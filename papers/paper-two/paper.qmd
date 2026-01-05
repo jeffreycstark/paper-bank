@@ -1,0 +1,187 @@
+---
+title: "EconDev-AuthPref: Paper Title"
+subtitle: "Subtitle (Optional)"
+author:
+  - name: Jeffrey Stark
+    affiliations:
+      - name: Yonsei University
+    email: jeffrey.stark@yonsei.ac.kr
+    orcid: 0000-0000-0000-0000
+date: today
+date-format: long
+abstract: |
+  This is the abstract. It should concisely summarize the main question, 
+  methodology, findings, and contribution of the paper. Typically 150-250 words.
+keywords: [social science, survey, methodology]
+thanks: |
+  Acknowledgments and funding information go here.
+bibliography: refs.bib
+csl: ../../apa.csl
+number-sections: true
+---
+
+# Introduction {#sec-introduction}
+
+## Research Question
+
+State your research question clearly and concisely.
+
+## Motivation
+
+Why is this question important? What gap in the literature does it address?
+
+## Contribution
+
+What does this paper contribute to the field?
+
+# Literature Review {#sec-literature}
+
+## Theoretical Framework
+
+Discuss the theoretical foundations of your research.
+
+## Previous Research
+
+Review relevant empirical studies and their findings.
+
+## Hypotheses
+
+State your hypotheses explicitly:
+
+**H1:** First hypothesis statement.
+
+**H2:** Second hypothesis statement.
+
+# Data and Methods {#sec-methods}
+
+## Data Source
+
+```{r}
+#| label: load-data
+#| include: false
+
+# Load necessary R packages
+library(tidyverse)
+library(haven)
+library(modelsummary)
+
+# Source utility functions
+source("../../src/r/utils/load_data.R")
+source("../../src/r/utils/descriptive_stats.R")
+
+# Load the processed data
+data <- read_rds("../../data/processed/survey_data.rds")
+```
+
+Describe your data source, sampling strategy, and sample characteristics.
+
+## Variables
+
+### Dependent Variable
+
+Describe your outcome variable(s).
+
+### Independent Variables
+
+Describe your key explanatory variables.
+
+### Control Variables
+
+List and describe control variables.
+
+## Analytical Strategy
+
+Describe your statistical approach and model specification.
+
+# Results {#sec-results}
+
+## Descriptive Statistics
+
+@tbl-descriptives presents descriptive statistics for all variables in the analysis.
+
+```{r}
+#| label: tbl-descriptives
+#| tbl-cap: "Descriptive Statistics"
+#| echo: false
+
+# Generate descriptive statistics table
+datasummary_skim(
+  data,
+  output = "tables/descriptive_stats.html"
+)
+```
+
+## Main Results
+
+@tbl-main-results presents the main regression results.
+
+```{r}
+#| label: tbl-main-results
+#| tbl-cap: "Main Regression Results"
+#| echo: false
+
+# Run main analysis
+model1 <- lm(outcome ~ predictor1 + predictor2, data = data)
+model2 <- lm(outcome ~ predictor1 + predictor2 + control1 + control2, data = data)
+
+# Create regression table
+modelsummary(
+  list("Model 1" = model1, "Model 2" = model2),
+  stars = TRUE,
+  gof_map = c("nobs", "r.squared", "adj.r.squared"),
+  output = "tables/main_results.html"
+)
+```
+
+@fig-main-effect visualizes the main relationship of interest.
+
+```{python}
+#| label: fig-main-effect
+#| fig-cap: "Main Effect Visualization"
+#| echo: false
+
+import pandas as pd
+import matplotlib.pyplot as plt
+import seaborn as sns
+
+# Load Python data if needed
+# data = pd.read_csv("../../data/processed/survey_data.csv")
+
+# Create visualization
+# plt.figure(figsize=(10, 6))
+# sns.scatterplot(data=data, x='predictor', y='outcome')
+# plt.savefig('figures/main_effect.png', dpi=300, bbox_inches='tight')
+# plt.show()
+```
+
+## Robustness Checks
+
+Describe robustness checks and sensitivity analyses.
+
+# Discussion {#sec-discussion}
+
+## Interpretation of Findings
+
+Interpret your results in the context of your hypotheses and theoretical framework.
+
+## Implications
+
+Discuss theoretical and practical implications.
+
+## Limitations
+
+Acknowledge limitations of your study.
+
+# Conclusion {#sec-conclusion}
+
+Summarize main findings and contributions. Suggest directions for future research.
+
+# References {.unnumbered}
+
+::: {#refs}
+:::
+
+# Appendix {.appendix}
+
+See [appendix](appendix.qmd) for additional materials.
+

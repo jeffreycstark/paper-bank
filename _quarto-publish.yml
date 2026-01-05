@@ -1,0 +1,36 @@
+# Production/publish environment configuration
+# Use with: quarto render --profile publish
+
+project:
+  type: manuscript
+  output-dir: _site
+
+execute:
+  freeze: auto
+  echo: false
+  warning: false
+  message: false
+  error: false
+  cache: false
+
+format:
+  html:
+    theme: cosmo
+    toc: true
+    toc-depth: 2
+    code-fold: true
+    code-tools: false
+    df-print: kable
+    fig-width: 7
+    fig-height: 5
+    self-contained: true
+    
+  pdf:
+    documentclass: article
+    geometry: 
+      - margin=1in
+    keep-tex: false
+    number-sections: true
+    
+  docx:
+    reference-doc: custom-reference.docx

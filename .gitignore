@@ -1,0 +1,168 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+pip-wheel-metadata/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# Virtual environments
+.env
+.venv
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+.python-version.bak
+
+# UV
+.uv/
+uv.lock
+
+# PyInstaller
+*.manifest
+*.spec
+
+# Unit test / coverage reports
+htmlcov/
+.tox/
+.nox/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+*.py,cover
+.hypothesis/
+.pytest_cache/
+
+# Jupyter Notebook
+.ipynb_checkpoints
+*/.ipynb_checkpoints/*
+
+# IPython
+profile_default/
+ipython_config.py
+
+# pyenv
+.python-version
+
+# R
+.Rproj.user
+.Rhistory
+.RData
+.Ruserdata
+*.Rproj
+
+# renv
+renv/library/
+renv/local/
+renv/staging/
+
+# R package builds
+*.tar.gz
+*.Rcheck/
+
+# Quarto
+/.quarto/
+_site/
+_book/
+_freeze/
+*.html
+*.pdf
+!papers/**/figures/*.pdf
+!outputs/figures/*.pdf
+
+# Quarto cache
+*_cache/
+*_files/
+
+# Data files (uncomment if you don't want to track data)
+# data/raw/*.csv
+# data/raw/*.xlsx
+# data/raw/*.dta
+# data/interim/*.csv
+# data/processed/*.csv
+
+# LaTeX
+*.aux
+*.bbl
+*.blg
+*.fdb_latexmk
+*.fls
+*.log
+*.out
+*.synctex.gz
+*.toc
+*.lof
+*.lot
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# OS
+Thumbs.db
+.Spotlight-V100
+.Trashes
+
+# Project specific
+.secrets
+*.key
+*.pem
+credentials/
+.env.local
+.env.*.local
+
+# Temporary files
+tmp/
+temp/
+*.tmp
+*.bak
+*.backup
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Archives
+*.zip
+*.tar
+*.gz
+!data/raw/*.tar.gz
+
+# Output artifacts (rendered documents)
+# Uncomment if you want Git to track rendered outputs
+outputs/*.html
+outputs/*.pdf
+outputs/*.docx
+papers/**/*.html
+papers/**/*.pdf
+papers/**/*.docx
+!papers/**/submission/*.pdf

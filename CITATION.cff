@@ -1,0 +1,20 @@
+cff-version: 1.2.0
+message: "If you use this research in your work, please cite it as below."
+type: dataset
+title: "EconDev-AuthPref"
+authors:
+  - family-names: "Stark"
+    given-names: "Jeffrey"
+    email: "jeffrey.stark@yonsei.ac.kr"
+    affiliation: "Yonsei University"
+    orcid: "https://orcid.org/0000-0000-0000-0000"  # Replace with actual ORCID
+repository-code: "https://github.com/username/econdev-authpref"
+url: "https://username.github.io/econdev-authpref"
+abstract: "Research project for EconDev-AuthPref"
+keywords:
+  - social science
+  - survey research
+  - quantitative methods
+license: MIT
+date-released: "2024-01-01"  # Will be updated automatically
+version: "0.1.0"

@@ -1,0 +1,28 @@
+# Development environment configuration
+# Use with: quarto render --profile dev
+
+project:
+  type: manuscript
+  output-dir: _site
+
+execute:
+  freeze: false
+  echo: true
+  warning: true
+  message: true
+  error: true
+  cache: true
+
+format:
+  html:
+    theme: cosmo
+    toc: true
+    toc-depth: 3
+    toc-location: left
+    code-fold: show
+    code-tools: true
+    code-line-numbers: true
+    df-print: paged
+    fig-width: 8
+    fig-height: 6
+    self-contained: false

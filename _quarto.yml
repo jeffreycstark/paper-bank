@@ -1,0 +1,81 @@
+project:
+  type: manuscript
+  output-dir: _site
+  render:
+    - "papers/*/paper.qmd"
+    - "papers/*/appendix.qmd"
+
+execute:
+  freeze: auto
+  echo: false
+  warning: false
+  message: false
+  error: false
+  cache: true
+  daemon: false
+
+# Default bibliography and citation style
+bibliography: papers/paper-two/refs.bib
+csl: apa.csl
+
+# Figure and table options
+fig-cap-location: bottom
+tbl-cap-location: top
+
+# Code execution
+jupyter: python3
+
+# Rendering options
+format:
+  html:
+    theme:
+      light: flatly
+      dark: darkly
+    toc: true
+    toc-depth: 3
+    toc-location: left
+    code-fold: true
+    code-tools: true
+    code-line-numbers: false
+    code-copy: true
+    df-print: paged
+    fig-width: 8
+    fig-height: 6
+    number-sections: true
+    citations-hover: true
+    footnotes-hover: true
+    crossrefs-hover: true
+    self-contained: false
+
+  pdf:
+    documentclass: article
+    classoption: [11pt, letterpaper]
+    geometry:
+      - margin=1in
+      - heightrounded
+    keep-tex: false
+    number-sections: true
+    colorlinks: true
+    cite-method: biblatex
+
+  docx:
+    toc: true
+    number-sections: true
+    highlight-style: github
+
+# Language and locale
+lang: en
+date-format: long
+
+# Cross-reference settings
+crossref:
+  fig-title: Figure
+  tbl-title: Table
+  eq-prefix: Equation
+  sec-prefix: Section
+
+# Profile-specific configurations
+profile:
+  default: default
+  dev: _quarto-dev.yml
+  publish: _quarto-publish.yml
