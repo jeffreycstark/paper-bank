@@ -1,0 +1,223 @@
+# Generated YAML template - review and edit before using
+# Source: Search results for "satisf" containing "democracy"
+# 16 matches across 6 waves
+# Generated: 2026-01-06
+
+q1:
+  id: "",  # TODO: Set to dem_sat_national or similar
+  concept: "democracy_satisfaction"
+  description: "Satisfaction with the way democracy works in the country"
+
+  source:
+    w1: "q098"
+    w2: "q93"
+    w3: "q89"
+    w4: "q92"
+    w5: "q99"
+    w6: "q90"
+
+  type: "ordinal"
+  target_scale:
+    min: 1
+    max: 4
+    labels:
+      1: "Not at all satisfied"
+      2: "Not very satisfied"
+      3: "Fairly satisfied"
+      4: "Very satisfied"
+
+  missing:
+    use_convention: "treat_as_na"
+
+  # Scale analysis (auto-detected):
+  # w1: 4pt scale, ascending direction, 100.0% confidence
+  # w2: 4pt scale, ascending direction, 100.0% confidence
+  # w3: 4pt scale, descending direction, 100.0% confidence
+  # w4: 4pt scale, descending direction, 100.0% confidence
+  # w5: 4pt scale, descending direction, 100.0% confidence
+  # w6: 4pt scale, descending direction, 100.0% confidence
+  # ⚠️  REVERSALS DETECTED:
+  #   w1 vs w3: opposite semantic direction
+  #   w2 vs w3: opposite semantic direction
+  # Consider using safe_reverse_4pt() for reversals
+
+  harmonize:
+    default:
+      method: "identity"
+    by_wave:
+      w1:
+        method: "r_function"
+        fn: "safe_reverse_4pt"
+        validate_all: ["democracy"]
+      w2:
+        method: "r_function"
+        fn: "safe_reverse_4pt"
+        validate_all: ["democracy"]
+
+  qc:
+    valid_range_by_wave:
+      w1: [1, 4]
+      w2: [1, 4]
+      w3: [1, 4]
+      w4: [1, 4]
+      w5: [1, 4]
+      w6: [1, 4]
+
+  tags: ["core", "democracy", "satisfaction"]
+
+---
+
+q2:
+  id: "",  # TODO: Set to gov_sat or similar
+  concept: "democracy_satisfaction"
+  description: "Satisfaction with the current government"
+
+  source:
+    w1: "q104"
+    w2: "q99"
+    w3: "q95"
+    w4: "q98"
+    w5: "q105"
+    w6: "q96"
+
+  type: "ordinal"
+  target_scale:
+    min: 1
+    max: 4
+    labels:
+      1: "Very satisfied"
+      2: "Somewhat satisfied"
+      3: "Somewhat dissatisfied"
+      4: "Very dissatisfied"
+
+  missing:
+    use_convention: "treat_as_na"
+
+  # Scale analysis (auto-detected):
+  # w1: 5pt scale, ascending direction, 80.0% confidence
+  # NOTE: W1 has unusual "Half and Half" value - requires manual handling
+  # w2: 4pt scale, descending direction, 100.0% confidence
+  # w3: 4pt scale, descending direction, 100.0% confidence
+  # w4: 4pt scale, descending direction, 100.0% confidence
+  # w5: 4pt scale, descending direction, 100.0% confidence
+  # w6: 4pt scale, descending direction, 100.0% confidence
+  # ⚠️  POTENTIAL REVERSALS:
+  #   w1 vs w2: different scale structures (5pt vs 4pt)
+  #   w1 vs w3: both have different directions and scale sizes
+  # Decision needed: How to handle W1 (5pt with "Half and Half")?
+  #   Option A: Collapse to 4pt (drop "Half and Half")
+  #   Option B: Use separately with safe_reverse_5pt
+  #   Option C: Custom mapping function
+
+  harmonize:
+    default:
+      method: "identity"
+    by_wave:
+      w1:
+        method: "identity"  # TODO: Decide how to handle 5pt scale + "Half and Half"
+        # If collapsing to 4pt:
+        # method: "r_function"
+        # fn: "custom_collapse_5to4"  # Would need to define this
+      w2:
+        method: "r_function"
+        fn: "safe_reverse_4pt"
+        validate_all: ["government"]
+
+  qc:
+    valid_range_by_wave:
+      w1: [1, 5]  # Note: 5 values due to "Half and Half"
+      w2: [1, 4]
+      w3: [1, 4]
+      w4: [1, 4]
+      w5: [1, 4]
+      w6: [1, 4]
+
+  tags: ["core", "government", "satisfaction"]
+
+---
+
+q3:
+  id: "",  # TODO: Set to household_income_sat or similar
+  concept: "democracy_satisfaction"
+  description: "Household income adequacy and satisfaction"
+
+  source:
+    w2: "se9a"
+    w3: "se13a"
+    w4: "se14a"
+    w6: "SE14a"
+    # NOTE: W1 and W5 do not have this question
+
+  type: "ordinal"
+  target_scale:
+    min: 1
+    max: 4
+    labels:
+      1: "Covers needs well, can save"
+      2: "Covers needs adequately"
+      3: "Does not cover needs, some difficulties"
+      4: "Does not cover needs, great difficulties"
+
+  missing:
+    use_convention: "treat_as_na"
+
+  # Scale analysis (auto-detected):
+  # w2: 4pt scale, descending direction, 100.0% confidence
+  # w3: 4pt scale, descending direction, 100.0% confidence
+  # w4: 4pt scale, descending direction, 100.0% confidence
+  # w6: 5pt scale, descending direction, 80.0% confidence
+  # NOTE: All scales descending (consistent direction) - no reversals needed
+  # NOTE: W1 and W5 missing this question entirely
+  # WARNING: W6 has 5 points while W2-W4 have 4 points
+  #   - W6 distinguishes "save a lot" vs "save" (values 1-2)
+  #   - Consider: collapse W6 to 4pt or keep separate?
+
+  harmonize:
+    default:
+      method: "identity"
+    by_wave:
+      w6:
+        method: "identity"  # TODO: Decide: collapse 5pt to 4pt or keep as-is
+        # If collapsing to 4pt:
+        # method: "r_function"
+        # fn: "custom_collapse_5to4"  # Combine values 1-2 into single category
+
+  qc:
+    valid_range_by_wave:
+      w2: [1, 4]
+      w3: [1, 4]
+      w4: [1, 4]
+      w6: [1, 5]  # Note: 5 values in W6
+
+  tags: ["secondary", "household", "satisfaction", "socioeconomic"]
+
+---
+
+# NOTES FOR USER:
+
+# 1. FILL IN ID FIELDS
+#    Each question needs a descriptive id:
+#    - q1: dem_sat_national (or q098, or similar)
+#    - q2: gov_sat (or q104, or similar)  
+#    - q3: household_income_sat (or se9a, or similar)
+
+# 2. CONFIRM HARMONIZATION METHODS
+#    - q1: W1/W2 reversals look correct (ascending→descending)
+#    - q2: W1 is problematic (5pt + "Half and Half") - decide what to do
+#    - q3: W6 is 5pt vs others 4pt - decide what to do
+
+# 3. HANDLE EDGE CASES
+#    - W1 q104: "Half and Half" option is unusual. Is this intentional?
+#    - W6 SE14a: More granular (5pt) than W2-4 (4pt)
+#    - W1/W5: Household income question missing entirely
+
+# 4. VALIDATE WITH DATA
+#    After filling in id and harmonize methods:
+#    spec <- yaml::read_yaml("src/config/harmonize/democracy_satisfaction.yml")
+#    validate_harmonize_spec(spec)
+#
+#    Then harmonize:
+#    harmonized <- harmonize_all(spec, waves=list(w1,w2,w3,w4,w5,w6))
+
+# 5. CHECK RESULTS
+#    report_harmonization(harmonized)

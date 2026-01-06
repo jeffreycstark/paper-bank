@@ -1,0 +1,204 @@
+# src/config/harmonize/economy.yml
+# Harmonization specifications for economy-related variables
+# Waves: w1, w2, w3, w4, w5, w6
+
+missing_conventions:
+  treat_as_na: [-1, 0, 7, 8, 9]
+  treat_as_na_extended: [-1, 0, 97, 98, 99]
+
+variables:
+  
+  # ============================================================================
+  # Overall national economic condition
+  # ============================================================================
+  
+  econ_national_now:
+    id: "econ_national_now"
+    concept: "economy"
+    description: "Overall national economic condition today"
+    
+    source:
+      w1: "q001"
+      w2: "q1"
+      w3: "q1"
+      w4: "q1"
+      w5: "q1"
+      w6: "q1"
+    
+    type: "ordinal"
+    
+    target_scale:
+      min: 1
+      max: 5
+      labels:
+        1: "Very bad"
+        2: "Bad"
+        3: "So so"
+        4: "Good"
+        5: "Very good"
+    
+    missing:
+      use_convention: "treat_as_na"
+    
+    harmonize:
+      default:
+        method: "identity"
+      
+      by_wave:
+        w3:
+          method: "r_function"
+          fn: "safe_reverse_5pt"
+          validate_all: ["economic"]
+        w4:
+          method: "r_function"
+          fn: "safe_reverse_5pt"
+          validate_all: ["economic"]
+        w5:
+          method: "r_function"
+          fn: "safe_reverse_5pt"
+          validate_all: ["economic"]
+        w6:
+          method: "r_function"
+          fn: "safe_reverse_5pt"
+          validate_all: ["economic"]
+    
+    qc:
+      valid_range_by_wave:
+        w1: [1, 5]
+        w2: [1, 5]
+        w3: [1, 5]
+        w4: [1, 5]
+        w5: [1, 5]
+        w6: [1, 5]
+    
+    tags: ["core", "candidate_index:economy"]
+
+  # ============================================================================
+  # Economic situation compared to one year ago
+  # ============================================================================
+  
+  econ_change_1yr:
+    id: "econ_change_1yr"
+    concept: "economy"
+    description: "Economic situation compared to one year ago"
+    
+    source:
+      w1: "q002"
+      w2: "q2"
+      w3: "q2"
+      w4: "q2"
+      w5: "q2"
+      w6: "q2"
+    
+    type: "ordinal"
+    
+    target_scale:
+      min: 1
+      max: 5
+      labels:
+        1: "Much worse"
+        2: "Worse"
+        3: "About the same"
+        4: "Better"
+        5: "Much better"
+    
+    missing:
+      use_convention: "treat_as_na"
+    
+    harmonize:
+      default:
+        method: "identity"
+      
+      by_wave:
+        w3:
+          method: "r_function"
+          fn: "safe_reverse_5pt"
+          validate_all: ["economic"]
+        w4:
+          method: "r_function"
+          fn: "safe_reverse_5pt"
+          validate_all: ["economic"]
+        w5:
+          method: "r_function"
+          fn: "safe_reverse_5pt"
+          validate_all: ["economic"]
+        w6:
+          method: "r_function"
+          fn: "safe_reverse_5pt"
+          validate_all: ["economic"]
+    
+    qc:
+      valid_range_by_wave:
+        w1: [1, 5]
+        w2: [1, 5]
+        w3: [1, 5]
+        w4: [1, 5]
+        w5: [1, 5]
+        w6: [1, 5]
+    
+    tags: ["candidate_index:economy"]
+
+  # ============================================================================
+  # Expected economic situation in one year
+  # ============================================================================
+  
+  econ_outlook_1yr:
+    id: "econ_outlook_1yr"
+    concept: "economy"
+    description: "Expected economic situation in one year"
+    
+    source:
+      w1: "q003"
+      w2: "q3"
+      w3: "q3"
+      w4: "q3"
+      w5: "q3"
+      w6: "q3"
+    
+    type: "ordinal"
+    
+    target_scale:
+      min: 1
+      max: 5
+      labels:
+        1: "Much worse"
+        2: "Worse"
+        3: "About the same"
+        4: "Better"
+        5: "Much better"
+    
+    missing:
+      use_convention: "treat_as_na"
+    
+    harmonize:
+      default:
+        method: "identity"
+      
+      by_wave:
+        w3:
+          method: "r_function"
+          fn: "safe_reverse_5pt"
+          validate_all: ["economic"]
+        w4:
+          method: "r_function"
+          fn: "safe_reverse_5pt"
+          validate_all: ["economic"]
+        w5:
+          method: "r_function"
+          fn: "safe_reverse_5pt"
+          validate_all: ["economic"]
+        w6:
+          method: "r_function"
+          fn: "safe_reverse_5pt"
+          validate_all: ["economic"]
+    
+    qc:
+      valid_range_by_wave:
+        w1: [1, 5]
+        w2: [1, 5]
+        w3: [1, 5]
+        w4: [1, 5]
+        w5: [1, 5]
+        w6: [1, 5]
+    
+    tags: ["candidate_index:economy"]
