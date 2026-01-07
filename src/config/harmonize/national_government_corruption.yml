@@ -1,0 +1,73 @@
+# National Government Corruption Perception - Harmonization Config
+# Question: How widespread do you think corruption and bribe-taking are in the national government?
+#
+# Scale heterogeneity (identical to local_government_corruption):
+# - W1-W2: 1-4 scale, 1=Almost everyone corrupt (need REVERSE)
+# - W3-W5: 1-4 scale, 1=Hardly anyone involved (already correct)
+# - W6: 1-5 scale, 1=Hardly anyone involved (need to map 5 to NA)
+
+variables:
+  - id: national_govt_corruption
+    description: "National government corruption perception (harmonized to 1-4 scale, high=more corrupt)"
+    
+    source:
+      w1: q115
+      w2: q118
+      w3: q117
+      w4: q118
+      w5: q125
+      w6: q116
+    
+    harmonize:
+      by_wave:
+        w1:
+          method: "r_function"
+          fn: "safe_reverse_4pt"
+          description: "W1 uses reversed scale (1=corrupt), need to reverse for consistency"
+          
+        w2:
+          method: "r_function"
+          fn: "safe_reverse_4pt"
+          description: "W2 uses reversed scale (1=corrupt), need to reverse for consistency"
+          
+        w3:
+          method: "identity"
+          description: "W3 already has correct orientation (1=least corrupt, 4=most corrupt)"
+          
+        w4:
+          method: "identity"
+          description: "W4 already has correct orientation (1=least corrupt, 4=most corrupt)"
+          
+        w5:
+          method: "identity"
+          description: "W5 already has correct orientation (1=least corrupt, 4=most corrupt)"
+          
+        w6:
+          method: "r_function"
+          fn: "harmonize_w6_corruption"
+          description: "W6 has extended 1-5 scale with 0=N/A, need to map 5→NA and keep 1-4"
+      
+      default:
+        method: "identity"
+        description: "Default: keep as-is after cleaning missing codes"
+
+missing_codes:
+  w1: [98, 99, -1, -2]
+  w2: [8, 9, -1, -2]
+  w3: [-1, -2, 8, 9]
+  w4: [-1, -2, 7, 8, 9]
+  w5: [-1, -2, 7, 8, 9]
+  w6: [-1, -2, 0, 7, 8, 9]  # 0=N/A in W6
+
+notes: |
+  After harmonization, scale should be 1-4 where:
+  1 = Almost everyone is corrupt (highest concern)
+  2 = Most officials are corrupt
+  3 = Not a lot of officials are corrupt
+  4 = Hardly anyone involved (lowest concern)
+  
+  W6 originally has extended scale with value 5 "No one is involved" which maps to NA
+  
+  NOTE: Variable codes differ from local_government_corruption:
+  - Local: q114 (W1), q117 (W2), q116 (W3), q117 (W4), q124 (W5), q115 (W6)
+  - National: q115 (W1), q118 (W2), q117 (W3), q118 (W4), q125 (W5), q116 (W6)

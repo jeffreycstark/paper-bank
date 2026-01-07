@@ -283,6 +283,29 @@ detect_scale <- function(x, var_name = "variable") {
 #' @return Logical TRUE/FALSE with warnings if issues found
 #'
 #' @export
+
+#' Handle W6 extended corruption scale (1-5 with special codes)
+#'
+#' W6 has extended scale with:
+#'   1 = Hardly anyone involved
+#'   2 = Not a lot of officials are corrupt
+#'   3 = Most officials are corrupt
+#'   4 = Almost everyone is corrupt
+#'   5 = No one is involved (rare response)
+#'   0 = Not applicable
+#' 
+#' Map to standard 1-4 scale by treating 5 and 0 as NA
+#' @param x Numeric vector (1-5 with 0=N/A)
+#' @return Numeric vector with 5→NA, 0→NA, keeping 1-4
+#'
+#' @export
+harmonize_w6_corruption <- function(x) {
+  # Map 5 (No one involved) and 0 (N/A) to NA
+  # Keep 1-4 as-is
+  ifelse(x >= 1 & x <= 4, x, NA_real_)
+}
+
+
 validate_harmonization <- function(x, expected_min = 1, expected_max = 4, var_name = "variable") {
 
   valid_count <- sum(!is.na(x))
