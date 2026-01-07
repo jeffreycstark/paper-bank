@@ -1,115 +1,59 @@
-- id: "trust_govt"
-  concept: "trust_in_government"
-  description: "Trust in the national government (harmonized to 1–4 across waves)"
+- id: "econ_national_now"
+  concept: "economy"
+  description: "Overall national economic condition today"
+
   source:
-    w1: "q23"
-    w2: "q23"
-    w3: "q23"
-    w4: "q23"
-    w5: "q23"     # same question, but 6-point response in wave 5
-    w6: "q23"
+    w1: "q001"
+    w2: "q1"
+    w3: "q1"
+    w4: "q1"
+    w5: "q1"
+    w6: "q1"
 
   type: "ordinal"
 
-  # Your canonical harmonized scale
   target_scale:
     min: 1
-    max: 4
+    max: 5
     labels:
-      1: "Low trust"
-      2: "Some trust"
-      3: "High trust"
-      4: "Very high trust"
+      1: "Very bad"
+      2: "Bad"
+      3: "So so"
+      4: "Good"
+      5: "Very good"
 
   missing:
     use_convention: "treat_as_na"
 
   harmonize:
-    # Default: assume waves already match target scale
     default:
       method: "identity"
 
-    # Exception: W5 is 1–6, so collapse to 1–4
     by_wave:
+      w3:
+        method: "r_function"
+        fn: "safe_reverse_5pt"
+        validate_all: ["econom"]
+      w4:
+        method: "r_function"
+        fn: "safe_reverse_5pt"
+        validate_all: ["econom"]
       w5:
-        method: "collapse_map"
-        # Example collapse: 6 categories -> 4 categories
-        # (You can tune these cutpoints based on codebook meaning.)
-        map:
-          1: 1
-          2: 1
-          3: 2
-          4: 3
-          5: 4
-          6: 4
-        note: "Wave 5 uses 6-point trust scale; collapsed to 4-point for comparability."
+        method: "r_function"
+        fn: "safe_reverse_5pt"
+        validate_all: ["econom"]
+      w6:
+        method: "r_function"
+        fn: "safe_reverse_5pt"
+        validate_all: ["econom"]
 
   qc:
     valid_range_by_wave:
-      w1: [1, 4]
-      w2: [1, 4]
-      w3: [1, 4]
-      w4: [1, 4]
-      w5: [1, 6]
-      w6: [1, 4]
-    warn_if_outside: true
+      w1: [1, 5]
+      w2: [1, 5]
+      w3: [1, 5]
+      w4: [1, 5]
+      w5: [1, 5]
+      w6: [1, 5]
 
-  tags: ["core", "candidate_index:trust"]
-  
-- id: "trust_govt"
-  concept: "trust_in_government"
-  description: "Trust in the national government (harmonized to 1–4 across waves)"
-  source:
-    w1: "q23"
-    w2: "q23"
-    w3: "q23"
-    w4: "q23"
-    w5: "q23"     # same question, but 6-point response in wave 5
-    w6: "q23"
-
-  type: "ordinal"
-
-  # Your canonical harmonized scale
-  target_scale:
-    min: 1
-    max: 4
-    labels:
-      1: "Low trust"
-      2: "Some trust"
-      3: "High trust"
-      4: "Very high trust"
-
-  missing:
-    use_convention: "treat_as_na"
-
-  harmonize:
-    # Default: assume waves already match target scale
-    default:
-      method: "identity"
-
-    # Exception: W5 is 1–6, so collapse to 1–4
-    by_wave:
-      w5:
-        method: "collapse_map"
-        # Example collapse: 6 categories -> 4 categories
-        # (You can tune these cutpoints based on codebook meaning.)
-        map:
-          1: 1
-          2: 1
-          3: 2
-          4: 3
-          5: 4
-          6: 4
-        note: "Wave 5 uses 6-point trust scale; collapsed to 4-point for comparability."
-
-  qc:
-    valid_range_by_wave:
-      w1: [1, 4]
-      w2: [1, 4]
-      w3: [1, 4]
-      w4: [1, 4]
-      w5: [1, 6]
-      w6: [1, 4]
-    warn_if_outside: true
-
-  tags: ["core", "candidate_index:trust"]
+  tags: ["core", "candidate_index:economy"]
