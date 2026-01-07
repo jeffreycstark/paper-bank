@@ -1,0 +1,24 @@
+variables:
+  - id: community_leader_contact
+    description: "Contact or engagement with traditional/community leaders (scale type should be confirmed)"
+    source:
+      w1: q035
+      w2: q84
+      w3: q66
+      w4: q71
+      w5: q72
+      w6: q70
+    harmonize:
+      default:
+        method: "identity"
+    missing_codes:
+      w1: [-2, -1, 7, 8, 9, 98, 99]
+      w2: [-2, -1, 7, 8, 9, 98, 99]
+      w3: [-2, -1, 7, 8, 9, 98, 99]
+      w4: [-2, -1, 7, 8, 9, 98, 99]
+      w5: [-2, -1, 7, 8, 9, 98, 99]
+      w6: [-2, -1, 0, 7, 8, 9, 98, 99]
+    notes: 
+      - "W1 also has q047 for community leader contact - verify if q035 or q047 (or both) should be used"
+      - "Verify actual scale type and expected range - may be frequency (1-4), contact (yes/no), or other"
+      - "W4 has q71/q71a notation - verify if this is q71, q71a, or combined"

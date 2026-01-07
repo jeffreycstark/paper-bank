@@ -1,0 +1,22 @@
+variables:
+  - id: upright_leader_discretion
+    description: "If we have political leaders who are morally upright, we can let them decide everything (1=strongly agree, 4=strongly disagree)"
+    source:
+      w1: q138
+      w2: q139
+      w3: q146
+      w4: q147
+      w5: q154
+      w6: q154
+    harmonize:
+      default:
+        method: "identity"
+    missing_codes:
+      w1: [-2, -1, 7, 8, 9, 98, 99]
+      w2: [-2, -1, 7, 8, 9, 98, 99]
+      w3: [-2, -1, 7, 8, 9, 98, 99]
+      w4: [-2, -1, 7, 8, 9, 98, 99]
+      w5: [-2, -1, 7, 8, 9, 98, 99]
+      w6: [-2, -1, 0, 7, 8, 9, 98, 99]
+    expected_min: 1
+    expected_max: 4
