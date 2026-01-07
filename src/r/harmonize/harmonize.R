@@ -106,7 +106,13 @@ harmonize_variable <- function(
     # ---- apply missing code handling ----
     miss_convention_key <- var_spec$missing$use_convention %||% NULL
     missing_codes <- if (!is.null(miss_convention_key)) {
-      as.numeric(missing_conventions[[miss_convention_key]])
+      convention <- missing_conventions[[miss_convention_key]]
+      # Handle both direct vector and nested structure with 'codes' field
+      if (is.list(convention) && !is.null(convention$codes)) {
+        as.numeric(convention$codes)
+      } else {
+        as.numeric(convention)
+      }
     } else {
       numeric(0)
     }

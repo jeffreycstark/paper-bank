@@ -1,0 +1,115 @@
+- id: "trust_govt"
+  concept: "trust_in_government"
+  description: "Trust in the national government (harmonized to 1–4 across waves)"
+  source:
+    w1: "q23"
+    w2: "q23"
+    w3: "q23"
+    w4: "q23"
+    w5: "q23"     # same question, but 6-point response in wave 5
+    w6: "q23"
+
+  type: "ordinal"
+
+  # Your canonical harmonized scale
+  target_scale:
+    min: 1
+    max: 4
+    labels:
+      1: "Low trust"
+      2: "Some trust"
+      3: "High trust"
+      4: "Very high trust"
+
+  missing:
+    use_convention: "treat_as_na"
+
+  harmonize:
+    # Default: assume waves already match target scale
+    default:
+      method: "identity"
+
+    # Exception: W5 is 1–6, so collapse to 1–4
+    by_wave:
+      w5:
+        method: "collapse_map"
+        # Example collapse: 6 categories -> 4 categories
+        # (You can tune these cutpoints based on codebook meaning.)
+        map:
+          1: 1
+          2: 1
+          3: 2
+          4: 3
+          5: 4
+          6: 4
+        note: "Wave 5 uses 6-point trust scale; collapsed to 4-point for comparability."
+
+  qc:
+    valid_range_by_wave:
+      w1: [1, 4]
+      w2: [1, 4]
+      w3: [1, 4]
+      w4: [1, 4]
+      w5: [1, 6]
+      w6: [1, 4]
+    warn_if_outside: true
+
+  tags: ["core", "candidate_index:trust"]
+  
+- id: "trust_govt"
+  concept: "trust_in_government"
+  description: "Trust in the national government (harmonized to 1–4 across waves)"
+  source:
+    w1: "q23"
+    w2: "q23"
+    w3: "q23"
+    w4: "q23"
+    w5: "q23"     # same question, but 6-point response in wave 5
+    w6: "q23"
+
+  type: "ordinal"
+
+  # Your canonical harmonized scale
+  target_scale:
+    min: 1
+    max: 4
+    labels:
+      1: "Low trust"
+      2: "Some trust"
+      3: "High trust"
+      4: "Very high trust"
+
+  missing:
+    use_convention: "treat_as_na"
+
+  harmonize:
+    # Default: assume waves already match target scale
+    default:
+      method: "identity"
+
+    # Exception: W5 is 1–6, so collapse to 1–4
+    by_wave:
+      w5:
+        method: "collapse_map"
+        # Example collapse: 6 categories -> 4 categories
+        # (You can tune these cutpoints based on codebook meaning.)
+        map:
+          1: 1
+          2: 1
+          3: 2
+          4: 3
+          5: 4
+          6: 4
+        note: "Wave 5 uses 6-point trust scale; collapsed to 4-point for comparability."
+
+  qc:
+    valid_range_by_wave:
+      w1: [1, 4]
+      w2: [1, 4]
+      w3: [1, 4]
+      w4: [1, 4]
+      w5: [1, 6]
+      w6: [1, 4]
+    warn_if_outside: true
+
+  tags: ["core", "candidate_index:trust"]
