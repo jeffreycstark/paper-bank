@@ -1,0 +1,7 @@
+"concept","variable_id","num_waves","waves_available"
+"democracy_satisfaction","dem_sat_national",6,"w1,w2,w3,w4,w5,w6"
+"democracy_satisfaction","gov_sat_national",6,"w1,w2,w3,w4,w5,w6"
+"democracy_satisfaction","hh_income_sat",4,"w2,w3,w4,w6"
+"economy","econ_national_now",6,"w1,w2,w3,w4,w5,w6"
+"economy","econ_change_1yr",6,"w1,w2,w3,w4,w5,w6"
+"economy","econ_outlook_1yr",6,"w1,w2,w3,w4,w5,w6"

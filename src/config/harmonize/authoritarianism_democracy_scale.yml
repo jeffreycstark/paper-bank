@@ -4,6 +4,11 @@
 # 10-point scale (1=Complete Dictatorship, 10=Complete Democracy)
 # Available only in W1-W2 (not in W3-W6)
 
+missing_conventions:
+  treat_as_na:
+    codes: [-1, -2, 97, 98, 99]
+    description: "Standard missing codes"
+
 variables:
   - id: authoritarianism_democracy_scale
     description: "Self-placement on authoritarianism-democracy spectrum (1=complete dictatorship, 10=complete democracy)"
@@ -26,11 +31,6 @@ variables:
       default:
         method: "identity"
         description: "Keep as-is after cleaning missing codes"
-
-# Missing codes vary by wave
-missing_codes:
-  w1: [97, 98, 99, -1, -2]
-  w2: [97, 98, 99, -1, -2]
 
 expected_min: 1
 expected_max: 10

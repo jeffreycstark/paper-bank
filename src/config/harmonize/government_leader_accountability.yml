@@ -1,3 +1,8 @@
+missing_conventions:
+  treat_as_na:
+    codes: [-1, -2, 97, 98, 99]
+    description: "Standard missing codes"
+
 variables:
   - id: government_leader_judicial_constraint
     description: "When government leaders break the laws, there is nothing the court can do (reversed: 1=nothing can be done/low constraint becomes 4, 4=laws apply equally/high constraint becomes 1)"

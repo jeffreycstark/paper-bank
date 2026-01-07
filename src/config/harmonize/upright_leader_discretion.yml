@@ -1,3 +1,8 @@
+missing_conventions:
+  treat_as_na:
+    codes: [-1, -2, 97, 98, 99]
+    description: "Standard missing codes"
+
 variables:
   - id: upright_leader_discretion
     description: "If we have political leaders who are morally upright, we can let them decide everything (1=strongly agree, 4=strongly disagree)"

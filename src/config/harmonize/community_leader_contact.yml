@@ -1,3 +1,8 @@
+missing_conventions:
+  treat_as_na:
+    codes: [-1, -2, 97, 98, 99]
+    description: "Standard missing codes"
+
 variables:
   - id: community_leader_contact
     description: "Contact or engagement with traditional/community leaders (scale type should be confirmed)"

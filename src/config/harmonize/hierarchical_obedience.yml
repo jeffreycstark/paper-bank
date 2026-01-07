@@ -1,3 +1,8 @@
+missing_conventions:
+  treat_as_na:
+    codes: [-1, -2, 97, 98, 99]
+    description: "Standard missing codes"
+
 variables:
   - id: hierarchical_obedience
     description: "Agreement that government should be obeyed like family head (1=strongly agree, 4=strongly disagree)"

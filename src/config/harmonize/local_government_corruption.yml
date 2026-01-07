@@ -1,3 +1,8 @@
+missing_conventions:
+  treat_as_na:
+    codes: [-1, -2, 97, 98, 99]
+    description: "Standard missing codes"
+
 # Local Government Corruption Perception - Harmonization Config
 # Question: How widespread do you think corruption and bribe-taking are in your local/municipal government?
 #
