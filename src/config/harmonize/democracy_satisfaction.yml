@@ -1,0 +1,218 @@
+# Democracy Satisfaction Harmonization Specification
+# Generated from search results: "satisf" containing "democracy"
+# 16 matches across 6 waves
+# Generated: 2026-01-06
+
+# Define missing value conventions for this domain
+missing_conventions:
+  treat_as_na:
+    codes: [-1, 0, 7, 8, 9]
+    description: "Standard missing codes"
+
+variables:
+
+  dem_sat_national:
+    id: "dem_sat_national"
+    concept: "democracy_satisfaction"
+    description: "Satisfaction with the way democracy works in the country"
+
+    source:
+      w1: "q098"
+      w2: "q93"
+      w3: "q89"
+      w4: "q92"
+      w5: "q99"
+      w6: "q90"
+
+    type: "ordinal"
+    target_scale:
+      min: 1
+      max: 4
+      labels:
+        1: "Not at all satisfied"
+        2: "Not very satisfied"
+        3: "Fairly satisfied"
+        4: "Very satisfied"
+
+    missing:
+      use_convention: "treat_as_na"
+
+    # Scale analysis (auto-detected):
+    # w1: 4pt scale, ascending direction (1=Not satisfied → 4=Very satisfied)
+    # w2: 4pt scale, ascending direction (1=Not satisfied → 4=Very satisfied)
+    # w3: 4pt scale, descending direction (1=Very satisfied → 4=Not satisfied)
+    # w4: 4pt scale, descending direction (1=Very satisfied → 4=Not satisfied)
+    # w5: 4pt scale, descending direction (1=Very satisfied → 4=Not satisfied)
+    # w6: 4pt scale, descending direction (1=Very satisfied → 4=Not satisfied)
+    #
+    # ⚠️  REVERSALS DETECTED:
+    #   w1 vs w3: opposite semantic direction - REQUIRES REVERSAL
+    #   w2 vs w3: opposite semantic direction - REQUIRES REVERSAL
+    #
+    # Harmonization strategy:
+    # - Use safe_reverse_4pt() for w1, w2 (ascending → descending)
+    # - Use identity for w3, w4, w5, w6 (already descending)
+
+    harmonize:
+      default:
+        method: "identity"
+      by_wave:
+        w1:
+          method: "r_function"
+          fn: "safe_reverse_4pt"
+          validate_all: ["democracy"]
+        w2:
+          method: "r_function"
+          fn: "safe_reverse_4pt"
+          validate_all: ["democracy"]
+        w3:
+          method: "identity"
+        w4:
+          method: "identity"
+        w5:
+          method: "identity"
+        w6:
+          method: "identity"
+
+    qc:
+      valid_range_by_wave:
+        w1: [1, 4]
+        w2: [1, 4]
+        w3: [1, 4]
+        w4: [1, 4]
+        w5: [1, 4]
+        w6: [1, 4]
+
+  gov_sat_national:
+    id: "gov_sat_national"
+    concept: "government_satisfaction"
+    description: "Satisfaction with government's handling of key issues"
+
+    source:
+      w1: "q104"
+      w2: "q96"
+      w3: "q91"
+      w4: "q94"
+      w5: "q102"
+      w6: "q88"
+
+    type: "ordinal"
+    target_scale:
+      min: 1
+      max: 4
+      labels:
+        1: "Not at all satisfied"
+        2: "Not very satisfied"
+        3: "Fairly satisfied"
+        4: "Very satisfied"
+
+    missing:
+      use_convention: "treat_as_na"
+
+    # Scale analysis (auto-detected):
+    # w1: EDGE CASE - includes "Half and Half" option (5pt scale)
+    # w2: 4pt scale, ascending direction
+    # w3: 4pt scale, descending direction
+    # w4: 4pt scale, descending direction
+    # w5: 4pt scale, descending direction
+    # w6: 4pt scale, descending direction
+    #
+    # ⚠️  REVERSALS AND EDGE CASES:
+    #   w1: 5pt scale with "Half and Half" - may need special handling
+    #   w2 vs w3: opposite semantic direction - REQUIRES REVERSAL
+    #
+    # Harmonization strategy:
+    # - For w1: Use identity (collapse 5pt to 4pt via missing_codes)
+    # - For w2: Use safe_reverse_4pt()
+    # - For w3-w6: Use identity
+
+    harmonize:
+      default:
+        method: "identity"
+      by_wave:
+        w1:
+          method: "identity"
+          note: "5pt scale in W1 - confirm if collapsing is appropriate"
+        w2:
+          method: "r_function"
+          fn: "safe_reverse_4pt"
+          validate_all: ["government"]
+        w3:
+          method: "identity"
+        w4:
+          method: "identity"
+        w5:
+          method: "identity"
+        w6:
+          method: "identity"
+
+    qc:
+      valid_range_by_wave:
+        w1: [1, 5]  # Note: W1 has 5pt scale
+        w2: [1, 4]
+        w3: [1, 4]
+        w4: [1, 4]
+        w5: [1, 4]
+        w6: [1, 4]
+
+  hh_income_sat:
+    id: "hh_income_sat"
+    concept: "household_income_satisfaction"
+    description: "Satisfaction with household income"
+
+    source:
+      w1: "se9a"
+      w2: "se9a"
+      w3: "se9a"
+      w4: "se9a"
+      w5: "se9a"
+      w6: "SE14a"
+
+    type: "ordinal"
+    target_scale:
+      min: 1
+      max: 4
+      labels:
+        1: "Very dissatisfied"
+        2: "Fairly dissatisfied"
+        3: "Fairly satisfied"
+        4: "Very satisfied"
+
+    missing:
+      use_convention: "treat_as_na"
+
+    # Scale analysis (auto-detected):
+    # w1-w5: 4pt scale, ascending direction (se9a variable)
+    # w6: POTENTIAL SCALE MISMATCH - SE14a (5pt vs 4pt)
+    #
+    # ⚠️  POTENTIAL ISSUES:
+    #   W6 variable name changed (se9a → SE14a) - verify this is same question
+    #   W6 scale type may differ - check if 5pt vs 4pt
+    #   May need manual review and adjustment
+
+    harmonize:
+      default:
+        method: "identity"
+      by_wave:
+        w1:
+          method: "identity"
+        w2:
+          method: "identity"
+        w3:
+          method: "identity"
+        w4:
+          method: "identity"
+        w5:
+          method: "identity"
+        w6:
+          method: "identity"
+          note: "Variable name/scale may differ - manual review recommended"
+
+    qc:
+      valid_range_by_wave:
+        w1: [1, 4]
+        w2: [1, 4]
+        w3: [1, 4]
+        w4: [1, 4]
+        w5: [1, 4]
+        w6: [1, 5]  # Note: Potential 5pt scale in W6

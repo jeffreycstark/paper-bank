@@ -1,0 +1,22 @@
+variables:
+  - id: hierarchical_obedience
+    description: "Agreement that government should be obeyed like family head (1=strongly agree, 4=strongly disagree)"
+    source:
+      w1: q133
+      w2: q134
+      w3: q141
+      w4: q142
+      w5: q149
+      w6: q149
+    harmonize:
+      default:
+        method: "identity"
+    missing_codes:
+      w1: [-2, -1, 7, 8, 9, 98, 99]
+      w2: [-2, -1, 7, 8, 9, 98, 99]
+      w3: [-2, -1, 7, 8, 9, 98, 99]
+      w4: [-2, -1, 7, 8, 9, 98, 99]
+      w5: [-2, -1, 7, 8, 9, 98, 99]
+      w6: [-2, -1, 0, 7, 8, 9, 98, 99]
+    expected_min: 1
+    expected_max: 4

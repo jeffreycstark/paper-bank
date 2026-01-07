@@ -1,0 +1,60 @@
+variables:
+  - id: government_leader_judicial_constraint
+    description: "When government leaders break the laws, there is nothing the court can do (reversed: 1=nothing can be done/low constraint becomes 4, 4=laws apply equally/high constraint becomes 1)"
+    source:
+      w1: q101
+      w2: q101
+      w3: q101
+      w4: q104
+      w5: q111
+      w6: q102
+    harmonize:
+      by_wave:
+        w1:
+          method: "r_function"
+          fn: "safe_reverse_4pt"
+        w2:
+          method: "r_function"
+          fn: "safe_reverse_4pt"
+        w3:
+          method: "r_function"
+          fn: "safe_reverse_4pt"
+        w4:
+          method: "r_function"
+          fn: "safe_reverse_4pt"
+        w5:
+          method: "r_function"
+          fn: "safe_reverse_4pt"
+        w6:
+          method: "r_function"
+          fn: "safe_reverse_4pt"
+    missing_codes:
+      w1: [-2, -1, 7, 8, 9, 98, 99]
+      w2: [-2, -1, 7, 8, 9, 98, 99]
+      w3: [-2, -1, 7, 8, 9, 98, 99]
+      w4: [-2, -1, 7, 8, 9, 98, 99]
+      w5: [-2, -1, 7, 8, 9, 98, 99]
+      w6: [-2, -1, 0, 7, 8, 9, 98, 99]
+    expected_min: 1
+    expected_max: 4
+    
+  - id: government_leader_law_breaking_frequency
+    description: "How often do you think government leaders break the law or abuse their power? (frequency scale)"
+    source:
+      w1: q110
+      w2: q110
+      w3: q110
+      w4: q112
+      w5: q118
+      w6: q109
+    harmonize:
+      default:
+        method: "identity"
+    missing_codes:
+      w1: [-2, -1, 7, 8, 9, 98, 99]
+      w2: [-2, -1, 7, 8, 9, 98, 99]
+      w3: [-2, -1, 7, 8, 9, 98, 99]
+      w4: [-2, -1, 7, 8, 9, 98, 99]
+      w5: [-2, -1, 7, 8, 9, 98, 99]
+      w6: [-2, -1, 0, 7, 8, 9, 98, 99]
+    note: "This variable should be reviewed to determine expected scale range; may differ from 1-4"

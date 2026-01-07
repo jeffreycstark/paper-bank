@@ -1,0 +1,59 @@
+- id: "econ_national_now"
+  concept: "economy"
+  description: "Overall national economic condition today"
+
+  source:
+    w1: "q001"
+    w2: "q1"
+    w3: "q1"
+    w4: "q1"
+    w5: "q1"
+    w6: "q1"
+
+  type: "ordinal"
+
+  target_scale:
+    min: 1
+    max: 5
+    labels:
+      1: "Very bad"
+      2: "Bad"
+      3: "So so"
+      4: "Good"
+      5: "Very good"
+
+  missing:
+    use_convention: "treat_as_na"
+
+  harmonize:
+    default:
+      method: "identity"
+
+    by_wave:
+      w3:
+        method: "r_function"
+        fn: "safe_reverse_5pt"
+        validate_all: ["econom"]
+      w4:
+        method: "r_function"
+        fn: "safe_reverse_5pt"
+        validate_all: ["econom"]
+      w5:
+        method: "r_function"
+        fn: "safe_reverse_5pt"
+        validate_all: ["econom"]
+      w6:
+        method: "r_function"
+        fn: "safe_reverse_5pt"
+        validate_all: ["econom"]
+
+  qc:
+    valid_range_by_wave:
+      w1: [1, 5]
+      w2: [1, 5]
+      w3: [1, 5]
+      w4: [1, 5]
+      w5: [1, 5]
+      w6: [1, 5]
+
+  tags: ["core", "candidate_index:economy"]

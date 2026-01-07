@@ -1,12 +1,12 @@
 # R/utils/_load_functions.R
 # Load all custom utility functions
 
-source(here::here("R", "utils", "recoding.R"))
-source(here::here("R", "utils", "validation.R"))
-source(here::here("R", "utils", "helpers.R"))
-source(here::here("R", "utils", "composites.R"))
-source(here::here("R", "utils", "clear_env.R"))
-source(here::here("R", "utils", "data_prep_helpers.R"))
+source(here::here("src", "r", "utils", "recoding.R"))
+source(here::here("src", "r", "utils", "validation.R"))
+source(here::here("src", "r", "utils", "helpers.R"))
+source(here::here("src", "r", "utils", "composites.R"))
+source(here::here("src", "r", "utils", "clear_env.R"))
+source(here::here("src", "r", "utils", "data_prep_helpers.R"))
 # Note: lint.R is NOT sourced here - it's a standalone script meant to be run manually
 
 cat("\n=== Custom Functions Loaded ===\n")
