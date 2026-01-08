@@ -61,12 +61,47 @@ for (spec_file in spec_files) {
   spec_path <- here("src/config/harmonize", paste0(spec_file, ".yml"))
   spec <- read_yaml(spec_path)
   
+  # DEBUG: Check structure for institutional_trust
+  if (spec_file == "institutional_trust") {
+    cat("  [DEBUG] variables class:", class(spec$variables), "length:", length(spec$variables), "\n")
+  }
+  
   # Process each variable in spec
-  for (var_id in names(spec$variables)) {
-    var_spec <- spec$variables[[var_id]]
-    source_cols <- var_spec$source
+  # Handle both named dictionary and list formats
+  var_keys <- names(spec$variables)
+  var_indices <- if (is.null(var_keys)) seq_along(spec$variables) else var_keys
+  
+  for (idx in var_indices) {
+    var_spec <- spec$variables[[idx]]
     
-    if (is.null(source_cols)) {
+    # Get variable ID (either from key or from id field)
+    var_id <- if (is.null(var_keys)) {
+      var_spec$id  # List format: get id from object
+    } else {
+      idx  # Dictionary format: key is the id
+    }
+    
+    if (is.null(var_id)) {
+      next  # Skip if no id found
+    }
+    
+    # Handle both source and sources formats
+    if (!is.null(var_spec$source)) {
+      # Format: source: {w1: q001, w2: q002}
+      source_cols <- var_spec$source
+    } else if (!is.null(var_spec$sources)) {
+      # Format: sources: [{wave: w1, variable: q001}, {wave: w2, variable: q002}]
+      source_cols <- list()
+      for (src in var_spec$sources) {
+        if (!is.null(src$wave) && !is.null(src$variable)) {
+          source_cols[[src$wave]] <- src$variable
+        }
+      }
+    } else {
+      source_cols <- NULL
+    }
+    
+    if (is.null(source_cols) || length(source_cols) == 0) {
       cat("  ✗ ", var_id, ": No source definition\n", sep="")
       next
     }

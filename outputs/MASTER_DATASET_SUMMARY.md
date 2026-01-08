@@ -1,47 +1,63 @@
 # Master Harmonized Dataset Report
 
-**Date**: 2026-01-07 18:47:49
+**Date**: 2026-01-07 21:11:31
 
 ## Executive Summary
 
 Successfully extracted and combined all harmonized variables into master datasets.
 
-### Consolidated Variable Count: **6**
+### Consolidated Variable Count: **15**
 
 ### Key Statistics
 
 | Metric | Value |
 |--------|-------|
-| Concepts | 2 |
-| **Consolidated Variables** | **6** |
-| Variable-Wave Combinations | 34 |
-| Total Data Points (Long Format) | 562698 |
+| Concepts | 10 |
+| **Consolidated Variables** | **15** |
+| Variable-Wave Combinations | 84 |
+| Total Data Points (Long Format) | 1397201 |
 
 ## Consolidated Variables by Concept
 
 | Concept | Variables | Wave Combinations |
 |---------|-----------|------------------|
+| authoritarianism_democracy_scale | 1 | 2 |
+| community_leader_contact | 1 | 6 |
 | democracy_satisfaction | 3 | 16 |
 | economy | 3 | 18 |
+| government_leader_accountability | 2 | 12 |
+| hierarchical_obedience | 1 | 6 |
+| local_government_corruption | 1 | 6 |
+| national_government_corruption | 1 | 6 |
+| strong_leader_preference | 1 | 6 |
+| upright_leader_discretion | 1 | 6 |
 
 ## Output Datasets
 
 ### Wave-Specific Files (Wide Format - Recommended)
-- `master_w1.rds` - 12217 rows × 5 columns
-- `master_w2.rds` - 19798 rows × 6 columns
-- `master_w3.rds` - 19436 rows × 6 columns
-- `master_w4.rds` - 20667 rows × 6 columns
-- `master_w5.rds` - 26951 rows × 5 columns
-- `master_w6.rds` - 1242 rows × 6 columns
+- `master_w1.rds` - 12217 rows × 14 columns
+- `master_w2.rds` - 19798 rows × 15 columns
+- `master_w3.rds` - 19436 rows × 14 columns
+- `master_w4.rds` - 20667 rows × 14 columns
+- `master_w5.rds` - 26951 rows × 13 columns
+- `master_w6.rds` - 1242 rows × 14 columns
 
 ### Combined Format
-- `master_long_format.rds` - Long format (562698 rows × 4 columns)
+- `master_long_format.rds` - Long format (1397201 rows × 4 columns)
 - `master_long_format.csv` - CSV export
 
 ### Metadata
 - `master_variable_metadata.csv` - Variable definitions
 
 ## Complete Variable Listing
+
+### authoritarianism_democracy_scale (1 variables)
+
+- `authoritarianism_democracy_scale_authoritarianism_democracy_scale` (2 waves: w1,w2)
+
+### community_leader_contact (1 variables)
+
+- `community_leader_contact_community_leader_contact` (6 waves: w1,w2,w3,w4,w5,w6)
 
 ### democracy_satisfaction (3 variables)
 
@@ -54,6 +70,31 @@ Successfully extracted and combined all harmonized variables into master dataset
 - `economy_econ_national_now` (6 waves: w1,w2,w3,w4,w5,w6)
 - `economy_econ_change_1yr` (6 waves: w1,w2,w3,w4,w5,w6)
 - `economy_econ_outlook_1yr` (6 waves: w1,w2,w3,w4,w5,w6)
+
+### government_leader_accountability (2 variables)
+
+- `government_leader_accountability_government_leader_judicial_constraint` (6 waves: w1,w2,w3,w4,w5,w6)
+- `government_leader_accountability_government_leader_law_breaking_frequency` (6 waves: w1,w2,w3,w4,w5,w6)
+
+### hierarchical_obedience (1 variables)
+
+- `hierarchical_obedience_hierarchical_obedience` (6 waves: w1,w2,w3,w4,w5,w6)
+
+### local_government_corruption (1 variables)
+
+- `local_government_corruption_local_govt_corruption` (6 waves: w1,w2,w3,w4,w5,w6)
+
+### national_government_corruption (1 variables)
+
+- `national_government_corruption_national_govt_corruption` (6 waves: w1,w2,w3,w4,w5,w6)
+
+### strong_leader_preference (1 variables)
+
+- `strong_leader_preference_strong_leader_preference` (6 waves: w1,w2,w3,w4,w5,w6)
+
+### upright_leader_discretion (1 variables)
+
+- `upright_leader_discretion_upright_leader_discretion` (6 waves: w1,w2,w3,w4,w5,w6)
 
 
 ## Data Structure
@@ -93,6 +134,6 @@ econ_w2 <- w2_vars$economy_econ_national_now
 
 ---
 
-**Report Generated**: 2026-01-07 18:47:49
-**Total Consolidated Variables: 6**
+**Report Generated**: 2026-01-07 21:11:31
+**Total Consolidated Variables: 15**
 
