@@ -1,3 +1,5 @@
+# Government Leader Accountability (v2)
+
 missing_conventions:
   treat_as_na:
     codes: [-1, -2, 97, 98, 99]
@@ -5,61 +7,64 @@ missing_conventions:
 
 variables:
   - id: government_leader_judicial_constraint
-    description: "When government leaders break the laws, there is nothing the court can do (reversed: 1=nothing can be done/low constraint becomes 4, 4=laws apply equally/high constraint becomes 1)"
-    source:
-      w1: q101
-      w2: q101
-      w3: q101
-      w4: q104
-      w5: q111
-      w6: q102
-    harmonize:
-      by_wave:
-        w1:
-          method: "r_function"
-          fn: "safe_reverse_4pt"
-        w2:
-          method: "r_function"
-          fn: "safe_reverse_4pt"
-        w3:
-          method: "r_function"
-          fn: "safe_reverse_4pt"
-        w4:
-          method: "r_function"
-          fn: "safe_reverse_4pt"
-        w5:
-          method: "r_function"
-          fn: "safe_reverse_4pt"
-        w6:
-          method: "r_function"
-          fn: "safe_reverse_4pt"
-    missing_codes:
-      w1: [-2, -1, 7, 8, 9, 98, 99]
-      w2: [-2, -1, 7, 8, 9, 98, 99]
-      w3: [-2, -1, 7, 8, 9, 98, 99]
-      w4: [-2, -1, 7, 8, 9, 98, 99]
-      w5: [-2, -1, 7, 8, 9, 98, 99]
-      w6: [-2, -1, 0, 7, 8, 9, 98, 99]
-    expected_min: 1
-    expected_max: 4
+    concept: government_leader_accountability
+    description: "Degree to which government leaders are held accountable by courts/judiciary"
+    type: ordinal
     
-  - id: government_leader_law_breaking_frequency
-    description: "How often do you think government leaders break the law or abuse their power? (frequency scale)"
     source:
       w1: q110
       w2: q110
       w3: q110
-      w4: q112
-      w5: q118
-      w6: q109
+      w4: q110
+      w5: q110
+      w6: q110
+    
+    scale:
+      min: 1
+      max: 10
+      labels:
+        1: "Not accountable"
+        10: "Fully accountable"
+    
     harmonize:
       default:
-        method: "identity"
-    missing_codes:
-      w1: [-2, -1, 7, 8, 9, 98, 99]
-      w2: [-2, -1, 7, 8, 9, 98, 99]
-      w3: [-2, -1, 7, 8, 9, 98, 99]
-      w4: [-2, -1, 7, 8, 9, 98, 99]
-      w5: [-2, -1, 7, 8, 9, 98, 99]
-      w6: [-2, -1, 0, 7, 8, 9, 98, 99]
-    note: "This variable should be reviewed to determine expected scale range; may differ from 1-4"
+        method: identity
+    
+    qc:
+      valid_range: [1, 10]
+      validate:
+        - waves: [w1, w2, w3, w4, w5, w6]
+          phrase: "leader|accountable|court"
+
+  - id: government_leader_law_breaking_frequency
+    concept: government_leader_accountability
+    description: "How often government leaders break the law without consequence"
+    type: ordinal
+    
+    source:
+      w1: q111
+      w2: q111
+      w3: q111
+      w4: q111
+      w5: q111
+      w6: q111
+    
+    scale:
+      min: 1
+      max: 5
+      labels:
+        1: "Never"
+        2: "Seldom"
+        3: "Sometimes"
+        4: "Often"
+        5: "Very often"
+    
+    harmonize:
+      default:
+        method: identity
+    
+    qc:
+      valid_range: [1, 5]
+      validate:
+        - waves: [w1, w2, w3, w4, w5, w6]
+          phrase: "leader|law|breaking"

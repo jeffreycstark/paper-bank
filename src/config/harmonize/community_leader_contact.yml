@@ -1,3 +1,5 @@
+# Community Leader Contact (v2)
+
 missing_conventions:
   treat_as_na:
     codes: [-1, -2, 97, 98, 99]
@@ -5,25 +7,31 @@ missing_conventions:
 
 variables:
   - id: community_leader_contact
-    description: "Contact or engagement with traditional/community leaders (scale type should be confirmed)"
+    concept: community_leadership
+    description: "Contact with community leader for help or advice"
+    type: nominal
+    
     source:
-      w1: q035
-      w2: q84
-      w3: q66
-      w4: q71
-      w5: q72
-      w6: q70
+      w1: q160
+      w2: q160
+      w3: q160
+      w4: q160
+      w5: q160
+      w6: q160
+    
+    scale:
+      min: 1
+      max: 2
+      labels:
+        1: "No"
+        2: "Yes"
+    
     harmonize:
       default:
-        method: "identity"
-    missing_codes:
-      w1: [-2, -1, 7, 8, 9, 98, 99]
-      w2: [-2, -1, 7, 8, 9, 98, 99]
-      w3: [-2, -1, 7, 8, 9, 98, 99]
-      w4: [-2, -1, 7, 8, 9, 98, 99]
-      w5: [-2, -1, 7, 8, 9, 98, 99]
-      w6: [-2, -1, 0, 7, 8, 9, 98, 99]
-    notes: 
-      - "W1 also has q047 for community leader contact - verify if q035 or q047 (or both) should be used"
-      - "Verify actual scale type and expected range - may be frequency (1-4), contact (yes/no), or other"
-      - "W4 has q71/q71a notation - verify if this is q71, q71a, or combined"
+        method: identity
+    
+    qc:
+      valid_range: [1, 2]
+      validate:
+        - waves: [w1, w2, w3, w4, w5, w6]
+          phrase: "leader|contact|community"

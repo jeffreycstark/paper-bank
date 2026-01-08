@@ -1,3 +1,5 @@
+# Hierarchical Obedience (v2)
+
 missing_conventions:
   treat_as_na:
     codes: [-1, -2, 97, 98, 99]
@@ -5,7 +7,10 @@ missing_conventions:
 
 variables:
   - id: hierarchical_obedience
+    concept: hierarchical_obedience
     description: "Agreement that government should be obeyed like family head (1=strongly agree, 4=strongly disagree)"
+    type: ordinal
+    
     source:
       w1: q133
       w2: q134
@@ -13,15 +18,17 @@ variables:
       w4: q142
       w5: q149
       w6: q149
+    
+    scale:
+      min: 1
+      max: 4
+    
     harmonize:
       default:
-        method: "identity"
-    missing_codes:
-      w1: [-2, -1, 7, 8, 9, 98, 99]
-      w2: [-2, -1, 7, 8, 9, 98, 99]
-      w3: [-2, -1, 7, 8, 9, 98, 99]
-      w4: [-2, -1, 7, 8, 9, 98, 99]
-      w5: [-2, -1, 7, 8, 9, 98, 99]
-      w6: [-2, -1, 0, 7, 8, 9, 98, 99]
-    expected_min: 1
-    expected_max: 4
+        method: identity
+    
+    qc:
+      valid_range: [1, 4]
+      validate:
+        - waves: [w1, w2, w3, w4, w5, w6]
+          phrase: "government|obey|hierarchy"

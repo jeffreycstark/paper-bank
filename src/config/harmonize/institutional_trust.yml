@@ -1,443 +1,359 @@
-variables:
-- name: trust_civil_service
-  id: TRUST_CIVIL_SERVICE
-  label: Trust in Civil Service
-  concept: institutional_trust
-  type: ordinal
-  sources:
-  - wave: w1
-    variable: q011
-    label: How much trust do you have in civil service?
-    validate_phrase: CIVIL
-  - wave: w2
-    variable: q12
-    label: Trust in Civil service
-    validate_phrase: CIVIL
-  - wave: w3
-    variable: q12
-    label: q12. Civil service
-    validate_phrase: CIVIL
-  - wave: w4
-    variable: q12
-    label: 12 Civil service
-    validate_phrase: CIVIL
-  - wave: w5
-    variable: q12
-    label: 12 Civil service
-    validate_phrase: CIVIL
-  - wave: w6
-    variable: q12
-    label: 12 Civil Service
-    validate_phrase: CIVIL
-  scale:
-    type: likert
-    min_value: 1
-    max_value: 4
-    reversed: no
-  harmonize:
-  - method: direct
-- name: trust_courts
-  id: TRUST_COURTS
-  label: Trust in Courts
-  concept: institutional_trust
-  type: ordinal
-  sources:
-  - wave: w1
-    variable: q007
-    label: How much trust do you have in the courts?
-    validate_phrase: COURT
-  - wave: w2
-    variable: q8
-    label: Trust in the Courts
-    validate_phrase: COURT
-  - wave: w3
-    variable: q8
-    label: q8. The courts
-    validate_phrase: COURT
-  - wave: w4
-    variable: q8
-    label: 8 The courts
-    validate_phrase: COURT
-  - wave: w5
-    variable: q8
-    label: 8 The courts
-    validate_phrase: COURT
-  - wave: w6
-    variable: q8
-    label: 8 The courts
-    validate_phrase: COURT
-  scale:
-    type: likert
-    min_value: 1
-    max_value: 4
-    reversed: no
-  harmonize:
-  - method: direct
-- name: trust_election_commission
-  id: TRUST_ELECTION_COMMISSION
-  label: Trust in Election Commission
-  concept: institutional_trust
-  type: ordinal
-  sources:
-  - wave: w1
-    variable: q012
-    label: How much trust do you have in the election commission?
-    validate_phrase: ELECTION
-  - wave: w2
-    variable: q18
-    label: Trust in the election commission
-    validate_phrase: ELECTION
-  - wave: w3
-    variable: q18
-    label: q18. The election commission
-    validate_phrase: ELECTION
-  - wave: w4
-    variable: q18
-    label: 18 The election commission
-    validate_phrase: ELECTION
-  - wave: w5
-    variable: q16
-    label: 16 The election commission
-    validate_phrase: ELECTION
-  - wave: w6
-    variable: q16
-    label: 16 The election commission
-    validate_phrase: ELECTION
-  scale:
-    type: likert
-    min_value: 1
-    max_value: 4
-    reversed: no
-  harmonize:
-  - method: direct
-- name: trust_local_government
-  id: TRUST_LOCAL_GOVERNMENT
-  label: Trust in Local Government
-  concept: institutional_trust
-  type: ordinal
-  sources:
-  - wave: w1
-    variable: q014
-    label: How much trust do you have in local government?
-    validate_phrase: LOCAL
-  - wave: w2
-    variable: q15
-    label: Trust in local government
-    validate_phrase: LOCAL
-  - wave: w3
-    variable: q15
-    label: q15. Local government
-    validate_phrase: LOCAL
-  - wave: w4
-    variable: q15
-    label: 15 Local government
-    validate_phrase: LOCAL
-  - wave: w5
-    variable: q15
-    label: 15 Local government
-    validate_phrase: LOCAL
-  - wave: w6
-    variable: q15
-    label: 15 Local government
-    validate_phrase: LOCAL
-  scale:
-    type: likert
-    min_value: 1
-    max_value: 4
-    reversed: no
-  harmonize:
-  - method: direct
-- name: trust_military
-  id: TRUST_MILITARY
-  label: Trust in Military
-  concept: institutional_trust
-  type: ordinal
-  sources:
-  - wave: w1
-    variable: q012
-    label: How much trust do you have in the military?
-    validate_phrase: MILITARY
-  - wave: w2
-    variable: q13
-    label: Trust in the military
-    validate_phrase: MILITARY
-  - wave: w3
-    variable: q13
-    label: q13. The military
-    validate_phrase: MILITARY
-  - wave: w4
-    variable: q13
-    label: 13 The military
-    validate_phrase: MILITARY
-  - wave: w5
-    variable: q13
-    label: 13 The military or armed force
-    validate_phrase: MILITARY
-  - wave: w6
-    variable: q13
-    label: 13 The military or armed forces
-    validate_phrase: MILITARY
-  scale:
-    type: likert
-    min_value: 1
-    max_value: 4
-    reversed: no
-  harmonize:
-  - method: direct
-- name: trust_national_government
-  id: TRUST_NATIONAL_GOVERNMENT
-  label: Trust in National Government
-  concept: institutional_trust
-  type: ordinal
-  sources:
-  - wave: w1
-    variable: q008
-    label: How much trust do you have in the national government?
-    validate_phrase: NATIONAL
-  - wave: w2
-    variable: q9
-    label: Trust in the national government
-    validate_phrase: NATIONAL
-  - wave: w3
-    variable: q9
-    label: q9. The national government
-    validate_phrase: NATIONAL
-  - wave: w4
-    variable: q9
-    label: 9 National government in the capital city
-    validate_phrase: NATIONAL
-  - wave: w5
-    variable: q9
-    label: 9 National government in the capital city
-    validate_phrase: NATIONAL
-  - wave: w6
-    variable: q9
-    label: 9 National government in the capital city
-    validate_phrase: NATIONAL
-  scale:
-    type: likert
-    min_value: 1
-    max_value: 4
-    reversed: no
-  harmonize:
-  - method: direct
-- name: trust_newspapers
-  id: TRUST_NEWSPAPERS
-  label: Trust in Newspapers
-  concept: institutional_trust
-  type: ordinal
-  sources:
-  - wave: w1
-    variable: q015
-    label: How much trust do you have in newspapers?
-    validate_phrase: NEWSPAPER
-  - wave: w2
-    variable: q16
-    label: Trust in newspaper
-    validate_phrase: NEWSPAPER
-  - wave: w3
-    variable: q16
-    label: q16. Newspapers
-    validate_phrase: NEWSPAPER
-  - wave: w4
-    variable: q16
-    label: 16 Newspaper
-    validate_phrase: NEWSPAPER
-  scale:
-    type: likert
-    min_value: 1
-    max_value: 4
-    reversed: no
-  harmonize:
-  - method: direct
-- name: trust_ngos
-  id: TRUST_NGOS
-  label: Trust in NGOs
-  concept: institutional_trust
-  type: ordinal
-  sources:
-  - wave: w1
-    variable: q013
-    label: How much trust do you have in non-governmental organizations?
-    validate_phrase: NGO
-  - wave: w2
-    variable: q19
-    label: Trust in NGOs
-    validate_phrase: NGO
-  - wave: w3
-    variable: q19
-    label: q19. Non-governmental organizations or NGOs
-    validate_phrase: NGO
-  scale:
-    type: likert
-    min_value: 1
-    max_value: 4
-    reversed: no
-  harmonize:
-  - method: direct
-- name: trust_parliament
-  id: TRUST_PARLIAMENT
-  label: Trust in Parliament
-  concept: institutional_trust
-  type: ordinal
-  sources:
-  - wave: w1
-    variable: q010
-    label: How much trust do you have in Parliament?
-    validate_phrase: PARLIAMENT
-  - wave: w2
-    variable: q11
-    label: Trust in Parliament
-    validate_phrase: PARLIAMENT
-  - wave: w3
-    variable: q11
-    label: q11. Parliament
-    validate_phrase: PARLIAMENT
-  - wave: w4
-    variable: q11
-    label: 11 Parliament
-    validate_phrase: PARLIAMENT
-  - wave: w5
-    variable: q11
-    label: 11 Parliament
-    validate_phrase: PARLIAMENT
-  - wave: w6
-    variable: q11
-    label: 11 Parliament
-    validate_phrase: PARLIAMENT
-  scale:
-    type: likert
-    min_value: 1
-    max_value: 4
-    reversed: no
-  harmonize:
-  - method: direct
-- name: trust_police
-  id: TRUST_POLICE
-  label: Trust in Police
-  concept: institutional_trust
-  type: ordinal
-  sources:
-  - wave: w1
-    variable: q013
-    label: How much trust do you have in the police?
-    validate_phrase: POLICE
-  - wave: w2
-    variable: q14
-    label: Trust in the police
-    validate_phrase: POLICE
-  - wave: w3
-    variable: q14
-    label: q14. The police
-    validate_phrase: POLICE
-  - wave: w4
-    variable: q14
-    label: 14 The police
-    validate_phrase: POLICE
-  - wave: w5
-    variable: q14
-    label: 14 The police
-    validate_phrase: POLICE
-  - wave: w6
-    variable: q14
-    label: 14 The police
-    validate_phrase: POLICE
-  scale:
-    type: likert
-    min_value: 1
-    max_value: 4
-    reversed: no
-  harmonize:
-  - method: direct
-- name: trust_political_parties
-  id: TRUST_POLITICAL_PARTIES
-  label: Trust in Political Parties
-  concept: institutional_trust
-  type: ordinal
-  sources:
-  - wave: w1
-    variable: q009
-    label: How much trust do you have in political parties?
-    validate_phrase: PARTIES
-  - wave: w2
-    variable: q10
-    label: Trust in Political parties
-    validate_phrase: PARTIES
-  - wave: w3
-    variable: q10
-    label: q10. Political parties
-    validate_phrase: PARTIES
-  - wave: w4
-    variable: q10
-    label: 10 Political parties
-    validate_phrase: PARTIES
-  - wave: w5
-    variable: q10
-    label: 10 Political parties
-    validate_phrase: PARTIES
-  - wave: w6
-    variable: q10
-    label: 10 Political parties
-    validate_phrase: PARTIES
-  scale:
-    type: likert
-    min_value: 1
-    max_value: 4
-    reversed: no
-  harmonize:
-  - method: direct
-- name: trust_president
-  id: TRUST_PRESIDENT
-  label: Trust in President
-  concept: institutional_trust
-  type: ordinal
-  sources:
-  - wave: w2
-    variable: q7
-    label: Trust in Prime Minister or president
-    validate_phrase: PRESIDENT
-  scale:
-    type: likert
-    min_value: 1
-    max_value: 4
-    reversed: no
-  harmonize:
-  - method: direct
-- name: trust_television
-  id: TRUST_TELEVISION
-  label: Trust in Television
-  concept: institutional_trust
-  type: ordinal
-  sources:
-  - wave: w1
-    variable: q016
-    label: How much trust do you have in television?
-    validate_phrase: TELEVISION
-  - wave: w2
-    variable: q17
-    label: Trust in television
-    validate_phrase: TELEVISION
-  - wave: w3
-    variable: q17
-    label: q17. Television
-    validate_phrase: TELEVISION
-  - wave: w4
-    variable: q17
-    label: 17 Television
-    validate_phrase: TELEVISION
-  scale:
-    type: likert
-    min_value: 1
-    max_value: 4
-    reversed: no
-  harmonize:
-  - method: direct
+# Institutional Trust (v2)
+# 13 variables measuring trust in various institutions
+
 missing_conventions:
   treat_as_na:
-  - -1
-  - -2
-  - 0
-  - 7
-  - 8
-  - 9
-  - 99
+    codes: [-1, -2, 97, 98, 99]
+    description: "Standard missing codes"
+
+variables:
+  - id: trust_civil_service
+    concept: institutional_trust
+    description: "Trust in civil service"
+    type: ordinal
+    
+    source:
+      w1: q011
+      w2: q12
+      w3: q12
+      w4: q12
+      w5: q12
+      w6: q12
+    
+    scale:
+      min: 1
+      max: 4
+    
+    harmonize:
+      default:
+        method: identity
+    
+    qc:
+      valid_range: [1, 4]
+      validate:
+        - waves: [w1, w2, w3, w4, w5, w6]
+          phrase: "CIVIL"
+
+  - id: trust_courts
+    concept: institutional_trust
+    description: "Trust in courts"
+    type: ordinal
+    
+    source:
+      w1: q007
+      w2: q8
+      w3: q8
+      w4: q8
+      w5: q8
+      w6: q8
+    
+    scale:
+      min: 1
+      max: 4
+    
+    harmonize:
+      default:
+        method: identity
+    
+    qc:
+      valid_range: [1, 4]
+      validate:
+        - waves: [w1, w2, w3, w4, w5, w6]
+          phrase: "COURT"
+
+  - id: trust_election_commission
+    concept: institutional_trust
+    description: "Trust in election commission"
+    type: ordinal
+    
+    source:
+      w1: q010
+      w2: q11
+      w3: q11
+      w4: q11
+      w5: q11
+      w6: q11
+    
+    scale:
+      min: 1
+      max: 4
+    
+    harmonize:
+      default:
+        method: identity
+    
+    qc:
+      valid_range: [1, 4]
+      validate:
+        - waves: [w1, w2, w3, w4, w5, w6]
+          phrase: "ELECTION"
+
+  - id: trust_local_government
+    concept: institutional_trust
+    description: "Trust in local government"
+    type: ordinal
+    
+    source:
+      w1: q125
+      w2: q122
+      w3: q118
+      w4: q117
+      w5: q123
+      w6: q123
+    
+    scale:
+      min: 1
+      max: 4
+    
+    harmonize:
+      default:
+        method: identity
+    
+    qc:
+      valid_range: [1, 4]
+      validate:
+        - waves: [w1, w2, w3, w4, w5, w6]
+          phrase: "LOCAL|GOVERNMENT"
+
+  - id: trust_military
+    concept: institutional_trust
+    description: "Trust in military"
+    type: ordinal
+    
+    source:
+      w1: q013
+      w2: q14
+      w3: q14
+      w4: q14
+      w5: q14
+      w6: q14
+    
+    scale:
+      min: 1
+      max: 4
+    
+    harmonize:
+      default:
+        method: identity
+    
+    qc:
+      valid_range: [1, 4]
+      validate:
+        - waves: [w1, w2, w3, w4, w5, w6]
+          phrase: "MILITARY"
+
+  - id: trust_national_government
+    concept: institutional_trust
+    description: "Trust in national government"
+    type: ordinal
+    
+    source:
+      w1: q124
+      w2: q121
+      w3: q117
+      w4: q116
+      w5: q122
+      w6: q122
+    
+    scale:
+      min: 1
+      max: 4
+    
+    harmonize:
+      default:
+        method: identity
+    
+    qc:
+      valid_range: [1, 4]
+      validate:
+        - waves: [w1, w2, w3, w4, w5, w6]
+          phrase: "NATIONAL|GOVERNMENT"
+
+  - id: trust_newspapers
+    concept: institutional_trust
+    description: "Trust in newspapers"
+    type: ordinal
+    
+    source:
+      w1: q016
+      w2: q17
+      w3: q17
+      w4: q17
+      w5: q17
+      w6: q17
+    
+    scale:
+      min: 1
+      max: 4
+    
+    harmonize:
+      default:
+        method: identity
+    
+    qc:
+      valid_range: [1, 4]
+      validate:
+        - waves: [w1, w2, w3, w4, w5, w6]
+          phrase: "NEWSPAPER"
+
+  - id: trust_ngos
+    concept: institutional_trust
+    description: "Trust in NGOs"
+    type: ordinal
+    
+    source:
+      w1: q018
+      w2: q19
+      w3: q19
+      w4: q19
+      w5: q19
+      w6: q19
+    
+    scale:
+      min: 1
+      max: 4
+    
+    harmonize:
+      default:
+        method: identity
+    
+    qc:
+      valid_range: [1, 4]
+      validate:
+        - waves: [w1, w2, w3, w4, w5, w6]
+          phrase: "NGO|ORGANIZATION"
+
+  - id: trust_parliament
+    concept: institutional_trust
+    description: "Trust in parliament"
+    type: ordinal
+    
+    source:
+      w1: q009
+      w2: q10
+      w3: q10
+      w4: q10
+      w5: q10
+      w6: q10
+    
+    scale:
+      min: 1
+      max: 4
+    
+    harmonize:
+      default:
+        method: identity
+    
+    qc:
+      valid_range: [1, 4]
+      validate:
+        - waves: [w1, w2, w3, w4, w5, w6]
+          phrase: "PARLIAMENT"
+
+  - id: trust_police
+    concept: institutional_trust
+    description: "Trust in police"
+    type: ordinal
+    
+    source:
+      w1: q015
+      w2: q16
+      w3: q16
+      w4: q16
+      w5: q16
+      w6: q16
+    
+    scale:
+      min: 1
+      max: 4
+    
+    harmonize:
+      default:
+        method: identity
+    
+    qc:
+      valid_range: [1, 4]
+      validate:
+        - waves: [w1, w2, w3, w4, w5, w6]
+          phrase: "POLICE"
+
+  - id: trust_political_parties
+    concept: institutional_trust
+    description: "Trust in political parties"
+    type: ordinal
+    
+    source:
+      w1: q019
+      w2: q20
+      w3: q20
+      w4: q20
+      w5: q20
+      w6: q20
+    
+    scale:
+      min: 1
+      max: 4
+    
+    harmonize:
+      default:
+        method: identity
+    
+    qc:
+      valid_range: [1, 4]
+      validate:
+        - waves: [w1, w2, w3, w4, w5, w6]
+          phrase: "PARTY|POLITICAL"
+
+  - id: trust_president
+    concept: institutional_trust
+    description: "Trust in president"
+    type: ordinal
+    
+    source:
+      w1: q006
+      w2: q7
+      w3: q7
+      w4: q7
+      w5: q7
+      w6: q7
+    
+    scale:
+      min: 1
+      max: 4
+    
+    harmonize:
+      default:
+        method: identity
+    
+    qc:
+      valid_range: [1, 4]
+      validate:
+        - waves: [w1, w2, w3, w4, w5, w6]
+          phrase: "PRESIDENT"
+
+  - id: trust_television
+    concept: institutional_trust
+    description: "Trust in television"
+    type: ordinal
+    
+    source:
+      w1: q017
+      w2: q18
+      w3: q18
+      w4: q18
+      w5: q18
+      w6: q18
+    
+    scale:
+      min: 1
+      max: 4
+    
+    harmonize:
+      default:
+        method: identity
+    
+    qc:
+      valid_range: [1, 4]
+      validate:
+        - waves: [w1, w2, w3, w4, w5, w6]
+          phrase: "TELEVISION|TV"

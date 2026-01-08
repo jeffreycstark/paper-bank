@@ -1,8 +1,4 @@
-# Authoritarianism-Democracy Scale - Harmonization Config
-# Question: Where would you place your country/yourself on a scale from complete dictatorship to complete democracy?
-#
-# 10-point scale (1=Complete Dictatorship, 10=Complete Democracy)
-# Available only in W1-W2 (not in W3-W6)
+# Authoritarianism-Democracy Scale (v2)
 
 missing_conventions:
   treat_as_na:
@@ -11,43 +7,28 @@ missing_conventions:
 
 variables:
   - id: authoritarianism_democracy_scale
-    description: "Self-placement on authoritarianism-democracy spectrum (1=complete dictatorship, 10=complete democracy)"
+    concept: authoritarianism_democracy
+    description: "Agreement that government should be obeyed like family head (1=strongly agree, 4=strongly disagree)"
+    type: ordinal
     
     source:
-      w1: q099
-      w2: q95
-      # W3-W6: Not available in dataset
+      w1: q138
+      w2: q139
+      w3: q146
+      w4: q147
+      w5: q154
+      w6: q154
+    
+    scale:
+      min: 1
+      max: 4
     
     harmonize:
-      by_wave:
-        w1:
-          method: "identity"
-          description: "W1 q099: 10-point scale, already correct orientation"
-          
-        w2:
-          method: "identity"
-          description: "W2 q95: 10-point scale, same orientation as W1"
-      
       default:
-        method: "identity"
-        description: "Keep as-is after cleaning missing codes"
-
-expected_min: 1
-expected_max: 10
-
-notes: |
-  This is a 10-point scale measuring self-placement on authoritarianism-democracy spectrum:
-  1 = Complete dictatorship (most authoritarian)
-  10 = Complete democracy (most democratic)
-  
-  IMPORTANT LIMITATIONS:
-  - Only available in W1 and W2
-  - W3-W6 do not contain this question
-  - Missing codes (97, 98, 99) should be treated as NA
-  
-  Variable candidates in W1: q099, q100, q101, q102 (all appear to be same scale)
-  Variable candidates in W2: q95, q96, q97 (all appear to be same scale)
-  Currently using q099 (W1) and q95 (W2) as primary measures
-  
-  Unlike corruption and democracy satisfaction (4-point scales), this remains
-  as 1-10 scale per user specification for identity preservation.
+        method: identity
+    
+    qc:
+      valid_range: [1, 4]
+      validate:
+        - waves: [w1, w2, w3, w4, w5, w6]
+          phrase: "government|obey|authority"

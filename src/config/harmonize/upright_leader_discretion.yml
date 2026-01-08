@@ -1,3 +1,5 @@
+# Upright Leader Discretion (v2)
+
 missing_conventions:
   treat_as_na:
     codes: [-1, -2, 97, 98, 99]
@@ -5,7 +7,10 @@ missing_conventions:
 
 variables:
   - id: upright_leader_discretion
+    concept: upright_leader_discretion
     description: "If we have political leaders who are morally upright, we can let them decide everything (1=strongly agree, 4=strongly disagree)"
+    type: ordinal
+    
     source:
       w1: q138
       w2: q139
@@ -13,15 +18,17 @@ variables:
       w4: q147
       w5: q154
       w6: q154
+    
+    scale:
+      min: 1
+      max: 4
+    
     harmonize:
       default:
-        method: "identity"
-    missing_codes:
-      w1: [-2, -1, 7, 8, 9, 98, 99]
-      w2: [-2, -1, 7, 8, 9, 98, 99]
-      w3: [-2, -1, 7, 8, 9, 98, 99]
-      w4: [-2, -1, 7, 8, 9, 98, 99]
-      w5: [-2, -1, 7, 8, 9, 98, 99]
-      w6: [-2, -1, 0, 7, 8, 9, 98, 99]
-    expected_min: 1
-    expected_max: 4
+        method: identity
+    
+    qc:
+      valid_range: [1, 4]
+      validate:
+        - waves: [w1, w2, w3, w4, w5, w6]
+          phrase: "leader|morally|upright"
