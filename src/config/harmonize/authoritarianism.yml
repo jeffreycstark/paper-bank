@@ -384,7 +384,7 @@ variables:
       w3: q111
       w4: q111
       w5: q111
-      w6: null    # TODO: find w6 mapping
+      w6: q109    # "How often do you think government leaders break the law or abuse their power?"
 
     scale:
       min: 1
@@ -398,7 +398,7 @@ variables:
     qc:
       valid_range: [1, 4]
       validate:
-        - waves: [w1, w2, w3, w4, w5]
+        - waves: [w1, w2, w3, w4, w5, w6]
           phrase: "break.*law|abuse"
 
   # ===========================================================================
