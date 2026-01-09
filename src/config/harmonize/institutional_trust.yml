@@ -65,14 +65,14 @@ variables:
     concept: institutional_trust
     description: "Trust in election commission"
     type: ordinal
-    
+
     source:
-      w1: q010
-      w2: q11
-      w3: q11
-      w4: q11
-      w5: q11
-      w6: q11
+      w1: q017
+      w2: q18
+      w3: q18
+      w4: q18
+      w5: q18
+      w6: q18
     
     scale:
       min: 1
@@ -92,14 +92,14 @@ variables:
     concept: institutional_trust
     description: "Trust in local government"
     type: ordinal
-    
+
     source:
-      w1: q125
-      w2: q122
-      w3: q118
-      w4: q117
-      w5: q123
-      w6: q123
+      w1: q014
+      w2: q15
+      w3: q15
+      w4: q15
+      w5: q15
+      w6: q15
     
     scale:
       min: 1
@@ -119,14 +119,14 @@ variables:
     concept: institutional_trust
     description: "Trust in military"
     type: ordinal
-    
+
     source:
-      w1: q013
-      w2: q14
-      w3: q14
-      w4: q14
-      w5: q14
-      w6: q14
+      w1: q012
+      w2: q13
+      w3: q13
+      w4: q13
+      w5: q13
+      w6: q13
     
     scale:
       min: 1
@@ -146,14 +146,14 @@ variables:
     concept: institutional_trust
     description: "Trust in national government"
     type: ordinal
-    
+
     source:
-      w1: q124
-      w2: q121
-      w3: q117
-      w4: q116
-      w5: q122
-      w6: q122
+      w1: q008
+      w2: q9
+      w3: q9
+      w4: q9
+      w5: q9
+      w6: q9
     
     scale:
       min: 1
@@ -173,14 +173,14 @@ variables:
     concept: institutional_trust
     description: "Trust in newspapers"
     type: ordinal
-    
+
     source:
-      w1: q016
-      w2: q17
-      w3: q17
-      w4: q17
-      w5: q17
-      w6: q17
+      w1: q015
+      w2: q16
+      w3: q16
+      w4: q16
+      w5: q16
+      w6: q16
     
     scale:
       min: 1
@@ -227,7 +227,61 @@ variables:
     concept: institutional_trust
     description: "Trust in parliament"
     type: ordinal
+
+    source:
+      w1: q010
+      w2: q11
+      w3: q11
+      w4: q11
+      w5: q11
+      w6: q11
     
+    scale:
+      min: 1
+      max: 4
+    
+    harmonize:
+      default:
+        method: identity
+    
+    qc:
+      valid_range: [1, 4]
+      validate:
+        - waves: [w1, w2, w3, w4, w5, w6]
+          phrase: "PARLIAMENT"
+
+  - id: trust_police
+    concept: institutional_trust
+    description: "Trust in police"
+    type: ordinal
+
+    source:
+      w1: q013
+      w2: q14
+      w3: q14
+      w4: q14
+      w5: q14
+      w6: q14
+    
+    scale:
+      min: 1
+      max: 4
+    
+    harmonize:
+      default:
+        method: identity
+    
+    qc:
+      valid_range: [1, 4]
+      validate:
+        - waves: [w1, w2, w3, w4, w5, w6]
+          phrase: "POLICE"
+
+  - id: trust_political_parties
+    concept: institutional_trust
+    description: "Trust in political parties"
+    type: ordinal
+
     source:
       w1: q009
       w2: q10
@@ -248,74 +302,21 @@ variables:
       valid_range: [1, 4]
       validate:
         - waves: [w1, w2, w3, w4, w5, w6]
-          phrase: "PARLIAMENT"
-
-  - id: trust_police
-    concept: institutional_trust
-    description: "Trust in police"
-    type: ordinal
-    
-    source:
-      w1: q015
-      w2: q16
-      w3: q16
-      w4: q16
-      w5: q16
-      w6: q16
-    
-    scale:
-      min: 1
-      max: 4
-    
-    harmonize:
-      default:
-        method: identity
-    
-    qc:
-      valid_range: [1, 4]
-      validate:
-        - waves: [w1, w2, w3, w4, w5, w6]
-          phrase: "POLICE"
-
-  - id: trust_political_parties
-    concept: institutional_trust
-    description: "Trust in political parties"
-    type: ordinal
-    
-    source:
-      w1: q019
-      w2: q20
-      w3: q20
-      w4: q20
-      w5: q20
-      w6: q20
-    
-    scale:
-      min: 1
-      max: 4
-    
-    harmonize:
-      default:
-        method: identity
-    
-    qc:
-      valid_range: [1, 4]
-      validate:
-        - waves: [w1, w2, w3, w4, w5, w6]
           phrase: "PARTY|POLITICAL"
 
   - id: trust_president
     concept: institutional_trust
-    description: "Trust in president"
+    description: "Trust in president/prime minister"
     type: ordinal
-    
+
     source:
-      w1: q006
+      w1: null
       w2: q7
       w3: q7
       w4: q7
       w5: q7
       w6: q7
+    note: "Wave 1 did not include president/PM trust question"
     
     scale:
       min: 1
@@ -335,14 +336,14 @@ variables:
     concept: institutional_trust
     description: "Trust in television"
     type: ordinal
-    
+
     source:
-      w1: q017
-      w2: q18
-      w3: q18
-      w4: q18
-      w5: q18
-      w6: q18
+      w1: q016
+      w2: q17
+      w3: q17
+      w4: q17
+      w5: q17
+      w6: q17
     
     scale:
       min: 1

@@ -222,3 +222,77 @@ variables:
         - waves: [w5, w6]
           phrase: "next generation.*better|generation.*worse"
 
+  # ===========================================================================
+  # State Role in Economy
+  # ===========================================================================
+
+  - id: econ_state_ownership
+    concept: economic_attitudes
+    description: "The government should maintain ownership of major state-owned enterprises"
+    type: ordinal
+
+    source:
+      w1: q140
+      w2: null
+      w3: null
+      w4: null
+      w5: null
+      w6: null
+    note: "Wave 1 only - part of ideological cleavage battery"
+
+    scale:
+      min: 1
+      max: 4
+      labels:
+        1: "Strongly agree"
+        2: "Somewhat agree"
+        3: "Somewhat disagree"
+        4: "Strongly disagree"
+
+    harmonize:
+      default:
+        method: r_function
+        fn: safe_reverse_4pt
+        note: "Reversed so higher = more support for state ownership"
+
+    qc:
+      valid_range: [1, 4]
+      validate:
+        - waves: [w1]
+          phrase: "state.*enterprise|government.*ownership"
+
+  - id: econ_central_authority
+    concept: economic_attitudes
+    description: "The national government should have more authority over local decisions than it does now"
+    type: ordinal
+
+    source:
+      w1: q141
+      w2: null
+      w3: null
+      w4: null
+      w5: null
+      w6: null
+    note: "Wave 1 only - part of ideological cleavage battery"
+
+    scale:
+      min: 1
+      max: 4
+      labels:
+        1: "Strongly agree"
+        2: "Somewhat agree"
+        3: "Somewhat disagree"
+        4: "Strongly disagree"
+
+    harmonize:
+      default:
+        method: r_function
+        fn: safe_reverse_4pt
+        note: "Reversed so higher = more support for central authority"
+
+    qc:
+      valid_range: [1, 4]
+      validate:
+        - waves: [w1]
+          phrase: "national.*authority|local decisions"
+

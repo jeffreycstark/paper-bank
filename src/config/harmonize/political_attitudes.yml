@@ -451,3 +451,142 @@ variables:
       validate:
         - waves: [w3, w4, w5, w6]
           phrase: "system.*change|needs.*change"
+
+  # ===========================================================================
+  # Media-Specific News Consumption (Wave 1 Psychological Involvement)
+  # ===========================================================================
+
+  - id: pol_news_newspaper
+    concept: political_attitudes
+    description: "How often do you follow news about politics in the daily newspaper?"
+    type: ordinal
+
+    source:
+      w1: q058
+      w2: null
+      w3: null
+      w4: null
+      w5: null
+      w6: null
+    note: "Wave 1 only - detailed media breakdown"
+
+    scale:
+      min: 1
+      max: 5
+      labels:
+        1: "Practically never"
+        2: "Not even once a week"
+        3: "Once or twice a week"
+        4: "Several times a week"
+        5: "Everyday"
+
+    harmonize:
+      default:
+        method: identity
+
+    qc:
+      valid_range: [1, 5]
+      validate:
+        - waves: [w1]
+          phrase: "newspaper.*politics"
+
+  - id: pol_news_television
+    concept: political_attitudes
+    description: "How often do you follow news about politics on television?"
+    type: ordinal
+
+    source:
+      w1: q059
+      w2: null
+      w3: null
+      w4: null
+      w5: null
+      w6: null
+    note: "Wave 1 only - detailed media breakdown"
+
+    scale:
+      min: 1
+      max: 5
+      labels:
+        1: "Practically never"
+        2: "Not even once a week"
+        3: "Once or twice a week"
+        4: "Several times a week"
+        5: "Everyday"
+
+    harmonize:
+      default:
+        method: identity
+
+    qc:
+      valid_range: [1, 5]
+      validate:
+        - waves: [w1]
+          phrase: "television.*politics"
+
+  - id: pol_news_radio
+    concept: political_attitudes
+    description: "How often do you follow news about politics on the radio?"
+    type: ordinal
+
+    source:
+      w1: q060
+      w2: null
+      w3: null
+      w4: null
+      w5: null
+      w6: null
+    note: "Wave 1 only - detailed media breakdown"
+
+    scale:
+      min: 1
+      max: 5
+      labels:
+        1: "Practically never"
+        2: "Not even once a week"
+        3: "Once or twice a week"
+        4: "Several times a week"
+        5: "Everyday"
+
+    harmonize:
+      default:
+        method: identity
+
+    qc:
+      valid_range: [1, 5]
+      validate:
+        - waves: [w1]
+          phrase: "radio.*politics"
+
+  - id: govt_policy_impact
+    concept: political_attitudes
+    description: "How much impact do you feel government policies have on your daily life?"
+    type: ordinal
+
+    source:
+      w1: q061
+      w2: null
+      w3: null
+      w4: null
+      w5: null
+      w6: null
+    note: "Wave 1 only"
+
+    scale:
+      min: 1
+      max: 4
+      labels:
+        1: "No impact at all"
+        2: "A little impact"
+        3: "Quite some impact"
+        4: "A great deal of impact"
+
+    harmonize:
+      default:
+        method: identity
+
+    qc:
+      valid_range: [1, 4]
+      validate:
+        - waves: [w1]
+          phrase: "impact.*government|policy.*daily"

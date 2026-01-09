@@ -379,3 +379,77 @@ variables:
         - waves: [w6]
           phrase: "opinions.*differ|hard.*conversing"
 
+  # ===========================================================================
+  # GROUP 5: Social Connections (Wave 1 Social Capital)
+  # ===========================================================================
+
+  - id: social_connections_help
+    concept: social_trust
+    description: "I have enough friends and connections so that I can get help if I need it"
+    type: ordinal
+
+    source:
+      w1: q025
+      w2: null
+      w3: null
+      w4: null
+      w5: null
+      w6: null
+    note: "Wave 1 only - part of social capital battery"
+
+    scale:
+      min: 1
+      max: 4
+      labels:
+        1: "Applies very well"
+        2: "Applies pretty well"
+        3: "Doesn't apply much"
+        4: "Doesn't apply at all"
+
+    harmonize:
+      default:
+        method: r_function
+        fn: safe_reverse_4pt
+        note: "Reversed so higher = more connections/resources"
+
+    qc:
+      valid_range: [1, 4]
+      validate:
+        - waves: [w1]
+          phrase: "friends.*connections|help.*need"
+
+  - id: social_connections_influence
+    concept: social_trust
+    description: "I have some friends with influence, so I don't have to worry too much if I get into a tight spot"
+    type: ordinal
+
+    source:
+      w1: q026
+      w2: null
+      w3: null
+      w4: null
+      w5: null
+      w6: null
+    note: "Wave 1 only - part of social capital battery"
+
+    scale:
+      min: 1
+      max: 4
+      labels:
+        1: "Applies very well"
+        2: "Applies pretty well"
+        3: "Doesn't apply much"
+        4: "Doesn't apply at all"
+
+    harmonize:
+      default:
+        method: r_function
+        fn: safe_reverse_4pt
+        note: "Reversed so higher = more influential connections"
+
+    qc:
+      valid_range: [1, 4]
+      validate:
+        - waves: [w1]
+          phrase: "friends.*influence|tight spot"
+

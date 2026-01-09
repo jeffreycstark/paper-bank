@@ -81,7 +81,7 @@ variables:
     type: nominal
 
     source:
-      w1: null
+      w1: q117
       w2: null
       w3: null
       w4: null
@@ -113,7 +113,7 @@ variables:
     type: nominal
 
     source:
-      w1: null
+      w1: q118
       w2: null
       w3: null
       w4: null

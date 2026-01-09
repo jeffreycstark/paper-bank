@@ -815,3 +815,77 @@ variables:
       validate:
         - waves: [w1, w2, w3, w4, w5, w6]
           phrase: "different.*thinking.*chaotic|chaotic.*thinking"
+
+  # ===========================================================================
+  # GROUP 7: Collectivism / Statism (Wave 1 Ideological Cleavage)
+  # ===========================================================================
+
+  - id: auth_individual_sacrifice
+    concept: authoritarianism
+    description: "For the sake of the national community/society, the individual should be prepared to sacrifice his personal interest"
+    type: ordinal
+
+    source:
+      w1: q143
+      w2: null
+      w3: null
+      w4: null
+      w5: null
+      w6: null
+    note: "Wave 1 only - part of ideological cleavage battery"
+
+    scale:
+      min: 1
+      max: 4
+      labels:
+        1: "Strongly disagree"
+        2: "Somewhat disagree"
+        3: "Somewhat agree"
+        4: "Strongly agree"
+
+    harmonize:
+      default:
+        method: r_function
+        fn: safe_4pt_none
+        note: "NOT reversed - higher = more collectivist"
+
+    qc:
+      valid_range: [1, 4]
+      validate:
+        - waves: [w1]
+          phrase: "sacrifice.*personal|national community"
+
+  - id: auth_individual_cog
+    concept: authoritarianism
+    description: "The state is like a big machine and the individual is but a small cog, with no independent status"
+    type: ordinal
+
+    source:
+      w1: q144
+      w2: null
+      w3: null
+      w4: null
+      w5: null
+      w6: null
+    note: "Wave 1 only - part of ideological cleavage battery"
+
+    scale:
+      min: 1
+      max: 4
+      labels:
+        1: "Strongly disagree"
+        2: "Somewhat disagree"
+        3: "Somewhat agree"
+        4: "Strongly agree"
+
+    harmonize:
+      default:
+        method: r_function
+        fn: safe_4pt_none
+        note: "NOT reversed - higher = more statist"
+
+    qc:
+      valid_range: [1, 4]
+      validate:
+        - waves: [w1]
+          phrase: "state.*machine|individual.*cog"

@@ -48,7 +48,7 @@ variables:
     type: ordinal
 
     source:
-      w1: null    # TODO: find w1 mapping
+      w1: q063
       w2: q55
       w3: q48
       w4: q54
