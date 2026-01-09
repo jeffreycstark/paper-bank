@@ -1,0 +1,406 @@
+# Political Action - Comprehensive YAML (v2)
+# Variables measuring political participation, civic engagement, and voting behavior
+
+missing_conventions:
+  treat_as_na:
+    codes: [-1, 0, 7, 8, 9, 97, 98, 99]
+    description: "Standard missing codes"
+
+variables:
+  # ===========================================================================
+  # GROUP 1: Contacting Officials / Representatives
+  # Scale: 1-5 (1=done >3 times, 5=would never do) - REVERSED so higher = more active
+  # ===========================================================================
+
+  - id: action_contact_elected
+    concept: political_action
+    description: "In the past three years, contacted elected officials or legislative representatives"
+    type: ordinal
+
+    source:
+      w1: q075
+      w2: q81
+      w3: q64
+      w4: q69
+      w5: q70
+      w6: q68
+
+    scale:
+      min: 1
+      max: 5
+      labels:
+        1: "Would never do"
+        2: "Have not done, but might"
+        3: "Have done once"
+        4: "Have done 2-3 times"
+        5: "Have done >3 times"
+
+    harmonize:
+      default:
+        method: r_function
+        fn: safe_reverse_5pt
+
+    qc:
+      valid_range: [1, 5]
+      validate:
+        - waves: [w1, w2, w3, w4, w5, w6]
+          phrase: "elected.*official|legislative.*representative"
+
+  - id: action_contact_civil_servant
+    concept: political_action
+    description: "In the past three years, contacted civil servants or officials"
+    type: ordinal
+
+    source:
+      w1: q073    # "government official"
+      w2: q79     # "government (administrative) official"
+      w3: q65     # "officials at higher level"
+      w4: q70
+      w5: q71
+      w6: q69
+
+    scale:
+      min: 1
+      max: 5
+      labels:
+        1: "Would never do"
+        2: "Have not done, but might"
+        3: "Have done once"
+        4: "Have done 2-3 times"
+        5: "Have done >3 times"
+
+    harmonize:
+      default:
+        method: r_function
+        fn: safe_reverse_5pt
+
+    qc:
+      valid_range: [1, 5]
+      validate:
+        - waves: [w1, w2, w3, w4, w5, w6]
+          phrase: "civil servant|official"
+
+  - id: action_contact_influential
+    concept: political_action
+    description: "Contacted other influential people outside government (traditional/community leaders)"
+    type: ordinal
+
+    source:
+      w1: null    # TODO: w1 has different structure
+      w2: q84
+      w3: q66
+      w4: q71
+      w5: q72
+      w6: q70
+
+    scale:
+      min: 1
+      max: 5
+      labels:
+        1: "Would never do"
+        2: "Have not done, but might"
+        3: "Have done once"
+        4: "Have done 2-3 times"
+        5: "Have done >3 times"
+
+    harmonize:
+      default:
+        method: r_function
+        fn: safe_reverse_5pt
+
+    qc:
+      valid_range: [1, 5]
+      validate:
+        - waves: [w2, w3, w4, w5, w6]
+          phrase: "influential|traditional leader|community leader"
+
+  - id: action_contact_media
+    concept: political_action
+    description: "Contacted news media"
+    type: ordinal
+
+    source:
+      w1: null    # TODO: find w1 mapping
+      w2: null    # TODO: find w2 mapping
+      w3: q68
+      w4: q73
+      w5: q73
+      w6: q71
+
+    scale:
+      min: 1
+      max: 5
+      labels:
+        1: "Would never do"
+        2: "Have not done, but might"
+        3: "Have done once"
+        4: "Have done 2-3 times"
+        5: "Have done >3 times"
+
+    harmonize:
+      default:
+        method: r_function
+        fn: safe_reverse_5pt
+
+    qc:
+      valid_range: [1, 5]
+      validate:
+        - waves: [w3, w4, w5, w6]
+          phrase: "news media"
+
+  # ===========================================================================
+  # GROUP 2: Collective Action / Petitions
+  # ===========================================================================
+
+  - id: action_petition
+    concept: political_action
+    description: "Signed a paper or online petition"
+    type: ordinal
+
+    source:
+      w1: null    # TODO: find w1 mapping
+      w2: q87     # "raise an issue or sign a petition"
+      w3: q70
+      w4: q75
+      w5: q74     # paper petition (w5 has separate online q75)
+      w6: q72
+
+    scale:
+      min: 1
+      max: 5
+      labels:
+        1: "Would never do"
+        2: "Have not done, but might"
+        3: "Have done once"
+        4: "Have done 2-3 times"
+        5: "Have done >3 times"
+
+    harmonize:
+      default:
+        method: r_function
+        fn: safe_reverse_5pt
+
+    qc:
+      valid_range: [1, 5]
+      validate:
+        - waves: [w2, w3, w4, w5, w6]
+          phrase: "petition"
+
+  - id: action_internet_political
+    concept: political_action
+    description: "Used internet/social media to express opinions about politics"
+    type: ordinal
+
+    source:
+      w1: null
+      w2: null
+      w3: null
+      w4: q52     # different scale - frequency
+      w5: q76
+      w6: q73
+
+    scale:
+      min: 1
+      max: 5
+      labels:
+        1: "Would never do"
+        2: "Have not done, but might"
+        3: "Have done once"
+        4: "Have done 2-3 times"
+        5: "Have done >3 times"
+
+    harmonize:
+      default:
+        method: r_function
+        fn: safe_reverse_5pt
+      exceptions:
+        w4:
+          method: identity
+          note: "w4 uses different scale (frequency) - may need separate handling"
+
+    qc:
+      valid_range: [1, 5]
+      validate:
+        - waves: [w4, w5, w6]
+          phrase: "internet.*social media.*politic|social media.*opinion"
+
+  - id: action_join_cause
+    concept: political_action
+    description: "Joined a group to actively support a cause (including online)"
+    type: ordinal
+
+    source:
+      w1: null
+      w2: null
+      w3: null
+      w4: null
+      w5: q77
+      w6: q74
+
+    scale:
+      min: 1
+      max: 5
+      labels:
+        1: "Would never do"
+        2: "Have not done, but might"
+        3: "Have done once"
+        4: "Have done 2-3 times"
+        5: "Have done >3 times"
+
+    harmonize:
+      default:
+        method: r_function
+        fn: safe_reverse_5pt
+
+    qc:
+      valid_range: [1, 5]
+      validate:
+        - waves: [w5, w6]
+          phrase: "join.*group|support.*cause"
+
+  - id: action_resolve_local
+    concept: political_action
+    description: "Got together with others face-to-face to resolve local problems"
+    type: ordinal
+
+    source:
+      w1: null
+      w2: null
+      w3: null
+      w4: q74
+      w5: q78
+      w6: q75
+
+    scale:
+      min: 1
+      max: 5
+      labels:
+        1: "Would never do"
+        2: "Have not done, but might"
+        3: "Have done once"
+        4: "Have done 2-3 times"
+        5: "Have done >3 times"
+
+    harmonize:
+      default:
+        method: r_function
+        fn: safe_reverse_5pt
+
+    qc:
+      valid_range: [1, 5]
+      validate:
+        - waves: [w4, w5, w6]
+          phrase: "together.*local|resolve.*local"
+
+  # ===========================================================================
+  # GROUP 3: Protest / High-Cost Action
+  # ===========================================================================
+
+  - id: action_demonstration
+    concept: political_action
+    description: "Attended a demonstration or protest march"
+    type: ordinal
+
+    source:
+      w1: null    # w1 q087 is about doing alone/with others
+      w2: q88
+      w3: q71
+      w4: q76
+      w5: q79
+      w6: q76
+
+    scale:
+      min: 1
+      max: 5
+      labels:
+        1: "Would never do"
+        2: "Have not done, but might"
+        3: "Have done once"
+        4: "Have done 2-3 times"
+        5: "Have done >3 times"
+
+    harmonize:
+      default:
+        method: r_function
+        fn: safe_reverse_5pt
+
+    qc:
+      valid_range: [1, 5]
+      validate:
+        - waves: [w2, w3, w4, w5, w6]
+          phrase: "demonstration|protest"
+
+  - id: action_risky_political
+    concept: political_action
+    description: "Taken action for a political cause that put you at risk of injury"
+    type: ordinal
+
+    source:
+      w1: null
+      w2: null
+      w3: null
+      w4: null
+      w5: q80
+      w6: q77
+
+    scale:
+      min: 1
+      max: 5
+      labels:
+        1: "Would never do"
+        2: "Have not done, but might"
+        3: "Have done once"
+        4: "Have done 2-3 times"
+        5: "Have done >3 times"
+
+    harmonize:
+      default:
+        method: r_function
+        fn: safe_reverse_5pt
+
+    qc:
+      valid_range: [1, 5]
+      validate:
+        - waves: [w5, w6]
+          phrase: "risk.*injured|political.*risk"
+
+  # ===========================================================================
+  # GROUP 4: Voting Behavior
+  # ===========================================================================
+
+  - id: voting_frequency
+    concept: political_action
+    description: "How often have you voted since becoming eligible?"
+    type: ordinal
+
+    source:
+      w1: null    # TODO: find w1 mapping
+      w2: q38     # "Have you voted in the last election?" - different question
+      w3: q73
+      w4: null    # TODO: find w4 mapping
+      w5: q81
+      w6: q78
+
+    scale:
+      min: 1
+      max: 4
+      labels:
+        1: "Hardly ever voted"
+        2: "Voted in some elections"
+        3: "Voted in most elections"
+        4: "Voted in every election"
+
+    harmonize:
+      default:
+        method: r_function
+        fn: safe_reverse_4pt
+      exceptions:
+        w2:
+          method: identity
+          note: "w2 asks different question (voted in last election) - binary"
+
+    qc:
+      valid_range: [1, 4]
+      validate:
+        - waves: [w3, w5, w6]
+          phrase: "voted.*election"

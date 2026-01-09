@@ -254,6 +254,72 @@ variables:
   # GROUP 4: System Support / Loyalty
   # ===========================================================================
 
+  - id: system_capable
+    concept: political_attitudes
+    description: "Over the long run, our system of government is capable of solving the problems our country faces"
+    type: ordinal
+
+    source:
+      w1: null
+      w2: null
+      w3: q80
+      w4: q83
+      w5: q86
+      w6: q80
+
+    scale:
+      min: 1
+      max: 4
+      labels:
+        1: "Strongly disagree"
+        2: "Disagree"
+        3: "Agree"
+        4: "Strongly agree"
+
+    harmonize:
+      default:
+        method: r_function
+        fn: safe_reverse_4pt
+
+    qc:
+      valid_range: [1, 4]
+      validate:
+        - waves: [w3, w4, w5, w6]
+          phrase: "system.*capable|solving.*problem"
+
+  - id: system_proud
+    concept: political_attitudes
+    description: "Thinking in general, I am proud of our system of government"
+    type: ordinal
+
+    source:
+      w1: null
+      w2: null
+      w3: q81
+      w4: q84
+      w5: q87
+      w6: q81
+
+    scale:
+      min: 1
+      max: 4
+      labels:
+        1: "Strongly disagree"
+        2: "Disagree"
+        3: "Agree"
+        4: "Strongly agree"
+
+    harmonize:
+      default:
+        method: r_function
+        fn: safe_reverse_4pt
+
+    qc:
+      valid_range: [1, 4]
+      validate:
+        - waves: [w3, w4, w5, w6]
+          phrase: "proud.*system"
+
   - id: system_deserves_support
     concept: political_attitudes
     description: "A system like ours, even if it runs into problems, deserves the people's support"
@@ -319,3 +385,69 @@ variables:
       validate:
         - waves: [w2, w3, w4, w5, w6]
           phrase: "loyal.*country"
+
+  - id: system_prefer
+    concept: political_attitudes
+    description: "I would rather live under our system of government than any other that I can think of"
+    type: ordinal
+
+    source:
+      w1: null
+      w2: null
+      w3: q83
+      w4: q86
+      w5: q89
+      w6: q83
+
+    scale:
+      min: 1
+      max: 4
+      labels:
+        1: "Strongly disagree"
+        2: "Disagree"
+        3: "Agree"
+        4: "Strongly agree"
+
+    harmonize:
+      default:
+        method: r_function
+        fn: safe_reverse_4pt
+
+    qc:
+      valid_range: [1, 4]
+      validate:
+        - waves: [w3, w4, w5, w6]
+          phrase: "rather live.*system|prefer.*system"
+
+  - id: system_needs_change
+    concept: political_attitudes
+    description: "Would you say our system of government works fine, needs minor change, needs major change, or should be replaced?"
+    type: ordinal
+
+    source:
+      w1: null
+      w2: null
+      w3: q84
+      w4: q87
+      w5: q90
+      w6: q84
+
+    scale:
+      min: 1
+      max: 4
+      labels:
+        1: "Works fine, no change needed"
+        2: "Needs minor change"
+        3: "Needs major change"
+        4: "Should be replaced"
+
+    harmonize:
+      default:
+        method: identity
+        note: "Higher values = more desire for change (not reversed)"
+
+    qc:
+      valid_range: [1, 4]
+      validate:
+        - waves: [w3, w4, w5, w6]
+          phrase: "system.*change|needs.*change"
