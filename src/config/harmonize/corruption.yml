@@ -193,7 +193,7 @@ variables:
       w2: null    # TODO: find w2 mapping
       w3: null    # TODO: find w3 mapping
       w4: null    # TODO: find w4 mapping
-      w5: null    # TODO: find w5 mapping
+      w5: q127a_1   # "Did you personally witness it..."
       w6: q119a
 
     scale:
@@ -210,7 +210,7 @@ variables:
     qc:
       valid_range: [1, 2]
       validate:
-        - waves: [w6]
+        - waves: [w5, w6]
           phrase: "personally witness"
 
   - id: corrupt_witness_family
@@ -223,7 +223,7 @@ variables:
       w2: null
       w3: null
       w4: null
-      w5: null
+      w5: q127a_2   # "told about it by a family member who personally witnessed"
       w6: q119b
 
     scale:
@@ -240,7 +240,7 @@ variables:
     qc:
       valid_range: [1, 2]
       validate:
-        - waves: [w6]
+        - waves: [w5, w6]
           phrase: "family member"
 
   - id: corrupt_witness_friend
@@ -253,7 +253,7 @@ variables:
       w2: null
       w3: null
       w4: null
-      w5: null
+      w5: q127a_3   # "told about it by a friend who personally witnessed"
       w6: q119c
 
     scale:
@@ -270,7 +270,7 @@ variables:
     qc:
       valid_range: [1, 2]
       validate:
-        - waves: [w6]
+        - waves: [w5, w6]
           phrase: "friend"
 
   # ===========================================================================

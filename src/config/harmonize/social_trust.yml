@@ -224,7 +224,7 @@ variables:
       w2: q27
       w3: null
       w4: q29
-      w5: null
+      w5: q28     # "How many people do you have contact within a typical week day?"
       w6: q28
 
     scale:
@@ -244,7 +244,7 @@ variables:
     qc:
       valid_range: [1, 5]
       validate:
-        - waves: [w2, w4, w6]
+        - waves: [w2, w4, w5, w6]
           phrase: "contact.*week"
 
   - id: social_contacts_status
@@ -289,7 +289,7 @@ variables:
       w2: null
       w3: null
       w4: null
-      w5: null
+      w5: q30     # "...which of the following best describes the political views of these people?"
       w6: q30
 
     scale:
@@ -310,7 +310,7 @@ variables:
     qc:
       valid_range: [1, 5]
       validate:
-        - waves: [w6]
+        - waves: [w5, w6]
           phrase: "political views.*contact"
 
   - id: social_support_available
@@ -323,7 +323,7 @@ variables:
       w2: null
       w3: null
       w4: q30
-      w5: null
+      w5: q31     # "If you have a difficult problem to manage, are there people outside your household you can ask for help?"
       w6: q31
 
     scale:
@@ -342,7 +342,7 @@ variables:
     qc:
       valid_range: [1, 4]
       validate:
-        - waves: [w4, w6]
+        - waves: [w4, w5, w6]
           phrase: "ask for help|difficult problem"
 
   - id: political_discussion_tolerance
