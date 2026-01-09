@@ -22,7 +22,7 @@ variables:
       w2: null
       w3: null
       w4: null
-      w5: null
+      w5: q160a
       w6: q160a
 
     scale:
@@ -42,7 +42,7 @@ variables:
     qc:
       valid_range: [1, 4]
       validate:
-        - waves: [w6]
+        - waves: [w5, w6]
           phrase: "narrow.*gap|rich.*poor"
 
   - id: govt_resp_housing
@@ -55,7 +55,7 @@ variables:
       w2: null
       w3: null
       w4: null
-      w5: null
+      w5: q160b
       w6: q160b
 
     scale:
@@ -75,7 +75,7 @@ variables:
     qc:
       valid_range: [1, 4]
       validate:
-        - waves: [w6]
+        - waves: [w5, w6]
           phrase: "affordable housing"
 
   - id: govt_resp_healthcare
@@ -88,7 +88,7 @@ variables:
       w2: null
       w3: null
       w4: null
-      w5: null
+      w5: q160c
       w6: q160c
 
     scale:
@@ -108,7 +108,7 @@ variables:
     qc:
       valid_range: [1, 4]
       validate:
-        - waves: [w6]
+        - waves: [w5, w6]
           phrase: "basic medical care|medical care"
 
   - id: govt_resp_basic_needs
@@ -121,7 +121,7 @@ variables:
       w2: null
       w3: null
       w4: null
-      w5: null
+      w5: q160d
       w6: q160d
 
     scale:
@@ -141,6 +141,6 @@ variables:
     qc:
       valid_range: [1, 4]
       validate:
-        - waves: [w6]
+        - waves: [w5, w6]
           phrase: "basic necessities|food.*shelter"
 

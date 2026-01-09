@@ -514,7 +514,7 @@ variables:
       w2: null
       w3: null
       w4: null
-      w5: null
+      w5: q51d
       w6: q52d
 
     scale:
@@ -534,7 +534,7 @@ variables:
     qc:
       valid_range: [1, 4]
       validate:
-        - waves: [w6]
+        - waves: [w5, w6]
           phrase: "organize.*politic"
 
   # ===========================================================================

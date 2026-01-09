@@ -239,7 +239,7 @@ variables:
       w2: null
       w3: null
       w4: null
-      w5: null    # TODO: search for w5 equivalent
+      w5: q168
       w6: q168
 
     scale:
@@ -254,7 +254,7 @@ variables:
     qc:
       valid_range: [1, 4]
       validate:
-        - waves: [w6]
+        - waves: [w5, w6]
           phrase: "decree|disregard.*parliament"
 
   - id: accept_economic_over_elections
@@ -295,7 +295,7 @@ variables:
       w2: null
       w3: null
       w4: null
-      w5: null    # TODO: search for w5 equivalent
+      w5: q169
       w6: q170
 
     scale:
@@ -310,7 +310,7 @@ variables:
     qc:
       valid_range: [1, 4]
       validate:
-        - waves: [w6]
+        - waves: [w5, w6]
           phrase: "break.*rule"
 
   - id: accept_stability_over_democracy

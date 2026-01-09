@@ -91,7 +91,7 @@ variables:
       w2: null
       w3: null
       w4: q153
-      w5: null    # TODO: verify if w5 has this
+      w5: q158
       w6: q158
 
     scale:
@@ -112,6 +112,72 @@ variables:
     qc:
       valid_range: [1, 4]
       validate:
-        - waves: [w4, w6]
+        - waves: [w4, w5, w6]
           phrase: "immigra|foreign.*inflow"
+
+  # ===========================================================================
+  # GROUP 4: Intensity Follow-ups (Wave 5)
+  # ===========================================================================
+
+  - id: glob_cultural_defense_intensity
+    concept: globalization
+    description: "How strongly do you feel about defending way of life/learning from others?"
+    type: ordinal
+
+    source:
+      w1: null
+      w2: null
+      w3: null
+      w4: null
+      w5: q156a
+      w6: null
+    note: "Wave 5 only - intensity follow-up to q156"
+
+    scale:
+      min: 1
+      max: 2
+      labels:
+        1: "Strongly"
+        2: "Not strongly"
+
+    harmonize:
+      default:
+        method: identity
+
+    qc:
+      valid_range: [1, 2]
+      validate:
+        - waves: [w5]
+          phrase: "strongly|how much"
+
+  - id: glob_trade_protection_intensity
+    concept: globalization
+    description: "How strongly do you feel about trade protection/openness?"
+    type: ordinal
+
+    source:
+      w1: null
+      w2: null
+      w3: null
+      w4: null
+      w5: q157a
+      w6: null
+    note: "Wave 5 only - intensity follow-up to q157"
+
+    scale:
+      min: 1
+      max: 2
+      labels:
+        1: "Strongly"
+        2: "Not strongly"
+
+    harmonize:
+      default:
+        method: identity
+
+    qc:
+      valid_range: [1, 2]
+      validate:
+        - waves: [w5]
+          phrase: "strongly|how much"
 

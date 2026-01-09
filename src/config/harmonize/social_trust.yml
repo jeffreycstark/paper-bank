@@ -154,7 +154,7 @@ variables:
       w2: null
       w3: null
       w4: q28
-      w5: null
+      w5: q26
       w6: q26
 
     scale:
@@ -174,7 +174,7 @@ variables:
     qc:
       valid_range: [1, 4]
       validate:
-        - waves: [w4, w6]
+        - waves: [w4, w5, w6]
           phrase: "people.*interact"
 
   - id: trust_strangers
@@ -355,7 +355,7 @@ variables:
       w2: null
       w3: null
       w4: q32
-      w5: null
+      w5: q32
       w6: q32
 
     scale:
@@ -376,7 +376,7 @@ variables:
     qc:
       valid_range: [1, 4]
       validate:
-        - waves: [w4, w6]
+        - waves: [w4, w5, w6]
           phrase: "opinions.*differ|hard.*conversing"
 
   # ===========================================================================

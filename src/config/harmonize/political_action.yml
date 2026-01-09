@@ -510,7 +510,7 @@ variables:
       w2: q41
       w3: q35
       w4: null
-      w5: null
+      w5: q36
       w6: q36
 
     scale:
@@ -527,7 +527,7 @@ variables:
     qc:
       valid_range: [1, 2]
       validate:
-        - waves: [w1, w2, w3, w6]
+        - waves: [w1, w2, w3, w5, w6]
           phrase: "persuade.*vote"
 
   - id: worked_for_candidate
@@ -540,7 +540,7 @@ variables:
       w2: null
       w3: null
       w4: null
-      w5: null
+      w5: q37
       w6: q37
 
     scale:
@@ -557,7 +557,7 @@ variables:
     qc:
       valid_range: [1, 2]
       validate:
-        - waves: [w6]
+        - waves: [w5, w6]
           phrase: "help.*party|work.*candidate"
 
   - id: election_free_fair

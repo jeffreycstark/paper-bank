@@ -159,7 +159,7 @@ variables:
       w2: null
       w3: null
       w4: null
-      w5: null
+      w5: q176
       w6: q175
 
     scale:
@@ -181,7 +181,7 @@ variables:
     qc:
       valid_range: [1, 6]
       validate:
-        - waves: [w6]
+        - waves: [w5, w6]
           phrase: "USA.*influence.*world|United States.*world"
 
   - id: intl_usa_country_influence_amount
@@ -194,7 +194,7 @@ variables:
       w2: null
       w3: null
       w4: null
-      w5: null
+      w5: q183
       w6: q183
 
     scale:
@@ -214,7 +214,7 @@ variables:
     qc:
       valid_range: [1, 4]
       validate:
-        - waves: [w6]
+        - waves: [w5, w6]
           phrase: "USA.*influence.*country|how much influence.*USA"
 
   - id: intl_usa_country_influence_valence
@@ -227,7 +227,7 @@ variables:
       w2: null
       w3: null
       w4: null
-      w5: null
+      w5: q184
       w6: q184
 
     scale:
@@ -249,7 +249,7 @@ variables:
     qc:
       valid_range: [1, 6]
       validate:
-        - waves: [w6]
+        - waves: [w5, w6]
           phrase: "USA.*influence.*country.*positive|USA.*influence.*country.*negative"
 
   # ===========================================================================
@@ -299,7 +299,7 @@ variables:
       w2: null
       w3: null
       w4: null
-      w5: null
+      w5: q178
       w6: q177
 
     scale:
@@ -321,7 +321,7 @@ variables:
     qc:
       valid_range: [1, 6]
       validate:
-        - waves: [w6]
+        - waves: [w5, w6]
           phrase: "China.*influence.*world"
 
   - id: intl_china_country_influence_amount
@@ -334,7 +334,7 @@ variables:
       w2: null
       w3: null
       w4: null
-      w5: null
+      w5: q181
       w6: q181
 
     scale:
@@ -354,7 +354,7 @@ variables:
     qc:
       valid_range: [1, 4]
       validate:
-        - waves: [w6]
+        - waves: [w5, w6]
           phrase: "China.*influence.*country|how much influence.*China"
 
   - id: intl_china_country_influence_valence
@@ -367,7 +367,7 @@ variables:
       w2: null
       w3: null
       w4: null
-      w5: null
+      w5: q182
       w6: q182
 
     scale:
@@ -389,7 +389,7 @@ variables:
     qc:
       valid_range: [1, 6]
       validate:
-        - waves: [w6]
+        - waves: [w5, w6]
           phrase: "China.*influence.*country.*positive|China.*influence.*country.*negative"
 
   # ===========================================================================
@@ -445,7 +445,7 @@ variables:
       w2: null
       w3: null
       w4: q172
-      w5: null
+      w5: q186
       w6: q186
 
     scale:
@@ -466,7 +466,7 @@ variables:
     qc:
       valid_range: [1, 4]
       validate:
-        - waves: [w4, w6]
+        - waves: [w4, w5, w6]
           phrase: "close.*ASEAN"
 
   # ===========================================================================

@@ -21,7 +21,7 @@ variables:
       w2: null
       w3: null
       w4: null
-      w5: null
+      w5: q159
       w6: q159
 
     scale:
@@ -41,7 +41,7 @@ variables:
     qc:
       valid_range: [1, 4]
       validate:
-        - waves: [w6]
+        - waves: [w5, w6]
           phrase: "income.*distribut|distribut.*fair"
 
   - id: econ_family_income_fair

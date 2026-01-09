@@ -71,6 +71,68 @@ variables:
         - waves: [w3, w4, w5, w6]
           phrase: "United States.*scale|USA.*scale|place.*United States"
 
+  - id: dem_rating_japan
+    concept: democracy_tradeoffs
+    description: "Where would you place Japan today on a democracy scale? (1=undemocratic, 10=democratic)"
+    type: ordinal
+
+    source:
+      w1: null
+      w2: null
+      w3: null
+      w4: null
+      w5: q130
+      w6: null
+    note: "Wave 5 only"
+
+    scale:
+      min: 1
+      max: 10
+      labels:
+        1: "Completely undemocratic"
+        10: "Completely democratic"
+
+    harmonize:
+      default:
+        method: identity
+
+    qc:
+      valid_range: [1, 10]
+      validate:
+        - waves: [w5]
+          phrase: "Japan.*scale|place.*Japan"
+
+  - id: dem_rating_india
+    concept: democracy_tradeoffs
+    description: "Where would you place India today on a democracy scale? (1=undemocratic, 10=democratic)"
+    type: ordinal
+
+    source:
+      w1: null
+      w2: null
+      w3: null
+      w4: null
+      w5: q131
+      w6: null
+    note: "Wave 5 only"
+
+    scale:
+      min: 1
+      max: 10
+      labels:
+        1: "Completely undemocratic"
+        10: "Completely democratic"
+
+    harmonize:
+      default:
+        method: identity
+
+    qc:
+      valid_range: [1, 10]
+      validate:
+        - waves: [w5]
+          phrase: "India.*scale|place.*India"
+
   # ===========================================================================
   # GROUP 2: Democracy Preference
   # ===========================================================================
@@ -224,9 +286,9 @@ variables:
       w2: null
       w3: null
       w4: q79
-      w5: null
+      w5: q82
       w6: null
-    note: "Wave 4 - paired statement item, see codebook for specific wording"
+    note: "Wave 4/5 - paired statement item, see codebook for specific wording"
 
     scale:
       min: 1
@@ -242,7 +304,7 @@ variables:
     qc:
       valid_range: [1, 2]
       validate:
-        - waves: [w4]
+        - waves: [w4, w5]
           phrase: "statement.*agree"
 
   - id: dem_statement_pair_1_intensity
@@ -255,9 +317,9 @@ variables:
       w2: null
       w3: null
       w4: q79a
-      w5: null
+      w5: q82a
       w6: null
-    note: "Wave 4 - intensity follow-up to q79"
+    note: "Wave 4/5 - intensity follow-up"
 
     scale:
       min: 1
@@ -273,7 +335,7 @@ variables:
     qc:
       valid_range: [1, 2]
       validate:
-        - waves: [w4]
+        - waves: [w4, w5]
           phrase: "strongly agree|just agree"
 
   - id: dem_statement_pair_2
@@ -472,9 +534,9 @@ variables:
       w2: null
       w3: null
       w4: q125
-      w5: null
+      w5: q132
       w6: null
-    note: "Wave 4 - statement choice item, see codebook for specific options"
+    note: "Wave 4/5 - statement choice item, see codebook for specific options"
 
     scale:
       min: 1
@@ -491,7 +553,7 @@ variables:
     qc:
       valid_range: [1, 3]
       validate:
-        - waves: [w4]
+        - waves: [w4, w5]
           phrase: "statement.*closest|opinion"
 
   - id: dem_statement_view
@@ -504,9 +566,9 @@ variables:
       w2: null
       w3: null
       w4: q126
-      w5: null
+      w5: q133
       w6: null
-    note: "Wave 4 - statement choice item, see codebook for specific options"
+    note: "Wave 4/5 - statement choice item, see codebook for specific options"
 
     scale:
       min: 1
@@ -522,6 +584,6 @@ variables:
     qc:
       valid_range: [1, 2]
       validate:
-        - waves: [w4]
+        - waves: [w4, w5]
           phrase: "statement.*closer|view"
 
