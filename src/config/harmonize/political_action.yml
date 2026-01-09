@@ -377,7 +377,7 @@ variables:
       w1: null    # TODO: find w1 mapping
       w2: q90     # "Thinking of whether you voted or not ever since you became eligible for voting"
       w3: q73
-      w4: null    # TODO: find w4 mapping
+      w4: q78     # "Thinking of whether you voted or not ever since you became eligible for voting"
       w5: q81
       w6: q78
 
@@ -398,7 +398,7 @@ variables:
     qc:
       valid_range: [1, 4]
       validate:
-        - waves: [w2, w3, w5, w6]
+        - waves: [w2, w3, w4, w5, w6]
           phrase: "voted.*election"
 
   # ===========================================================================
@@ -505,7 +505,7 @@ variables:
       w1: q030
       w2: q41
       w3: q35
-      w4: null
+      w4: q36
       w5: q36
       w6: q36
 
@@ -523,7 +523,7 @@ variables:
     qc:
       valid_range: [1, 2]
       validate:
-        - waves: [w1, w2, w3, w5, w6]
+        - waves: [w1, w2, w3, w4, w5, w6]
           phrase: "persuade.*vote"
 
   - id: worked_for_candidate

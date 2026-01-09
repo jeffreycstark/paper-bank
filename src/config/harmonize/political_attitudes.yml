@@ -226,7 +226,7 @@ variables:
       w1: null    # TODO: find w1 mapping
       w2: null    # TODO: find w2 mapping
       w3: q95
-      w4: null    # TODO: find w4 mapping
+      w4: q98     # "How satisfied or dissatisfied are you with the current government?"
       w5: q105
       w6: q96
 
@@ -247,8 +247,8 @@ variables:
     qc:
       valid_range: [1, 4]
       validate:
-        - waves: [w3, w5, w6]
-          phrase: "satisfied.*president"
+        - waves: [w3, w4, w5, w6]
+          phrase: "satisfied.*government|satisfied.*president"
 
   # ===========================================================================
   # GROUP 4: System Support / Loyalty
