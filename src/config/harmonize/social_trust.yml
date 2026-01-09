@@ -119,7 +119,7 @@ variables:
     source:
       w1: null
       w2: q25
-      w3: null
+      w3: q26
       w4: q27
       w5: q25
       w6: q25
@@ -141,7 +141,7 @@ variables:
     qc:
       valid_range: [1, 4]
       validate:
-        - waves: [w2, w4, w5, w6]
+        - waves: [w2, w3, w4, w5, w6]
           phrase: "trust.*neighbor"
 
   - id: trust_acquaintances
@@ -152,7 +152,7 @@ variables:
     source:
       w1: null
       w2: q26
-      w3: null
+      w3: q27
       w4: q28
       w5: q26
       w6: q26
@@ -174,7 +174,7 @@ variables:
     qc:
       valid_range: [1, 4]
       validate:
-        - waves: [w2, w4, w5, w6]
+        - waves: [w2, w3, w4, w5, w6]
           phrase: "people.*interact"
 
   - id: trust_strangers
