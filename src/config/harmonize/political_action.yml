@@ -404,3 +404,37 @@ variables:
       validate:
         - waves: [w3, w5, w6]
           phrase: "voted.*election"
+
+  # ===========================================================================
+  # GROUP 5: Electoral Experience
+  # ===========================================================================
+
+  - id: vote_buying_offered
+    concept: political_action
+    description: "Were you offered anything (money, gift, etc.) by a candidate or party during the election?"
+    type: nominal
+
+    source:
+      w1: q116    # Similar to corruption witness question - verify
+      w2: q119
+      w3: q119
+      w4: q120
+      w5: q127
+      w6: q79
+
+    scale:
+      min: 1
+      max: 2
+      labels:
+        1: "Yes"
+        2: "No"
+
+    harmonize:
+      default:
+        method: identity
+
+    qc:
+      valid_range: [1, 2]
+      validate:
+        - waves: [w1, w2, w3, w4, w5, w6]
+          phrase: "offered.*money|offered.*gift|candidate.*offer"

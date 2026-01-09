@@ -2,7 +2,7 @@
 
 missing_conventions:
   treat_as_na:
-    codes: [-1, -2, 97, 98, 99]
+    codes: [-1, 0, 97, 98, 99]
     description: "Standard missing codes"
 
 variables:
@@ -25,7 +25,8 @@ variables:
     
     harmonize:
       default:
-        method: identity
+        method: r_function
+        fn: safe_reverse_4pt
     
     qc:
       valid_range: [1, 4]
