@@ -1,0 +1,572 @@
+# Authoritarianism - Comprehensive YAML (v2)
+# Variables measuring authoritarian attitudes, regime preferences, and leader deference
+
+missing_conventions:
+  treat_as_na:
+    codes: [-1, 0, 7, 8, 9, 97, 98, 99]
+    description: "Standard missing codes"
+
+variables:
+  # ===========================================================================
+  # GROUP 1: Regime Type Preferences (support for non-democratic alternatives)
+  # Scale: 1-4 (1=Strongly disapprove, 4=Strongly approve) - HIGHER = MORE AUTH
+  # ===========================================================================
+
+  - id: auth_strong_leader
+    concept: authoritarianism
+    description: "We should get rid of parliament and elections and have a strong leader decide things"
+    type: ordinal
+
+    source:
+      w1: q121
+      w2: q124
+      w3: q129    # TODO: verify - might be q129a
+      w4: q130
+      w5: q137
+      w6: q129
+
+    scale:
+      min: 1
+      max: 4
+      labels:
+        1: "Strongly disapprove"
+        2: "Disapprove"
+        3: "Approve"
+        4: "Strongly approve"
+
+    harmonize:
+      default:
+        method: r_function
+        fn: safe_4pt_none
+
+    qc:
+      valid_range: [1, 4]
+      validate:
+        - waves: [w1, w2, w3, w4, w5, w6]
+          phrase: "strong leader"
+
+  - id: auth_one_party
+    concept: authoritarianism
+    description: "Only one political party should be allowed to stand for election and hold office"
+    type: ordinal
+
+    source:
+      w1: null    # TODO: find w1 mapping
+      w2: q125
+      w3: q130
+      w4: q131
+      w5: q138
+      w6: q130
+
+    scale:
+      min: 1
+      max: 4
+
+    harmonize:
+      default:
+        method: r_function
+        fn: safe_4pt_none
+
+    qc:
+      valid_range: [1, 4]
+      validate:
+        - waves: [w2, w3, w4, w5, w6]
+          phrase: "one political party"
+
+  - id: auth_military_rule
+    concept: authoritarianism
+    description: "The army/military should come in to govern the country"
+    type: ordinal
+
+    source:
+      w1: q123
+      w2: q126
+      w3: q131
+      w4: q132
+      w5: q139
+      w6: q131
+
+    scale:
+      min: 1
+      max: 4
+
+    harmonize:
+      default:
+        method: r_function
+        fn: safe_4pt_none
+
+    qc:
+      valid_range: [1, 4]
+      validate:
+        - waves: [w1, w2, w3, w4, w5, w6]
+          phrase: "army|military"
+
+  - id: auth_expert_rule
+    concept: authoritarianism
+    description: "We should get rid of elections and parliaments and have experts make decisions"
+    type: ordinal
+
+    source:
+      w1: q124
+      w2: null    # TODO: find w2 mapping
+      w3: q132
+      w4: q133
+      w5: q140
+      w6: q132
+
+    scale:
+      min: 1
+      max: 4
+
+    harmonize:
+      default:
+        method: r_function
+        fn: safe_4pt_none
+
+    qc:
+      valid_range: [1, 4]
+      validate:
+        - waves: [w1, w3, w4, w5, w6]
+          phrase: "expert"
+
+  # ===========================================================================
+  # GROUP 2: Leader Deference / Executive Dominance
+  # Scale: 1-4 (1=Strongly disagree, 4=Strongly agree) - HIGHER = MORE AUTH
+  # ===========================================================================
+
+  - id: hierarchical_obedience
+    concept: authoritarianism
+    description: "Government leaders are like the head of a family; we should all follow their decisions"
+    type: ordinal
+
+    source:
+      w1: q133
+      w2: q134
+      w3: q141
+      w4: q142
+      w5: q149
+      w6: q149
+
+    scale:
+      min: 1
+      max: 4
+      labels:
+        1: "Strongly disagree"
+        2: "Disagree"
+        3: "Agree"
+        4: "Strongly agree"
+
+    harmonize:
+      default:
+        method: r_function
+        fn: safe_reverse_4pt    # Reverse so higher = more authoritarian
+
+    qc:
+      valid_range: [1, 4]
+      validate:
+        - waves: [w1, w2, w3, w4, w5, w6]
+          phrase: "head of a family|follow their decisions"
+
+  - id: strong_leader_preference
+    concept: authoritarianism
+    description: "If the government is constantly checked by the legislature, it cannot possibly accomplish great things"
+    type: ordinal
+
+    source:
+      w1: q137
+      w2: q138
+      w3: q145
+      w4: q146
+      w5: q153
+      w6: q153
+
+    scale:
+      min: 1
+      max: 4
+
+    harmonize:
+      default:
+        method: r_function
+        fn: safe_reverse_4pt
+
+    qc:
+      valid_range: [1, 4]
+      validate:
+        - waves: [w1, w2, w3, w4, w5, w6]
+          phrase: "checked|legislature|accomplish"
+
+  - id: upright_leader_discretion
+    concept: authoritarianism
+    description: "If we have political leaders who are morally upright, we can let them decide everything"
+    type: ordinal
+
+    source:
+      w1: q138
+      w2: q139
+      w3: q146
+      w4: q147
+      w5: q154
+      w6: q154
+
+    scale:
+      min: 1
+      max: 4
+
+    harmonize:
+      default:
+        method: r_function
+        fn: safe_reverse_4pt
+
+    qc:
+      valid_range: [1, 4]
+      validate:
+        - waves: [w1, w2, w3, w4, w5, w6]
+          phrase: "morally upright|decide everything"
+
+  # ===========================================================================
+  # GROUP 3: Acceptance of Authoritarian Governance
+  # Scale: 1-4 (varies) - need to verify direction
+  # NOTE: These are mostly Wave 5/6 only
+  # ===========================================================================
+
+  - id: accept_leader_decree
+    concept: authoritarianism
+    description: "A leader can govern by decrees and disregard the parliament if necessary to solve urgent problems"
+    type: ordinal
+
+    source:
+      w1: null
+      w2: null
+      w3: null
+      w4: null
+      w5: null    # TODO: search for w5 equivalent
+      w6: q168
+
+    scale:
+      min: 1
+      max: 4
+
+    harmonize:
+      default:
+        method: r_function
+        fn: safe_4pt_none    # TODO: verify direction
+
+    qc:
+      valid_range: [1, 4]
+      validate:
+        - waves: [w6]
+          phrase: "decree|disregard.*parliament"
+
+  - id: accept_economic_over_elections
+    concept: authoritarianism
+    description: "As long as the government solves economic problems, it does not matter if it holds regular elections"
+    type: ordinal
+
+    source:
+      w1: null
+      w2: null
+      w3: null
+      w4: null
+      w5: q173
+      w6: q169
+
+    scale:
+      min: 1
+      max: 4
+
+    harmonize:
+      default:
+        method: r_function
+        fn: safe_4pt_none    # TODO: verify direction
+
+    qc:
+      valid_range: [1, 4]
+      validate:
+        - waves: [w5, w6]
+          phrase: "economic|election"
+
+  - id: accept_leader_break_rules
+    concept: authoritarianism
+    description: "This country needs a leader who can break the rules if necessary to get things done"
+    type: ordinal
+
+    source:
+      w1: null
+      w2: null
+      w3: null
+      w4: null
+      w5: null    # TODO: search for w5 equivalent
+      w6: q170
+
+    scale:
+      min: 1
+      max: 4
+
+    harmonize:
+      default:
+        method: r_function
+        fn: safe_4pt_none    # TODO: verify direction
+
+    qc:
+      valid_range: [1, 4]
+      validate:
+        - waves: [w6]
+          phrase: "break.*rule"
+
+  - id: accept_stability_over_democracy
+    concept: authoritarianism
+    description: "As long as the government maintains order and stability, it does not matter if it is democratic"
+    type: ordinal
+
+    source:
+      w1: null
+      w2: null
+      w3: null
+      w4: null
+      w5: q170    # Different wording - about effectiveness
+      w6: q171
+
+    scale:
+      min: 1
+      max: 4
+
+    harmonize:
+      default:
+        method: r_function
+        fn: safe_4pt_none    # TODO: verify direction
+
+    qc:
+      valid_range: [1, 4]
+      validate:
+        - waves: [w5, w6]
+          phrase: "stability|democratic"
+
+  # ===========================================================================
+  # GROUP 4: Government Accountability (reverse-coded - low accountability = auth)
+  # ===========================================================================
+
+  - id: govt_leader_judicial_constraint
+    concept: authoritarianism
+    description: "To what extent is the legislature capable of keeping government leaders in check"
+    type: ordinal
+
+    source:
+      w1: q110
+      w2: q110
+      w3: q110
+      w4: q110
+      w5: q110
+      w6: q111    # TODO: verify w6 mapping
+
+    scale:
+      min: 1
+      max: 4
+
+    harmonize:
+      default:
+        method: r_function
+        fn: safe_4pt_none    # Higher = more constraint (less auth)
+
+    qc:
+      valid_range: [1, 4]
+      validate:
+        - waves: [w1, w2, w3, w4, w5, w6]
+          phrase: "legislature|check"
+
+  - id: govt_leader_law_breaking
+    concept: authoritarianism
+    description: "How often do government leaders break the law or abuse their power"
+    type: ordinal
+
+    source:
+      w1: q111
+      w2: q111
+      w3: q111
+      w4: q111
+      w5: q111
+      w6: null    # TODO: find w6 mapping
+
+    scale:
+      min: 1
+      max: 4
+
+    harmonize:
+      default:
+        method: r_function
+        fn: safe_4pt_none
+
+    qc:
+      valid_range: [1, 4]
+      validate:
+        - waves: [w1, w2, w3, w4, w5]
+          phrase: "break.*law|abuse"
+
+  # ===========================================================================
+  # GROUP 5: Emergency Powers Justification (Wave 6 Only)
+  # Scale: 1-4 (Very justified to Not at all justified) - REVERSED so higher = more supportive
+  # ===========================================================================
+
+  - id: emergency_health_crisis
+    concept: authoritarianism
+    description: "Emergency powers to constrain rights justified for: A public health crisis like COVID-19"
+    type: ordinal
+
+    source:
+      w1: null
+      w2: null
+      w3: null
+      w4: null
+      w5: null
+      w6: q172a
+
+    scale:
+      min: 1
+      max: 4
+      labels:
+        1: "Not at all justified"
+        2: "Not very justified"
+        3: "Somewhat justified"
+        4: "Very justified"
+
+    harmonize:
+      default:
+        method: r_function
+        fn: safe_reverse_4pt
+
+    qc:
+      valid_range: [1, 4]
+      validate:
+        - waves: [w6]
+          phrase: "health crisis|covid"
+
+  - id: emergency_economic_crisis
+    concept: authoritarianism
+    description: "Emergency powers to constrain rights justified for: An economic crisis causing job losses"
+    type: ordinal
+
+    source:
+      w1: null
+      w2: null
+      w3: null
+      w4: null
+      w5: null
+      w6: q172b
+
+    scale:
+      min: 1
+      max: 4
+      labels:
+        1: "Not at all justified"
+        2: "Not very justified"
+        3: "Somewhat justified"
+        4: "Very justified"
+
+    harmonize:
+      default:
+        method: r_function
+        fn: safe_reverse_4pt
+
+    qc:
+      valid_range: [1, 4]
+      validate:
+        - waves: [w6]
+          phrase: "economic crisis|job"
+
+  - id: emergency_corruption_crisis
+    concept: authoritarianism
+    description: "Emergency powers to constrain rights justified for: Corruption that requires increasing executive power"
+    type: ordinal
+
+    source:
+      w1: null
+      w2: null
+      w3: null
+      w4: null
+      w5: null
+      w6: q172c
+
+    scale:
+      min: 1
+      max: 4
+      labels:
+        1: "Not at all justified"
+        2: "Not very justified"
+        3: "Somewhat justified"
+        4: "Very justified"
+
+    harmonize:
+      default:
+        method: r_function
+        fn: safe_reverse_4pt
+
+    qc:
+      valid_range: [1, 4]
+      validate:
+        - waves: [w6]
+          phrase: "corruption|executive power"
+
+  - id: emergency_security_crisis
+    concept: authoritarianism
+    description: "Emergency powers to constrain rights justified for: Security crisis due to unrest or terrorism"
+    type: ordinal
+
+    source:
+      w1: null
+      w2: null
+      w3: null
+      w4: null
+      w5: null
+      w6: q172d
+
+    scale:
+      min: 1
+      max: 4
+      labels:
+        1: "Not at all justified"
+        2: "Not very justified"
+        3: "Somewhat justified"
+        4: "Very justified"
+
+    harmonize:
+      default:
+        method: r_function
+        fn: safe_reverse_4pt
+
+    qc:
+      valid_range: [1, 4]
+      validate:
+        - waves: [w6]
+          phrase: "security|unrest|terrorism"
+
+  - id: emergency_war
+    concept: authoritarianism
+    description: "Emergency powers to constrain rights justified for: The country is at war"
+    type: ordinal
+
+    source:
+      w1: null
+      w2: null
+      w3: null
+      w4: null
+      w5: null
+      w6: q172e
+
+    scale:
+      min: 1
+      max: 4
+      labels:
+        1: "Not at all justified"
+        2: "Not very justified"
+        3: "Somewhat justified"
+        4: "Very justified"
+
+    harmonize:
+      default:
+        method: r_function
+        fn: safe_reverse_4pt
+
+    qc:
+      valid_range: [1, 4]
+      validate:
+        - waves: [w6]
+          phrase: "war"

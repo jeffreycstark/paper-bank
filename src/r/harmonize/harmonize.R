@@ -100,8 +100,13 @@ harmonize_variable <- function(
       next
     }
 
-    # Convert to numeric (suppress warnings about coercion)
-    x <- suppressWarnings(as.numeric(df[[src]]))
+    # Convert to numeric (handle haven_labelled from SPSS imports)
+    x <- df[[src]]
+    if (inherits(x, "haven_labelled")) {
+      x <- as.numeric(haven::zap_labels(x))
+    } else {
+      x <- suppressWarnings(as.numeric(x))
+    }
 
     # ---- apply missing code handling ----
     miss_convention_key <- var_spec$missing$use_convention %||% NULL

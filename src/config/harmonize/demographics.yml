@@ -1,0 +1,286 @@
+# Demographics - Comprehensive YAML (v2)
+# Core demographic and socioeconomic variables
+
+missing_conventions:
+  treat_as_na:
+    codes: [-1, 0, 97, 98, 99]
+    description: "Standard missing codes"
+
+variables:
+  # ===========================================================================
+  # GROUP 1: Basic Demographics
+  # ===========================================================================
+
+  - id: urban_rural
+    concept: demographics
+    description: "Urban or rural residence"
+    type: nominal
+
+    source:
+      w1: level3
+      w2: level3
+      w3: level3
+      w4: level
+      w5: Level
+      w6: LEVEL
+
+    scale:
+      min: 1
+      max: 2
+      labels:
+        1: "Urban"
+        2: "Rural"
+
+    harmonize:
+      default:
+        method: identity
+
+    qc:
+      valid_range: [1, 2]
+      validate:
+        - waves: [w1, w2, w3, w4, w5, w6]
+          phrase: "urban|rural"
+
+  - id: gender
+    concept: demographics
+    description: "Gender of respondent"
+    type: nominal
+
+    source:
+      w1: se002    # TODO: verify w1 variable name
+      w2: se2
+      w3: se2
+      w4: se2
+      w5: SE2
+      w6: SE2
+
+    scale:
+      min: 1
+      max: 2
+      labels:
+        1: "Male"
+        2: "Female"
+
+    harmonize:
+      default:
+        method: identity
+
+    qc:
+      valid_range: [1, 2]
+      validate:
+        - waves: [w1, w2, w3, w4, w5, w6]
+          phrase: "gender"
+
+  - id: age
+    concept: demographics
+    description: "Age of respondent (actual age)"
+    type: continuous
+
+    source:
+      w1: se003a    # TODO: verify w1 variable name
+      w2: se3a
+      w3: se3a
+      w4: se3_2
+      w5: SE3_1
+      w6: SE3_1
+
+    scale:
+      min: 18
+      max: 99
+
+    harmonize:
+      default:
+        method: identity
+
+    qc:
+      valid_range: [18, 99]
+      validate:
+        - waves: [w1, w2, w3, w4, w5, w6]
+          phrase: "age"
+
+  # ===========================================================================
+  # GROUP 2: Education
+  # ===========================================================================
+
+  - id: education_level
+    concept: demographics
+    description: "Highest level of education completed"
+    type: ordinal
+
+    source:
+      w1: se005    # TODO: verify w1 variable name
+      w2: se5
+      w3: se5
+      w4: se5
+      w5: SE5
+      w6: SE5
+
+    scale:
+      min: 1
+      max: 10    # TODO: verify max value across waves
+
+    harmonize:
+      default:
+        method: identity
+
+    qc:
+      valid_range: [1, 10]
+      validate:
+        - waves: [w1, w2, w3, w4, w5, w6]
+          phrase: "education"
+
+  - id: education_years
+    concept: demographics
+    description: "Years of formal education"
+    type: continuous
+
+    source:
+      w1: se005a    # TODO: verify w1 variable name
+      w2: se5a
+      w3: se5a
+      w4: se5a
+      w5: SE5A
+      w6: SE5a
+
+    scale:
+      min: 0
+      max: 25
+
+    harmonize:
+      default:
+        method: identity
+
+    qc:
+      valid_range: [0, 25]
+      validate:
+        - waves: [w1, w2, w3, w4, w5, w6]
+          phrase: "years.*education|education.*years"
+
+  # ===========================================================================
+  # GROUP 3: Employment / Economic Status
+  # ===========================================================================
+
+  - id: employed
+    concept: demographics
+    description: "Currently employed"
+    type: nominal
+
+    source:
+      w1: null    # TODO: find w1 mapping
+      w2: null    # NOTE: w2 se9 is household income
+      w3: se9
+      w4: se9
+      w5: SE9
+      w6: SE9
+
+    scale:
+      min: 1
+      max: 2
+      labels:
+        1: "Yes"
+        2: "No"
+
+    harmonize:
+      default:
+        method: identity
+
+    qc:
+      valid_range: [1, 2]
+      validate:
+        - waves: [w3, w4, w5, w6]
+          phrase: "employed"
+
+  - id: main_earner
+    concept: demographics
+    description: "Are you the main earner in your household?"
+    type: nominal
+
+    source:
+      w1: null    # TODO: find w1 mapping
+      w2: null    # TODO: find w2 mapping
+      w3: se10
+      w4: se10
+      w5: SE10
+      w6: SE10
+
+    scale:
+      min: 1
+      max: 2
+      labels:
+        1: "Yes"
+        2: "No"
+
+    harmonize:
+      default:
+        method: identity
+
+    qc:
+      valid_range: [1, 2]
+      validate:
+        - waves: [w3, w4, w5, w6]
+          phrase: "main earner"
+
+  # ===========================================================================
+  # GROUP 4: Income
+  # ===========================================================================
+
+  - id: hh_income
+    concept: demographics
+    description: "Monthly/annual household income"
+    type: ordinal
+
+    source:
+      w1: null    # TODO: find w1 mapping
+      w2: se9     # NOTE: w2 se9 is income, different from w3-w6
+      w3: null    # TODO: find w3 mapping
+      w4: se14
+      w5: SE14
+      w6: SE14
+
+    scale:
+      min: 1
+      max: 20    # TODO: verify - income brackets vary by wave
+
+    harmonize:
+      default:
+        method: identity
+        note: "Income brackets may differ across waves - use with caution"
+
+    qc:
+      valid_range: [1, 20]
+      validate:
+        - waves: [w2, w4, w5, w6]
+          phrase: "income"
+
+  - id: hh_income_subjective
+    concept: demographics
+    description: "Does household income satisfactorily cover your needs?"
+    type: ordinal
+
+    source:
+      w1: se9a    # TODO: verify w1 variable name
+      w2: se9a
+      w3: null    # TODO: find w3 mapping
+      w4: se14a
+      w5: SE14A
+      w6: SE14a
+
+    scale:
+      min: 1
+      max: 4
+      labels:
+        1: "Not at all"
+        2: "Not very well"
+        3: "Fairly well"
+        4: "Very well"
+
+    harmonize:
+      default:
+        method: r_function
+        fn: safe_4pt_none
+
+    qc:
+      valid_range: [1, 4]
+      validate:
+        - waves: [w1, w2, w4, w5, w6]
+          phrase: "income.*cover|satisf"

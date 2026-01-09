@@ -1,0 +1,289 @@
+# Democracy - Comprehensive YAML (v2)
+# Variables measuring democratic attitudes, perceptions, and satisfaction
+
+missing_conventions:
+  treat_as_na:
+    codes: [-1, 0, 7, 8, 9, 97, 98, 99]
+    description: "Standard missing codes"
+
+variables:
+  # ===========================================================================
+  # GROUP 1: Democratic Satisfaction
+  # ===========================================================================
+
+  - id: dem_sat_national
+    concept: democracy
+    description: "Satisfaction with the way democracy works in the country"
+    type: ordinal
+
+    source:
+      w1: q098
+      w2: q93
+      w3: q89
+      w4: q92
+      w5: q99
+      w6: q90
+
+    scale:
+      min: 1
+      max: 4
+      labels:
+        1: "Not at all satisfied"
+        2: "Not very satisfied"
+        3: "Fairly satisfied"
+        4: "Very satisfied"
+
+    harmonize:
+      default:
+        method: r_function
+        fn: safe_4pt_none
+      exceptions:
+        w1:
+          method: r_function
+          fn: safe_reverse_4pt
+        w2:
+          method: r_function
+          fn: safe_reverse_4pt
+
+    qc:
+      valid_range: [1, 4]
+      validate:
+        - waves: [w1, w2, w3, w4, w5, w6]
+          phrase: "democracy"
+
+  # ===========================================================================
+  # GROUP 2: Perceived Level of Democracy
+  # ===========================================================================
+
+  - id: dem_extent_current
+    concept: democracy
+    description: "In your opinion how much of a democracy is our country?"
+    type: ordinal
+
+    source:
+      w1: null    # TODO: w1 asks different question (want to be democratic)
+      w2: q94
+      w3: q90
+      w4: q93
+      w5: q100
+      w6: q91
+
+    scale:
+      min: 1
+      max: 10
+      labels:
+        1: "Complete dictatorship"
+        10: "Complete democracy"
+
+    harmonize:
+      default:
+        method: identity
+
+    qc:
+      valid_range: [1, 10]
+      validate:
+        - waves: [w2, w3, w4, w5, w6]
+          phrase: "how much.*democracy"
+
+  - id: dem_country_present_govt
+    concept: democracy
+    description: "Where would you place our country under the present government? (1=dictatorship, 10=democracy)"
+    type: ordinal
+
+    source:
+      w1: q100
+      w2: q96
+      w3: q91
+      w4: q94
+      w5: q101
+      w6: q92
+
+    scale:
+      min: 1
+      max: 10
+      labels:
+        1: "Complete dictatorship"
+        10: "Complete democracy"
+
+    harmonize:
+      default:
+        method: identity
+
+    qc:
+      valid_range: [1, 10]
+      validate:
+        - waves: [w1, w2, w3, w4, w5, w6]
+          phrase: "place.*country|present.*government"
+
+  # ===========================================================================
+  # GROUP 3: Democratic Values / Support
+  # ===========================================================================
+
+  - id: dem_best_form
+    concept: democracy
+    description: "Democracy may have its problems, but it is still the best form of government"
+    type: ordinal
+
+    source:
+      w1: null    # TODO: find w1 mapping
+      w2: null    # TODO: find w2 mapping
+      w3: q128
+      w4: q129
+      w5: q136
+      w6: q128
+
+    scale:
+      min: 1
+      max: 4
+      labels:
+        1: "Strongly disagree"
+        2: "Somewhat disagree"
+        3: "Somewhat agree"
+        4: "Strongly agree"
+
+    harmonize:
+      default:
+        method: r_function
+        fn: safe_4pt_none
+
+    qc:
+      valid_range: [1, 4]
+      validate:
+        - waves: [w3, w4, w5, w6]
+          phrase: "best form|democracy.*problem"
+
+  - id: dem_suitable_country
+    concept: democracy
+    description: "Democracy is suitable for our country"
+    type: ordinal
+
+    source:
+      w1: q103
+      w2: q98
+      w3: q94    # TODO: verify - may be 10pt scale
+      w4: q97
+      w5: q104
+      w6: q95
+
+    scale:
+      min: 1
+      max: 10
+      labels:
+        1: "Not suitable at all"
+        10: "Completely suitable"
+
+    harmonize:
+      default:
+        method: identity
+
+    qc:
+      valid_range: [1, 10]
+      validate:
+        - waves: [w1, w2, w3, w4, w5, w6]
+          phrase: "democracy.*suitable"
+
+  # ===========================================================================
+  # GROUP 4: Democratic Rights / Freedoms
+  # ===========================================================================
+
+  - id: dem_free_speech
+    concept: democracy
+    description: "People are free to speak what they think without fear"
+    type: ordinal
+
+    source:
+      w1: null    # TODO: find w1 mapping
+      w2: q110
+      w3: q106
+      w4: q108
+      w5: q115
+      w6: q106
+
+    scale:
+      min: 1
+      max: 4
+      labels:
+        1: "Strongly disagree"
+        2: "Somewhat disagree"
+        3: "Somewhat agree"
+        4: "Strongly agree"
+
+    harmonize:
+      default:
+        method: r_function
+        fn: safe_4pt_none
+
+    qc:
+      valid_range: [1, 4]
+      validate:
+        - waves: [w2, w3, w4, w5, w6]
+          phrase: "free to speak|speak.*fear"
+
+  # ===========================================================================
+  # GROUP 5: Government Satisfaction (related)
+  # ===========================================================================
+
+  - id: gov_sat_national
+    concept: democracy
+    description: "Satisfaction with government's handling of key issues"
+    type: ordinal
+
+    source:
+      w1: q104
+      w2: q96
+      w3: q91
+      w4: q94
+      w5: q102
+      w6: q88
+
+    scale:
+      min: 1
+      max: 4
+
+    harmonize:
+      default:
+        method: r_function
+        fn: safe_4pt_none
+      exceptions:
+        w2:
+          method: r_function
+          fn: safe_reverse_4pt
+
+    qc:
+      valid_range: [1, 4]
+      validate:
+        - waves: [w1, w2, w3, w4, w5, w6]
+          phrase: "government|satisfaction"
+
+  - id: hh_income_sat
+    concept: democracy
+    description: "Satisfaction with household income"
+    type: ordinal
+
+    source:
+      w1: se9a
+      w2: se9a
+      w3: se9a
+      w4: se9a
+      w5: se9a
+      w6: SE14a
+
+    scale:
+      min: 1
+      max: 4
+      labels:
+        1: "Very dissatisfied"
+        2: "Fairly dissatisfied"
+        3: "Fairly satisfied"
+        4: "Very satisfied"
+
+    harmonize:
+      default:
+        method: r_function
+        fn: safe_4pt_none
+
+    qc:
+      valid_range: [1, 4]
+      validate:
+        - waves: [w1, w2, w3, w4, w5, w6]
+          phrase: "income|satisfaction"
