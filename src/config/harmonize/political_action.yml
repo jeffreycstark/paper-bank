@@ -375,7 +375,7 @@ variables:
 
     source:
       w1: null    # TODO: find w1 mapping
-      w2: q38     # "Have you voted in the last election?" - different question
+      w2: q90     # "Thinking of whether you voted or not ever since you became eligible for voting"
       w3: q73
       w4: null    # TODO: find w4 mapping
       w5: q81
@@ -394,15 +394,11 @@ variables:
       default:
         method: r_function
         fn: safe_reverse_4pt
-      exceptions:
-        w2:
-          method: identity
-          note: "w2 asks different question (voted in last election) - binary"
 
     qc:
       valid_range: [1, 4]
       validate:
-        - waves: [w3, w5, w6]
+        - waves: [w2, w3, w5, w6]
           phrase: "voted.*election"
 
   # ===========================================================================
@@ -446,7 +442,7 @@ variables:
 
     source:
       w1: null
-      w2: null
+      w2: q38     # "Have you voted in the last election?"
       w3: q32
       w4: q33
       w5: q33
@@ -467,7 +463,7 @@ variables:
     qc:
       valid_range: [1, 3]
       validate:
-        - waves: [w3, w4, w5, w6]
+        - waves: [w2, w3, w4, w5, w6]
           phrase: "vote.*national|did you vote"
 
   - id: attended_campaign_rally

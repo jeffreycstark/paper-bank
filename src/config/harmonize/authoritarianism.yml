@@ -936,12 +936,12 @@ variables:
 
     source:
       w1: q125
-      w2: null
+      w2: q141
       w3: null
       w4: q149
       w5: null
       w6: null
-    note: "Wave 1 and Wave 4 - rule of law vs. expediency"
+    note: "Wave 1, 2 and Wave 4 - rule of law vs. expediency"
 
     scale:
       min: 1
@@ -961,7 +961,7 @@ variables:
     qc:
       valid_range: [1, 4]
       validate:
-        - waves: [w1, w4]
+        - waves: [w1, w2, w4]
           phrase: "disregard.*law|government.*law"
 
   - id: auth_powerful_few
@@ -1006,12 +1006,12 @@ variables:
 
     source:
       w1: q130
-      w2: null
+      w2: q129
       w3: null
       w4: null
       w5: null
       w6: null
-    note: "Wave 1 only - system support"
+    note: "Waves 1 and 2 - system support"
 
     scale:
       min: 1
@@ -1031,7 +1031,7 @@ variables:
     qc:
       valid_range: [1, 4]
       validate:
-        - waves: [w1]
+        - waves: [w1, w2]
           phrase: "government.*best|form.*government"
 
   # ===========================================================================

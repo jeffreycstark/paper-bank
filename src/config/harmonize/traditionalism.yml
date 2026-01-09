@@ -470,12 +470,12 @@ variables:
 
     source:
       w1: q066
-      w2: null
+      w2: q58
       w3: null
       w4: null
       w5: null
       w6: null
-    note: "Wave 1 only - conflict avoidance/accommodation"
+    note: "Waves 1 and 2 - conflict avoidance/accommodation"
 
     scale:
       min: 1
@@ -495,7 +495,7 @@ variables:
     qc:
       valid_range: [1, 4]
       validate:
-        - waves: [w1]
+        - waves: [w1, w2]
           phrase: "conflict.*neighbor|accommodate"
 
   - id: trad_male_supervisor

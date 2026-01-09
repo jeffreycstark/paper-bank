@@ -151,7 +151,7 @@ variables:
 
     source:
       w1: null
-      w2: null
+      w2: q26
       w3: null
       w4: q28
       w5: q26
@@ -174,7 +174,7 @@ variables:
     qc:
       valid_range: [1, 4]
       validate:
-        - waves: [w4, w5, w6]
+        - waves: [w2, w4, w5, w6]
           phrase: "people.*interact"
 
   - id: trust_strangers
@@ -221,7 +221,7 @@ variables:
 
     source:
       w1: null
-      w2: null
+      w2: q27
       w3: null
       w4: q29
       w5: null
@@ -244,7 +244,7 @@ variables:
     qc:
       valid_range: [1, 5]
       validate:
-        - waves: [w4, w6]
+        - waves: [w2, w4, w6]
           phrase: "contact.*week"
 
   - id: social_contacts_status
@@ -352,7 +352,7 @@ variables:
 
     source:
       w1: null
-      w2: null
+      w2: q31
       w3: null
       w4: q32
       w5: q32
@@ -376,7 +376,7 @@ variables:
     qc:
       valid_range: [1, 4]
       validate:
-        - waves: [w4, w5, w6]
+        - waves: [w2, w4, w5, w6]
           phrase: "opinions.*differ|hard.*conversing"
 
   # ===========================================================================
