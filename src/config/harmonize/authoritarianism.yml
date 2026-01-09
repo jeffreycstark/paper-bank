@@ -51,7 +51,7 @@ variables:
     type: ordinal
 
     source:
-      w1: null    # TODO: find w1 mapping
+      w1: q122    # "No opposition party should be allowed to compete for power"
       w2: q125
       w3: q130
       w4: q131
@@ -70,8 +70,8 @@ variables:
     qc:
       valid_range: [1, 4]
       validate:
-        - waves: [w2, w3, w4, w5, w6]
-          phrase: "one political party"
+        - waves: [w1, w2, w3, w4, w5, w6]
+          phrase: "one political party|opposition party"
 
   - id: auth_military_rule
     concept: authoritarianism
