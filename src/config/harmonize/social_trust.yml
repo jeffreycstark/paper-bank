@@ -1,0 +1,381 @@
+# Social Trust - Comprehensive YAML (v2)
+# Variables measuring generalized trust, interpersonal trust, and social networks
+
+missing_conventions:
+  treat_as_na:
+    codes: [-1, 0, 7, 8, 9, 97, 98, 99]
+    description: "Standard missing codes"
+
+variables:
+  # ===========================================================================
+  # GROUP 1: Generalized Trust
+  # ===========================================================================
+
+  - id: trust_generalized_binary
+    concept: social_trust
+    description: "Would you say most people can be trusted or must be very careful in dealing with people?"
+    type: nominal
+
+    source:
+      w1: q024
+      w2: q23
+      w3: q23
+      w4: q23
+      w5: q22
+      w6: q22
+
+    scale:
+      min: 1
+      max: 2
+      labels:
+        1: "Most people can be trusted"
+        2: "Must be very careful"
+
+    harmonize:
+      default:
+        method: identity
+
+    qc:
+      valid_range: [1, 2]
+      validate:
+        - waves: [w1, w2, w3, w4, w5, w6]
+          phrase: "most people.*trusted|careful.*dealing"
+
+  - id: trust_generalized_ordinal
+    concept: social_trust
+    description: "Do you agree that most people are trustworthy?"
+    type: ordinal
+
+    source:
+      w1: null
+      w2: null
+      w3: q49
+      w4: q24
+      w5: q23
+      w6: q23
+
+    scale:
+      min: 1
+      max: 4
+      labels:
+        1: "Strongly disagree"
+        2: "Somewhat disagree"
+        3: "Somewhat agree"
+        4: "Strongly agree"
+
+    harmonize:
+      default:
+        method: r_function
+        fn: safe_reverse_4pt
+
+    qc:
+      valid_range: [1, 4]
+      validate:
+        - waves: [w3, w4, w5, w6]
+          phrase: "trustworthy"
+
+  # ===========================================================================
+  # GROUP 2: Trust in Different People
+  # ===========================================================================
+
+  - id: trust_relatives
+    concept: social_trust
+    description: "How much trust do you have in your relatives?"
+    type: ordinal
+
+    source:
+      w1: null
+      w2: q24
+      w3: q25
+      w4: q26
+      w5: q24
+      w6: q24
+
+    scale:
+      min: 1
+      max: 4
+      labels:
+        1: "None at all"
+        2: "Not very much trust"
+        3: "Quite a lot of trust"
+        4: "A great deal of trust"
+
+    harmonize:
+      default:
+        method: r_function
+        fn: safe_reverse_4pt
+
+    qc:
+      valid_range: [1, 4]
+      validate:
+        - waves: [w2, w3, w4, w5, w6]
+          phrase: "trust.*relative"
+
+  - id: trust_neighbors
+    concept: social_trust
+    description: "How much trust do you have in your neighbors?"
+    type: ordinal
+
+    source:
+      w1: null
+      w2: q25
+      w3: null
+      w4: q27
+      w5: q25
+      w6: q25
+
+    scale:
+      min: 1
+      max: 4
+      labels:
+        1: "None at all"
+        2: "Not very much trust"
+        3: "Quite a lot of trust"
+        4: "A great deal of trust"
+
+    harmonize:
+      default:
+        method: r_function
+        fn: safe_reverse_4pt
+
+    qc:
+      valid_range: [1, 4]
+      validate:
+        - waves: [w2, w4, w5, w6]
+          phrase: "trust.*neighbor"
+
+  - id: trust_acquaintances
+    concept: social_trust
+    description: "How much trust do you have in other people you interact with?"
+    type: ordinal
+
+    source:
+      w1: null
+      w2: null
+      w3: null
+      w4: null
+      w5: null
+      w6: q26
+
+    scale:
+      min: 1
+      max: 4
+      labels:
+        1: "None at all"
+        2: "Not very much trust"
+        3: "Quite a lot of trust"
+        4: "A great deal of trust"
+
+    harmonize:
+      default:
+        method: r_function
+        fn: safe_reverse_4pt
+
+    qc:
+      valid_range: [1, 4]
+      validate:
+        - waves: [w6]
+          phrase: "people.*interact"
+
+  - id: trust_strangers
+    concept: social_trust
+    description: "How much trust do you have in people you meet for the first time?"
+    type: ordinal
+
+    source:
+      w1: null
+      w2: null
+      w3: null
+      w4: null
+      w5: q27
+      w6: q27
+
+    scale:
+      min: 1
+      max: 4
+      labels:
+        1: "None at all"
+        2: "Not very much trust"
+        3: "Quite a lot of trust"
+        4: "A great deal of trust"
+
+    harmonize:
+      default:
+        method: r_function
+        fn: safe_reverse_4pt
+
+    qc:
+      valid_range: [1, 4]
+      validate:
+        - waves: [w5, w6]
+          phrase: "first time|strangers"
+
+  # ===========================================================================
+  # GROUP 3: Social Networks
+  # ===========================================================================
+
+  - id: social_contacts_count
+    concept: social_trust
+    description: "How many people do you have contact with in a typical week day?"
+    type: ordinal
+
+    source:
+      w1: null
+      w2: null
+      w3: null
+      w4: null
+      w5: null
+      w6: q28
+
+    scale:
+      min: 1
+      max: 5
+      labels:
+        1: "0-4 people"
+        2: "5-9 people"
+        3: "10-19 people"
+        4: "20-49 people"
+        5: "50 or more people"
+
+    harmonize:
+      default:
+        method: identity
+
+    qc:
+      valid_range: [1, 5]
+      validate:
+        - waves: [w6]
+          phrase: "contact.*week"
+
+  - id: social_contacts_status
+    concept: social_trust
+    description: "Social status of most of your contacts relative to yours"
+    type: nominal
+
+    source:
+      w1: null
+      w2: null
+      w3: null
+      w4: null
+      w5: null
+      w6: q29
+
+    scale:
+      min: 1
+      max: 4
+      labels:
+        1: "Higher status than yours"
+        2: "Lower status than yours"
+        3: "Equal status to yours"
+        4: "Various"
+
+    harmonize:
+      default:
+        method: identity
+
+    qc:
+      valid_range: [1, 4]
+      validate:
+        - waves: [w6]
+          phrase: "social status.*contact"
+
+  - id: social_contacts_political_views
+    concept: social_trust
+    description: "Political views of people you have frequent contact with"
+    type: ordinal
+
+    source:
+      w1: null
+      w2: null
+      w3: null
+      w4: null
+      w5: null
+      w6: q30
+
+    scale:
+      min: 1
+      max: 5
+      labels:
+        1: "Most have views different from me"
+        2: "Only some have views similar to me"
+        3: "A lot have views similar to me"
+        4: "Virtually all have views similar to me"
+        5: "Don't know their political views"
+
+    harmonize:
+      default:
+        method: identity
+        note: "Code 5 may need special handling as non-response"
+
+    qc:
+      valid_range: [1, 5]
+      validate:
+        - waves: [w6]
+          phrase: "political views.*contact"
+
+  - id: social_support_available
+    concept: social_trust
+    description: "Are there people outside your household you can ask for help with a difficult problem?"
+    type: ordinal
+
+    source:
+      w1: null
+      w2: null
+      w3: null
+      w4: null
+      w5: null
+      w6: q31
+
+    scale:
+      min: 1
+      max: 4
+      labels:
+        1: "No, nobody"
+        2: "Yes, a few"
+        3: "Yes, some"
+        4: "Yes, a lot"
+
+    harmonize:
+      default:
+        method: identity
+
+    qc:
+      valid_range: [1, 4]
+      validate:
+        - waves: [w6]
+          phrase: "ask for help|difficult problem"
+
+  - id: political_discussion_tolerance
+    concept: social_trust
+    description: "Would you have a hard time conversing with friends whose political opinions differ from yours?"
+    type: ordinal
+
+    source:
+      w1: null
+      w2: null
+      w3: null
+      w4: null
+      w5: null
+      w6: q32
+
+    scale:
+      min: 1
+      max: 4
+      labels:
+        1: "Not hard at all"
+        2: "Not too hard"
+        3: "A bit hard"
+        4: "Very hard"
+
+    harmonize:
+      default:
+        method: r_function
+        fn: safe_reverse_4pt
+        note: "Original: 1=very hard to 4=not hard at all; Reversed so higher = more intolerance"
+
+    qc:
+      valid_range: [1, 4]
+      validate:
+        - waves: [w6]
+          phrase: "opinions.*differ|hard.*conversing"
+

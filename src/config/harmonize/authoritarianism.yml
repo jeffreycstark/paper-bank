@@ -570,3 +570,248 @@ variables:
       validate:
         - waves: [w6]
           phrase: "war"
+
+  # ===========================================================================
+  # GROUP 6: Illiberal Attitudes
+  # Scale: 1-4 (Strongly agree to Strongly disagree) - REVERSED where appropriate
+  # ===========================================================================
+
+  - id: auth_women_politics
+    concept: authoritarianism
+    description: "Women should not be involved in politics as much as men"
+    type: ordinal
+
+    source:
+      w1: null
+      w2: null
+      w3: q139
+      w4: q139
+      w5: q146
+      w6: q146
+
+    scale:
+      min: 1
+      max: 4
+      labels:
+        1: "Strongly disagree"
+        2: "Somewhat disagree"
+        3: "Somewhat agree"
+        4: "Strongly agree"
+      note: "Authoritarian/sexist item - higher = more agreement with excluding women"
+
+    harmonize:
+      default:
+        method: r_function
+        fn: safe_4pt_none
+        note: "NOT reversed - higher = more authoritarian"
+
+    qc:
+      valid_range: [1, 4]
+      validate:
+        - waves: [w3, w4, w5, w6]
+          phrase: "women.*politics"
+
+  - id: auth_religious_authorities
+    concept: authoritarianism
+    description: "The government should consult religious authorities when interpreting the laws"
+    type: ordinal
+
+    source:
+      w1: null
+      w2: null
+      w3: q138
+      w4: q140
+      w5: q147
+      w6: q147
+
+    scale:
+      min: 1
+      max: 4
+      labels:
+        1: "Strongly disagree"
+        2: "Somewhat disagree"
+        3: "Somewhat agree"
+        4: "Strongly agree"
+
+    harmonize:
+      default:
+        method: r_function
+        fn: safe_4pt_none
+        note: "NOT reversed - higher = more support for religious authority"
+
+    qc:
+      valid_range: [1, 4]
+      validate:
+        - waves: [w3, w4, w5, w6]
+          phrase: "religious.*authorities|consult.*religious"
+
+  - id: auth_education_politics
+    concept: authoritarianism
+    description: "People with little or no education should have as much say in politics as highly-educated people"
+    type: ordinal
+
+    source:
+      w1: q132
+      w2: q133
+      w3: q140
+      w4: q141
+      w5: q148
+      w6: q148
+
+    scale:
+      min: 1
+      max: 4
+      labels:
+        1: "Strongly disagree"
+        2: "Somewhat disagree"
+        3: "Somewhat agree"
+        4: "Strongly agree"
+      note: "Democratic/egalitarian item - higher = more inclusive"
+
+    harmonize:
+      default:
+        method: r_function
+        fn: safe_reverse_4pt
+        note: "REVERSED so higher = more democratic/inclusive"
+
+    qc:
+      valid_range: [1, 4]
+      validate:
+        - waves: [w1, w2, w3, w4, w5, w6]
+          phrase: "education.*say.*politics|little.*education"
+
+  - id: auth_govt_decide_ideas
+    concept: authoritarianism
+    description: "The government should decide whether certain ideas should be allowed to be discussed in society"
+    type: ordinal
+
+    source:
+      w1: q134
+      w2: q135
+      w3: q142
+      w4: q143
+      w5: q150
+      w6: q150
+
+    scale:
+      min: 1
+      max: 4
+      labels:
+        1: "Strongly disagree"
+        2: "Somewhat disagree"
+        3: "Somewhat agree"
+        4: "Strongly agree"
+
+    harmonize:
+      default:
+        method: r_function
+        fn: safe_4pt_none
+        note: "NOT reversed - higher = more authoritarian censorship support"
+
+    qc:
+      valid_range: [1, 4]
+      validate:
+        - waves: [w1, w2, w3, w4, w5, w6]
+          phrase: "government.*decide.*ideas|ideas.*discussed"
+
+  - id: auth_groups_disrupt_harmony
+    concept: authoritarianism
+    description: "Harmony of the community will be disrupted if people organize lots of groups"
+    type: ordinal
+
+    source:
+      w1: q135
+      w2: q136
+      w3: q143
+      w4: q144
+      w5: q151
+      w6: q151
+
+    scale:
+      min: 1
+      max: 4
+      labels:
+        1: "Strongly disagree"
+        2: "Somewhat disagree"
+        3: "Somewhat agree"
+        4: "Strongly agree"
+
+    harmonize:
+      default:
+        method: r_function
+        fn: safe_4pt_none
+        note: "NOT reversed - higher = more anti-pluralist"
+
+    qc:
+      valid_range: [1, 4]
+      validate:
+        - waves: [w1, w2, w3, w4, w5, w6]
+          phrase: "harmony.*disrupted|groups.*harmony"
+
+  - id: auth_judges_accept_executive
+    concept: authoritarianism
+    description: "When judges decide important cases, they should accept the view of the executive branch"
+    type: ordinal
+
+    source:
+      w1: q136
+      w2: q137
+      w3: q144
+      w4: q145
+      w5: q152
+      w6: q152
+
+    scale:
+      min: 1
+      max: 4
+      labels:
+        1: "Strongly disagree"
+        2: "Somewhat disagree"
+        3: "Somewhat agree"
+        4: "Strongly agree"
+
+    harmonize:
+      default:
+        method: r_function
+        fn: safe_4pt_none
+        note: "NOT reversed - higher = less judicial independence support"
+
+    qc:
+      valid_range: [1, 4]
+      validate:
+        - waves: [w1, w2, w3, w4, w5, w6]
+          phrase: "judges.*executive"
+
+  - id: auth_diversity_chaotic
+    concept: authoritarianism
+    description: "If people have too many different ways of thinking, society will be chaotic"
+    type: ordinal
+
+    source:
+      w1: q139
+      w2: q140
+      w3: q147
+      w4: q148
+      w5: q155
+      w6: q155
+
+    scale:
+      min: 1
+      max: 4
+      labels:
+        1: "Strongly disagree"
+        2: "Somewhat disagree"
+        3: "Somewhat agree"
+        4: "Strongly agree"
+
+    harmonize:
+      default:
+        method: r_function
+        fn: safe_4pt_none
+        note: "NOT reversed - higher = more anti-pluralist"
+
+    qc:
+      valid_range: [1, 4]
+      validate:
+        - waves: [w1, w2, w3, w4, w5, w6]
+          phrase: "different.*thinking.*chaotic|chaotic.*thinking"
