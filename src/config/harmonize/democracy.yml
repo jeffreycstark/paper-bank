@@ -225,35 +225,96 @@ variables:
 
   - id: gov_sat_national
     concept: democracy
-    description: "Satisfaction with government's handling of key issues"
+    description: "How satisfied or dissatisfied are you with the current president/government?"
     type: ordinal
 
     source:
       w1: q104
-      w2: q96
-      w3: q91
-      w4: q94
-      w5: q102
-      w6: q88
+      w2: q99
+      w3: q95
+      w4: q98
+      w5: q105
+      w6: q96
 
     scale:
       min: 1
       max: 4
+      labels:
+        1: "Very dissatisfied"
+        2: "Somewhat dissatisfied"
+        3: "Somewhat satisfied"
+        4: "Very satisfied"
 
     harmonize:
       default:
         method: r_function
         fn: safe_4pt_none
-      exceptions:
-        w2:
-          method: r_function
-          fn: safe_reverse_4pt
 
     qc:
       valid_range: [1, 4]
       validate:
         - waves: [w1, w2, w3, w4, w5, w6]
-          phrase: "government|satisfaction"
+          phrase: "satisf.*president|satisf.*government"
+
+  - id: dem_country_past
+    concept: democracy
+    description: "Where would you place our country ten years ago? (1=dictatorship, 10=democracy)"
+    type: ordinal
+
+    source:
+      w1: null
+      w2: null
+      w3: q92
+      w4: q95
+      w5: q102
+      w6: q93
+
+    scale:
+      min: 1
+      max: 10
+      labels:
+        1: "Complete dictatorship"
+        10: "Complete democracy"
+
+    harmonize:
+      default:
+        method: identity
+
+    qc:
+      valid_range: [1, 10]
+      validate:
+        - waves: [w3, w4, w5, w6]
+          phrase: "ten years ago|years ago"
+
+  - id: dem_country_future
+    concept: democracy
+    description: "Where would you expect our country to be ten years from now? (1=dictatorship, 10=democracy)"
+    type: ordinal
+
+    source:
+      w1: null
+      w2: null
+      w3: q93
+      w4: q96
+      w5: q103
+      w6: q94
+
+    scale:
+      min: 1
+      max: 10
+      labels:
+        1: "Complete dictatorship"
+        10: "Complete democracy"
+
+    harmonize:
+      default:
+        method: identity
+
+    qc:
+      valid_range: [1, 10]
+      validate:
+        - waves: [w3, w4, w5, w6]
+          phrase: "ten years from now|future"
 
   - id: hh_income_sat
     concept: democracy
