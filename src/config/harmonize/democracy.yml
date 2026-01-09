@@ -625,3 +625,176 @@ variables:
       validate:
         - waves: [w1]
           phrase: "judges.*courts|political interference|better than before"
+
+  # ===========================================================================
+  # GROUP 8: Democratic Process Quality (Wave 4+)
+  # ===========================================================================
+
+  - id: dem_power_change_govt
+    concept: democracy
+    description: "People have the power to change a government they don't like"
+    type: ordinal
+
+    source:
+      w1: null
+      w2: null
+      w3: null
+      w4: q101
+      w5: null
+      w6: null
+    note: "Wave 4 - democratic accountability perception"
+
+    scale:
+      min: 1
+      max: 4
+      labels:
+        1: "Strongly disagree"
+        2: "Somewhat disagree"
+        3: "Somewhat agree"
+        4: "Strongly agree"
+
+    harmonize:
+      default:
+        method: r_function
+        fn: safe_4pt_none
+
+    qc:
+      valid_range: [1, 4]
+      validate:
+        - waves: [w4]
+          phrase: "power.*change.*government"
+
+  - id: dem_equal_media_access
+    concept: democracy
+    description: "Political parties or candidates have equal access to mass media during elections"
+    type: ordinal
+
+    source:
+      w1: null
+      w2: null
+      w3: null
+      w4: q102
+      w5: null
+      w6: null
+    note: "Wave 4 - electoral fairness perception"
+
+    scale:
+      min: 1
+      max: 4
+      labels:
+        1: "Strongly disagree"
+        2: "Somewhat disagree"
+        3: "Somewhat agree"
+        4: "Strongly agree"
+
+    harmonize:
+      default:
+        method: r_function
+        fn: safe_4pt_none
+
+    qc:
+      valid_range: [1, 4]
+      validate:
+        - waves: [w4]
+          phrase: "equal.*media|media.*election"
+
+  - id: dem_elections_attention
+    concept: democracy
+    description: "How much do you feel that having elections makes the government pay attention to what the people think?"
+    type: ordinal
+
+    source:
+      w1: null
+      w2: null
+      w3: null
+      w4: q116
+      w5: null
+      w6: null
+    note: "Wave 4 - electoral responsiveness perception"
+
+    scale:
+      min: 1
+      max: 4
+      labels:
+        1: "Not at all"
+        2: "A little"
+        3: "Somewhat"
+        4: "A lot"
+
+    harmonize:
+      default:
+        method: r_function
+        fn: safe_4pt_none
+
+    qc:
+      valid_range: [1, 4]
+      validate:
+        - waves: [w4]
+          phrase: "elections.*attention|pay attention"
+
+  # ===========================================================================
+  # GROUP 9: Comparative Democracy Assessment (Wave 4)
+  # Scale: 1-10 (Complete dictatorship to Complete democracy)
+  # ===========================================================================
+
+  - id: dem_japan_scale
+    concept: democracy
+    description: "Where would you place Japan on this scale? (1=dictatorship, 10=democracy)"
+    type: ordinal
+
+    source:
+      w1: null
+      w2: null
+      w3: null
+      w4: q123
+      w5: null
+      w6: null
+    note: "Wave 4 - comparative democracy assessment for Japan"
+
+    scale:
+      min: 1
+      max: 10
+      labels:
+        1: "Complete dictatorship"
+        10: "Complete democracy"
+
+    harmonize:
+      default:
+        method: identity
+
+    qc:
+      valid_range: [1, 10]
+      validate:
+        - waves: [w4]
+          phrase: "Japan"
+
+  - id: dem_india_scale
+    concept: democracy
+    description: "Where would you place India on this scale? (1=dictatorship, 10=democracy)"
+    type: ordinal
+
+    source:
+      w1: null
+      w2: null
+      w3: null
+      w4: q124
+      w5: null
+      w6: null
+    note: "Wave 4 - comparative democracy assessment for India"
+
+    scale:
+      min: 1
+      max: 10
+      labels:
+        1: "Complete dictatorship"
+        10: "Complete democracy"
+
+    harmonize:
+      default:
+        method: identity
+
+    qc:
+      valid_range: [1, 10]
+      validate:
+        - waves: [w4]
+          phrase: "India"

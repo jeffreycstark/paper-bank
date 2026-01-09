@@ -248,7 +248,80 @@ variables:
           phrase: "childcare"
 
   # ===========================================================================
-  # GROUP 3: Local Safety
+  # GROUP 3: Document and Education Access (Wave 4)
+  # Note: Wave 4 uses different question numbers than w5/w6
+  # ===========================================================================
+
+  - id: access_identity_document
+    concept: public_services
+    description: "How easy or difficult to obtain identity documents (such as birth certificate, ID card)"
+    type: ordinal
+
+    source:
+      w1: null
+      w2: null
+      w3: null
+      w4: q39
+      w5: null
+      w6: null
+    note: "Wave 4 only - access to identity documents"
+
+    scale:
+      min: 1
+      max: 4
+      labels:
+        1: "Very difficult"
+        2: "Difficult"
+        3: "Easy"
+        4: "Very easy"
+
+    harmonize:
+      default:
+        method: r_function
+        fn: safe_reverse_4pt
+
+    qc:
+      valid_range: [1, 4]
+      validate:
+        - waves: [w4]
+          phrase: "identity.*document|birth certificate|ID card"
+
+  - id: access_public_school
+    concept: public_services
+    description: "How easy or difficult to obtain a place in a public school"
+    type: ordinal
+
+    source:
+      w1: null
+      w2: null
+      w3: null
+      w4: q40
+      w5: null
+      w6: null
+    note: "Wave 4 only - access to public schooling"
+
+    scale:
+      min: 1
+      max: 4
+      labels:
+        1: "Very difficult"
+        2: "Difficult"
+        3: "Easy"
+        4: "Very easy"
+
+    harmonize:
+      default:
+        method: r_function
+        fn: safe_reverse_4pt
+
+    qc:
+      valid_range: [1, 4]
+      validate:
+        - waves: [w4]
+          phrase: "public school|school.*place"
+
+  # ===========================================================================
+  # GROUP 4: Local Safety
   # ===========================================================================
 
   - id: local_safety

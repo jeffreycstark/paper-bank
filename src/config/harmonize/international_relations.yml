@@ -444,7 +444,7 @@ variables:
       w1: null
       w2: null
       w3: null
-      w4: null
+      w4: q172
       w5: null
       w6: q186
 
@@ -466,6 +466,184 @@ variables:
     qc:
       valid_range: [1, 4]
       validate:
-        - waves: [w6]
+        - waves: [w4, w6]
           phrase: "close.*ASEAN"
+
+  # ===========================================================================
+  # GROUP 6: Political Interest in Foreign Affairs (Wave 4)
+  # ===========================================================================
+
+  - id: intl_follow_foreign_events
+    concept: international_relations
+    description: "How closely do you follow what is going on in foreign countries?"
+    type: ordinal
+
+    source:
+      w1: null
+      w2: null
+      w3: null
+      w4: q150
+      w5: null
+      w6: null
+    note: "Wave 4 only - interest in foreign affairs"
+
+    scale:
+      min: 1
+      max: 4
+      labels:
+        1: "Not at all closely"
+        2: "Not very closely"
+        3: "Somewhat closely"
+        4: "Very closely"
+
+    harmonize:
+      default:
+        method: r_function
+        fn: safe_reverse_4pt
+
+    qc:
+      valid_range: [1, 4]
+      validate:
+        - waves: [w4]
+          phrase: "foreign.*countr|follow.*foreign"
+
+  # ===========================================================================
+  # GROUP 7: China/USA Influence on Country (Wave 4)
+  # ===========================================================================
+
+  - id: intl_china_country_influence_amount_w4
+    concept: international_relations
+    description: "How much influence does China have on our country? (Wave 4 variant)"
+    type: ordinal
+
+    source:
+      w1: null
+      w2: null
+      w3: null
+      w4: q168
+      w5: null
+      w6: null
+    note: "Wave 4 version - different question number than w6"
+
+    scale:
+      min: 1
+      max: 4
+      labels:
+        1: "No influence at all"
+        2: "Not much influence"
+        3: "Some influence"
+        4: "A great deal of influence"
+
+    harmonize:
+      default:
+        method: r_function
+        fn: safe_reverse_4pt
+
+    qc:
+      valid_range: [1, 4]
+      validate:
+        - waves: [w4]
+          phrase: "China.*influence.*country|how much influence.*China"
+
+  - id: intl_china_country_influence_valence_w4
+    concept: international_relations
+    description: "Is the influence China has on our country positive or negative? (Wave 4 variant)"
+    type: ordinal
+
+    source:
+      w1: null
+      w2: null
+      w3: null
+      w4: q169
+      w5: null
+      w6: null
+    note: "Wave 4 version - may have different scale than w6"
+
+    scale:
+      min: 1
+      max: 4
+      labels:
+        1: "Very negative"
+        2: "Somewhat negative"
+        3: "Somewhat positive"
+        4: "Very positive"
+
+    harmonize:
+      default:
+        method: r_function
+        fn: safe_4pt_none
+
+    qc:
+      valid_range: [1, 4]
+      validate:
+        - waves: [w4]
+          phrase: "China.*influence.*positive|China.*influence.*negative"
+
+  - id: intl_usa_country_influence_amount_w4
+    concept: international_relations
+    description: "How much influence does the USA have on our country? (Wave 4 variant)"
+    type: ordinal
+
+    source:
+      w1: null
+      w2: null
+      w3: null
+      w4: q170
+      w5: null
+      w6: null
+    note: "Wave 4 version - different question number than w6"
+
+    scale:
+      min: 1
+      max: 4
+      labels:
+        1: "No influence at all"
+        2: "Not much influence"
+        3: "Some influence"
+        4: "A great deal of influence"
+
+    harmonize:
+      default:
+        method: r_function
+        fn: safe_reverse_4pt
+
+    qc:
+      valid_range: [1, 4]
+      validate:
+        - waves: [w4]
+          phrase: "USA.*influence.*country|how much influence.*USA"
+
+  - id: intl_usa_country_influence_valence_w4
+    concept: international_relations
+    description: "Is the influence the USA has on our country positive or negative? (Wave 4 variant)"
+    type: ordinal
+
+    source:
+      w1: null
+      w2: null
+      w3: null
+      w4: q171
+      w5: null
+      w6: null
+    note: "Wave 4 version - may have different scale than w6"
+
+    scale:
+      min: 1
+      max: 4
+      labels:
+        1: "Very negative"
+        2: "Somewhat negative"
+        3: "Somewhat positive"
+        4: "Very positive"
+
+    harmonize:
+      default:
+        method: r_function
+        fn: safe_4pt_none
+
+    qc:
+      valid_range: [1, 4]
+      validate:
+        - waves: [w4]
+          phrase: "USA.*influence.*positive|USA.*influence.*negative"
 

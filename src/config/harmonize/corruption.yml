@@ -82,6 +82,40 @@ variables:
   # GROUP 2: Government Anti-Corruption Effectiveness
   # ===========================================================================
 
+  - id: govt_anticorrupt_effort
+    concept: corruption
+    description: "Is the government working to crack down on corruption and root out bribery?"
+    type: ordinal
+
+    source:
+      w1: null
+      w2: null
+      w3: null
+      w4: q119
+      w5: null
+      w6: null
+    note: "Wave 4 - asks about effort/working on corruption (cf. govt_anticorrupt_effective for effectiveness)"
+
+    scale:
+      min: 1
+      max: 4
+      labels:
+        1: "Strongly disagree"
+        2: "Somewhat disagree"
+        3: "Somewhat agree"
+        4: "Strongly agree"
+
+    harmonize:
+      default:
+        method: r_function
+        fn: safe_4pt_none
+
+    qc:
+      valid_range: [1, 4]
+      validate:
+        - waves: [w4]
+          phrase: "working.*corruption|crack down"
+
   - id: govt_anticorrupt_effective
     concept: corruption
     description: "How effective is the government in cracking down on corruption?"

@@ -296,3 +296,175 @@ variables:
         - waves: [w1]
           phrase: "national.*authority|local decisions"
 
+  # ===========================================================================
+  # GROUP 5: Inequality and Economic Fairness (Wave 4)
+  # ===========================================================================
+
+  - id: econ_inequality_statement
+    concept: economic_attitudes
+    description: "Which of these statements comes closer to your view? (inequality/fairness)"
+    type: nominal
+
+    source:
+      w1: null
+      w2: null
+      w3: null
+      w4: q154
+      w5: null
+      w6: null
+    note: "Wave 4 - statement pair about inequality, see codebook for specific wording"
+
+    scale:
+      min: 1
+      max: 2
+      labels:
+        1: "Statement A"
+        2: "Statement B"
+
+    harmonize:
+      default:
+        method: identity
+
+    qc:
+      valid_range: [1, 2]
+      validate:
+        - waves: [w4]
+          phrase: "statement.*view"
+
+  - id: econ_income_distribution_fair
+    concept: economic_attitudes
+    description: "How fair do you think income distribution is in the country?"
+    type: ordinal
+
+    source:
+      w1: null
+      w2: null
+      w3: null
+      w4: q155
+      w5: null
+      w6: null
+    note: "Wave 4 - perceived fairness of income distribution"
+
+    scale:
+      min: 1
+      max: 4
+      labels:
+        1: "Very unfair"
+        2: "Somewhat unfair"
+        3: "Somewhat fair"
+        4: "Very fair"
+
+    harmonize:
+      default:
+        method: r_function
+        fn: safe_4pt_none
+
+    qc:
+      valid_range: [1, 4]
+      validate:
+        - waves: [w4]
+          phrase: "income distribution.*fair"
+
+  - id: econ_govt_reduce_inequality
+    concept: economic_attitudes
+    description: "It is the responsibility of the government to reduce the differences between people with high income and those with low incomes"
+    type: ordinal
+
+    source:
+      w1: null
+      w2: null
+      w3: null
+      w4: q156
+      w5: null
+      w6: null
+    note: "Wave 4 - support for redistribution"
+
+    scale:
+      min: 1
+      max: 4
+      labels:
+        1: "Strongly disagree"
+        2: "Somewhat disagree"
+        3: "Somewhat agree"
+        4: "Strongly agree"
+
+    harmonize:
+      default:
+        method: r_function
+        fn: safe_4pt_none
+
+    qc:
+      valid_range: [1, 4]
+      validate:
+        - waves: [w4]
+          phrase: "government.*reduce.*difference|high income.*low income"
+
+  - id: econ_income_loss_concern
+    concept: economic_attitudes
+    description: "How concerned are you about the loss of your major source of income within the next 12 months?"
+    type: ordinal
+
+    source:
+      w1: null
+      w2: null
+      w3: null
+      w4: q157
+      w5: null
+      w6: null
+    note: "Wave 4 - economic insecurity"
+
+    scale:
+      min: 1
+      max: 4
+      labels:
+        1: "Not at all concerned"
+        2: "Not too concerned"
+        3: "Somewhat concerned"
+        4: "Very concerned"
+
+    harmonize:
+      default:
+        method: r_function
+        fn: safe_4pt_none
+
+    qc:
+      valid_range: [1, 4]
+      validate:
+        - waves: [w4]
+          phrase: "loss.*income|concerned.*income"
+
+  - id: econ_family_income_fair
+    concept: economic_attitudes
+    description: "Considering all the effort that you and your family members have made in the past, do you think the income that your family currently receives is fair?"
+    type: ordinal
+
+    source:
+      w1: null
+      w2: null
+      w3: null
+      w4: q159a
+      w5: null
+      w6: null
+    note: "Wave 4 - perceived fairness of own family income (6 categories)"
+
+    scale:
+      min: 1
+      max: 6
+      labels:
+        1: "Very unfair"
+        2: "Somewhat unfair"
+        3: "A little unfair"
+        4: "A little fair"
+        5: "Somewhat fair"
+        6: "Very fair"
+
+    harmonize:
+      default:
+        method: identity
+
+    qc:
+      valid_range: [1, 6]
+      validate:
+        - waves: [w4]
+          phrase: "family.*income.*fair|effort.*fair"
+

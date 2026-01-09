@@ -153,7 +153,7 @@ variables:
       w1: null
       w2: null
       w3: null
-      w4: null
+      w4: q28
       w5: null
       w6: q26
 
@@ -174,7 +174,7 @@ variables:
     qc:
       valid_range: [1, 4]
       validate:
-        - waves: [w6]
+        - waves: [w4, w6]
           phrase: "people.*interact"
 
   - id: trust_strangers
@@ -223,7 +223,7 @@ variables:
       w1: null
       w2: null
       w3: null
-      w4: null
+      w4: q29
       w5: null
       w6: q28
 
@@ -244,7 +244,7 @@ variables:
     qc:
       valid_range: [1, 5]
       validate:
-        - waves: [w6]
+        - waves: [w4, w6]
           phrase: "contact.*week"
 
   - id: social_contacts_status
@@ -322,7 +322,7 @@ variables:
       w1: null
       w2: null
       w3: null
-      w4: null
+      w4: q30
       w5: null
       w6: q31
 
@@ -342,7 +342,7 @@ variables:
     qc:
       valid_range: [1, 4]
       validate:
-        - waves: [w6]
+        - waves: [w4, w6]
           phrase: "ask for help|difficult problem"
 
   - id: political_discussion_tolerance
@@ -354,7 +354,7 @@ variables:
       w1: null
       w2: null
       w3: null
-      w4: null
+      w4: q32
       w5: null
       w6: q32
 
@@ -376,7 +376,7 @@ variables:
     qc:
       valid_range: [1, 4]
       validate:
-        - waves: [w6]
+        - waves: [w4, w6]
           phrase: "opinions.*differ|hard.*conversing"
 
   # ===========================================================================
@@ -452,4 +452,72 @@ variables:
       validate:
         - waves: [w1]
           phrase: "friends.*influence|tight spot"
+
+  # ===========================================================================
+  # GROUP 6: Interpersonal Trust - Fairness (Wave 4)
+  # ===========================================================================
+
+  - id: trust_fairness_binary
+    concept: social_trust
+    description: "Do you think most people would try to take advantage of you if they got a chance, or would they try to be fair?"
+    type: nominal
+
+    source:
+      w1: null
+      w2: null
+      w3: null
+      w4: q25
+      w5: null
+      w6: null
+    note: "Wave 4 - binary fairness perception"
+
+    scale:
+      min: 1
+      max: 2
+      labels:
+        1: "Try to take advantage"
+        2: "Try to be fair"
+
+    harmonize:
+      default:
+        method: identity
+
+    qc:
+      valid_range: [1, 2]
+      validate:
+        - waves: [w4]
+          phrase: "take advantage|fair"
+
+  - id: social_support_reciprocity
+    concept: social_trust
+    description: "When people outside your household have problems, do they come to you for help?"
+    type: ordinal
+
+    source:
+      w1: null
+      w2: null
+      w3: null
+      w4: q31
+      w5: null
+      w6: null
+    note: "Wave 4 - reciprocal social support"
+
+    scale:
+      min: 1
+      max: 4
+      labels:
+        1: "No, nobody"
+        2: "Yes, a few"
+        3: "Yes, some"
+        4: "Yes, a lot"
+
+    harmonize:
+      default:
+        method: identity
+
+    qc:
+      valid_range: [1, 4]
+      validate:
+        - waves: [w4]
+          phrase: "come to you.*help|problems"
 

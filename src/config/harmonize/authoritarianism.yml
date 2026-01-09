@@ -938,10 +938,10 @@ variables:
       w1: q125
       w2: null
       w3: null
-      w4: null
+      w4: q149
       w5: null
       w6: null
-    note: "Wave 1 only - rule of law vs. expediency"
+    note: "Wave 1 and Wave 4 - rule of law vs. expediency"
 
     scale:
       min: 1
@@ -961,7 +961,7 @@ variables:
     qc:
       valid_range: [1, 4]
       validate:
-        - waves: [w1]
+        - waves: [w1, w4]
           phrase: "disregard.*law|government.*law"
 
   - id: auth_powerful_few

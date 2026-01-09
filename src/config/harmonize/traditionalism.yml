@@ -567,3 +567,77 @@ variables:
       validate:
         - waves: [w1]
           phrase: "elder.*dispute|quarrel.*elder"
+
+  # ===========================================================================
+  # GROUP 7: Long-term Orientation (Wave 4)
+  # ===========================================================================
+
+  - id: trad_longterm_planning
+    concept: traditionalism
+    description: "When dealing with others, one should not only focus on immediate interest but also plan for future"
+    type: ordinal
+
+    source:
+      w1: null
+      w2: null
+      w3: null
+      w4: q59
+      w5: null
+      w6: null
+    note: "Wave 4 - long-term orientation value"
+
+    scale:
+      min: 1
+      max: 4
+      labels:
+        1: "Strongly disagree"
+        2: "Somewhat disagree"
+        3: "Somewhat agree"
+        4: "Strongly agree"
+
+    harmonize:
+      default:
+        method: r_function
+        fn: safe_reverse_4pt
+        note: "Reversed so higher = more traditional/long-term oriented"
+
+    qc:
+      valid_range: [1, 4]
+      validate:
+        - waves: [w4]
+          phrase: "immediate interest|plan.*future"
+
+  - id: trad_longterm_gains
+    concept: traditionalism
+    description: "When dealing with others, one should not be preoccupied with temporary gains and losses"
+    type: ordinal
+
+    source:
+      w1: null
+      w2: null
+      w3: null
+      w4: q68
+      w5: null
+      w6: null
+    note: "Wave 4 - long-term orientation value"
+
+    scale:
+      min: 1
+      max: 4
+      labels:
+        1: "Strongly disagree"
+        2: "Somewhat disagree"
+        3: "Somewhat agree"
+        4: "Strongly agree"
+
+    harmonize:
+      default:
+        method: r_function
+        fn: safe_reverse_4pt
+        note: "Reversed so higher = more traditional/long-term oriented"
+
+    qc:
+      valid_range: [1, 4]
+      validate:
+        - waves: [w4]
+          phrase: "temporary gains|preoccupied"

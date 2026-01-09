@@ -51,7 +51,74 @@ variables:
           phrase: "internet"
 
   # ===========================================================================
-  # GROUP 2: Social Media Platform Usage (Yes/No)
+  # GROUP 2: Internet Access (Wave 4)
+  # Wave 4 has separate questions about internet access at home and mobile
+  # ===========================================================================
+
+  - id: internet_access_home
+    concept: social_media
+    description: "Do you have access to the internet at home?"
+    type: nominal
+
+    source:
+      w1: null
+      w2: null
+      w3: null
+      w4: q47
+      w5: null
+      w6: null
+    note: "Wave 4 only - internet access at home"
+
+    scale:
+      min: 1
+      max: 2
+      labels:
+        1: "Yes"
+        2: "No"
+
+    harmonize:
+      default:
+        method: identity
+
+    qc:
+      valid_range: [1, 2]
+      validate:
+        - waves: [w4]
+          phrase: "internet.*home|access.*internet"
+
+  - id: internet_access_mobile
+    concept: social_media
+    description: "Do you have access to the internet on your mobile phone?"
+    type: nominal
+
+    source:
+      w1: null
+      w2: null
+      w3: null
+      w4: q48
+      w5: null
+      w6: null
+    note: "Wave 4 only - internet access on mobile"
+
+    scale:
+      min: 1
+      max: 2
+      labels:
+        1: "Yes"
+        2: "No"
+
+    harmonize:
+      default:
+        method: identity
+
+    qc:
+      valid_range: [1, 2]
+      validate:
+        - waves: [w4]
+          phrase: "internet.*mobile|mobile.*internet"
+
+  # ===========================================================================
+  # GROUP 3: Social Media Platform Usage (Yes/No)
   # Wave 6 has detailed platform breakdown; earlier waves have general question
   # ===========================================================================
 
@@ -296,7 +363,45 @@ variables:
           phrase: "whatsapp"
 
   # ===========================================================================
-  # GROUP 3: Social Media Activities
+  # GROUP 4: Internet for Political Information (Wave 4)
+  # ===========================================================================
+
+  - id: internet_political_info
+    concept: social_media
+    description: "How often do you use the internet to find information about politics and government?"
+    type: ordinal
+
+    source:
+      w1: null
+      w2: null
+      w3: null
+      w4: q51
+      w5: null
+      w6: null
+    note: "Wave 4 only - internet for political information"
+
+    scale:
+      min: 1
+      max: 4
+      labels:
+        1: "Never"
+        2: "Seldom"
+        3: "Sometimes"
+        4: "Often"
+
+    harmonize:
+      default:
+        method: r_function
+        fn: safe_reverse_4pt
+
+    qc:
+      valid_range: [1, 4]
+      validate:
+        - waves: [w4]
+          phrase: "internet.*politic|political.*information"
+
+  # ===========================================================================
+  # GROUP 5: Social Media Activities
   # Scale: 1-4 (Often to Never) - REVERSED so higher = more frequent
   # ===========================================================================
 
