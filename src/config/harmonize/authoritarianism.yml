@@ -889,3 +889,291 @@ variables:
       validate:
         - waves: [w1]
           phrase: "state.*machine|individual.*cog"
+
+  # ===========================================================================
+  # GROUP 8: Anti-Democratic System Attitudes (Wave 1)
+  # ===========================================================================
+
+  - id: auth_no_opposition
+    concept: authoritarianism
+    description: "No opposition party should be allowed to compete for power"
+    type: ordinal
+
+    source:
+      w1: q122
+      w2: null
+      w3: null
+      w4: null
+      w5: null
+      w6: null
+    note: "Wave 1 only - anti-pluralism item"
+
+    scale:
+      min: 1
+      max: 4
+      labels:
+        1: "Strongly agree"
+        2: "Somewhat agree"
+        3: "Somewhat disagree"
+        4: "Strongly disagree"
+
+    harmonize:
+      default:
+        method: r_function
+        fn: safe_reverse_4pt
+        note: "Reversed so higher = more anti-opposition/authoritarian"
+
+    qc:
+      valid_range: [1, 4]
+      validate:
+        - waves: [w1]
+          phrase: "opposition.*party|compete.*power"
+
+  - id: auth_disregard_law
+    concept: authoritarianism
+    description: "It is OK for the government to disregard the law in order to deal with the situation when the country is facing a difficult situation"
+    type: ordinal
+
+    source:
+      w1: q125
+      w2: null
+      w3: null
+      w4: null
+      w5: null
+      w6: null
+    note: "Wave 1 only - rule of law vs. expediency"
+
+    scale:
+      min: 1
+      max: 4
+      labels:
+        1: "Strongly agree"
+        2: "Somewhat agree"
+        3: "Somewhat disagree"
+        4: "Strongly disagree"
+
+    harmonize:
+      default:
+        method: r_function
+        fn: safe_reverse_4pt
+        note: "Reversed so higher = more willing to disregard law"
+
+    qc:
+      valid_range: [1, 4]
+      validate:
+        - waves: [w1]
+          phrase: "disregard.*law|government.*law"
+
+  - id: auth_powerful_few
+    concept: authoritarianism
+    description: "The nation is run by a powerful few and ordinary citizens cannot do much about it"
+    type: ordinal
+
+    source:
+      w1: q128
+      w2: null
+      w3: null
+      w4: null
+      w5: null
+      w6: null
+    note: "Wave 1 only - political cynicism/powerlessness"
+
+    scale:
+      min: 1
+      max: 4
+      labels:
+        1: "Strongly agree"
+        2: "Somewhat agree"
+        3: "Somewhat disagree"
+        4: "Strongly disagree"
+
+    harmonize:
+      default:
+        method: r_function
+        fn: safe_reverse_4pt
+        note: "Reversed so higher = more cynical/powerless belief"
+
+    qc:
+      valid_range: [1, 4]
+      validate:
+        - waves: [w1]
+          phrase: "powerful few|ordinary citizens"
+
+  - id: auth_govt_best
+    concept: authoritarianism
+    description: "Our form of government is still the best for us"
+    type: ordinal
+
+    source:
+      w1: q130
+      w2: null
+      w3: null
+      w4: null
+      w5: null
+      w6: null
+    note: "Wave 1 only - system support"
+
+    scale:
+      min: 1
+      max: 4
+      labels:
+        1: "Strongly agree"
+        2: "Somewhat agree"
+        3: "Somewhat disagree"
+        4: "Strongly disagree"
+
+    harmonize:
+      default:
+        method: r_function
+        fn: safe_reverse_4pt
+        note: "Reversed so higher = more system support"
+
+    qc:
+      valid_range: [1, 4]
+      validate:
+        - waves: [w1]
+          phrase: "government.*best|form.*government"
+
+  # ===========================================================================
+  # GROUP 9: Political Leader Behavior (Wave 1)
+  # ===========================================================================
+
+  - id: leader_accomplish_goals
+    concept: authoritarianism
+    description: "The most important thing for a political leader is to accomplish his goals even if he has to ignore the established procedures"
+    type: ordinal
+
+    source:
+      w1: q145
+      w2: null
+      w3: null
+      w4: null
+      w5: null
+      w6: null
+    note: "Wave 1 only - leader behavior battery"
+
+    scale:
+      min: 1
+      max: 4
+      labels:
+        1: "Strongly agree"
+        2: "Somewhat agree"
+        3: "Somewhat disagree"
+        4: "Strongly disagree"
+
+    harmonize:
+      default:
+        method: r_function
+        fn: safe_reverse_4pt
+        note: "Reversed so higher = more support for bypassing procedures"
+
+    qc:
+      valid_range: [1, 4]
+      validate:
+        - waves: [w1]
+          phrase: "accomplish.*goals|ignore.*procedure"
+
+  - id: leader_refuse_compromise
+    concept: authoritarianism
+    description: "If a political leader really believes in his position, he should refuse to compromise regardless of how many people disagree"
+    type: ordinal
+
+    source:
+      w1: q146
+      w2: null
+      w3: null
+      w4: null
+      w5: null
+      w6: null
+    note: "Wave 1 only - leader behavior battery"
+
+    scale:
+      min: 1
+      max: 4
+      labels:
+        1: "Strongly agree"
+        2: "Somewhat agree"
+        3: "Somewhat disagree"
+        4: "Strongly disagree"
+
+    harmonize:
+      default:
+        method: r_function
+        fn: safe_reverse_4pt
+        note: "Reversed so higher = more anti-compromise"
+
+    qc:
+      valid_range: [1, 4]
+      validate:
+        - waves: [w1]
+          phrase: "refuse.*compromise|believe.*position"
+
+  - id: leader_tolerate_challenge
+    concept: authoritarianism
+    description: "A political leader should tolerate the views of those who challenge his political ideals"
+    type: ordinal
+
+    source:
+      w1: q147
+      w2: null
+      w3: null
+      w4: null
+      w5: null
+      w6: null
+    note: "Wave 1 only - leader behavior battery (pro-democratic item)"
+
+    scale:
+      min: 1
+      max: 4
+      labels:
+        1: "Strongly disagree"
+        2: "Somewhat disagree"
+        3: "Somewhat agree"
+        4: "Strongly agree"
+
+    harmonize:
+      default:
+        method: r_function
+        fn: safe_4pt_none
+        note: "NOT reversed - this item already in democratic direction (higher = more tolerant)"
+
+    qc:
+      valid_range: [1, 4]
+      validate:
+        - waves: [w1]
+          phrase: "tolerate.*views|challenge.*ideals"
+
+  - id: leader_majority_agenda
+    concept: authoritarianism
+    description: "As long as a political leader enjoys majority support, he should implement his own agenda and disregard the view of the minority"
+    type: ordinal
+
+    source:
+      w1: q148
+      w2: null
+      w3: null
+      w4: null
+      w5: null
+      w6: null
+    note: "Wave 1 only - leader behavior battery"
+
+    scale:
+      min: 1
+      max: 4
+      labels:
+        1: "Strongly agree"
+        2: "Somewhat agree"
+        3: "Somewhat disagree"
+        4: "Strongly disagree"
+
+    harmonize:
+      default:
+        method: r_function
+        fn: safe_reverse_4pt
+        note: "Reversed so higher = more majoritarian/anti-minority rights"
+
+    qc:
+      valid_range: [1, 4]
+      validate:
+        - waves: [w1]
+          phrase: "majority support|disregard.*minority"

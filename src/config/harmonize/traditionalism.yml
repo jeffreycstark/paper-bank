@@ -423,3 +423,147 @@ variables:
       validate:
         - waves: [w3, w4, w5, w6]
           phrase: "boy.*girl|prefer.*boy"
+
+  # ===========================================================================
+  # GROUP 6: Nepotism / Particularism (Wave 1)
+  # ===========================================================================
+
+  - id: trad_hire_relatives
+    concept: traditionalism
+    description: "When hiring someone, even if a stranger is more qualified, the opportunity should still be given to relatives and friends"
+    type: ordinal
+
+    source:
+      w1: q065
+      w2: null
+      w3: null
+      w4: null
+      w5: null
+      w6: null
+    note: "Wave 1 only - particularism/nepotism attitude"
+
+    scale:
+      min: 1
+      max: 4
+      labels:
+        1: "Strongly agree"
+        2: "Somewhat agree"
+        3: "Somewhat disagree"
+        4: "Strongly disagree"
+
+    harmonize:
+      default:
+        method: r_function
+        fn: safe_reverse_4pt
+        note: "Reversed so higher = more traditional/particularist"
+
+    qc:
+      valid_range: [1, 4]
+      validate:
+        - waves: [w1]
+          phrase: "hiring.*relative|stranger.*qualified"
+
+  - id: trad_accommodate_neighbor
+    concept: traditionalism
+    description: "When one has a conflict with a neighbor, the best way to deal with it is to accommodate the other person"
+    type: ordinal
+
+    source:
+      w1: q066
+      w2: null
+      w3: null
+      w4: null
+      w5: null
+      w6: null
+    note: "Wave 1 only - conflict avoidance/accommodation"
+
+    scale:
+      min: 1
+      max: 4
+      labels:
+        1: "Strongly agree"
+        2: "Somewhat agree"
+        3: "Somewhat disagree"
+        4: "Strongly disagree"
+
+    harmonize:
+      default:
+        method: r_function
+        fn: safe_reverse_4pt
+        note: "Reversed so higher = more traditional/accommodating"
+
+    qc:
+      valid_range: [1, 4]
+      validate:
+        - waves: [w1]
+          phrase: "conflict.*neighbor|accommodate"
+
+  - id: trad_male_supervisor
+    concept: traditionalism
+    description: "A man will lose face if he works under a female supervisor"
+    type: ordinal
+
+    source:
+      w1: q070
+      w2: null
+      w3: null
+      w4: null
+      w5: null
+      w6: null
+    note: "Wave 1 only - gender traditionalism"
+
+    scale:
+      min: 1
+      max: 4
+      labels:
+        1: "Strongly agree"
+        2: "Somewhat agree"
+        3: "Somewhat disagree"
+        4: "Strongly disagree"
+
+    harmonize:
+      default:
+        method: r_function
+        fn: safe_reverse_4pt
+        note: "Reversed so higher = more traditional/gender conservative"
+
+    qc:
+      valid_range: [1, 4]
+      validate:
+        - waves: [w1]
+          phrase: "female supervisor|lose face"
+
+  - id: trad_elder_dispute
+    concept: traditionalism
+    description: "If there is a quarrel, we should ask an elder to resolve the dispute"
+    type: ordinal
+
+    source:
+      w1: q071
+      w2: null
+      w3: null
+      w4: null
+      w5: null
+      w6: null
+    note: "Wave 1 only - deference to elders"
+
+    scale:
+      min: 1
+      max: 4
+      labels:
+        1: "Strongly agree"
+        2: "Somewhat agree"
+        3: "Somewhat disagree"
+        4: "Strongly disagree"
+
+    harmonize:
+      default:
+        method: r_function
+        fn: safe_reverse_4pt
+        note: "Reversed so higher = more traditional/elder deference"
+
+    qc:
+      valid_range: [1, 4]
+      validate:
+        - waves: [w1]
+          phrase: "elder.*dispute|quarrel.*elder"

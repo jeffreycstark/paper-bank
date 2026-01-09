@@ -348,3 +348,280 @@ variables:
       validate:
         - waves: [w1, w2, w3, w4, w5, w6]
           phrase: "income|satisfaction"
+
+  # ===========================================================================
+  # GROUP 6: Democracy Scale - Country Placement (Wave 1)
+  # ===========================================================================
+
+  - id: dem_country_authoritarian
+    concept: democracy
+    description: "Where would you place our country during the period of most recent authoritarian rule? (1=dictatorship, 10=democracy)"
+    type: ordinal
+
+    source:
+      w1: q099
+      w2: null
+      w3: null
+      w4: null
+      w5: null
+      w6: null
+    note: "Wave 1 only - retrospective rating of authoritarian period"
+
+    scale:
+      min: 1
+      max: 10
+      labels:
+        1: "Complete dictatorship"
+        10: "Complete democracy"
+
+    harmonize:
+      default:
+        method: identity
+
+    qc:
+      valid_range: [1, 10]
+      validate:
+        - waves: [w1]
+          phrase: "authoritarian|previous.*government"
+
+  - id: dem_want_democratic
+    concept: democracy
+    description: "To what extent would you want our country to be democratic now? (1=dictatorship, 10=democracy)"
+    type: ordinal
+
+    source:
+      w1: q101
+      w2: null
+      w3: null
+      w4: null
+      w5: null
+      w6: null
+    note: "Wave 1 only - desired level of democracy"
+
+    scale:
+      min: 1
+      max: 10
+      labels:
+        1: "Complete dictatorship"
+        10: "Complete democracy"
+
+    harmonize:
+      default:
+        method: identity
+
+    qc:
+      valid_range: [1, 10]
+      validate:
+        - waves: [w1]
+          phrase: "want.*democratic|extent.*democratic"
+
+  - id: dem_country_five_years
+    concept: democracy
+    description: "Where do you expect our country to be in five years? (1=dictatorship, 10=democracy)"
+    type: ordinal
+
+    source:
+      w1: q102
+      w2: null
+      w3: null
+      w4: null
+      w5: null
+      w6: null
+    note: "Wave 1 only - 5-year expectation (cf. dem_country_future for 10-year)"
+
+    scale:
+      min: 1
+      max: 10
+      labels:
+        1: "Complete dictatorship"
+        10: "Complete democracy"
+
+    harmonize:
+      default:
+        method: identity
+
+    qc:
+      valid_range: [1, 10]
+      validate:
+        - waves: [w1]
+          phrase: "five years|expect.*country"
+
+  # ===========================================================================
+  # GROUP 7: Regime Comparison - Is Better Than Before? (Wave 1)
+  # Scale: 1-5 (Much worse to Much better)
+  # ===========================================================================
+
+  - id: regime_freespeech_better
+    concept: democracy
+    description: "Everyone is free to say what they think - is it better than before?"
+    type: ordinal
+
+    source:
+      w1: q105
+      w2: null
+      w3: null
+      w4: null
+      w5: null
+      w6: null
+    note: "Wave 1 only - regime comparison battery"
+
+    scale:
+      min: 1
+      max: 5
+      labels:
+        1: "Much worse"
+        2: "Somewhat worse"
+        3: "Much the same"
+        4: "Somewhat better"
+        5: "Much better than before"
+
+    harmonize:
+      default:
+        method: identity
+        note: "Higher = more improvement perceived"
+
+    qc:
+      valid_range: [1, 5]
+      validate:
+        - waves: [w1]
+          phrase: "free.*say|better than before"
+
+  - id: regime_influence_better
+    concept: democracy
+    description: "People like me can have an influence on government - is it better than before?"
+    type: ordinal
+
+    source:
+      w1: q107
+      w2: null
+      w3: null
+      w4: null
+      w5: null
+      w6: null
+    note: "Wave 1 only - regime comparison battery"
+
+    scale:
+      min: 1
+      max: 5
+      labels:
+        1: "Much worse"
+        2: "Somewhat worse"
+        3: "Much the same"
+        4: "Somewhat better"
+        5: "Much better than before"
+
+    harmonize:
+      default:
+        method: identity
+        note: "Higher = more improvement perceived"
+
+    qc:
+      valid_range: [1, 5]
+      validate:
+        - waves: [w1]
+          phrase: "influence.*government|better than before"
+
+  - id: regime_corruption_better
+    concept: democracy
+    description: "Corruption in politics and government is under control - is it better than before?"
+    type: ordinal
+
+    source:
+      w1: q108
+      w2: null
+      w3: null
+      w4: null
+      w5: null
+      w6: null
+    note: "Wave 1 only - regime comparison battery"
+
+    scale:
+      min: 1
+      max: 5
+      labels:
+        1: "Much worse"
+        2: "Somewhat worse"
+        3: "Much the same"
+        4: "Somewhat better"
+        5: "Much better than before"
+
+    harmonize:
+      default:
+        method: identity
+        note: "Higher = more improvement perceived"
+
+    qc:
+      valid_range: [1, 5]
+      validate:
+        - waves: [w1]
+          phrase: "corruption.*control|better than before"
+
+  - id: regime_inequality_better
+    concept: democracy
+    description: "The gap between the rich and the poor has narrowed - is it better than before?"
+    type: ordinal
+
+    source:
+      w1: q109
+      w2: null
+      w3: null
+      w4: null
+      w5: null
+      w6: null
+    note: "Wave 1 only - regime comparison battery"
+
+    scale:
+      min: 1
+      max: 5
+      labels:
+        1: "Much worse"
+        2: "Somewhat worse"
+        3: "Much the same"
+        4: "Somewhat better"
+        5: "Much better than before"
+
+    harmonize:
+      default:
+        method: identity
+        note: "Higher = more improvement perceived"
+
+    qc:
+      valid_range: [1, 5]
+      validate:
+        - waves: [w1]
+          phrase: "rich.*poor|gap.*narrowed|better than before"
+
+  - id: regime_judiciary_better
+    concept: democracy
+    description: "Judges and courts are free from political interference - is it better than before?"
+    type: ordinal
+
+    source:
+      w1: q112
+      w2: null
+      w3: null
+      w4: null
+      w5: null
+      w6: null
+    note: "Wave 1 only - regime comparison battery"
+
+    scale:
+      min: 1
+      max: 5
+      labels:
+        1: "Much worse"
+        2: "Somewhat worse"
+        3: "Much the same"
+        4: "Somewhat better"
+        5: "Much better than before"
+
+    harmonize:
+      default:
+        method: identity
+        note: "Higher = more improvement perceived"
+
+    qc:
+      valid_range: [1, 5]
+      validate:
+        - waves: [w1]
+          phrase: "judges.*courts|political interference|better than before"

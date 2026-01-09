@@ -239,3 +239,257 @@ variables:
         - waves: [w6]
           phrase: "friend"
 
+  # ===========================================================================
+  # GROUP 4: Clientelism - Gift/Dinner for Political Contact (Wave 1)
+  # Binary: 1=No, 2=Yes
+  # Asked for each type of political contact made
+  # ===========================================================================
+
+  - id: clientelism_gift_govt
+    concept: corruption
+    description: "Did you bring a gift or invite them for dinner when contacting government officials?"
+    type: nominal
+
+    source:
+      w1: q089
+      w2: null
+      w3: null
+      w4: null
+      w5: null
+      w6: null
+    note: "Wave 1 only - clientelism indicator for government contact"
+
+    scale:
+      min: 1
+      max: 2
+      labels:
+        1: "No"
+        2: "Yes"
+
+    harmonize:
+      default:
+        method: identity
+
+    qc:
+      valid_range: [1, 2]
+      validate:
+        - waves: [w1]
+          phrase: "gift|dinner|government"
+
+  - id: clientelism_gift_higher
+    concept: corruption
+    description: "Did you bring a gift or invite them for dinner when contacting higher level officials?"
+    type: nominal
+
+    source:
+      w1: q090
+      w2: null
+      w3: null
+      w4: null
+      w5: null
+      w6: null
+    note: "Wave 1 only - clientelism indicator for higher-level contact"
+
+    scale:
+      min: 1
+      max: 2
+      labels:
+        1: "No"
+        2: "Yes"
+
+    harmonize:
+      default:
+        method: identity
+
+    qc:
+      valid_range: [1, 2]
+      validate:
+        - waves: [w1]
+          phrase: "gift|dinner|higher"
+
+  - id: clientelism_gift_elected
+    concept: corruption
+    description: "Did you bring a gift or invite them for dinner when contacting elected representatives?"
+    type: nominal
+
+    source:
+      w1: q091
+      w2: null
+      w3: null
+      w4: null
+      w5: null
+      w6: null
+    note: "Wave 1 only - clientelism indicator for elected representative contact"
+
+    scale:
+      min: 1
+      max: 2
+      labels:
+        1: "No"
+        2: "Yes"
+
+    harmonize:
+      default:
+        method: identity
+
+    qc:
+      valid_range: [1, 2]
+      validate:
+        - waves: [w1]
+          phrase: "gift|dinner|elected"
+
+  - id: clientelism_gift_party
+    concept: corruption
+    description: "Did you bring a gift or invite them for dinner when contacting political party officials?"
+    type: nominal
+
+    source:
+      w1: q092
+      w2: null
+      w3: null
+      w4: null
+      w5: null
+      w6: null
+    note: "Wave 1 only - clientelism indicator for party contact"
+
+    scale:
+      min: 1
+      max: 2
+      labels:
+        1: "No"
+        2: "Yes"
+
+    harmonize:
+      default:
+        method: identity
+
+    qc:
+      valid_range: [1, 2]
+      validate:
+        - waves: [w1]
+          phrase: "gift|dinner|party"
+
+  - id: clientelism_gift_ngo
+    concept: corruption
+    description: "Did you bring a gift or invite them for dinner when contacting civil society/interest group?"
+    type: nominal
+
+    source:
+      w1: q093
+      w2: null
+      w3: null
+      w4: null
+      w5: null
+      w6: null
+    note: "Wave 1 only - clientelism indicator for NGO/civil society contact"
+
+    scale:
+      min: 1
+      max: 2
+      labels:
+        1: "No"
+        2: "Yes"
+
+    harmonize:
+      default:
+        method: identity
+
+    qc:
+      valid_range: [1, 2]
+      validate:
+        - waves: [w1]
+          phrase: "gift|dinner|civil|interest"
+
+  - id: clientelism_gift_media
+    concept: corruption
+    description: "Did you bring a gift or invite them for dinner when contacting the media?"
+    type: nominal
+
+    source:
+      w1: q094
+      w2: null
+      w3: null
+      w4: null
+      w5: null
+      w6: null
+    note: "Wave 1 only - clientelism indicator for media contact"
+
+    scale:
+      min: 1
+      max: 2
+      labels:
+        1: "No"
+        2: "Yes"
+
+    harmonize:
+      default:
+        method: identity
+
+    qc:
+      valid_range: [1, 2]
+      validate:
+        - waves: [w1]
+          phrase: "gift|dinner|media"
+
+  - id: clientelism_gift_demonstration
+    concept: corruption
+    description: "Did you bring a gift or invite them for dinner when participating in demonstrations?"
+    type: nominal
+
+    source:
+      w1: q095
+      w2: null
+      w3: null
+      w4: null
+      w5: null
+      w6: null
+    note: "Wave 1 only - clientelism indicator for demonstration participation"
+
+    scale:
+      min: 1
+      max: 2
+      labels:
+        1: "No"
+        2: "Yes"
+
+    harmonize:
+      default:
+        method: identity
+
+    qc:
+      valid_range: [1, 2]
+      validate:
+        - waves: [w1]
+          phrase: "gift|dinner|demonstration"
+
+  - id: clientelism_gift_other
+    concept: corruption
+    description: "Did you bring a gift or invite them for dinner for other political contacts?"
+    type: nominal
+
+    source:
+      w1: q096
+      w2: null
+      w3: null
+      w4: null
+      w5: null
+      w6: null
+    note: "Wave 1 only - clientelism indicator for other contacts"
+
+    scale:
+      min: 1
+      max: 2
+      labels:
+        1: "No"
+        2: "Yes"
+
+    harmonize:
+      default:
+        method: identity
+
+    qc:
+      valid_range: [1, 2]
+      validate:
+        - waves: [w1]
+          phrase: "gift|dinner|other"
+
