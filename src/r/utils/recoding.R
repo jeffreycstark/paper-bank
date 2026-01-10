@@ -895,3 +895,53 @@ recode_w6_country <- function(x,
     TRUE ~ NA_real_
   )
 }
+
+# ------------------------------------------------------------------------------
+# POLITICAL ATTITUDES: News follow and discuss recodes (Added 2025-01-10)
+# ------------------------------------------------------------------------------
+
+recode_w1_news_follow <- function(x,
+                                   missing_codes = c(-1, 0, 97, 98, 99)) {
+  #' Recode Wave 1 news follow (q057) from 2-6 scale to 1-5
+
+  #'
+ #' W1 coded: 2=Practically never -> 6=Everyday
+  #' Target: 1=Practically never -> 5=Everyday
+  #' Simply subtract 1
+
+  dplyr::case_when(
+    x %in% missing_codes ~ NA_real_,
+    x %in% 2:6 ~ as.numeric(x - 1),
+    TRUE ~ NA_real_
+  )
+}
+
+recode_w1_discuss <- function(x,
+                               missing_codes = c(-1, 0, 97, 98, 99)) {
+  #' Recode Wave 1 discuss politics (q023) from 5pt to 3pt
+  #'
+  #' W1 coded: 1=Never, 2=Rarely, 3=Sometimes, 4=Often, 5=Very often
+  #' Target 3pt: 1=Never, 2=Occasionally, 3=Frequently
+  #' Collapse: 1->1, 2-3->2, 4-5->3
+
+  dplyr::case_when(
+    x %in% missing_codes ~ NA_real_,
+    x == 1 ~ 1,
+    x %in% c(2, 3) ~ 2,
+    x %in% c(4, 5) ~ 3,
+    TRUE ~ NA_real_
+  )
+}
+
+safe_reverse_3pt <- function(x,
+                              missing_codes = c(-1, 0, 7, 8, 9)) {
+  #' Reverse 3-point scale (if not already defined)
+  #'
+  #' 1 <-> 3, 2 stays at 2
+
+  dplyr::case_when(
+    x %in% missing_codes ~ NA_real_,
+    x %in% 1:3 ~ 4 - x,
+    TRUE ~ NA_real_
+  )
+}
