@@ -160,6 +160,9 @@ variables:
       w4: q41
       w5: q42
       w6: q42
+    # Verified 2025-01-10:
+    # W2-W4: 1=Very difficult → 4=Very easy (low→high) ✔
+    # W5-W6: 1=Very easy → 4=Very difficult (high→low) - REVERSED
 
     scale:
       min: 1
@@ -172,8 +175,17 @@ variables:
 
     harmonize:
       default:
-        method: r_function
-        fn: safe_reverse_4pt
+        method: identity
+        note: "W2-W4 already coded 1=difficult → 4=easy"
+      exceptions:
+        w5:
+          method: r_function
+          fn: safe_reverse_4pt
+          note: "W5 coded 1=easy → 4=difficult; reverse"
+        w6:
+          method: r_function
+          fn: safe_reverse_4pt
+          note: "W6 coded 1=easy → 4=difficult; reverse"
 
     qc:
       valid_range: [1, 4]
@@ -193,6 +205,9 @@ variables:
       w4: q42
       w5: q43
       w6: q43
+    # Verified 2025-01-10:
+    # W2-W4: 1=Very difficult → 4=Very easy (low→high) ✔
+    # W5-W6: 1=Very easy → 4=Very difficult (high→low) - REVERSED
 
     scale:
       min: 1
@@ -205,8 +220,17 @@ variables:
 
     harmonize:
       default:
-        method: r_function
-        fn: safe_reverse_4pt
+        method: identity
+        note: "W2-W4 already coded 1=difficult → 4=easy"
+      exceptions:
+        w5:
+          method: r_function
+          fn: safe_reverse_4pt
+          note: "W5 coded 1=easy → 4=difficult; reverse"
+        w6:
+          method: r_function
+          fn: safe_reverse_4pt
+          note: "W6 coded 1=easy → 4=difficult; reverse"
 
     qc:
       valid_range: [1, 4]
@@ -336,6 +360,8 @@ variables:
       w4: q43
       w5: q45
       w6: q46
+    # Verified 2025-01-10: All waves 1=Very safe → 4=Very unsafe
+    # Need reversal so high = safer
 
     scale:
       min: 1
@@ -349,7 +375,8 @@ variables:
     harmonize:
       default:
         method: r_function
-        fn: safe_4pt_none    # Already in correct direction (higher = safer)
+        fn: safe_reverse_4pt
+        note: "All waves coded 1=Very safe → 4=Very unsafe; reverse so high=safer"
 
     qc:
       valid_range: [1, 4]
