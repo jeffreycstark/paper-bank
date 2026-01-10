@@ -604,7 +604,8 @@ middle_reverse_5pt <- function(x,
 # ------------------------------------------------------------------------------
 
 recode_w1_trust_binary <- function(x,
-                                    missing_codes = c(-1, 0, 97, 98, 99)) {
+                                    missing_codes = c(-1, 0, 97, 98, 99),
+                                    ...) {
   #' Recode Wave 1 generalized trust (q024) to binary
   #'
   #' Wave 1 has 3 categories:
@@ -624,7 +625,8 @@ recode_w1_trust_binary <- function(x,
 }
 
 recode_w5_trust_binary <- function(x,
-                                    missing_codes = c(-1, 0, 7, 8, 9)) {
+                                    missing_codes = c(-1, 0, 7, 8, 9),
+                                    ...) {
   #' Recode Wave 5 generalized trust (q22) to binary
   #'
   #' Wave 5 has 3 categories:
@@ -644,7 +646,8 @@ recode_w5_trust_binary <- function(x,
 }
 
 safe_reverse_2pt <- function(x,
-                              missing_codes = c(-1, 0, 7, 8, 9)) {
+                              missing_codes = c(-1, 0, 7, 8, 9),
+                              ...) {
   #' Reverse 2-point scale
   #'
   #' For Wave 2 generalized trust (q23):
@@ -664,7 +667,8 @@ safe_reverse_2pt <- function(x,
 # ------------------------------------------------------------------------------
 
 collapse_6pt_to_4pt_reverse <- function(x,
-                                         missing_codes = c(-1, 0, 97, 98, 99)) {
+                                         missing_codes = c(-1, 0, 97, 98, 99),
+                                         ...) {
   #' Collapse Wave 5 6-point trust scale to 4-point and reverse
   #'
   #' Wave 5 trust items (relatives, neighbors, acquaintances) use 6-point scale:
@@ -698,7 +702,8 @@ collapse_6pt_to_4pt_reverse <- function(x,
 # ------------------------------------------------------------------------------
 
 recode_w2_anticorrupt <- function(x,
-                                   missing_codes = c(-1, 7, 8, 9)) {
+                                   missing_codes = c(-1, 7, 8, 9),
+                                   ...) {
   #' Recode Wave 2 anti-corruption effort (q120) from 5-point to 4-point
   #'
   #' Wave 2 has 5-point scale starting at 0:
@@ -732,7 +737,8 @@ recode_w2_anticorrupt <- function(x,
 # ------------------------------------------------------------------------------
 
 recode_w3_witnessed <- function(x,
-                                 missing_codes = c(-1, 0, 7, 8, 9)) {
+                                 missing_codes = c(-1, 0, 7, 8, 9),
+                                 ...) {
   #' Recode Wave 3 witnessed corruption (q119) to binary
   #'
   #' Wave 3 has:
@@ -752,7 +758,8 @@ recode_w3_witnessed <- function(x,
 }
 
 recode_w4_witnessed <- function(x,
-                                 missing_codes = c(-1, 0, 7, 8, 9)) {
+                                 missing_codes = c(-1, 0, 7, 8, 9),
+                                 ...) {
   #' Recode Wave 4 witnessed corruption (q120) to binary
   #'
   #' Wave 4 has 5 categories:
@@ -778,7 +785,8 @@ recode_w4_witnessed <- function(x,
 # ------------------------------------------------------------------------------
 
 collapse_5pt_to_4pt_then_reverse <- function(x,
-                                              missing_codes = c(-1, 0, 7, 8, 9, 97, 98, 99)) {
+                                              missing_codes = c(-1, 0, 7, 8, 9, 97, 98, 99),
+                                              ...) {
   #' Collapse 5-point scale to 4-point and reverse
   #'
   #' For household income satisfaction in W5-W6 which may have 5 categories.
@@ -802,7 +810,8 @@ collapse_5pt_to_4pt_then_reverse <- function(x,
 # ------------------------------------------------------------------------------
 
 recode_w6_corruption <- function(x,
-                                  missing_codes = c(-1, 0, 7, 8, 9, 97, 98, 99)) {
+                                  missing_codes = c(-1, 0, 7, 8, 9, 97, 98, 99),
+                                  ...) {
   #' Recode Wave 6 corruption variables to handle category 5
   #'
   #' Wave 6 (Cambodia) has an extra category:
@@ -819,6 +828,70 @@ recode_w6_corruption <- function(x,
     x %in% missing_codes ~ NA_real_,
     x == 5 ~ 1,           # "No one involved" -> 1 (lowest corruption)
     x %in% 1:4 ~ as.numeric(x),
+    TRUE ~ NA_real_
+  )
+}
+
+# ------------------------------------------------------------------------------
+# COUNTRY: W6 text-to-code mapping
+# ------------------------------------------------------------------------------
+
+recode_w6_country <- function(x,
+                               data = NULL,
+                               var_name = NULL,
+                               validate_all = NULL) {
+  #' Map Wave 6 country text names to numeric codes
+  #'
+  #' W1-W5 use numeric country codes (1-15)
+  #' W6 uses text country names - map to same codes
+  #'
+  #' ABS Country Code Mapping:
+  #'   1 = Japan
+  #'   2 = Hong Kong
+  #'   3 = Korea
+  #'   4 = Mainland China
+  #'   5 = Mongolia
+  #'   6 = Philippines
+  #'   7 = Taiwan
+  #'   8 = Thailand
+  #'   9 = Indonesia
+  #'   10 = Singapore
+  #'   11 = Vietnam
+  #'   12 = Cambodia
+  #'   13 = Malaysia
+  #'   14 = Myanmar
+  #'   15 = Australia
+  #'
+  #' NOTE: This function reads raw data from data[[var_name]] because
+  #'       harmonize.R converts to numeric before calling, which destroys text
+
+  # Use raw data if available (x will be NA from numeric conversion of text)
+  if (!is.null(data) && !is.null(var_name) && var_name %in% names(data)) {
+    x_raw <- data[[var_name]]
+  } else {
+    x_raw <- x
+  }
+
+  # Convert to character to handle both factor and character input
+  x_char <- as.character(x_raw)
+
+  dplyr::case_when(
+    x_char == "Japan" ~ 1,
+    x_char == "Hong Kong" ~ 2,
+    x_char == "Korea" ~ 3,
+    x_char == "Mainland China" | x_char == "China" ~ 4,
+    x_char == "Mongolia" ~ 5,
+    x_char == "Philippines" ~ 6,
+    x_char == "Taiwan" ~ 7,
+    x_char == "Thailand" ~ 8,
+    x_char == "Indonesia" ~ 9,
+    x_char == "Singapore" ~ 10,
+    x_char == "Vietnam" ~ 11,
+    x_char == "Cambodia" ~ 12,
+    x_char == "Malaysia" ~ 13,
+    x_char == "Myanmar" ~ 14,
+    x_char == "Australia" ~ 15,
+    x_char == "India" ~ 18,
     TRUE ~ NA_real_
   )
 }

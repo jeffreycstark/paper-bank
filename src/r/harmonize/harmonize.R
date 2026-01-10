@@ -127,7 +127,10 @@ harmonize_variable <- function(
 
     # ---- select harmonization rule ----
     default_rule <- var_spec$harmonize$default %||% list(method = "identity")
-    wave_rule <- var_spec$harmonize$by_wave[[wave_name]] %||% default_rule
+    # Support both v1 format (by_wave) and v2 format (exceptions)
+    wave_rule <- var_spec$harmonize$by_wave[[wave_name]] %||%
+                 var_spec$harmonize$exceptions[[wave_name]] %||%
+                 default_rule
 
     # ---- apply harmonization method ----
     if (wave_rule$method == "identity") {

@@ -57,6 +57,7 @@ for (spec_path in spec_files) {
         var_count <- var_count + 1
 
       }, error = function(e) {
+        cat("   ERROR in", var_id, ":", e$message, "\n")
         failed_vars <<- c(failed_vars, var_id)
       })
     }

@@ -8,6 +8,83 @@ missing_conventions:
 
 variables:
   # ===========================================================================
+  # GROUP 0: Record Identifiers
+  # ===========================================================================
+
+  - id: country
+    concept: identifiers
+    description: "Country code (numeric)"
+    type: nominal
+
+    source:
+      w1: country
+      w2: country
+      w3: country
+      w4: country
+      w5: COUNTRY
+      w6: country
+    note: "W1-W5 have numeric codes, W6 has text names mapped to codes"
+
+    scale:
+      min: 1
+      max: 18
+      labels:
+        1: "Japan"
+        2: "Hong Kong"
+        3: "Korea"
+        4: "Mainland China"
+        5: "Mongolia"
+        6: "Philippines"
+        7: "Taiwan"
+        8: "Thailand"
+        9: "Indonesia"
+        10: "Singapore"
+        11: "Vietnam"
+        12: "Cambodia"
+        13: "Malaysia"
+        14: "Myanmar"
+        15: "Australia"
+        18: "India"
+      note: "Code 16-17 unused; 18=India (W5 only)"
+
+    harmonize:
+      default:
+        method: identity
+      exceptions:
+        w6:
+          method: r_function
+          fn: recode_w6_country
+          note: "Map W6 text country names to numeric codes"
+
+    qc:
+      valid_range: [1, 18]
+      validate:
+        - waves: [w1, w2, w3, w4, w5, w6]
+          phrase: "country"
+
+  - id: idnumber
+    concept: identifiers
+    description: "Interview/respondent ID number"
+    type: nominal
+
+    source:
+      w1: idnumber
+      w2: idnumber
+      w3: idnumber
+      w4: idnumber
+      w5: IDnumber
+      w6: idnumber
+
+    harmonize:
+      default:
+        method: identity
+
+    qc:
+      validate:
+        - waves: [w1, w2, w3, w4, w5, w6]
+          phrase: "id"
+
+  # ===========================================================================
   # GROUP 1: Basic Demographics
   # ===========================================================================
 
