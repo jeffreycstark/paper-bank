@@ -1,9 +1,10 @@
-# Democracy Satisfaction Harmonization Specification (v2)
+# Democracy Satisfaction Harmonization Specification (v2 - CORRECTED)
 # Variables: dem_sat_national, gov_sat_national, hh_income_sat
+# Corrected 2025-01-10: Fixed scale reversals and variable numbers based on codebook verification
 
 missing_conventions:
   treat_as_na:
-    codes: [-1, 0, 7, 8, 9]
+    codes: [-1, 0, 7, 8, 9, 98, 99]
     description: "Standard missing codes"
 
 variables:
@@ -34,21 +35,22 @@ variables:
     
     harmonize:
       default:
-        method: identity
+        method: r_function
+        fn: safe_reverse_4pt
+        note: "W3-W6 coded 1=Very satisfied → 4=Not at all; reverse to low→high"
       exceptions:
         w1:
-          method: r_function
-          fn: safe_reverse_4pt
+          method: identity
+          note: "W1 already coded 1=Not at all → 4=Very satisfied"
         w2:
-          method: r_function
-          fn: safe_reverse_4pt
+          method: identity
+          note: "W2 already coded 1=Not at all → 4=Very satisfied"
     
     qc:
       valid_range: [1, 4]
+      expected_direction: positive
       validate:
-        - waves: [w1, w2]
-          phrase: "democracy"
-        - waves: [w3, w4, w5, w6]
+        - waves: [w1, w2, w3, w4, w5, w6]
           phrase: "democracy"
 
   # ============================================================================
@@ -56,84 +58,102 @@ variables:
   # ============================================================================
   - id: gov_sat_national
     concept: government_satisfaction
-    description: "Satisfaction with government's handling of key issues"
+    description: "Satisfaction with current government/president"
     type: ordinal
     
     source:
       w1: q104
-      w2: q96
-      w3: q91
-      w4: q94
-      w5: q102
-      w6: q88
-    
-    scale:
-      min: 1
-      max: 4
-      labels:
-        1: "Not at all satisfied"
-        2: "Not very satisfied"
-        3: "Fairly satisfied"
-        4: "Very satisfied"
-    
-    harmonize:
-      default:
-        method: identity
-      exceptions:
-        w1:
-          method: identity
-          note: "W1 has 5pt scale - confirm if collapsing to 4pt is appropriate"
-        w2:
-          method: r_function
-          fn: safe_reverse_4pt
-    
-    qc:
-      valid_range: [1, 4]
-      validate:
-        - waves: [w1]
-          phrase: "government"
-          note: "W1 has 5pt scale (1-5)"
-        - waves: [w2, w3, w4, w5, w6]
-          phrase: "government"
-
-  # ============================================================================
-  # Household income satisfaction
-  # ============================================================================
-  - id: hh_income_sat
-    concept: household_income_satisfaction
-    description: "Satisfaction with household income"
-    type: ordinal
-    
-    source:
-      w1: se9a
-      w2: se9a
-      w3: se9a
-      w4: se9a
-      w5: se9a
-      w6: SE14a
+      w2: q99
+      w3: q95
+      w4: q98
+      w5: q105
+      w6: q96
     
     scale:
       min: 1
       max: 4
       labels:
         1: "Very dissatisfied"
-        2: "Fairly dissatisfied"
-        3: "Fairly satisfied"
+        2: "Somewhat dissatisfied"
+        3: "Somewhat satisfied"
         4: "Very satisfied"
     
     harmonize:
       default:
-        method: identity
+        method: r_function
+        fn: safe_reverse_4pt
+        note: "W2-W6 coded 1=Very satisfied → 4=Very dissatisfied; reverse to low→high"
       exceptions:
-        w6:
+        w1:
           method: identity
-          note: "Variable name changed (se9a → SE14a) - verify scale consistency"
+          note: "W1 coded 1=Very dissatisfied → 4=Very satisfied (has 5=Half/Half, treat as NA)"
     
     qc:
       valid_range: [1, 4]
+      expected_direction: positive
       validate:
-        - waves: [w1, w2, w3, w4, w5]
-          phrase: "income|satisfaction"
-        - waves: [w6]
-          phrase: "income|satisfaction"
-          note: "Variable name/scale may differ from w1-w5 - manual review recommended"
+        - waves: [w1, w2, w3, w4, w5, w6]
+          phrase: "government|president"
+      notes:
+        - "W1 has 5pt scale with midpoint; code 5 treated as NA"
+
+  # ============================================================================
+  # Household income satisfaction
+  # "Does the total income of your household allow you to satisfactorily cover your needs?"
+  # NOTE: W1 does not have this variable - excluded
+  # NOTE: Scales differ across waves - requires careful harmonization
+  # ============================================================================
+  - id: hh_income_sat
+    concept: household_income_satisfaction
+    description: "Whether household income satisfactorily covers needs"
+    type: ordinal
+    
+    source:
+      w1: null  # NOT AVAILABLE IN W1
+      w2: se9a
+      w3: se13a
+      w4: se14a
+      w5: SE14A
+      w6: SE14a
+    
+    scale:
+      min: 1
+      max: 4
+      labels:
+        1: "Does not cover needs, great difficulties"
+        2: "Does not cover needs, some difficulties"
+        3: "Covers needs, without much difficulty"
+        4: "Covers needs well, can save"
+    
+    harmonize:
+      default:
+        method: r_function
+        fn: safe_reverse_4pt
+        note: "Raw coding is 1=save → 4=difficulties; reverse so high=good"
+      exceptions:
+        w1:
+          method: null
+          note: "Variable not available in W1"
+        w4:
+          method: r_function
+          fn: safe_reverse_3pt
+          note: "W4 has only 3 categories (missing 'great difficulties'); consider excluding or imputing"
+        w5:
+          method: r_function
+          fn: collapse_5pt_to_4pt_then_reverse
+          note: "W5 has 5pt scale; collapse top 2 (save a lot + save) before reversing"
+        w6:
+          method: r_function
+          fn: collapse_5pt_to_4pt_then_reverse
+          note: "W6 has 5pt scale; collapse top 2 (save a lot + save) before reversing"
+    
+    qc:
+      valid_range: [1, 4]
+      expected_direction: positive
+      validate:
+        - waves: [w2, w3, w4, w5, w6]
+          phrase: "income|needs"
+      notes:
+        - "W1: Variable not available - exclude from analysis"
+        - "W4: Only 3 response categories - may need sensitivity analysis"
+        - "W5/W6: 5pt collapsed to 4pt by combining 'save a lot' + 'save'"

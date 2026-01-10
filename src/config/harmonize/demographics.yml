@@ -34,6 +34,20 @@ variables:
     harmonize:
       default:
         method: identity
+        note: "W1-W3 coded 1=urban, 2=rural"
+      exceptions:
+        w4:
+          method: r_function
+          fn: safe_reverse_2pt
+          note: "W4 coded 1=Rural, 2=Urban; reverse to 1=Urban, 2=Rural"
+        w5:
+          method: r_function
+          fn: safe_reverse_2pt
+          note: "W5 coded 1=Rural, 2=Urban; reverse to 1=Urban, 2=Rural"
+        w6:
+          method: r_function
+          fn: safe_reverse_2pt
+          note: "W6 coded 1=Rural, 2=Urban; reverse to 1=Urban, 2=Rural"
 
     qc:
       valid_range: [1, 2]
@@ -251,39 +265,6 @@ variables:
       validate:
         - waves: [w2, w4, w5, w6]
           phrase: "income"
-
-  - id: hh_income_subjective
-    concept: demographics
-    description: "Does household income satisfactorily cover your needs?"
-    type: ordinal
-
-    source:
-      w1: se9a    # TODO: verify w1 variable name
-      w2: se9a
-      w3: null    # TODO: find w3 mapping
-      w4: se14a
-      w5: SE14A
-      w6: SE14a
-
-    scale:
-      min: 1
-      max: 4
-      labels:
-        1: "Not at all"
-        2: "Not very well"
-        3: "Fairly well"
-        4: "Very well"
-
-    harmonize:
-      default:
-        method: r_function
-        fn: safe_4pt_none
-
-    qc:
-      valid_range: [1, 4]
-      validate:
-        - waves: [w1, w2, w4, w5, w6]
-          phrase: "income.*cover|satisf"
 
   # ===========================================================================
   # GROUP 5: Marital Status & Family
