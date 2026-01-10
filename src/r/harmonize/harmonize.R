@@ -57,7 +57,7 @@ apply_missing <- function(x, missing_codes) {
 #' 4. Apply method:
 #'    - "identity": pass through
 #'    - "r_function": call recoding function (e.g., safe_reverse_5pt)
-#' 5. Optional QC: check valid range (warn only, don't coerce)
+#' 5. QC: check valid range and coerce out-of-range values to NA
 #'
 #' @examples
 #' \dontrun{
@@ -109,17 +109,18 @@ harmonize_variable <- function(
     }
 
     # ---- apply missing code handling ----
-    miss_convention_key <- var_spec$missing$use_convention %||% NULL
-    missing_codes <- if (!is.null(miss_convention_key)) {
+    # First check for variable-specific convention, then use global treat_as_na
+    miss_convention_key <- var_spec$missing$use_convention %||% "treat_as_na"
+    missing_codes <- numeric(0)
+
+    if (!is.null(missing_conventions[[miss_convention_key]])) {
       convention <- missing_conventions[[miss_convention_key]]
       # Handle both direct vector and nested structure with 'codes' field
       if (is.list(convention) && !is.null(convention$codes)) {
-        as.numeric(convention$codes)
+        missing_codes <- as.numeric(convention$codes)
       } else {
-        as.numeric(convention)
+        missing_codes <- as.numeric(convention)
       }
-    } else {
-      numeric(0)
     }
 
     x <- apply_missing(x, missing_codes)
@@ -155,18 +156,28 @@ harmonize_variable <- function(
       stop("❌ Unknown harmonization method: ", wave_rule$method)
     }
 
-    # ---- optional QC: range check (warn, don't coerce) ----
-    vr <- var_spec$qc$valid_range_by_wave[[wave_name]] %||% NULL
-    if (!is.null(vr)) {
+    # ---- QC: range check and coerce out-of-range to NA ----
+    # Check for valid_range (global) or valid_range_by_wave (wave-specific)
+    vr <- var_spec$qc$valid_range_by_wave[[wave_name]] %||%
+          var_spec$qc$valid_range %||%
+          NULL
+
+    if (is.null(vr)) {
+      # Warn if no valid_range specified - may miss bad data
+      warning(
+        sprintf("⚠️  %s (%s): No valid_range in qc - using defaults may miss bad values",
+                var_spec$id, wave_name),
+        call. = FALSE
+      )
+    } else {
+      # Count and coerce out-of-range values to NA
       bad <- !is.na(x_harm) & (x_harm < vr[1] | x_harm > vr[2])
       if (any(bad)) {
-        warning(
-          sprintf(
-            "⚠️  %s (%s): %d values outside valid range [%s,%s]",
-            var_spec$id, wave_name, sum(bad), vr[1], vr[2]
-          ),
-          call. = FALSE
+        message(
+          sprintf("   %s (%s): Converting %d out-of-range values to NA [valid: %s-%s]",
+                  var_spec$id, wave_name, sum(bad), vr[1], vr[2])
         )
+        x_harm[bad] <- NA_real_
       }
     }
 
