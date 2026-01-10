@@ -429,8 +429,9 @@ variables:
       w2: q16
       w3: q16
       w4: q16
-      w5: q16
+      w5: q54
       w6: q16
+    note: "W5 uses q54 (different question block for media trust)"
     
     scale:
       min: 1
@@ -474,8 +475,9 @@ variables:
       w2: q17
       w3: q17
       w4: q17
-      w5: q17
+      w5: q53
       w6: q17
+    note: "W5 uses q53 (different question block for media trust)"
     
     scale:
       min: 1
@@ -519,8 +521,9 @@ variables:
       w2: q18
       w3: q18
       w4: q18
-      w5: q18
+      w5: q16
       w6: q18
+    note: "W5 uses q16 (election commission shifted in W5 questionnaire)"
     
     scale:
       min: 1
@@ -558,14 +561,15 @@ variables:
     concept: institutional_trust
     description: "Trust in NGOs"
     type: ordinal
-    
+
     source:
       w1: q018
       w2: q19
       w3: q19
       w4: q19
-      w5: q19
+      w5: q17
       w6: q19
+    note: "W5 uses q17 (NGOs shifted in W5 questionnaire)"
     
     scale:
       min: 1
