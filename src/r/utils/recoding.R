@@ -796,3 +796,29 @@ collapse_5pt_to_4pt_then_reverse <- function(x,
     TRUE ~ NA_real_
   )
 }
+
+# ------------------------------------------------------------------------------
+# CORRUPTION: W6 "No one is involved" recode
+# ------------------------------------------------------------------------------
+
+recode_w6_corruption <- function(x,
+                                  missing_codes = c(-1, 0, 7, 8, 9, 97, 98, 99)) {
+  #' Recode Wave 6 corruption variables to handle category 5
+  #'
+  #' Wave 6 (Cambodia) has an extra category:
+  #'   1 = Hardly anyone is involved
+  #'   2 = Not a lot of officials are corrupt
+  #'   3 = Most officials are corrupt
+  #'   4 = Almost everyone is corrupt
+  #'   5 = No one is involved  <- more extreme than "hardly anyone"
+  #'
+  #' Recode 5 -> 1 (most extreme low-corruption response)
+  #' Keep 1-4 as identity
+
+  dplyr::case_when(
+    x %in% missing_codes ~ NA_real_,
+    x == 5 ~ 1,           # "No one involved" -> 1 (lowest corruption)
+    x %in% 1:4 ~ as.numeric(x),
+    TRUE ~ NA_real_
+  )
+}

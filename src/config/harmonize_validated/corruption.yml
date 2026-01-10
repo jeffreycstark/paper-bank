@@ -4,8 +4,8 @@
 
 missing_conventions:
   treat_as_na:
-    codes: [-1, 0, 5, 6, 7, 8, 9, 97, 98, 99]
-    description: "Standard missing codes plus W6 category 5 (no one involved)"
+    codes: [-1, 0, 7, 8, 9, 97, 98, 99]
+    description: "Standard missing codes"
 
 variables:
   # ===========================================================================
@@ -41,7 +41,7 @@ variables:
     harmonize:
       default:
         method: identity
-        note: "W3-W6 coded 1=Hardly anyone → 4=Almost everyone (high=more corrupt)"
+        note: "W3-W5 coded 1=Hardly anyone → 4=Almost everyone (high=more corrupt)"
       exceptions:
         w1:
           method: r_function
@@ -51,6 +51,10 @@ variables:
           method: r_function
           fn: safe_reverse_4pt
           note: "W2 coded 1=Almost everyone → 4=Hardly anyone; reverse so high=more corrupt"
+        w6:
+          method: r_function
+          fn: recode_w6_corruption
+          note: "W6 has category 5 (No one is involved) - recode 5→1, then identity"
 
     qc:
       valid_range: [1, 4]
@@ -87,7 +91,7 @@ variables:
     harmonize:
       default:
         method: identity
-        note: "W3-W6 coded 1=Hardly anyone → 4=Almost everyone (high=more corrupt)"
+        note: "W3-W5 coded 1=Hardly anyone → 4=Almost everyone (high=more corrupt)"
       exceptions:
         w1:
           method: r_function
@@ -97,6 +101,10 @@ variables:
           method: r_function
           fn: safe_reverse_4pt
           note: "W2 coded 1=Almost everyone → 4=Hardly anyone; reverse so high=more corrupt"
+        w6:
+          method: r_function
+          fn: recode_w6_corruption
+          note: "W6 has category 5 (No one is involved) - recode 5→1, then identity"
 
     qc:
       valid_range: [1, 4]
