@@ -592,3 +592,207 @@ middle_reverse_5pt <- function(x,
     TRUE ~ NA_real_
   )
 }
+
+# ==============================================================================
+# WAVE-SPECIFIC RECODING FUNCTIONS (Added 2025-01-10)
+# ==============================================================================
+# These functions handle specific cross-wave harmonization issues identified
+# during codebook verification.
+
+# ------------------------------------------------------------------------------
+# SOCIAL TRUST: Binary trust question recodes
+# ------------------------------------------------------------------------------
+
+recode_w1_trust_binary <- function(x,
+                                    missing_codes = c(-1, 0, 97, 98, 99)) {
+  #' Recode Wave 1 generalized trust (q024) to binary
+  #'
+  #' Wave 1 has 3 categories:
+  #'   1 = "One can't be too careful in dealing with them" -> 2 (careful)
+  #'   2 = "Most people can be trusted" -> 1 (trusted)
+  #'   3 = "Both" -> NA (ambiguous middle category)
+  #'
+  #' Target scale: 1=Trusted, 2=Careful (to match W3-W6)
+
+  dplyr::case_when(
+    x %in% missing_codes ~ NA_real_,
+    x == 1 ~ 2,      # Careful -> 2
+    x == 2 ~ 1,      # Trusted -> 1
+    x == 3 ~ NA_real_,  # Both -> NA (can't place on binary scale)
+    TRUE ~ NA_real_
+  )
+}
+
+recode_w5_trust_binary <- function(x,
+                                    missing_codes = c(-1, 0, 7, 8, 9)) {
+  #' Recode Wave 5 generalized trust (q22) to binary
+  #'
+  #' Wave 5 has 3 categories:
+  #'   1 = "Most people can be trusted" -> 1 (trusted)
+  #'   2 = "You must be very careful in dealing with people" -> 2 (careful)
+  #'   3 = "It depends" -> NA (ambiguous middle category)
+  #'
+  #' Target scale: 1=Trusted, 2=Careful (to match W3-W6)
+
+  dplyr::case_when(
+    x %in% missing_codes ~ NA_real_,
+    x == 1 ~ 1,      # Trusted -> 1
+    x == 2 ~ 2,      # Careful -> 2
+    x == 3 ~ NA_real_,  # Depends -> NA
+    TRUE ~ NA_real_
+  )
+}
+
+safe_reverse_2pt <- function(x,
+                              missing_codes = c(-1, 0, 7, 8, 9)) {
+  #' Reverse 2-point scale
+  #'
+  #' For Wave 2 generalized trust (q23):
+  #'   Original: 1=Careful, 2=Trusted
+  #'   Target:   1=Trusted, 2=Careful (to match W3-W6)
+
+  dplyr::case_when(
+    x %in% missing_codes ~ NA_real_,
+    x == 1 ~ 2,
+    x == 2 ~ 1,
+    TRUE ~ NA_real_
+  )
+}
+
+# ------------------------------------------------------------------------------
+# SOCIAL TRUST: 6-point to 4-point collapse with reversal
+# ------------------------------------------------------------------------------
+
+collapse_6pt_to_4pt_reverse <- function(x,
+                                         missing_codes = c(-1, 0, 97, 98, 99)) {
+  #' Collapse Wave 5 6-point trust scale to 4-point and reverse
+  #'
+  #' Wave 5 trust items (relatives, neighbors, acquaintances) use 6-point scale:
+  #'   1 = Trust fully
+  #'   2 = Trust a lot
+  #'   3 = Trust somewhat
+  #'   4 = Distrust somewhat
+  #'   5 = Distrust a lot
+  #'   6 = Distrust fully
+  #'
+  #' Target 4-point scale (high = more trust):
+  #'   4 = A great deal of trust (W5: 1,2)
+  #'   3 = Quite a lot of trust (W5: 3)
+  #'   2 = Not very much trust (W5: 4)
+  #'   1 = None at all (W5: 5,6)
+  #'
+  #' Mapping: 1->4, 2->4, 3->3, 4->2, 5->1, 6->1
+
+  dplyr::case_when(
+    x %in% missing_codes ~ NA_real_,
+    x %in% c(1, 2) ~ 4,   # Trust fully/a lot -> Great deal
+    x == 3 ~ 3,            # Trust somewhat -> Quite a lot
+    x == 4 ~ 2,            # Distrust somewhat -> Not very much
+    x %in% c(5, 6) ~ 1,   # Distrust a lot/fully -> None at all
+    TRUE ~ NA_real_
+  )
+}
+
+# ------------------------------------------------------------------------------
+# CORRUPTION: Wave 2 anti-corruption effort recode
+# ------------------------------------------------------------------------------
+
+recode_w2_anticorrupt <- function(x,
+                                   missing_codes = c(-1, 7, 8, 9)) {
+  #' Recode Wave 2 anti-corruption effort (q120) from 5-point to 4-point
+  #'
+  #' Wave 2 has 5-point scale starting at 0:
+  #'   0 = It is doing this quite effectively
+  #'   1 = It is doing its best
+  #'   2 = It is doing something
+  #'   3 = It is not doing much
+  #'   4 = Doing nothing
+  #'
+  #' Target 4-point scale (W3-W6 style):
+  #'   1 = Very effective / Doing its best
+  #'   2 = Somewhat effective / Doing something
+  #'   3 = Not very effective / Not doing much
+  #'   4 = Not effective at all / Doing nothing
+  #'
+  #' Mapping: 0->1, 1->1, 2->2, 3->3, 4->4
+  #' Note: Collapsing 0 and 1 into category 1 (top effectiveness)
+
+  dplyr::case_when(
+    x %in% missing_codes ~ NA_real_,
+    x %in% c(0, 1) ~ 1,   # Quite effectively / Doing best -> 1
+    x == 2 ~ 2,            # Doing something -> 2
+    x == 3 ~ 3,            # Not doing much -> 3
+    x == 4 ~ 4,            # Doing nothing -> 4
+    TRUE ~ NA_real_
+  )
+}
+
+# ------------------------------------------------------------------------------
+# CORRUPTION: Witnessed corruption recodes
+# ------------------------------------------------------------------------------
+
+recode_w3_witnessed <- function(x,
+                                 missing_codes = c(-1, 0, 7, 8, 9)) {
+  #' Recode Wave 3 witnessed corruption (q119) to binary
+  #'
+  #' Wave 3 has:
+  #'   1 = Witnessed
+  #'   2 = Never witnessed
+  #'   6 = No one I know has personally witnessed
+  #'
+  #' Target binary: 1=Yes, 2=No
+  #' Mapping: 1->1, 2->2, 6->2
+
+  dplyr::case_when(
+    x %in% missing_codes ~ NA_real_,
+    x == 1 ~ 1,           # Witnessed -> Yes
+    x %in% c(2, 6) ~ 2,   # Never witnessed / No one I know -> No
+    TRUE ~ NA_real_
+  )
+}
+
+recode_w4_witnessed <- function(x,
+                                 missing_codes = c(-1, 0, 7, 8, 9)) {
+  #' Recode Wave 4 witnessed corruption (q120) to binary
+  #'
+  #' Wave 4 has 5 categories:
+  #'   1 = Personally witnessed
+  #'   2 = Told about it by a family member who personally witnessed
+  #'   3 = Told about it by a friend who personally witnessed
+  #'   4 = Personally never witnessed
+  #'   5 = No one I know has personally witnessed
+  #'
+  #' Target binary: 1=Yes (any witnessing), 2=No
+  #' Mapping: 1,2,3->1, 4,5->2
+
+  dplyr::case_when(
+    x %in% missing_codes ~ NA_real_,
+    x %in% c(1, 2, 3) ~ 1,  # Any form of witnessed -> Yes
+    x %in% c(4, 5) ~ 2,      # Never witnessed -> No
+    TRUE ~ NA_real_
+  )
+}
+
+# ------------------------------------------------------------------------------
+# DEMOCRACY SATISFACTION: Collapse 5-point to 4-point then reverse
+# ------------------------------------------------------------------------------
+
+collapse_5pt_to_4pt_then_reverse <- function(x,
+                                              missing_codes = c(-1, 0, 7, 8, 9, 97, 98, 99)) {
+  #' Collapse 5-point scale to 4-point and reverse
+  #'
+  #' For household income satisfaction in W5-W6 which may have 5 categories.
+  #' Collapses middle categories and reverses direction.
+  #'
+  #' This is a placeholder - verify actual scale structure before using.
+
+  dplyr::case_when(
+    x %in% missing_codes ~ NA_real_,
+    x == 1 ~ 4,
+    x == 2 ~ 3,
+    x == 3 ~ 2,
+    x == 4 ~ 2,  # Collapse 3&4 to middle-low
+    x == 5 ~ 1,
+    TRUE ~ NA_real_
+  )
+}
