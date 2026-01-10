@@ -8,51 +8,7 @@ missing_conventions:
 
 variables:
   # ===========================================================================
-  # GROUP 1: Democratic Satisfaction
-  # ===========================================================================
-
-  - id: dem_sat_national
-    concept: democracy
-    description: "Satisfaction with the way democracy works in the country"
-    type: ordinal
-
-    source:
-      w1: q098
-      w2: q93
-      w3: q89
-      w4: q92
-      w5: q99
-      w6: q90
-
-    scale:
-      min: 1
-      max: 4
-      labels:
-        1: "Not at all satisfied"
-        2: "Not very satisfied"
-        3: "Fairly satisfied"
-        4: "Very satisfied"
-
-    harmonize:
-      default:
-        method: r_function
-        fn: safe_4pt_none
-      exceptions:
-        w1:
-          method: r_function
-          fn: safe_reverse_4pt
-        w2:
-          method: r_function
-          fn: safe_reverse_4pt
-
-    qc:
-      valid_range: [1, 4]
-      validate:
-        - waves: [w1, w2, w3, w4, w5, w6]
-          phrase: "democracy"
-
-  # ===========================================================================
-  # GROUP 2: Perceived Level of Democracy
+  # GROUP 1: Perceived Level of Democracy
   # ===========================================================================
 
   - id: dem_extent_current
@@ -219,43 +175,6 @@ variables:
         - waves: [w2, w3, w4, w5, w6]
           phrase: "free to speak|speak.*fear"
 
-  # ===========================================================================
-  # GROUP 5: Government Satisfaction (related)
-  # ===========================================================================
-
-  - id: gov_sat_national
-    concept: democracy
-    description: "How satisfied or dissatisfied are you with the current president/government?"
-    type: ordinal
-
-    source:
-      w1: q104
-      w2: q99
-      w3: q95
-      w4: q98
-      w5: q105
-      w6: q96
-
-    scale:
-      min: 1
-      max: 4
-      labels:
-        1: "Very dissatisfied"
-        2: "Somewhat dissatisfied"
-        3: "Somewhat satisfied"
-        4: "Very satisfied"
-
-    harmonize:
-      default:
-        method: r_function
-        fn: safe_4pt_none
-
-    qc:
-      valid_range: [1, 4]
-      validate:
-        - waves: [w1, w2, w3, w4, w5, w6]
-          phrase: "satisf.*president|satisf.*government"
-
   - id: dem_country_past
     concept: democracy
     description: "Where would you place our country ten years ago? (1=dictatorship, 10=democracy)"
@@ -316,41 +235,8 @@ variables:
         - waves: [w3, w4, w5, w6]
           phrase: "ten years from now|future"
 
-  - id: hh_income_sat
-    concept: democracy
-    description: "Satisfaction with household income"
-    type: ordinal
-
-    source:
-      w1: se9a
-      w2: se9a
-      w3: se9a
-      w4: se9a
-      w5: se9a
-      w6: SE14a
-
-    scale:
-      min: 1
-      max: 4
-      labels:
-        1: "Very dissatisfied"
-        2: "Fairly dissatisfied"
-        3: "Fairly satisfied"
-        4: "Very satisfied"
-
-    harmonize:
-      default:
-        method: r_function
-        fn: safe_4pt_none
-
-    qc:
-      valid_range: [1, 4]
-      validate:
-        - waves: [w1, w2, w3, w4, w5, w6]
-          phrase: "income|satisfaction"
-
   # ===========================================================================
-  # GROUP 6: Democracy Scale - Country Placement (Wave 1)
+  # GROUP 5: Democracy Scale - Country Placement (Wave 1)
   # ===========================================================================
 
   - id: dem_country_authoritarian

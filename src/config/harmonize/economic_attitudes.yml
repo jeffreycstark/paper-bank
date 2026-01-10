@@ -433,7 +433,7 @@ variables:
         - waves: [w4]
           phrase: "loss.*income|concerned.*income"
 
-  - id: econ_family_income_fair
+  - id: econ_family_income_fair_6pt
     concept: economic_attitudes
     description: "Considering all the effort that you and your family members have made in the past, do you think the income that your family currently receives is fair?"
     type: ordinal
@@ -445,7 +445,7 @@ variables:
       w4: q159a
       w5: null
       w6: null
-    note: "Wave 4 - perceived fairness of own family income (6 categories)"
+    note: "Wave 4 only - 6-point version (q159a). See econ_family_income_fair for 4-point version (q159)"
 
     scale:
       min: 1
