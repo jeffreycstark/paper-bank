@@ -1,7 +1,7 @@
 # 2_harmonize_all.R
 # Mass harmonization phase - process all YAML specs
 #
-# Reads all YAML configurations from src/config/harmonize/
+# Reads all YAML configurations from src/config/harmonize_validated/
 # Applies harmonize_variable() to each variable
 # Returns harmonized data organized by concept
 
@@ -21,7 +21,7 @@ source(here::here("src/r/utils/_load_functions.R"))
 #'
 #' @return Character vector of YAML file paths
 list_yaml_specs <- function() {
-  config_dir <- here::here("src/config/harmonize")
+  config_dir <- here::here("src/config/harmonize_validated")
 
   files <- list.files(config_dir, pattern = "\\.yml$", full.names = TRUE)
 
