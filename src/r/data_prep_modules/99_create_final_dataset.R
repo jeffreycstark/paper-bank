@@ -55,9 +55,12 @@ wave_summary <- abs_econdev_authpref %>%
   summarise(n = n(), .groups = "drop")
 print(wave_summary)
 
-# Save final dataset
-output_file <- here("outputs", "abs_econdev_authpref.rds")
+# Save final dataset to data/processed (primary) and outputs (backup)
+output_file <- here("data", "processed", "abs_econdev_authpref.rds")
 saveRDS(abs_econdev_authpref, output_file)
+
+# Also save to outputs for convenience
+saveRDS(abs_econdev_authpref, here("outputs", "abs_econdev_authpref.rds"))
 
 cat("\n=== FINAL DATASET SAVED ===\n")
 cat("File:", output_file, "\n")
