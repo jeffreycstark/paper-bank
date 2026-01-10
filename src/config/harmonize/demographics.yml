@@ -284,3 +284,401 @@ variables:
       validate:
         - waves: [w1, w2, w4, w5, w6]
           phrase: "income.*cover|satisf"
+
+  # ===========================================================================
+  # GROUP 5: Marital Status & Family
+  # ===========================================================================
+
+  - id: marital_status
+    concept: demographics
+    description: "Marital status of respondent"
+    type: nominal
+
+    source:
+      w1: se004
+      w2: se4
+      w3: se4
+      w4: se4
+      w5: SE4
+      w6: se4
+
+    scale:
+      min: 1
+      max: 6
+      labels:
+        1: "Single/Never married"
+        2: "Married"
+        3: "Living together as married"
+        4: "Widowed"
+        5: "Separated"
+        6: "Divorced"
+
+    harmonize:
+      default:
+        method: identity
+
+    qc:
+      valid_range: [1, 6]
+      validate:
+        - waves: [w1, w2, w3, w4, w5, w6]
+          phrase: "marital"
+
+  - id: hh_size
+    concept: demographics
+    description: "Number of people living in household"
+    type: continuous
+
+    source:
+      w1: se008a
+      w2: se8a
+      w3: se8a
+      w4: se8a
+      w5: SE8A
+      w6: se8a
+
+    scale:
+      min: 1
+      max: 20
+
+    harmonize:
+      default:
+        method: identity
+
+    qc:
+      valid_range: [1, 20]
+      validate:
+        - waves: [w1, w2, w3, w4, w5, w6]
+          phrase: "people.*household|household.*members"
+
+  - id: hh_generations
+    concept: demographics
+    description: "Number of generations living in household"
+    type: ordinal
+
+    source:
+      w1: se008b
+      w2: se8b
+      w3: se8b
+      w4: se8b
+      w5: SE8B
+      w6: se8b
+
+    scale:
+      min: 1
+      max: 4
+      labels:
+        1: "One generation"
+        2: "Two generations"
+        3: "Three generations"
+        4: "Four or more generations"
+
+    harmonize:
+      default:
+        method: identity
+
+    qc:
+      valid_range: [1, 4]
+      validate:
+        - waves: [w1, w2, w3, w4, w5, w6]
+          phrase: "generation"
+
+  # ===========================================================================
+  # GROUP 6: Religion
+  # ===========================================================================
+
+  - id: religion
+    concept: demographics
+    description: "Religious affiliation"
+    type: nominal
+
+    source:
+      w1: se006
+      w2: se6
+      w3: se6
+      w4: se6
+      w5: SE6
+      w6: se6
+
+    scale:
+      min: 1
+      max: 90
+      labels:
+        1: "Traditional/Folk religion"
+        10: "Roman Catholic"
+        20: "Protestant"
+        40: "Islam"
+        50: "Hindu"
+        60: "Buddhist"
+        75: "Shinto"
+        76: "Taoism"
+        78: "Confucianism"
+        80: "Other"
+        90: "None"
+    note: "Detailed religion codes vary by country/wave - see codebook for full list"
+
+    harmonize:
+      default:
+        method: identity
+
+    qc:
+      valid_range: [1, 99]
+      validate:
+        - waves: [w1, w2, w3, w4, w5, w6]
+          phrase: "religion"
+
+  - id: religiosity_practice
+    concept: demographics
+    description: "How often do you practice religious services or rituals?"
+    type: ordinal
+
+    source:
+      w1: se007
+      w2: se7
+      w3: se7
+      w4: se7
+      w5: SE7
+      w6: se7
+
+    scale:
+      min: 1
+      max: 11
+      labels:
+        1: "Several times a day"
+        2: "Once a day"
+        3: "Several times a week"
+        4: "Once a week"
+        5: "Several times a month"
+        6: "Once a month"
+        7: "Several times a year"
+        8: "Once a year"
+        9: "Less often"
+        10: "Practically never"
+        11: "No religion"
+
+    harmonize:
+      default:
+        method: identity
+
+    qc:
+      valid_range: [1, 11]
+      validate:
+        - waves: [w1, w2, w3, w4, w5, w6]
+          phrase: "religious.*practice|practice.*religious"
+
+  - id: religiosity_self
+    concept: demographics
+    description: "Would you describe yourself as religious?"
+    type: ordinal
+
+    source:
+      w1: null
+      w2: se7a
+      w3: se7a
+      w4: se7a
+      w5: SE7A
+      w6: se7a
+
+    scale:
+      min: 1
+      max: 4
+      labels:
+        1: "Very religious"
+        2: "Moderately religious"
+        3: "Lightly religious"
+        4: "Not religious at all"
+
+    harmonize:
+      default:
+        method: identity
+        note: "Higher values = less religious"
+
+    qc:
+      valid_range: [1, 4]
+      validate:
+        - waves: [w2, w3, w4, w5, w6]
+          phrase: "describe.*religious"
+
+  # ===========================================================================
+  # GROUP 7: Social Status
+  # ===========================================================================
+
+  - id: subjective_social_status
+    concept: demographics
+    description: "Subjective social status (1=lowest, 10=highest)"
+    type: ordinal
+
+    source:
+      w1: se017
+      w2: se13
+      w3: se12
+      w4: se12
+      w5: SE12
+      w6: se12
+
+    scale:
+      min: 1
+      max: 10
+      labels:
+        1: "Lowest status"
+        10: "Highest status"
+
+    harmonize:
+      default:
+        method: identity
+
+    qc:
+      valid_range: [1, 10]
+      validate:
+        - waves: [w1, w2, w3, w4, w5, w6]
+          phrase: "social status|place.*family"
+
+  # ===========================================================================
+  # GROUP 8: Employment Details
+  # ===========================================================================
+
+  - id: employment_type
+    concept: demographics
+    description: "Self-employed, family business, or outside employer?"
+    type: nominal
+
+    source:
+      w1: null
+      w2: null
+      w3: se9a
+      w4: se9a
+      w5: SE9A
+      w6: se9a
+
+    scale:
+      min: 1
+      max: 4
+      labels:
+        1: "Self-employed/business owner"
+        2: "Working in family business"
+        3: "Working for outside employer"
+        4: "Peasant/farmer"
+
+    harmonize:
+      default:
+        method: identity
+
+    qc:
+      valid_range: [1, 4]
+      validate:
+        - waves: [w3, w4, w5, w6]
+          phrase: "self-employed|family business|employer"
+
+  - id: seeking_employment
+    concept: demographics
+    description: "Are you currently seeking employment?"
+    type: nominal
+
+    source:
+      w1: null
+      w2: null
+      w3: se9d
+      w4: se9d
+      w5: SE9D
+      w6: se9d
+
+    scale:
+      min: 1
+      max: 2
+      labels:
+        1: "Yes"
+        2: "No"
+
+    harmonize:
+      default:
+        method: identity
+
+    qc:
+      valid_range: [1, 2]
+      validate:
+        - waves: [w3, w4, w5, w6]
+          phrase: "seeking employment"
+
+  - id: current_status_unemployed
+    concept: demographics
+    description: "What is your current status? (for non-employed)"
+    type: nominal
+
+    source:
+      w1: null
+      w2: null
+      w3: se9e
+      w4: se9e
+      w5: SE9E
+      w6: se9e
+
+    scale:
+      min: 1
+      max: 6
+      labels:
+        1: "Retired"
+        2: "Housewife"
+        3: "Student"
+        4: "Disabled"
+        5: "Unemployed"
+        6: "Other"
+    note: "Categories may vary slightly across waves"
+
+    harmonize:
+      default:
+        method: identity
+
+    qc:
+      valid_range: [1, 6]
+      validate:
+        - waves: [w3, w4, w5, w6]
+          phrase: "current status"
+
+  # ===========================================================================
+  # GROUP 9: Language & Ethnicity
+  # ===========================================================================
+
+  - id: language_home
+    concept: demographics
+    description: "What language do you speak most at home?"
+    type: nominal
+
+    source:
+      w1: se014
+      w2: se11
+      w3: se11
+      w4: se11
+      w5: Se11
+      w6: se11
+    note: "Language codes are country-specific"
+
+    harmonize:
+      default:
+        method: identity
+
+    qc:
+      validate:
+        - waves: [w1, w2, w3, w4, w5, w6]
+          phrase: "language.*home|speak.*home"
+
+  - id: ethnicity
+    concept: demographics
+    description: "Racial or ethnic background"
+    type: nominal
+
+    source:
+      w1: se016
+      w2: null
+      w3: null
+      w4: se11a
+      w5: Se11a
+      w6: se11a
+    note: "Ethnicity codes are country-specific"
+
+    harmonize:
+      default:
+        method: identity
+
+    qc:
+      validate:
+        - waves: [w1, w4, w5, w6]
+          phrase: "ethnic|racial"
