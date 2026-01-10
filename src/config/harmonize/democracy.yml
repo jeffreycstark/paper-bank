@@ -1,5 +1,6 @@
-# Democracy - Comprehensive YAML (v2)
+# Democracy - Comprehensive YAML (v3 - CORRECTED)
 # Variables measuring democratic attitudes, perceptions, and satisfaction
+# Corrected 2025-01-10: Fixed scale directions for dem_sat and dem_best_form
 
 missing_conventions:
   treat_as_na:
@@ -7,6 +8,54 @@ missing_conventions:
     description: "Standard missing codes"
 
 variables:
+  # ===========================================================================
+  # GROUP 0: Satisfaction with Democracy (KEY VARIABLE)
+  # ===========================================================================
+
+  - id: dem_sat_national
+    concept: democracy
+    description: "On the whole, how satisfied or dissatisfied are you with the way democracy works in our country?"
+    type: ordinal
+
+    source:
+      w1: q098
+      w2: q93
+      w3: q89
+      w4: q92
+      w5: q99
+      w6: q90
+    # Verified 2025-01-10:
+    # W1, W2: 1=Not at all satisfied → 4=Very satisfied (low→high) ✔
+    # W3, W4, W5, W6: 1=Very satisfied → 4=Not at all (high→low) - REVERSED
+
+    scale:
+      min: 1
+      max: 4
+      labels:
+        1: "Not at all satisfied"
+        2: "Not very satisfied"
+        3: "Fairly satisfied"
+        4: "Very satisfied"
+
+    harmonize:
+      default:
+        method: r_function
+        fn: safe_reverse_4pt
+        note: "W3-W6 coded 1=Very satisfied → 4=Not at all; reverse so high=satisfied"
+      exceptions:
+        w1:
+          method: identity
+          note: "W1 already coded 1=Not at all → 4=Very satisfied"
+        w2:
+          method: identity
+          note: "W2 already coded 1=Not at all → 4=Very satisfied"
+
+    qc:
+      valid_range: [1, 4]
+      validate:
+        - waves: [w1, w2, w3, w4, w5, w6]
+          phrase: "satisfied.*democracy|democracy.*works"
+
   # ===========================================================================
   # GROUP 1: Perceived Level of Democracy
   # ===========================================================================
@@ -81,32 +130,75 @@ variables:
     type: ordinal
 
     source:
-      w1: null    # TODO: find w1 mapping
-      w2: null    # TODO: find w2 mapping
+      w1: null    # Not asked in W1
+      w2: null    # Not asked in W2
       w3: q128
       w4: q129
       w5: q136
       w6: q128
+    # Verified 2025-01-10: All W3-W6 coded 1=Strongly agree → 4=Strongly disagree
+    # Need reversal so high = pro-democracy
 
     scale:
       min: 1
       max: 4
       labels:
         1: "Strongly disagree"
-        2: "Somewhat disagree"
-        3: "Somewhat agree"
+        2: "Disagree"
+        3: "Agree"
         4: "Strongly agree"
 
     harmonize:
       default:
         method: r_function
-        fn: safe_4pt_none
+        fn: safe_reverse_4pt
+        note: "All waves coded 1=Agree → 4=Disagree; reverse so high=pro-democracy"
 
     qc:
       valid_range: [1, 4]
       validate:
         - waves: [w3, w4, w5, w6]
           phrase: "best form|democracy.*problem"
+
+  - id: dem_vs_econ
+    concept: democracy
+    description: "If you had to choose between democracy and economic development, which would you say is more important?"
+    type: ordinal
+
+    source:
+      w1: q119
+      w2: q123
+      w3: q126
+      w4: q127
+      w5: q134
+      w6: q126
+    # Verified 2025-01-10: All waves same coding
+    # 1=Econ definitely more, 2=Econ somewhat more, 3=Dem somewhat more, 4=Dem definitely more, 5=Both equally
+    # NOTE: 5-point scale with "both equally" as middle - may need special handling
+
+    scale:
+      min: 1
+      max: 5
+      labels:
+        1: "Economic development is definitely more important"
+        2: "Economic development is somewhat more important"
+        3: "Democracy is somewhat more important"
+        4: "Democracy is definitely more important"
+        5: "They are both equally important"
+
+    harmonize:
+      default:
+        method: identity
+        note: "All waves coded consistently; higher = more pro-democracy (except 5=neutral)"
+
+    qc:
+      valid_range: [1, 5]
+      validate:
+        - waves: [w1, w2, w3, w4, w5, w6]
+          phrase: "democracy.*economic|choose.*democracy"
+      notes:
+        - "Category 5 (both equally) is not on the democracy-economy continuum"
+        - "Consider recoding 5 to NA for ordinal analysis, or create binary/ternary version"
 
   - id: dem_suitable_country
     concept: democracy

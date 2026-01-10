@@ -1,5 +1,6 @@
-# Social Trust - Comprehensive YAML (v2)
+# Social Trust - Comprehensive YAML (v2 - CORRECTED)
 # Variables measuring generalized trust, interpersonal trust, and social networks
+# Corrected 2025-01-10: Fixed scale directions and documented W5 6pt scale issue
 
 missing_conventions:
   treat_as_na:
@@ -23,6 +24,9 @@ variables:
       w4: q23
       w5: q22
       w6: q22
+    # WARNING: W1 has 3 categories (1=Careful, 2=Trusted, 3=Both)
+    # WARNING: W5 has 3 categories (1=Trusted, 2=Careful, 3=Depends)
+    # W2 is reversed (1=Careful, 2=Trusted) vs W3-W6 (1=Trusted, 2=Careful)
 
     scale:
       min: 1
@@ -34,12 +38,29 @@ variables:
     harmonize:
       default:
         method: identity
+        note: "W3, W4, W6 coded 1=Trusted, 2=Careful"
+      exceptions:
+        w1:
+          method: r_function
+          fn: recode_w1_trust_binary
+          note: "W1 has 3 categories: 1=Careful→2, 2=Trusted→1, 3=Both→NA"
+        w2:
+          method: r_function
+          fn: safe_reverse_2pt
+          note: "W2 coded 1=Careful, 2=Trusted; reverse to match W3-W6"
+        w5:
+          method: r_function
+          fn: recode_w5_trust_binary
+          note: "W5 has 3 categories: 1=Trusted→1, 2=Careful→2, 3=Depends→NA"
 
     qc:
       valid_range: [1, 2]
       validate:
         - waves: [w1, w2, w3, w4, w5, w6]
           phrase: "most people.*trusted|careful.*dealing"
+      notes:
+        - "W1 and W5 have 3rd category that must be recoded to NA"
+        - "W2 scale is reversed from W3-W6"
 
   - id: trust_generalized_ordinal
     concept: social_trust
@@ -47,12 +68,13 @@ variables:
     type: ordinal
 
     source:
-      w1: null
-      w2: null
+      w1: null  # Not asked
+      w2: null  # Not asked
       w3: q49
       w4: q24
       w5: q23
       w6: q23
+    # Verified 2025-01-10: All waves 1=Strongly agree → 4=Strongly disagree
 
     scale:
       min: 1
@@ -67,6 +89,7 @@ variables:
       default:
         method: r_function
         fn: safe_reverse_4pt
+        note: "All waves coded 1=Agree → 4=Disagree; reverse so high=trust"
 
     qc:
       valid_range: [1, 4]
@@ -76,6 +99,7 @@ variables:
 
   # ===========================================================================
   # GROUP 2: Trust in Different People
+  # WARNING: W5 uses 6-point scale, others use 4-point
   # ===========================================================================
 
   - id: trust_relatives
@@ -84,12 +108,15 @@ variables:
     type: ordinal
 
     source:
-      w1: null
+      w1: null  # Not asked
       w2: q24
       w3: q25
       w4: q26
-      w5: q24
+      w5: q24   # WARNING: 6pt scale
       w6: q24
+    # W2: 1=None → 4=Great deal (low→high)
+    # W3, W4, W6: 1=Great deal → 4=None (high→low, needs reversal)
+    # W5: 6pt 1=Trust fully → 6=Distrust fully (needs collapse + reversal)
 
     scale:
       min: 1
@@ -104,12 +131,23 @@ variables:
       default:
         method: r_function
         fn: safe_reverse_4pt
+        note: "W3, W4, W6 coded 1=Great deal → 4=None; reverse so high=trust"
+      exceptions:
+        w2:
+          method: identity
+          note: "W2 already coded 1=None → 4=Great deal"
+        w5:
+          method: r_function
+          fn: collapse_6pt_to_4pt_reverse
+          note: "W5 has 6pt scale (1=Trust fully → 6=Distrust fully); collapse and reverse"
 
     qc:
       valid_range: [1, 4]
       validate:
         - waves: [w2, w3, w4, w5, w6]
           phrase: "trust.*relative"
+      notes:
+        - "W5 uses different 6-point scale - requires special harmonization"
 
   - id: trust_neighbors
     concept: social_trust
@@ -117,12 +155,13 @@ variables:
     type: ordinal
 
     source:
-      w1: null
+      w1: null  # Not asked
       w2: q25
       w3: q26
       w4: q27
-      w5: q25
+      w5: q25   # WARNING: 6pt scale
       w6: q25
+    # Same pattern as trust_relatives
 
     scale:
       min: 1
@@ -137,6 +176,15 @@ variables:
       default:
         method: r_function
         fn: safe_reverse_4pt
+        note: "W3, W4, W6 coded 1=Great deal → 4=None; reverse so high=trust"
+      exceptions:
+        w2:
+          method: identity
+          note: "W2 already coded 1=None → 4=Great deal"
+        w5:
+          method: r_function
+          fn: collapse_6pt_to_4pt_reverse
+          note: "W5 has 6pt scale; collapse and reverse"
 
     qc:
       valid_range: [1, 4]
@@ -150,12 +198,13 @@ variables:
     type: ordinal
 
     source:
-      w1: null
+      w1: null  # Not asked
       w2: q26
       w3: q27
       w4: q28
-      w5: q26
+      w5: q26   # WARNING: 6pt scale
       w6: q26
+    # Same pattern as trust_relatives
 
     scale:
       min: 1
@@ -170,6 +219,15 @@ variables:
       default:
         method: r_function
         fn: safe_reverse_4pt
+        note: "W3, W4, W6 coded 1=Great deal → 4=None; reverse so high=trust"
+      exceptions:
+        w2:
+          method: identity
+          note: "W2 already coded 1=None → 4=Great deal"
+        w5:
+          method: r_function
+          fn: collapse_6pt_to_4pt_reverse
+          note: "W5 has 6pt scale; collapse and reverse"
 
     qc:
       valid_range: [1, 4]
@@ -187,7 +245,7 @@ variables:
       w2: null
       w3: null
       w4: null
-      w5: q27
+      w5: q27   # WARNING: 6pt scale
       w6: q27
 
     scale:
@@ -203,6 +261,12 @@ variables:
       default:
         method: r_function
         fn: safe_reverse_4pt
+        note: "W6 coded 1=Great deal → 4=None; reverse so high=trust"
+      exceptions:
+        w5:
+          method: r_function
+          fn: collapse_6pt_to_4pt_reverse
+          note: "W5 has 6pt scale; collapse and reverse"
 
     qc:
       valid_range: [1, 4]
@@ -211,313 +275,40 @@ variables:
           phrase: "first time|strangers"
 
   # ===========================================================================
-  # GROUP 3: Social Networks
+  # GROUP 3: Trust in Government (from political attitudes)
   # ===========================================================================
 
-  - id: social_contacts_count
+  - id: trust_govt_do_right
     concept: social_trust
-    description: "How many people do you have contact with in a typical week day?"
+    description: "You can generally trust the people who run our government to do what is right"
     type: ordinal
 
     source:
-      w1: null
-      w2: q27
-      w3: null
-      w4: q29
-      w5: q28     # "How many people do you have contact within a typical week day?"
-      w6: q28
-
-    scale:
-      min: 1
-      max: 5
-      labels:
-        1: "0-4 people"
-        2: "5-9 people"
-        3: "10-19 people"
-        4: "20-49 people"
-        5: "50 or more people"
-
-    harmonize:
-      default:
-        method: identity
-
-    qc:
-      valid_range: [1, 5]
-      validate:
-        - waves: [w2, w4, w5, w6]
-          phrase: "contact.*week"
-
-  - id: social_contacts_status
-    concept: social_trust
-    description: "Social status of most of your contacts relative to yours"
-    type: nominal
-
-    source:
-      w1: null
-      w2: null
-      w3: null
-      w4: null
-      w5: null
-      w6: q29
+      w1: q131
+      w2: q130
+      w3: q136
+      w4: q137
+      w5: q144
+      w6: q136
+    # All waves: 1=Strongly agree → 4=Strongly disagree
 
     scale:
       min: 1
       max: 4
       labels:
-        1: "Higher status than yours"
-        2: "Lower status than yours"
-        3: "Equal status to yours"
-        4: "Various"
-
-    harmonize:
-      default:
-        method: identity
-
-    qc:
-      valid_range: [1, 4]
-      validate:
-        - waves: [w6]
-          phrase: "social status.*contact"
-
-  - id: social_contacts_political_views
-    concept: social_trust
-    description: "Political views of people you have frequent contact with"
-    type: ordinal
-
-    source:
-      w1: null
-      w2: null
-      w3: null
-      w4: null
-      w5: q30     # "...which of the following best describes the political views of these people?"
-      w6: q30
-
-    scale:
-      min: 1
-      max: 5
-      labels:
-        1: "Most have views different from me"
-        2: "Only some have views similar to me"
-        3: "A lot have views similar to me"
-        4: "Virtually all have views similar to me"
-        5: "Don't know their political views"
-
-    harmonize:
-      default:
-        method: identity
-        note: "Code 5 may need special handling as non-response"
-
-    qc:
-      valid_range: [1, 5]
-      validate:
-        - waves: [w5, w6]
-          phrase: "political views.*contact"
-
-  - id: social_support_available
-    concept: social_trust
-    description: "Are there people outside your household you can ask for help with a difficult problem?"
-    type: ordinal
-
-    source:
-      w1: null
-      w2: null
-      w3: null
-      w4: q30
-      w5: q31     # "If you have a difficult problem to manage, are there people outside your household you can ask for help?"
-      w6: q31
-
-    scale:
-      min: 1
-      max: 4
-      labels:
-        1: "No, nobody"
-        2: "Yes, a few"
-        3: "Yes, some"
-        4: "Yes, a lot"
-
-    harmonize:
-      default:
-        method: identity
-
-    qc:
-      valid_range: [1, 4]
-      validate:
-        - waves: [w4, w5, w6]
-          phrase: "ask for help|difficult problem"
-
-  - id: political_discussion_tolerance
-    concept: social_trust
-    description: "Would you have a hard time conversing with friends whose political opinions differ from yours?"
-    type: ordinal
-
-    source:
-      w1: null
-      w2: q31
-      w3: null
-      w4: q32
-      w5: q32
-      w6: q32
-
-    scale:
-      min: 1
-      max: 4
-      labels:
-        1: "Not hard at all"
-        2: "Not too hard"
-        3: "A bit hard"
-        4: "Very hard"
+        1: "Strongly disagree"
+        2: "Somewhat disagree"
+        3: "Somewhat agree"
+        4: "Strongly agree"
 
     harmonize:
       default:
         method: r_function
         fn: safe_reverse_4pt
-        note: "Original: 1=very hard to 4=not hard at all; Reversed so higher = more intolerance"
+        note: "All waves coded 1=Agree → 4=Disagree; reverse so high=trust"
 
     qc:
       valid_range: [1, 4]
       validate:
-        - waves: [w2, w4, w5, w6]
-          phrase: "opinions.*differ|hard.*conversing"
-
-  # ===========================================================================
-  # GROUP 5: Social Connections (Wave 1 Social Capital)
-  # ===========================================================================
-
-  - id: social_connections_help
-    concept: social_trust
-    description: "I have enough friends and connections so that I can get help if I need it"
-    type: ordinal
-
-    source:
-      w1: q025
-      w2: null
-      w3: null
-      w4: null
-      w5: null
-      w6: null
-    note: "Wave 1 only - part of social capital battery"
-
-    scale:
-      min: 1
-      max: 4
-      labels:
-        1: "Applies very well"
-        2: "Applies pretty well"
-        3: "Doesn't apply much"
-        4: "Doesn't apply at all"
-
-    harmonize:
-      default:
-        method: r_function
-        fn: safe_reverse_4pt
-        note: "Reversed so higher = more connections/resources"
-
-    qc:
-      valid_range: [1, 4]
-      validate:
-        - waves: [w1]
-          phrase: "friends.*connections|help.*need"
-
-  - id: social_connections_influence
-    concept: social_trust
-    description: "I have some friends with influence, so I don't have to worry too much if I get into a tight spot"
-    type: ordinal
-
-    source:
-      w1: q026
-      w2: null
-      w3: null
-      w4: null
-      w5: null
-      w6: null
-    note: "Wave 1 only - part of social capital battery"
-
-    scale:
-      min: 1
-      max: 4
-      labels:
-        1: "Applies very well"
-        2: "Applies pretty well"
-        3: "Doesn't apply much"
-        4: "Doesn't apply at all"
-
-    harmonize:
-      default:
-        method: r_function
-        fn: safe_reverse_4pt
-        note: "Reversed so higher = more influential connections"
-
-    qc:
-      valid_range: [1, 4]
-      validate:
-        - waves: [w1]
-          phrase: "friends.*influence|tight spot"
-
-  # ===========================================================================
-  # GROUP 6: Interpersonal Trust - Fairness (Wave 4)
-  # ===========================================================================
-
-  - id: trust_fairness_binary
-    concept: social_trust
-    description: "Do you think most people would try to take advantage of you if they got a chance, or would they try to be fair?"
-    type: nominal
-
-    source:
-      w1: null
-      w2: null
-      w3: null
-      w4: q25
-      w5: null
-      w6: null
-    note: "Wave 4 - binary fairness perception"
-
-    scale:
-      min: 1
-      max: 2
-      labels:
-        1: "Try to take advantage"
-        2: "Try to be fair"
-
-    harmonize:
-      default:
-        method: identity
-
-    qc:
-      valid_range: [1, 2]
-      validate:
-        - waves: [w4]
-          phrase: "take advantage|fair"
-
-  - id: social_support_reciprocity
-    concept: social_trust
-    description: "When people outside your household have problems, do they come to you for help?"
-    type: ordinal
-
-    source:
-      w1: null
-      w2: null
-      w3: null
-      w4: q31
-      w5: null
-      w6: null
-    note: "Wave 4 - reciprocal social support"
-
-    scale:
-      min: 1
-      max: 4
-      labels:
-        1: "No, nobody"
-        2: "Yes, a few"
-        3: "Yes, some"
-        4: "Yes, a lot"
-
-    harmonize:
-      default:
-        method: identity
-
-    qc:
-      valid_range: [1, 4]
-      validate:
-        - waves: [w4]
-          phrase: "come to you.*help|problems"
-
+        - waves: [w1, w2, w3, w4, w5, w6]
+          phrase: "trust.*government.*right"

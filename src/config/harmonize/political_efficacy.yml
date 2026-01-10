@@ -56,6 +56,7 @@ variables:
       w4: q135
       w5: q142
       w6: q134
+    # Verified 2025-01-10: All waves 1=Strongly agree → 4=Strongly disagree
 
     scale:
       min: 1
@@ -90,11 +91,12 @@ variables:
 
     source:
       w1: q129
-      w2: null
+      w2: null  # Not asked in W2
       w3: q135
       w4: q136
       w5: q143
       w6: q135
+    # Verified 2025-01-10: All waves 1=Strongly agree → 4=Strongly disagree
 
     scale:
       min: 1
