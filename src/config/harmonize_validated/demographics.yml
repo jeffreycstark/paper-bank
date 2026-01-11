@@ -141,12 +141,12 @@ variables:
     type: nominal
 
     source:
-      w1: se002    # TODO: verify w1 variable name
+      w1: se002
       w2: se2
       w3: se2
       w4: se2
       w5: SE2
-      w6: SE2
+      w6: se2
 
     scale:
       min: 1
@@ -171,12 +171,12 @@ variables:
     type: continuous
 
     source:
-      w1: se003a    # TODO: verify w1 variable name
+      w1: se003a
       w2: se3a
       w3: se3a
       w4: se3_2
       w5: SE3_1
-      w6: SE3_1
+      w6: se3_1
 
     scale:
       min: 18
