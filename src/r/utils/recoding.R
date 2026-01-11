@@ -1071,3 +1071,73 @@ no_verify <- function(x,
   dplyr::if_else(x %in% missing_codes, NA_real_, as.numeric(x))
 }
 
+# ==============================================================================
+# COMMUNITY LEADER CONTACT RECODING
+# ==============================================================================
+
+#' Recode W3 community leader contact from 0-2 to 1-3 scale
+#'
+#' W3 q66: 0=Never Done, 1=Once, 2=More than once
+#' Target: 1=Never, 2=Once, 3=More than once
+recode_w3_leader_contact <- function(x,
+                                      data = NULL,
+                                      var_name = NULL,
+                                      missing_codes = c(-1, 7, 8, 9),
+                                      validate_all = NULL) {
+
+  if (!is.null(validate_all)) {
+    if (is.null(data) || is.null(var_name)) {
+      stop("validate_all requires both `data` and `var_name`")
+    }
+    qtext <- attr(data[[var_name]], "label")
+    if (!is.null(qtext)) {
+      for (pattern in validate_all) {
+        if (!grepl(pattern, qtext, ignore.case = TRUE)) {
+          stop(glue::glue("{var_name}: expected '{pattern}' not found in: '{qtext}'"))
+        }
+      }
+    }
+  }
+
+  dplyr::case_when(
+    x %in% missing_codes ~ NA_real_,
+    x == 0 ~ 1,  # Never → 1
+    x == 1 ~ 2,  # Once → 2
+    x == 2 ~ 3,  # More than once → 3
+    TRUE ~ NA_real_
+  )
+}
+
+#' Collapse W5/W6 5-point leader contact to 3-point scale
+#'
+#' W5/W6: 1=More than 3x, 2=2-3x, 3=Once, 4=Might do it, 5=Never would
+#' Target: 1=Never, 2=Once, 3=More than once
+collapse_5pt_leader_to_3pt <- function(x,
+                                        data = NULL,
+                                        var_name = NULL,
+                                        missing_codes = c(-1, 0, 7, 8, 9),
+                                        validate_all = NULL) {
+
+  if (!is.null(validate_all)) {
+    if (is.null(data) || is.null(var_name)) {
+      stop("validate_all requires both `data` and `var_name`")
+    }
+    qtext <- attr(data[[var_name]], "label")
+    if (!is.null(qtext)) {
+      for (pattern in validate_all) {
+        if (!grepl(pattern, qtext, ignore.case = TRUE)) {
+          stop(glue::glue("{var_name}: expected '{pattern}' not found in: '{qtext}'"))
+        }
+      }
+    }
+  }
+
+  dplyr::case_when(
+    x %in% missing_codes ~ NA_real_,
+    x %in% c(1, 2) ~ 3,  # More than once (more than 3x or 2-3x) → 3
+    x == 3 ~ 2,          # Once → 2
+    x %in% c(4, 5) ~ 1,  # Might/Never → 1 (Never)
+    TRUE ~ NA_real_
+  )
+}
+

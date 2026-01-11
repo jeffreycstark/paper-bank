@@ -1,5 +1,7 @@
-# Partisanship - Comprehensive YAML (v2)
+# Partisanship - Validated YAML (v2)
 # Variables measuring party identification and attachment strength
+# NOTE: party_id excluded due to country-specific codes (100s of values)
+# Validated 2025-01-11
 
 missing_conventions:
   treat_as_na:
@@ -8,39 +10,8 @@ missing_conventions:
 
 variables:
   # ===========================================================================
-  # Party Identification
+  # Party Closeness
   # ===========================================================================
-
-  - id: party_id
-    concept: partisanship
-    description: "Among the political parties listed, which party do you feel closest to?"
-    type: nominal
-
-    source:
-      w1: q062
-      w2: q54
-      w3: q47
-      w4: q53
-      w5: q56
-      w6: q54
-
-    scale:
-      min: 1
-      max: 9999
-      labels:
-        90: "Don't feel close to any political party"
-      note: "Country-specific party codes (100s=Japan, 300s=Korea, 500s=Mongolia, etc.)"
-
-    harmonize:
-      default:
-        method: identity
-        note: "Nominal variable with country-specific codes - analyze within country or recode to party family"
-
-    qc:
-      valid_range: [1, 9999]
-      validate:
-        - waves: [w1, w2, w3, w4, w5, w6]
-          phrase: "closest.*party|party.*closest"
 
   - id: party_closeness
     concept: partisanship
@@ -71,7 +42,7 @@ variables:
     qc:
       valid_range: [1, 3]
       validate:
-        - waves: [w2, w3, w4, w5, w6]
+        - waves: [w1, w2, w3, w4, w5, w6]
           phrase: "how close.*party|close.*feel"
 
   # ===========================================================================

@@ -1,5 +1,7 @@
-# Political Action - Comprehensive YAML (v2)
+# Political Action - Validated YAML (v2)
 # Variables measuring political participation, civic engagement, and voting behavior
+# NOTE: party_voted_for excluded due to country-specific codes (100s of values)
+# Validated 2025-01-11
 
 missing_conventions:
   treat_as_na:
@@ -52,9 +54,9 @@ variables:
     type: ordinal
 
     source:
-      w1: q073    # "government official"
-      w2: q79     # "government (administrative) official"
-      w3: q65     # "officials at higher level"
+      w1: q073
+      w2: q79
+      w3: q65
       w4: q70
       w5: q71
       w6: q69
@@ -86,7 +88,7 @@ variables:
     type: ordinal
 
     source:
-      w1: null    # TODO: w1 has different structure
+      w1: null
       w2: q84
       w3: q66
       w4: q71
@@ -120,8 +122,8 @@ variables:
     type: ordinal
 
     source:
-      w1: null    # TODO: find w1 mapping
-      w2: null    # TODO: find w2 mapping
+      w1: null
+      w2: null
       w3: q68
       w4: q73
       w5: q73
@@ -158,11 +160,11 @@ variables:
     type: ordinal
 
     source:
-      w1: null    # TODO: find w1 mapping
-      w2: q87     # "raise an issue or sign a petition"
+      w1: null
+      w2: q87
       w3: q70
       w4: q75
-      w5: q74     # paper petition (w5 has separate online q75)
+      w5: q74
       w6: q72
 
     scale:
@@ -195,7 +197,7 @@ variables:
       w1: null
       w2: null
       w3: null
-      w4: q52     # different scale - frequency
+      w4: q52
       w5: q76
       w6: q73
 
@@ -302,7 +304,7 @@ variables:
     type: ordinal
 
     source:
-      w1: null    # w1 q087 is about doing alone/with others
+      w1: null
       w2: q88
       w3: q71
       w4: q76
@@ -374,10 +376,10 @@ variables:
     type: ordinal
 
     source:
-      w1: null    # TODO: find w1 mapping
-      w2: q90     # "Thinking of whether you voted or not ever since you became eligible for voting"
+      w1: null
+      w2: q90
       w3: q73
-      w4: q78     # "Thinking of whether you voted or not ever since you became eligible for voting"
+      w4: q78
       w5: q81
       w6: q78
 
@@ -411,7 +413,7 @@ variables:
     type: nominal
 
     source:
-      w1: q116    # Similar to corruption witness question - verify
+      w1: q116
       w2: q119
       w3: q119
       w4: q120
@@ -442,7 +444,7 @@ variables:
 
     source:
       w1: null
-      w2: q38     # "Have you voted in the last election?"
+      w2: q38
       w3: q32
       w4: q33
       w5: q33
@@ -658,38 +660,6 @@ variables:
       validate:
         - waves: [w1]
           phrase: "participated.*election"
-
-  - id: party_voted_for
-    concept: political_action
-    description: "Which party did you vote for?"
-    type: nominal
-
-    source:
-      w1: q028
-      w2: null
-      w3: null
-      w4: null
-      w5: null
-      w6: null
-    note: "Wave 1 only - country-specific party codes"
-
-    scale:
-      min: 1
-      max: 9999
-      labels:
-        96: "Forgot"
-      note: "Country-specific party codes (100s=Japan, etc.)"
-
-    harmonize:
-      default:
-        method: identity
-        note: "Nominal - use as categorical within country"
-
-    qc:
-      valid_range: [1, 9999]
-      validate:
-        - waves: [w1]
-          phrase: "which party.*vote"
 
   - id: helped_party_w1
     concept: political_action
@@ -1145,7 +1115,6 @@ variables:
   # ===========================================================================
   # GROUP 9: Wave 4 Political Contact Actions (4-Category Scale)
   # Scale: 1=Never, 2=Once, 3=Twice, 4=Several times (or similar)
-  # Alternative coding to waves 2-6 which use 5-point scale
   # ===========================================================================
 
   - id: action_contact_elected_w4

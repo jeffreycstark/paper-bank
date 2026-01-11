@@ -1,5 +1,6 @@
-# Governance Perceptions - Comprehensive YAML (v2)
+# Governance Perceptions - Validated YAML (v2)
 # Variables measuring perceptions of government functioning, accountability, equality, and rights
+# Validated 2025-01-11
 
 missing_conventions:
   treat_as_na:
@@ -191,7 +192,7 @@ variables:
     type: ordinal
 
     source:
-      w1: q106    # "Everyone treated equally - better than before?"
+      w1: q106
       w2: q108
       w3: q104
       w4: q106
@@ -265,7 +266,7 @@ variables:
     type: ordinal
 
     source:
-      w1: q113    # "join any organization - better than before?"
+      w1: q113
       w2: q111
       w3: q107
       w4: q109
@@ -474,7 +475,7 @@ variables:
           phrase: "enforcing laws|implement.*polic"
 
   # ===========================================================================
-  # GROUP 6: Important Problems (from q97-q98)
+  # GROUP 6: Important Problems
   # ===========================================================================
 
   - id: problem_most_important
@@ -543,4 +544,3 @@ variables:
       validate:
         - waves: [w2, w3, w4, w5, w6]
           phrase: "government.*solve|likely.*solve"
-

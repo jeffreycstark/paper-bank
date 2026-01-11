@@ -1,5 +1,6 @@
-# Globalization Attitudes - Comprehensive YAML (v2)
+# Globalization Attitudes - Validated YAML (v2)
 # Variables measuring attitudes toward cultural openness, trade, and immigration
+# Validated 2025-01-11
 
 missing_conventions:
   treat_as_na:
@@ -34,7 +35,6 @@ variables:
     harmonize:
       default:
         method: identity
-        note: "Binary choice - use as-is for analysis"
 
     qc:
       valid_range: [1, 2]
@@ -69,7 +69,6 @@ variables:
     harmonize:
       default:
         method: identity
-        note: "Binary choice - use as-is for analysis"
 
     qc:
       valid_range: [1, 2]
@@ -116,7 +115,7 @@ variables:
           phrase: "immigra|foreign.*inflow"
 
   # ===========================================================================
-  # GROUP 4: Intensity Follow-ups (Wave 5)
+  # GROUP 4: Intensity Follow-ups (Wave 5 only)
   # ===========================================================================
 
   - id: glob_cultural_defense_intensity
@@ -131,7 +130,6 @@ variables:
       w4: null
       w5: q156a
       w6: null
-    note: "Wave 5 only - intensity follow-up to q156"
 
     scale:
       min: 1
@@ -162,7 +160,6 @@ variables:
       w4: null
       w5: q157a
       w6: null
-    note: "Wave 5 only - intensity follow-up to q157"
 
     scale:
       min: 1
@@ -180,4 +177,3 @@ variables:
       validate:
         - waves: [w5]
           phrase: "strongly|how much"
-

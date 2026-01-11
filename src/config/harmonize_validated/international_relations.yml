@@ -1,5 +1,6 @@
-# International Relations - Comprehensive YAML (v2)
+# International Relations - Validated YAML (v2)
 # Variables measuring perceptions of major powers' influence and regional attitudes
+# Validated 2025-01-11
 
 missing_conventions:
   treat_as_na:
@@ -648,7 +649,7 @@ variables:
           phrase: "USA.*influence.*positive|USA.*influence.*negative"
 
   # ===========================================================================
-  # GROUP 1: Democracy Ratings of Other Countries
+  # GROUP 8: Democracy Ratings of Other Countries
   # ===========================================================================
 
   - id: dem_rating_china
@@ -772,4 +773,3 @@ variables:
       validate:
         - waves: [w5]
           phrase: "India.*scale|place.*India"
-

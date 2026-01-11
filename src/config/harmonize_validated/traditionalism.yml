@@ -1,6 +1,7 @@
-# Traditionalism - Comprehensive YAML (v2)
+# Traditionalism - Validated YAML (v2)
 # Variables measuring traditional/collectivist values, hierarchy, and fatalism
 # Scale: 1-4 (Strongly agree to Strongly disagree) - REVERSED so higher = more traditional
+# Validated 2025-01-11
 
 missing_conventions:
   treat_as_na:
@@ -250,6 +251,42 @@ variables:
       validate:
         - waves: [w2, w3, w4, w5, w6]
           phrase: "student.*teacher|question.*authority"
+
+  - id: trad_hierarchical_obedience
+    concept: traditionalism
+    description: "Government leaders are like the head of a family; we should all follow their decisions"
+    type: ordinal
+
+    source:
+      w1: q133
+      w2: q134
+      w3: q141
+      w4: q142
+      w5: q149
+      w6: q149
+    # Verified 2025-01-11:
+    # All waves: 1=Strongly agree, 2=Somewhat agree, 3=Somewhat disagree, 4=Strongly disagree
+
+    scale:
+      min: 1
+      max: 4
+      labels:
+        1: "Strongly disagree"
+        2: "Somewhat disagree"
+        3: "Somewhat agree"
+        4: "Strongly agree"
+
+    harmonize:
+      default:
+        method: r_function
+        fn: safe_reverse_4pt
+        note: "Reversed so higher = more traditional/deferential to authority"
+
+    qc:
+      valid_range: [1, 4]
+      validate:
+        - waves: [w1, w2, w3, w4, w5, w6]
+          phrase: "government.*head.*family|follow.*decision"
 
   # ===========================================================================
   # GROUP 4: Harmony / Conflict Avoidance

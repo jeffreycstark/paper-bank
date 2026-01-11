@@ -1,5 +1,6 @@
-# National Identity - Comprehensive YAML (v2)
+# National Identity - Validated YAML (v2)
 # Variables measuring national pride and attachment to country
+# Validated 2025-01-11
 
 missing_conventions:
   treat_as_na:
@@ -80,4 +81,3 @@ variables:
       validate:
         - waves: [w2, w3, w4, w5, w6]
           phrase: "willing.*another country|live.*other country"
-

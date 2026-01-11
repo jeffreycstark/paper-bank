@@ -1,6 +1,8 @@
-# Meaning of Democracy - Comprehensive YAML (v2)
-# Forced-choice questions about what constitutes essential characteristics of democracy
-# Each set presents 4 options: 2 substantive (economic/welfare) and 2 procedural (political process)
+# Meaning of Democracy - Validated YAML (v2)
+# Forced-choice questions about essential characteristics of democracy
+# Each set presents 4 options mixing substantive/economic and procedural/political choices
+# NOTE: W1/W2/W5 have different question formats - those excluded; W3/W4/W6 have matched sets
+# Validated 2025-01-11
 
 missing_conventions:
   treat_as_na:
@@ -9,7 +11,7 @@ missing_conventions:
 
 variables:
   # ===========================================================================
-  # GROUP 1: Essential Characteristics Sets (4 sets)
+  # Essential Characteristics Sets (4 sets, W3/W4/W6 only)
   # Nominal: respondent picks 1 of 4 options
   # ===========================================================================
 
@@ -19,11 +21,11 @@ variables:
     type: nominal
 
     source:
-      w1: null    # w1 has open-ended q097_1,2,3
-      w2: null    # w2 has single question q92
+      w1: null
+      w2: null
       w3: q85
       w4: q88
-      w5: null    # w5 has single question q98
+      w5: null
       w6: q85
 
     scale:
@@ -144,4 +146,3 @@ variables:
       validate:
         - waves: [w3, w4, w6]
           phrase: "protest|demonstration|corruption|court.*protect|unemploy"
-

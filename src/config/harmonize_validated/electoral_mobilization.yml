@@ -1,6 +1,7 @@
-# Electoral Mobilization - Comprehensive YAML (v2)
+# Electoral Mobilization - Validated YAML (v2)
 # Variables measuring vote solicitation sources and influence on voting decisions
 # Wave 1 specific battery (24 items in two parallel groups)
+# Validated 2025-01-11
 
 missing_conventions:
   treat_as_na:
@@ -9,7 +10,7 @@ missing_conventions:
 
 variables:
   # ===========================================================================
-  # GROUP 1: Vote Solicitation Sources
+  # GROUP 1: Vote Solicitation Sources (12 items)
   # "Did the following personally ask you to vote for a particular candidate?"
   # Binary: 1=No, 2=Yes
   # ===========================================================================
@@ -26,7 +27,6 @@ variables:
       w4: null
       w5: null
       w6: null
-    note: "Wave 1 only - part of electoral mobilization battery"
 
     scale:
       min: 1
@@ -57,7 +57,6 @@ variables:
       w4: null
       w5: null
       w6: null
-    note: "Wave 1 only - part of electoral mobilization battery"
 
     scale:
       min: 1
@@ -88,7 +87,6 @@ variables:
       w4: null
       w5: null
       w6: null
-    note: "Wave 1 only - part of electoral mobilization battery"
 
     scale:
       min: 1
@@ -119,7 +117,6 @@ variables:
       w4: null
       w5: null
       w6: null
-    note: "Wave 1 only - part of electoral mobilization battery"
 
     scale:
       min: 1
@@ -150,7 +147,6 @@ variables:
       w4: null
       w5: null
       w6: null
-    note: "Wave 1 only - part of electoral mobilization battery"
 
     scale:
       min: 1
@@ -181,7 +177,6 @@ variables:
       w4: null
       w5: null
       w6: null
-    note: "Wave 1 only - part of electoral mobilization battery"
 
     scale:
       min: 1
@@ -212,7 +207,6 @@ variables:
       w4: null
       w5: null
       w6: null
-    note: "Wave 1 only - part of electoral mobilization battery"
 
     scale:
       min: 1
@@ -243,7 +237,6 @@ variables:
       w4: null
       w5: null
       w6: null
-    note: "Wave 1 only - part of electoral mobilization battery"
 
     scale:
       min: 1
@@ -274,7 +267,6 @@ variables:
       w4: null
       w5: null
       w6: null
-    note: "Wave 1 only - part of electoral mobilization battery"
 
     scale:
       min: 1
@@ -291,7 +283,7 @@ variables:
       valid_range: [1, 2]
       validate:
         - waves: [w1]
-          phrase: "ask.*vote.*government.*don't know|official.*don't know.*vote"
+          phrase: "ask.*vote.*government|official.*vote"
 
   - id: mob_asked_party_known
     concept: electoral_mobilization
@@ -305,7 +297,6 @@ variables:
       w4: null
       w5: null
       w6: null
-    note: "Wave 1 only - part of electoral mobilization battery"
 
     scale:
       min: 1
@@ -336,7 +327,6 @@ variables:
       w4: null
       w5: null
       w6: null
-    note: "Wave 1 only - part of electoral mobilization battery"
 
     scale:
       min: 1
@@ -353,7 +343,7 @@ variables:
       valid_range: [1, 2]
       validate:
         - waves: [w1]
-          phrase: "ask.*vote.*party.*don't know|candidate.*activist.*don't know"
+          phrase: "ask.*vote.*party|candidate.*activist.*vote"
 
   - id: mob_asked_other
     concept: electoral_mobilization
@@ -367,7 +357,6 @@ variables:
       w4: null
       w5: null
       w6: null
-    note: "Wave 1 only - part of electoral mobilization battery"
 
     scale:
       min: 1
@@ -387,7 +376,7 @@ variables:
           phrase: "ask.*vote.*other"
 
   # ===========================================================================
-  # GROUP 2: Vote Influence Sources
+  # GROUP 2: Vote Influence Sources (12 items)
   # "Was [source] influential in your vote decision?"
   # Binary: 1=No, 2=Yes
   # ===========================================================================
@@ -404,7 +393,6 @@ variables:
       w4: null
       w5: null
       w6: null
-    note: "Wave 1 only - part of electoral mobilization battery"
 
     scale:
       min: 1
@@ -435,7 +423,6 @@ variables:
       w4: null
       w5: null
       w6: null
-    note: "Wave 1 only - part of electoral mobilization battery"
 
     scale:
       min: 1
@@ -466,7 +453,6 @@ variables:
       w4: null
       w5: null
       w6: null
-    note: "Wave 1 only - part of electoral mobilization battery"
 
     scale:
       min: 1
@@ -497,7 +483,6 @@ variables:
       w4: null
       w5: null
       w6: null
-    note: "Wave 1 only - part of electoral mobilization battery"
 
     scale:
       min: 1
@@ -528,7 +513,6 @@ variables:
       w4: null
       w5: null
       w6: null
-    note: "Wave 1 only - part of electoral mobilization battery"
 
     scale:
       min: 1
@@ -559,7 +543,6 @@ variables:
       w4: null
       w5: null
       w6: null
-    note: "Wave 1 only - part of electoral mobilization battery"
 
     scale:
       min: 1
@@ -590,7 +573,6 @@ variables:
       w4: null
       w5: null
       w6: null
-    note: "Wave 1 only - part of electoral mobilization battery"
 
     scale:
       min: 1
@@ -621,7 +603,6 @@ variables:
       w4: null
       w5: null
       w6: null
-    note: "Wave 1 only - part of electoral mobilization battery"
 
     scale:
       min: 1
@@ -652,7 +633,6 @@ variables:
       w4: null
       w5: null
       w6: null
-    note: "Wave 1 only - part of electoral mobilization battery"
 
     scale:
       min: 1
@@ -669,7 +649,7 @@ variables:
       valid_range: [1, 2]
       validate:
         - waves: [w1]
-          phrase: "influential.*government.*don't know|official.*don't know.*influential"
+          phrase: "influential.*government|official.*influential"
 
   - id: mob_influence_party_known
     concept: electoral_mobilization
@@ -683,7 +663,6 @@ variables:
       w4: null
       w5: null
       w6: null
-    note: "Wave 1 only - part of electoral mobilization battery"
 
     scale:
       min: 1
@@ -714,7 +693,6 @@ variables:
       w4: null
       w5: null
       w6: null
-    note: "Wave 1 only - part of electoral mobilization battery"
 
     scale:
       min: 1
@@ -731,7 +709,7 @@ variables:
       valid_range: [1, 2]
       validate:
         - waves: [w1]
-          phrase: "influential.*party.*don't know|candidate.*activist.*don't know.*influential"
+          phrase: "influential.*party|candidate.*activist.*influential"
 
   - id: mob_influence_other
     concept: electoral_mobilization
@@ -745,7 +723,6 @@ variables:
       w4: null
       w5: null
       w6: null
-    note: "Wave 1 only - part of electoral mobilization battery"
 
     scale:
       min: 1

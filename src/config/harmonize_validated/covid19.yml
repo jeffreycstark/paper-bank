@@ -1,6 +1,7 @@
-# COVID-19 - Wave 6 Only YAML (v2)
+# COVID-19 - Validated YAML (v2)
 # Variables measuring COVID-19 impact, trust, and government response
 # NOTE: These variables are ONLY available in Wave 6
+# Validated 2025-01-11
 
 missing_conventions:
   treat_as_na:
@@ -314,23 +315,23 @@ variables:
       w4: null
       w5: null
       w6: q162
+    # Note: Only asked of those with income; -1 = not applicable (no income)
 
     scale:
       min: 1
-      max: 4
+      max: 3
       labels:
         1: "Not serious at all"
         2: "Not very serious"
-        3: "Somewhat serious"
-        4: "Very serious"
+        3: "Somewhat/Very serious"
 
     harmonize:
       default:
         method: r_function
-        fn: safe_4pt_none
+        fn: safe_3pt_none
 
     qc:
-      valid_range: [1, 4]
+      valid_range: [1, 3]
       validate:
         - waves: [w6]
           phrase: "lose.*income|serious"

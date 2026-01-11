@@ -1,5 +1,7 @@
-# Democracy Tradeoffs - Comprehensive YAML (v2)
-# Variables measuring attitudes toward democracy vs. other values
+# Democracy Tradeoffs - Validated YAML (v2)
+# Variables measuring attitudes toward democracy through statement pairs
+# W4/W5 specific items with intensity follow-ups
+# Validated 2025-01-11
 
 missing_conventions:
   treat_as_na:
@@ -7,11 +9,9 @@ missing_conventions:
     description: "Standard missing codes"
 
 variables:
-
-
   # ===========================================================================
-  # GROUP 4: Democracy Statement Pairs (Wave 4)
-  # Format: Main question + intensity follow-up
+  # GROUP 1: Statement Pairs with Intensity Follow-ups
+  # Format: Binary/ternary choice + intensity follow-up
   # ===========================================================================
 
   - id: dem_statement_pair_1
@@ -26,7 +26,6 @@ variables:
       w4: q79
       w5: q82
       w6: null
-    note: "Wave 4/5 - paired statement item, see codebook for specific wording"
 
     scale:
       min: 1
@@ -57,7 +56,6 @@ variables:
       w4: q79a
       w5: q82a
       w6: null
-    note: "Wave 4/5 - intensity follow-up"
 
     scale:
       min: 1
@@ -88,7 +86,6 @@ variables:
       w4: q80
       w5: null
       w6: null
-    note: "Wave 4 - paired statement item, see codebook for specific wording"
 
     scale:
       min: 1
@@ -119,7 +116,6 @@ variables:
       w4: q80a
       w5: null
       w6: null
-    note: "Wave 4 - intensity follow-up to q80"
 
     scale:
       min: 1
@@ -150,7 +146,6 @@ variables:
       w4: q81
       w5: null
       w6: null
-    note: "Wave 4 - paired statement item, see codebook for specific wording"
 
     scale:
       min: 1
@@ -181,7 +176,6 @@ variables:
       w4: q81a
       w5: null
       w6: null
-    note: "Wave 4 - intensity follow-up to q81"
 
     scale:
       min: 1
@@ -212,7 +206,6 @@ variables:
       w4: q82
       w5: null
       w6: null
-    note: "Wave 4 - paired statement item, see codebook for specific wording"
 
     scale:
       min: 1
@@ -243,7 +236,6 @@ variables:
       w4: q82a
       w5: null
       w6: null
-    note: "Wave 4 - intensity follow-up to q82"
 
     scale:
       min: 1
@@ -274,7 +266,6 @@ variables:
       w4: q125
       w5: q132
       w6: null
-    note: "Wave 4/5 - statement choice item, see codebook for specific options"
 
     scale:
       min: 1
@@ -306,7 +297,6 @@ variables:
       w4: q126
       w5: q133
       w6: null
-    note: "Wave 4/5 - statement choice item, see codebook for specific options"
 
     scale:
       min: 1
@@ -324,4 +314,3 @@ variables:
       validate:
         - waves: [w4, w5]
           phrase: "statement.*closer|view"
-
