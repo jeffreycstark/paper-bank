@@ -776,3 +776,122 @@ variables:
       validate:
         - waves: [w4]
           phrase: "India"
+
+  - id: dem_always_preferable
+    concept: democracy_tradeoffs
+    description: "Democracy always preferable vs. authoritarian sometimes preferable vs. doesn't matter"
+    type: nominal
+
+    source:
+      w1: q117
+      w2: q121
+      w3: q124
+      w4: q125
+      w5: q132
+      w6: q124
+    # NOTE: Scale directions differ across waves - see harmonize exceptions
+
+    scale:
+      min: 1
+      max: 3
+      labels:
+        1: "Democracy is always preferable"
+        2: "Authoritarian sometimes preferable"
+        3: "Doesn't matter what kind of regime"
+
+    harmonize:
+      default:
+        method: identity
+        note: "W3-W6 already coded 1=Democracy, 2=Auth, 3=Doesn't matter"
+      exceptions:
+        w1:
+          method: r_function
+          fn: recode_w1_dem_preferable
+          note: "W1 coded 1=Auth, 2=Doesn't matter, 3=Democracy; remap to standard"
+        w2:
+          method: r_function
+          fn: recode_w2_dem_preferable
+          note: "W2 coded 1=Doesn't matter, 2=Auth, 3=Democracy; remap to standard"
+
+    qc:
+      valid_range: [1, 3]
+      validate:
+        - waves: [w1, w2, w3, w4, w5, w6]
+          phrase: "democracy.*preferable|authoritarian.*preferable|closest.*opinion"
+
+  - id: dem_capable_solving
+    concept: democracy_tradeoffs
+    description: "Democracy is capable of solving society's problems vs. cannot solve"
+    type: nominal
+
+    source:
+      w1: q118
+      w2: q122
+      w3: q125
+      w4: q126
+      w5: q133
+      w6: q125
+    # NOTE: W1-W2 reversed from W3-W6
+
+    scale:
+      min: 1
+      max: 2
+      labels:
+        1: "Democracy is capable of solving problems"
+        2: "Democracy cannot solve problems"
+
+    harmonize:
+      default:
+        method: identity
+        note: "W3-W6 already coded 1=Capable, 2=Cannot"
+      exceptions:
+        w1:
+          method: r_function
+          fn: safe_reverse_2pt
+          note: "W1 coded 1=Cannot, 2=Capable; reverse to match W3-W6"
+        w2:
+          method: r_function
+          fn: safe_reverse_2pt
+          note: "W2 coded 1=Cannot, 2=Capable; reverse to match W3-W6"
+
+    qc:
+      valid_range: [1, 2]
+      validate:
+        - waves: [w1, w2, w3, w4, w5, w6]
+          phrase: "comes closer"
+
+  - id: dem_vs_equality
+    concept: democracy_tradeoffs
+    description: "If you had to choose between reducing economic inequality and protecting political freedom, which is more important?"
+    type: ordinal
+
+    source:
+      w1: null
+      w2: null
+      w3: q127
+      w4: q128
+      w5: q135
+      w6: q127
+    # NOTE: Raw data has "both equally" at position 5, not center
+
+    scale:
+      min: 1
+      max: 5
+      labels:
+        1: "Reducing inequality definitely more important"
+        2: "Reducing inequality somewhat more important"
+        3: "Both equally important"
+        4: "Political freedom somewhat more important"
+        5: "Political freedom definitely more important"
+
+    harmonize:
+      default:
+        method: r_function
+        fn: middle_identity_5pt
+        note: "Raw: 1=ineq def, 2=ineq somewhat, 3=free somewhat, 4=free def, 5=both; remap 5→3 to center"
+
+    qc:
+      valid_range: [1, 5]
+      validate:
+        - waves: [w3, w4, w5, w6]
+          phrase: "inequality.*freedom|freedom.*inequality"

@@ -259,11 +259,14 @@ if (sys.nframe() == 0) {
   # Stack into wide format
   harmonized_wide <- stack_harmonized_wide(results, waves)
 
-  # Summary
-  cat("\n=== Output ===\n")
+  # Save master files
+  cat("\n=== Saving master files ===\n")
+  output_dir <- here::here("outputs")
   for (wave_name in names(harmonized_wide)) {
     df <- harmonized_wide[[wave_name]]
-    cat(sprintf("%s: %d rows, %d variables\n",
-                wave_name, nrow(df), ncol(df) - 2))  # -2 for wave, row_id
+    output_file <- file.path(output_dir, paste0("master_", wave_name, ".rds"))
+    saveRDS(df, output_file)
+    cat(sprintf("  Saved %s: %d rows, %d variables\n",
+                basename(output_file), nrow(df), ncol(df) - 2))  # -2 for wave, row_id
   }
 }

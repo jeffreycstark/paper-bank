@@ -149,40 +149,8 @@ variables:
 
   # ===========================================================================
   # GROUP 2: Trust in Government / Officials
+  # NOTE: trust_govt_do_right moved to social_trust.yml (with correct reversal)
   # ===========================================================================
-
-  - id: trust_govt_do_right
-    concept: political_attitudes
-    description: "You can generally trust the people who run our government to do what is right"
-    type: ordinal
-
-    source:
-      w1: q131
-      w2: q130
-      w3: q136
-      w4: q137
-      w5: q144
-      w6: q136
-
-    scale:
-      min: 1
-      max: 4
-      labels:
-        1: "Strongly disagree"
-        2: "Somewhat disagree"
-        3: "Somewhat agree"
-        4: "Strongly agree"
-
-    harmonize:
-      default:
-        method: r_function
-        fn: safe_4pt_none
-
-    qc:
-      valid_range: [1, 4]
-      validate:
-        - waves: [w1, w2, w3, w4, w5, w6]
-          phrase: "trust.*government.*right"
 
   # ===========================================================================
   # GROUP 3: Government Responsiveness / Performance

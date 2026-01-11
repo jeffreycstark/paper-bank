@@ -962,3 +962,59 @@ collapse_middle5_to_4pt <- function(x,
   )
 }
 
+# ------------------------------------------------------------------------------
+# DEMOCRACY PREFERABLE: Wave-specific recodes for dem_always_preferable
+# ------------------------------------------------------------------------------
+
+recode_w1_dem_preferable <- function(x,
+                                      missing_codes = c(-1, 0, 97, 98, 99),
+                                      ...) {
+  #' Recode Wave 1 democracy preferable (q117) to standard coding
+  #'
+  #' W1 coding:
+  #'   1 = Authoritarian government can be preferable
+  #'   2 = Does not matter whether we have a democratic or nondemocratic regime
+  #'   3 = Democracy: preferable to any other kind of government
+  #'
+  #' Target coding (W3-W6 standard):
+  #'   1 = Democracy is always preferable
+  #'   2 = Authoritarian sometimes preferable
+  #'   3 = Doesn't matter what kind of regime
+  #'
+  #' Mapping: 1->2, 2->3, 3->1
+
+  dplyr::case_when(
+    x %in% missing_codes ~ NA_real_,
+    x == 1 ~ 2,   # Auth -> 2
+    x == 2 ~ 3,   # Doesn't matter -> 3
+    x == 3 ~ 1,   # Democracy -> 1
+    TRUE ~ NA_real_
+  )
+}
+
+recode_w2_dem_preferable <- function(x,
+                                      missing_codes = c(-1, 0, 7, 8, 9),
+                                      ...) {
+  #' Recode Wave 2 democracy preferable (q121) to standard coding
+  #'
+  #' W2 coding:
+  #'   1 = For people like me, it does not matter (doesn't matter)
+  #'   2 = Under some circumstances, an authoritarian government can be preferable
+  #'   3 = Democracy is always preferable to any other kind of government
+  #'
+  #' Target coding (W3-W6 standard):
+  #'   1 = Democracy is always preferable
+  #'   2 = Authoritarian sometimes preferable
+  #'   3 = Doesn't matter what kind of regime
+  #'
+  #' Mapping: 1->3, 2->2, 3->1
+
+  dplyr::case_when(
+    x %in% missing_codes ~ NA_real_,
+    x == 1 ~ 3,   # Doesn't matter -> 3
+    x == 2 ~ 2,   # Auth -> 2 (no change)
+    x == 3 ~ 1,   # Democracy -> 1
+    TRUE ~ NA_real_
+  )
+}
+
