@@ -85,8 +85,9 @@ variables:
         note: "W2-W6 coded 1=Very satisfied → 4=Very dissatisfied; reverse to low→high"
       exceptions:
         w1:
-          method: identity
-          note: "W1 coded 1=Very dissatisfied → 4=Very satisfied (has 5=Half/Half, treat as NA)"
+          method: r_function
+          fn: collapse_middle5_to_4pt
+          note: "W1 has 5pt scale with 5=Half/Half middle category; keeps 1-4, converts 5 to NA"
     
     qc:
       valid_range: [1, 4]

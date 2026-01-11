@@ -935,3 +935,30 @@ recode_w1_discuss <- function(x,
   )
 }
 
+# ------------------------------------------------------------------------------
+# GOV SATISFACTION: W1 5-point with middle at 5 to 4-point
+# ------------------------------------------------------------------------------
+
+collapse_middle5_to_4pt <- function(x,
+                                     missing_codes = c(-1, 0, 97, 98, 99),
+                                     ...) {
+  #' Collapse 5-point scale (with middle at position 5) to 4-point
+
+  #'
+  #' W1 gov_sat_national (q104) has:
+  #'   1 = Very dissatisfied
+  #'   2 = Somewhat dissatisfied
+  #'   3 = Somewhat satisfied
+  #'   4 = Very satisfied
+  #'   5 = Half and Half (middle - no equivalent in 4-point scale)
+  #'
+  #' Keeps 1-4 as identity, converts 5 to NA (can't place middle on 4-point)
+
+  dplyr::case_when(
+    x %in% missing_codes ~ NA_real_,
+    x %in% 1:4 ~ as.numeric(x),
+    x == 5 ~ NA_real_,  # Middle category - no 4-point equivalent
+    TRUE ~ NA_real_
+  )
+}
+

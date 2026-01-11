@@ -204,7 +204,7 @@ variables:
       w3: se5
       w4: se5
       w5: SE5
-      w6: SE5
+      w6: se5
 
     scale:
       min: 1
@@ -231,7 +231,7 @@ variables:
       w3: se5a
       w4: se5a
       w5: SE5A
-      w6: SE5a
+      w6: se5a
 
     scale:
       min: 0
