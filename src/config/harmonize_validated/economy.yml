@@ -312,3 +312,35 @@ variables:
           phrase: "family.*will be|family.*few years"
 
     tags: ["candidate_index:economy"]
+
+  # ============================================================================
+  # Sample Type: Elite vs Mass
+  # ============================================================================
+  - id: sample_elite_mass
+    concept: economy
+    description: "Sample type indicator - Elite vs Mass sample"
+    type: nominal
+
+    source:
+      w1: null
+      w2: null
+      w3: null
+      w4: se9c_3
+      w5: Se9c_3
+      w6: se9c_3
+
+    scale:
+      min: 1
+      max: 2
+      labels:
+        1: "Elite"
+        2: "Mass"
+
+    harmonize:
+      default:
+        method: identity
+
+    qc:
+      valid_range: [1, 2]
+
+    tags: [sampling]
