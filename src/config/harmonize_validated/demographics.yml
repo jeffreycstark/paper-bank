@@ -77,9 +77,12 @@ variables:
 
     harmonize:
       default:
-        method: identity
+        method: r_function
+        fn: no_verify
+        note: "ID numbers - pass through without range validation"
 
     qc:
+      skip_range_check: true
       validate:
         - waves: [w1, w2, w3, w4, w5, w6]
           phrase: "id|interview|case"
@@ -691,52 +694,3 @@ variables:
         - waves: [w3, w4, w5, w6]
           phrase: "current status"
 
-  # ===========================================================================
-  # GROUP 9: Language & Ethnicity
-  # ===========================================================================
-
-  - id: language_home
-    concept: demographics
-    description: "What language do you speak most at home?"
-    type: nominal
-
-    source:
-      w1: se014
-      w2: se11
-      w3: se11
-      w4: se11
-      w5: Se11
-      w6: se11
-    note: "Language codes are country-specific"
-
-    harmonize:
-      default:
-        method: identity
-
-    qc:
-      validate:
-        - waves: [w1, w2, w3, w4, w5, w6]
-          phrase: "language"
-
-  - id: ethnicity
-    concept: demographics
-    description: "Racial or ethnic background"
-    type: nominal
-
-    source:
-      w1: se016
-      w2: null
-      w3: null
-      w4: se11a
-      w5: Se11a
-      w6: se11a
-    note: "Ethnicity codes are country-specific"
-
-    harmonize:
-      default:
-        method: identity
-
-    qc:
-      validate:
-        - waves: [w1, w4, w5, w6]
-          phrase: "ethnic|racial"

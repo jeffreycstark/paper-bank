@@ -1018,3 +1018,56 @@ recode_w2_dem_preferable <- function(x,
   )
 }
 
+# ==============================================================================
+# NO-VERIFY IDENTITY FUNCTION
+# ==============================================================================
+
+#' Pass-through function for identifiers and other variables that don't need validation
+#'
+#' @description Returns values as-is. Use for ID numbers, country codes, and other
+#'   variables where any numeric value is valid. Still supports semantic validation
+#'   via validate_all if you want to verify the question text.
+#'
+#' @param x Numeric vector
+#' @param data Optional dataframe for semantic validation
+#' @param var_name Optional variable name for semantic validation
+#' @param missing_codes Values to convert to NA (default: standard missing codes)
+#' @param validate_all Optional character vector of regex patterns to match question text
+#'
+#' @return Numeric vector with missing codes converted to NA
+no_verify <- function(x,
+                      data = NULL,
+                      var_name = NULL,
+                      missing_codes = c(-1, 97, 98, 99),
+                      validate_all = NULL) {
+
+  # ---- semantic validation (optional) ----
+  if (!is.null(validate_all)) {
+
+    if (is.null(data) || is.null(var_name)) {
+      stop("❌ validate_all requires both `data` and `var_name`")
+    }
+
+    if (!var_name %in% names(data)) {
+      stop(glue::glue("❌ {var_name}: variable not found in data"))
+    }
+
+    qtext <- attr(data[[var_name]], "label")
+
+    if (is.null(qtext) || is.na(qtext) || !nzchar(qtext)) {
+      stop(glue::glue("❌ {var_name}: missing question label for validation"))
+    }
+
+    for (pattern in validate_all) {
+      if (!grepl(pattern, qtext, ignore.case = TRUE)) {
+        stop(glue::glue(
+          "❌ {var_name}: expected concept '{pattern}' not found in question text:\n'{qtext}'"
+        ))
+      }
+    }
+  }
+
+  # ---- pass-through: only convert missing codes to NA ----
+  dplyr::if_else(x %in% missing_codes, NA_real_, as.numeric(x))
+}
+

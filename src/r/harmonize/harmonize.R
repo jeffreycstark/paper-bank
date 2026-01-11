@@ -160,12 +160,17 @@ harmonize_variable <- function(
     }
 
     # ---- QC: range check and coerce out-of-range to NA ----
+    # Check for skip_range_check flag (for IDs and other unconstrained values)
+    skip_range <- isTRUE(var_spec$qc$skip_range_check)
+
     # Check for valid_range (global) or valid_range_by_wave (wave-specific)
     vr <- var_spec$qc$valid_range_by_wave[[wave_name]] %||%
           var_spec$qc$valid_range %||%
           NULL
 
-    if (is.null(vr)) {
+    if (skip_range) {
+      # Explicitly skip range validation - no warning needed
+    } else if (is.null(vr)) {
       # Warn if no valid_range specified - may miss bad data
       warning(
         sprintf("⚠️  %s (%s): No valid_range in qc - using defaults may miss bad values",

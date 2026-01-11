@@ -647,3 +647,129 @@ variables:
         - waves: [w4]
           phrase: "USA.*influence.*positive|USA.*influence.*negative"
 
+  # ===========================================================================
+  # GROUP 1: Democracy Ratings of Other Countries
+  # ===========================================================================
+
+  - id: dem_rating_china
+    concept: democracy_tradeoffs
+    description: "Where would you place China today on a democracy scale? (1=undemocratic, 10=democratic)"
+    type: ordinal
+
+    source:
+      w1: null
+      w2: null
+      w3: q120
+      w4: q121
+      w5: q128
+      w6: q120
+
+    scale:
+      min: 1
+      max: 10
+      labels:
+        1: "Completely undemocratic"
+        10: "Completely democratic"
+
+    harmonize:
+      default:
+        method: identity
+
+    qc:
+      valid_range: [1, 10]
+      validate:
+        - waves: [w3, w4, w5, w6]
+          phrase: "China.*scale|place.*China"
+
+  - id: dem_rating_usa
+    concept: democracy_tradeoffs
+    description: "Where would you place the United States today on a democracy scale? (1=undemocratic, 10=democratic)"
+    type: ordinal
+
+    source:
+      w1: null
+      w2: null
+      w3: q121
+      w4: q122
+      w5: q129
+      w6: q121
+
+    scale:
+      min: 1
+      max: 10
+      labels:
+        1: "Completely undemocratic"
+        10: "Completely democratic"
+
+    harmonize:
+      default:
+        method: identity
+
+    qc:
+      valid_range: [1, 10]
+      validate:
+        - waves: [w3, w4, w5, w6]
+          phrase: "United States.*scale|USA.*scale|place.*United States"
+
+  - id: dem_rating_japan
+    concept: democracy_tradeoffs
+    description: "Where would you place Japan today on a democracy scale? (1=undemocratic, 10=democratic)"
+    type: ordinal
+
+    source:
+      w1: null
+      w2: null
+      w3: null
+      w4: null
+      w5: q130
+      w6: null
+    note: "Wave 5 only"
+
+    scale:
+      min: 1
+      max: 10
+      labels:
+        1: "Completely undemocratic"
+        10: "Completely democratic"
+
+    harmonize:
+      default:
+        method: identity
+
+    qc:
+      valid_range: [1, 10]
+      validate:
+        - waves: [w5]
+          phrase: "Japan.*scale|place.*Japan"
+
+  - id: dem_rating_india
+    concept: democracy_tradeoffs
+    description: "Where would you place India today on a democracy scale? (1=undemocratic, 10=democratic)"
+    type: ordinal
+
+    source:
+      w1: null
+      w2: null
+      w3: null
+      w4: null
+      w5: q131
+      w6: null
+    note: "Wave 5 only"
+
+    scale:
+      min: 1
+      max: 10
+      labels:
+        1: "Completely undemocratic"
+        10: "Completely democratic"
+
+    harmonize:
+      default:
+        method: identity
+
+    qc:
+      valid_range: [1, 10]
+      validate:
+        - waves: [w5]
+          phrase: "India.*scale|place.*India"
+

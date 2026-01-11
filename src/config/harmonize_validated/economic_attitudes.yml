@@ -20,9 +20,15 @@ variables:
       w1: null
       w2: null
       w3: null
-      w4: null
+      w4: q155
       w5: q159
       w6: q159
+    # Verified 2025-01-11:
+    # W4 q155: 4-point (1=Very fair → 4=Very unfair)
+    # W5 q159: 4-point (1=Very fair → 4=Very unfair)
+    # W6 q159: 4-point (1=Very fair → 4=Very unfair)
+    # All waves have same scale and direction
+    # Target: high = more fair
 
     scale:
       min: 1
@@ -37,11 +43,12 @@ variables:
       default:
         method: r_function
         fn: safe_reverse_4pt
+        note: "All waves coded 1=fair → 4=unfair; reverse so high=fair"
 
     qc:
       valid_range: [1, 4]
       validate:
-        - waves: [w5, w6]
+        - waves: [w4, w5, w6]
           phrase: "income.*distribut|distribut.*fair"
 
   - id: econ_family_income_fair
@@ -56,6 +63,11 @@ variables:
       w4: q159
       w5: q163
       w6: q163
+    # Verified 2025-01-11:
+    # W4 q159: 4-point (1=Very fair → 4=Very unfair)
+    # W5 q163: 6-point (1=Very fair → 6=Very unfair) - DIFFERENT SCALE
+    # W6 q163: 4-point (1=Very fair → 4=Very unfair)
+    # Target: high = more fair
 
     scale:
       min: 1
@@ -70,6 +82,12 @@ variables:
       default:
         method: r_function
         fn: safe_reverse_4pt
+        note: "W4/W6 are 4-point (1=fair → 4=unfair); reverse so high=fair"
+      exceptions:
+        w5:
+          method: r_function
+          fn: collapse_6pt_to_4pt_reverse
+          note: "W5 is 6-point (1=Very fair → 6=Very unfair); collapse to 4pt and reverse"
 
     qc:
       valid_range: [1, 4]
@@ -238,22 +256,24 @@ variables:
       w4: null
       w5: null
       w6: null
-    note: "Wave 1 only - part of ideological cleavage battery"
+    # Verified 2025-01-11:
+    # W1 q140: 4-point (1=Strongly agree → 4=Strongly disagree)
+    # Target: high = more support for state ownership
 
     scale:
       min: 1
       max: 4
       labels:
-        1: "Strongly agree"
-        2: "Somewhat agree"
-        3: "Somewhat disagree"
-        4: "Strongly disagree"
+        1: "Strongly disagree"
+        2: "Somewhat disagree"
+        3: "Somewhat agree"
+        4: "Strongly agree"
 
     harmonize:
       default:
         method: r_function
         fn: safe_reverse_4pt
-        note: "Reversed so higher = more support for state ownership"
+        note: "Raw: 1=agree → 4=disagree; reverse so high=more support"
 
     qc:
       valid_range: [1, 4]
@@ -273,111 +293,9 @@ variables:
       w4: null
       w5: null
       w6: null
-    note: "Wave 1 only - part of ideological cleavage battery"
-
-    scale:
-      min: 1
-      max: 4
-      labels:
-        1: "Strongly agree"
-        2: "Somewhat agree"
-        3: "Somewhat disagree"
-        4: "Strongly disagree"
-
-    harmonize:
-      default:
-        method: r_function
-        fn: safe_reverse_4pt
-        note: "Reversed so higher = more support for central authority"
-
-    qc:
-      valid_range: [1, 4]
-      validate:
-        - waves: [w1]
-          phrase: "national.*authority|local decisions"
-
-  # ===========================================================================
-  # GROUP 5: Inequality and Economic Fairness (Wave 4)
-  # ===========================================================================
-
-  - id: econ_inequality_statement
-    concept: economic_attitudes
-    description: "Which of these statements comes closer to your view? (inequality/fairness)"
-    type: nominal
-
-    source:
-      w1: null
-      w2: null
-      w3: null
-      w4: q154
-      w5: null
-      w6: null
-    note: "Wave 4 - statement pair about inequality, see codebook for specific wording"
-
-    scale:
-      min: 1
-      max: 2
-      labels:
-        1: "Statement A"
-        2: "Statement B"
-
-    harmonize:
-      default:
-        method: identity
-
-    qc:
-      valid_range: [1, 2]
-      validate:
-        - waves: [w4]
-          phrase: "statement.*view"
-
-  - id: econ_income_distribution_fair
-    concept: economic_attitudes
-    description: "How fair do you think income distribution is in the country?"
-    type: ordinal
-
-    source:
-      w1: null
-      w2: null
-      w3: null
-      w4: q155
-      w5: null
-      w6: null
-    note: "Wave 4 - perceived fairness of income distribution"
-
-    scale:
-      min: 1
-      max: 4
-      labels:
-        1: "Very unfair"
-        2: "Somewhat unfair"
-        3: "Somewhat fair"
-        4: "Very fair"
-
-    harmonize:
-      default:
-        method: r_function
-        fn: safe_4pt_none
-
-    qc:
-      valid_range: [1, 4]
-      validate:
-        - waves: [w4]
-          phrase: "income distribution.*fair"
-
-  - id: econ_govt_reduce_inequality
-    concept: economic_attitudes
-    description: "It is the responsibility of the government to reduce the differences between people with high income and those with low incomes"
-    type: ordinal
-
-    source:
-      w1: null
-      w2: null
-      w3: null
-      w4: q156
-      w5: null
-      w6: null
-    note: "Wave 4 - support for redistribution"
+    # Verified 2025-01-11:
+    # W1 q141: 4-point (1=Strongly agree → 4=Strongly disagree)
+    # Target: high = more support for central authority
 
     scale:
       min: 1
@@ -391,7 +309,86 @@ variables:
     harmonize:
       default:
         method: r_function
-        fn: safe_4pt_none
+        fn: safe_reverse_4pt
+        note: "Raw: 1=agree → 4=disagree; reverse so high=more support"
+
+    qc:
+      valid_range: [1, 4]
+      validate:
+        - waves: [w1]
+          phrase: "national.*authority|local decisions"
+
+  # ===========================================================================
+  # GROUP 5: Inequality and Economic Fairness (Wave 4)
+  # ===========================================================================
+
+  - id: econ_env_vs_growth
+    concept: economic_attitudes
+    description: "Which of these statements comes closer to your view? Environment vs Economic Growth"
+    type: nominal
+
+    source:
+      w1: null
+      w2: null
+      w3: null
+      w4: q154
+      w5: null
+      w6: null
+    # Verified 2025-01-11:
+    # W4 q154: "Which of these statements comes closer to your view?"
+    #   1 = Protecting the environment should be given priority
+    #   2 = Economic growth and creating jobs should be the top priority
+
+    scale:
+      min: 1
+      max: 2
+      labels:
+        1: "Environment priority"
+        2: "Economic growth priority"
+
+    harmonize:
+      default:
+        method: identity
+        note: "Binary choice - no transformation needed"
+
+    qc:
+      valid_range: [1, 2]
+      validate:
+        - waves: [w4]
+          phrase: "statement.*view|environment|economic growth"
+
+  # NOTE: econ_income_distribution_fair merged into econ_distribution_fair (W4 q155)
+
+  - id: econ_govt_reduce_inequality
+    concept: economic_attitudes
+    description: "It is the responsibility of the government to reduce the differences between people with high income and those with low incomes"
+    type: ordinal
+
+    source:
+      w1: null
+      w2: null
+      w3: null
+      w4: q156
+      w5: null
+      w6: null
+    # Verified 2025-01-11:
+    # W4 q156: 4-point (1=Strongly agree → 4=Strongly disagree)
+    # Target: high = more support for govt reducing inequality
+
+    scale:
+      min: 1
+      max: 4
+      labels:
+        1: "Strongly disagree"
+        2: "Somewhat disagree"
+        3: "Somewhat agree"
+        4: "Strongly agree"
+
+    harmonize:
+      default:
+        method: r_function
+        fn: safe_reverse_4pt
+        note: "Raw: 1=agree → 4=disagree; reverse so high=more support"
 
     qc:
       valid_range: [1, 4]
