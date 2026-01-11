@@ -131,6 +131,242 @@ validate_harmonize_spec <- function(spec, var_id = NULL) {
   invisible(TRUE)
 }
 
+#' Validate variable labels contain expected phrases
+#'
+#' Checks that source variables in each wave have labels containing
+#' the expected phrase from qc$validate. This catches wrong variable mappings.
+#'
+#' @param spec List: parsed YAML specification
+#' @param waves List: named list of wave dataframes (w1, w2, etc.)
+#' @param verbose Logical: print results as they're checked
+#'
+#' @return List with:
+#'   - passed: tibble of successful validations
+#'   - failed: tibble of failed validations (label doesn't contain phrase)
+#'   - missing: tibble of variables that couldn't be checked (no label or var not found)
+#'
+#' @export
+validate_phrases <- function(spec, waves, verbose = TRUE) {
+
+  results <- list(
+    passed = list(),
+    failed = list(),
+    missing = list()
+  )
+
+  # Iterate through each variable in spec
+  for (var_spec in spec$variables) {
+
+    var_id <- var_spec$id
+    validate_rules <- var_spec$qc$validate
+
+    # Skip if no validate rules
+    if (is.null(validate_rules)) next
+
+    # Process each validate rule
+    for (rule in validate_rules) {
+
+      phrase <- rule$phrase
+      rule_waves <- rule$waves
+
+      # Skip if no phrase specified
+      if (is.null(phrase)) next
+
+      # Check each wave in this rule
+      for (wave_name in rule_waves) {
+
+        # Get source variable name for this wave
+        source_var <- var_spec$source[[wave_name]]
+
+        # Skip if source is null (variable not in this wave)
+        if (is.null(source_var)) next
+
+        # Check if wave exists
+        if (!wave_name %in% names(waves)) {
+          results$missing[[length(results$missing) + 1]] <- list(
+            var_id = var_id,
+            wave = wave_name,
+            source_var = source_var,
+            phrase = phrase,
+            reason = "Wave not loaded"
+          )
+          next
+        }
+
+        wave_data <- waves[[wave_name]]
+
+        # Check if variable exists in wave
+        if (!source_var %in% names(wave_data)) {
+          results$missing[[length(results$missing) + 1]] <- list(
+            var_id = var_id,
+            wave = wave_name,
+            source_var = source_var,
+            phrase = phrase,
+            reason = "Variable not found in wave"
+          )
+          next
+        }
+
+        # Get variable label
+        var_label <- attr(wave_data[[source_var]], "label")
+
+        if (is.null(var_label) || var_label == "") {
+          results$missing[[length(results$missing) + 1]] <- list(
+            var_id = var_id,
+            wave = wave_name,
+            source_var = source_var,
+            phrase = phrase,
+            reason = "No label found"
+          )
+          next
+        }
+
+        # Check if label contains phrase (case-insensitive regex)
+        if (grepl(phrase, var_label, ignore.case = TRUE)) {
+          results$passed[[length(results$passed) + 1]] <- list(
+            var_id = var_id,
+            wave = wave_name,
+            source_var = source_var,
+            phrase = phrase,
+            label = var_label
+          )
+        } else {
+          results$failed[[length(results$failed) + 1]] <- list(
+            var_id = var_id,
+            wave = wave_name,
+            source_var = source_var,
+            phrase = phrase,
+            label = var_label
+          )
+        }
+      }
+    }
+  }
+
+  # Convert to tibbles
+  results$passed <- if (length(results$passed) > 0) {
+    dplyr::bind_rows(results$passed)
+  } else {
+    dplyr::tibble(var_id = character(), wave = character(),
+                  source_var = character(), phrase = character(), label = character())
+  }
+
+  results$failed <- if (length(results$failed) > 0) {
+    dplyr::bind_rows(results$failed)
+  } else {
+    dplyr::tibble(var_id = character(), wave = character(),
+                  source_var = character(), phrase = character(), label = character())
+  }
+
+  results$missing <- if (length(results$missing) > 0) {
+    dplyr::bind_rows(results$missing)
+  } else {
+    dplyr::tibble(var_id = character(), wave = character(),
+                  source_var = character(), phrase = character(), reason = character())
+  }
+
+  # Print summary if verbose
+  if (verbose) {
+    n_passed <- nrow(results$passed)
+    n_failed <- nrow(results$failed)
+    n_missing <- nrow(results$missing)
+
+    cat(sprintf("\n=== Phrase Validation Results ===\n"))
+    cat(sprintf("✅ Passed:  %d\n", n_passed))
+    cat(sprintf("❌ Failed:  %d\n", n_failed))
+    cat(sprintf("⚠️  Missing: %d\n", n_missing))
+
+    if (n_failed > 0) {
+      cat("\n❌ FAILED validations (label doesn't contain phrase):\n")
+      for (i in seq_len(nrow(results$failed))) {
+        row <- results$failed[i, ]
+        cat(sprintf("   %s (%s): '%s' not in label\n",
+                    row$var_id, row$wave, row$phrase))
+        cat(sprintf("      Source: %s\n", row$source_var))
+        cat(sprintf("      Label:  %s\n", substr(row$label, 1, 80)))
+      }
+    }
+
+    if (n_missing > 0 && n_missing <= 20) {
+      cat("\n⚠️  Could not validate (missing label or variable):\n")
+      for (i in seq_len(nrow(results$missing))) {
+        row <- results$missing[i, ]
+        cat(sprintf("   %s (%s → %s): %s\n",
+                    row$var_id, row$wave, row$source_var, row$reason))
+      }
+    } else if (n_missing > 20) {
+      cat(sprintf("\n⚠️  %d variables could not be validated (use results$missing for details)\n",
+                  n_missing))
+    }
+  }
+
+  results
+}
+
+
+#' Validate all YAML specs against wave data
+#'
+#' Runs phrase validation for all YAML specs in a directory
+#'
+#' @param waves List: named list of wave dataframes
+#' @param config_dir Path to YAML config directory
+#' @param verbose Print progress
+#'
+#' @return List of validation results by spec name
+#'
+#' @export
+validate_all_specs <- function(waves,
+                               config_dir = "src/config/harmonize_validated",
+                               verbose = TRUE) {
+
+  yaml_files <- list.files(config_dir, pattern = "\\.yml$", full.names = TRUE)
+
+  # Exclude template/readme files
+  exclude <- c("MODEL_VARIABLE", "TEMPLATE", "README")
+  yaml_files <- yaml_files[!grepl(paste(exclude, collapse = "|"), yaml_files, ignore.case = TRUE)]
+
+  all_results <- list()
+  total_passed <- 0
+  total_failed <- 0
+  total_missing <- 0
+
+  for (yml_path in yaml_files) {
+    spec_name <- tools::file_path_sans_ext(basename(yml_path))
+
+    if (verbose) {
+      cat(sprintf("\nValidating: %s\n", spec_name))
+    }
+
+    spec <- yaml::read_yaml(yml_path)
+    result <- validate_phrases(spec, waves, verbose = FALSE)
+
+    all_results[[spec_name]] <- result
+    total_passed <- total_passed + nrow(result$passed)
+    total_failed <- total_failed + nrow(result$failed)
+    total_missing <- total_missing + nrow(result$missing)
+
+    if (verbose && nrow(result$failed) > 0) {
+      cat(sprintf("  ❌ %d failed validations\n", nrow(result$failed)))
+      for (i in seq_len(min(5, nrow(result$failed)))) {
+        row <- result$failed[i, ]
+        cat(sprintf("     - %s (%s): '%s' not found\n",
+                    row$var_id, row$wave, row$phrase))
+      }
+    }
+  }
+
+  if (verbose) {
+    cat(sprintf("\n=== TOTAL SUMMARY ===\n"))
+    cat(sprintf("Specs validated: %d\n", length(yaml_files)))
+    cat(sprintf("✅ Passed:  %d\n", total_passed))
+    cat(sprintf("❌ Failed:  %d\n", total_failed))
+    cat(sprintf("⚠️  Missing: %d\n", total_missing))
+  }
+
+  all_results
+}
+
+
 #' Check if recoding functions exist
 #'
 #' Validates that all r_function harmonization methods have

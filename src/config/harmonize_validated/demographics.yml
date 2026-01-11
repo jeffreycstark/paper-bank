@@ -82,7 +82,7 @@ variables:
     qc:
       validate:
         - waves: [w1, w2, w3, w4, w5, w6]
-          phrase: "id"
+          phrase: "id|interview|case"
 
   # ===========================================================================
   # GROUP 1: Basic Demographics
@@ -245,7 +245,7 @@ variables:
       valid_range: [0, 25]
       validate:
         - waves: [w1, w2, w3, w4, w5, w6]
-          phrase: "years.*education|education.*years"
+          phrase: "year.*education|education.*year"
 
   # ===========================================================================
   # GROUP 3: Employment / Economic Status
@@ -521,7 +521,7 @@ variables:
       valid_range: [1, 11]
       validate:
         - waves: [w1, w2, w3, w4, w5, w6]
-          phrase: "religious.*practice|practice.*religious"
+          phrase: "rel.?g"
 
   - id: religiosity_self
     concept: demographics
@@ -716,7 +716,7 @@ variables:
     qc:
       validate:
         - waves: [w1, w2, w3, w4, w5, w6]
-          phrase: "language.*home|speak.*home"
+          phrase: "language"
 
   - id: ethnicity
     concept: demographics

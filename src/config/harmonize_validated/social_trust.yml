@@ -190,7 +190,7 @@ variables:
       valid_range: [1, 4]
       validate:
         - waves: [w2, w3, w4, w5, w6]
-          phrase: "trust.*neighbor"
+          phrase: "neighbor"
 
   - id: trust_acquaintances
     concept: social_trust

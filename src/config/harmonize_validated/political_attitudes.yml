@@ -525,7 +525,7 @@ variables:
       valid_range: [1, 5]
       validate:
         - waves: [w1]
-          phrase: "newspaper.*politics"
+          phrase: "newspaper"
 
   - id: pol_news_television
     concept: political_attitudes
@@ -559,7 +559,7 @@ variables:
       valid_range: [1, 5]
       validate:
         - waves: [w1]
-          phrase: "television.*politics"
+          phrase: "television"
 
   - id: pol_news_radio
     concept: political_attitudes
@@ -593,7 +593,7 @@ variables:
       valid_range: [1, 5]
       validate:
         - waves: [w1]
-          phrase: "radio.*politics"
+          phrase: "radio"
 
   - id: govt_policy_impact
     concept: political_attitudes
