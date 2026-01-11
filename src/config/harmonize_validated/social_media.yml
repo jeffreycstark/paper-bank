@@ -160,7 +160,7 @@ variables:
       w3: null
       w4: null
       w5: null
-      w6: q51a_Facebook
+      w6: q51a_facebook
 
     scale:
       min: 1
@@ -190,7 +190,7 @@ variables:
       w3: null
       w4: null
       w5: null
-      w6: q51b_Twitter
+      w6: q51b_twitter
 
     scale:
       min: 1
@@ -220,7 +220,7 @@ variables:
       w3: null
       w4: null
       w5: null
-      w6: q51c_Instagram
+      w6: q51c_instagram
 
     scale:
       min: 1
@@ -250,7 +250,7 @@ variables:
       w3: null
       w4: null
       w5: null
-      w6: q51d_Youtube
+      w6: q51a_youtube
 
     scale:
       min: 1
@@ -280,7 +280,7 @@ variables:
       w3: null
       w4: null
       w5: null
-      w6: q51e_Tiktok
+      w6: q51e_tiktok
 
     scale:
       min: 1
@@ -310,7 +310,7 @@ variables:
       w3: null
       w4: null
       w5: null
-      w6: q51f_Messenger
+      w6: q51g_philippines_messenger
 
     scale:
       min: 1
@@ -340,7 +340,7 @@ variables:
       w3: null
       w4: null
       w5: null
-      w6: q51i_Whatsapp
+      w6: q51e_whatsapp
 
     scale:
       min: 1
