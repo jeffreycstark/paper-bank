@@ -102,7 +102,7 @@ variables:
       w3: level3
       w4: level
       w5: Level
-      w6: LEVEL
+      w6: level
 
     scale:
       min: 1
