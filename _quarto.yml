@@ -2,6 +2,7 @@ project:
   type: manuscript
   output-dir: _site
   render:
+    - "papers/sausage-paper/paper.qmd"
     - "papers/*/paper.qmd"
     - "papers/*/appendix.qmd"
 

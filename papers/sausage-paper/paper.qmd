@@ -1,0 +1,123 @@
+---
+title: "I Don't Care How the Sausage Gets Made: Economic Priorities and Democratic Tradeoffs in Asia"
+author:
+  - name: Jeffrey Stark
+    affiliation: "Your Institution"
+    email: your.email@institution.edu
+date: today
+abstract: |
+  Conventional wisdom suggests citizens in authoritarian regimes prioritize economic outcomes over democratic process. Using six waves of Asian Barometer Survey data across 16 countries, I find the opposite: citizens in democracies are significantly more willing to trade democracy for economic development than citizens in authoritarian regimes. This "sausage mentality"—prioritizing outcomes over process—is strongest among middle-educated citizens in democracies, who know enough to be frustrated with democratic inefficiency but lack the procedural appreciation that comes with higher education. In authoritarian regimes, education has no such effect. These findings challenge modernization theory's assumption that democratic experience deepens democratic commitment and suggest that democratic consolidation may be more fragile than previously thought.
+keywords:
+  - democracy
+  - authoritarianism
+  - economic development
+  - Asian Barometer Survey
+  - political attitudes
+format:
+  pdf:
+    documentclass: article
+    classoption: [12pt, letterpaper]
+    geometry:
+      - margin=1in
+    number-sections: true
+    colorlinks: true
+    keep-tex: true
+  html:
+    toc: true
+    code-fold: true
+bibliography: refs.bib
+csl: ../../apa.csl
+execute:
+  echo: false
+  warning: false
+  message: false
+---
+
+```{r setup}
+#| include: false
+library(tidyverse)
+library(knitr)
+library(kableExtra)
+
+# Load data
+df <- readRDS(here::here("data/processed/abs_econdev_authpref.rds"))
+
+# Create regime classification
+regime_map <- c(
+  '1'='Democracy', '2'='Hybrid', '3'='Democracy', '4'='Authoritarian', '5'='Democracy',
+  '6'='Democracy', '7'='Democracy', '8'='Hybrid', '9'='Democracy',
+  '10'='Hybrid', '11'='Authoritarian', '12'='Authoritarian', '13'='Hybrid',
+  '14'='Authoritarian', '15'='Democracy', '18'='Democracy'
+)
+
+df <- df |>
+  mutate(
+    regime = regime_map[as.character(country)],
+    econ_priority = dem_vs_econ %in% c(1, 2),
+    edu_group = cut(education_level, 
+                    breaks = c(0, 3, 6, 10), 
+                    labels = c("Low", "Middle", "High"),
+                    include.lowest = TRUE)
+  )
+```
+
+# Introduction
+
+Why do citizens support democracy? Modernization theory suggests that as countries develop economically and citizens become more educated, democratic values deepen and consolidate. Yet recent democratic backsliding in established democracies—from Hungary to the Philippines to the United States—raises questions about whether democratic experience truly cultivates democratic commitment.
+
+This paper examines a fundamental question: when forced to choose between democratic process and economic outcomes, who prioritizes the "sausage" over how it gets made? Using six waves of Asian Barometer Survey data spanning 2001-2019, I find a counterintuitive pattern that challenges conventional assumptions about democratic consolidation.
+
+# Theory and Hypotheses
+
+## The Modernization Thesis
+
+[Your theoretical framework here]
+
+## The "Sausage Mentality" 
+
+[Theory about outcome vs process orientation]
+
+# Data and Methods
+
+I use data from the Asian Barometer Survey (ABS), a comparative survey project covering democratic values and political attitudes across Asia. The analysis draws on six survey waves (2001-2019) across 16 countries, yielding a pooled sample of over 110,000 respondents.
+
+## Dependent Variable
+
+The key dependent variable captures respondents' tradeoff between democracy and economic development. Respondents were asked: "If you had to choose between democracy and economic development, which would you say is more important?" Response options ranged from 1 (economic development definitely more important) to 4 (democracy definitely more important), with a fifth option for "both equally important."
+
+## Independent Variables
+
+[Description of education, regime type, controls]
+
+# Results
+
+```{r table-regime}
+#| label: tbl-regime
+#| tbl-cap: "Percentage Prioritizing Economy over Democracy by Regime Type and Education"
+
+df |>
+  filter(!is.na(edu_group), !is.na(regime), !is.na(econ_priority)) |>
+  group_by(edu_group, regime) |>
+  summarise(
+    pct = mean(econ_priority) * 100,
+    n = n(),
+    .groups = "drop"
+  ) |>
+  pivot_wider(names_from = regime, values_from = c(pct, n)) |>
+  kable(digits = 1, 
+        col.names = c("Education", "Auth. %", "Dem. %", "Hybrid %", 
+                      "Auth. N", "Dem. N", "Hybrid N"))
+```
+
+# Discussion
+
+[Interpretation of findings]
+
+# Conclusion
+
+[Summary and implications]
+
+# References
+
+::: {#refs}
+:::

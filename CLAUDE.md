@@ -1,8 +1,47 @@
 # econdev-authpref Project - Claude Navigation Guide
 
-**Project**: Democracy & Economic Development Research  
-**Current Branch**: `feature/codebook-analysis-and-harmonization`  
-**Status**: Active development
+**Project**: Democracy & Economic Development Research
+**Current Branch**: `main`
+**Status**: Active development - Harmonization complete (330 variables, 6 waves)
+
+---
+
+## 🔧 Available MCP Servers
+
+Several MCP servers are available to enhance Claude's capabilities on this project:
+
+| Server | Purpose | Key Uses |
+|--------|---------|----------|
+| **Serena** | Semantic code understanding + project memory | Symbol operations, session persistence, **read project memories first** |
+| **Context7** | Library documentation lookup | R/Python package docs, framework patterns |
+| **Memory** | Knowledge graph storage | Entity relationships, cross-session learning |
+| **Morphllm** | Bulk code transformations | Pattern-based edits across multiple files |
+| **Sequential Thinking** | Multi-step reasoning | Complex debugging, architectural analysis |
+| **Magic (21st.dev)** | UI component generation | If any frontend work needed |
+| **Tavily** | Web search | Current documentation, research |
+| **Git** | Git operations | Commits, branches, diffs |
+| **Filesystem** | File operations | Read/write outside project |
+
+### Serena Project Memories
+**Always check these first** - they contain project-specific knowledge:
+```
+list_memories() → Read relevant ones before starting work
+```
+
+| Memory | Contents |
+|--------|----------|
+| `project_overview` | Tech stack, structure, key packages |
+| `data_pipeline` | How to run harmonization pipeline |
+| `w6_case_sensitivity` | Common W6 column name issues and fixes |
+| `country_codes` | All 16 country numeric codes |
+| `variable_scales` | Scale conventions (1-5 political action, 1-4 trust, etc.) |
+| `common_analyses` | R code patterns for filtering, cross-tabs, cohorts |
+| `r_utility_functions` | Available R helper functions |
+| `style_conventions` | Code style guidelines |
+| `suggested_commands` | Useful shell commands |
+
+### Note on R
+No R MCP is currently configured. R code is executed via `Rscript` in Bash. If an R MCP would be useful for interactive R sessions, ask the user.
 
 ---
 
@@ -313,10 +352,11 @@ Scales linearly with number of matches.
 - [x] Production ready
 
 ### Project Status
-- [x] Data loaded (6 waves)
+- [x] Data loaded (6 waves: 110,721 total respondents)
 - [x] Codebook module complete
 - [x] Harmonization engine functional
-- [ ] Full dataset harmonized (in progress)
+- [x] Full dataset harmonized (330 variables across 27 YAML specs)
+- [x] Output files: RDS, CSV, Parquet in `data/processed/`
 
 ---
 
@@ -370,9 +410,10 @@ source("src/r/codebook/codebook_analysis.R")
 ---
 
 ## Last Updated
-- **Date**: 2026-01-07
+- **Date**: 2025-01-12
 - **By**: Claude Code
-- **Branch**: feature/codebook-analysis-and-harmonization
+- **Branch**: main
+- **Dataset**: 110,721 rows × 332 columns (330 harmonized variables + wave + id)
 
 ---
 
@@ -386,3 +427,33 @@ source("src/r/codebook/codebook_analysis.R")
 | How-to guide | `src/r/codebook/SKILL_SEARCH_AND_ANALYZE.md` |
 | Function list | `src/r/codebook/INDEX.md` |
 | Build notes | `src/r/codebook/BUILD_SUMMARY.md` |
+
+---
+
+## 📊 Harmonized Dataset Quick Reference
+
+### Loading the Data
+```r
+d <- readRDS("data/processed/abs_econdev_authpref.rds")
+# Or: arrow::read_parquet("data/processed/abs_econdev_authpref.parquet")
+```
+
+### Key Variables
+| Category | Examples |
+|----------|----------|
+| Demographics | country, age, gender, urban_rural, education_level |
+| Political Action | action_demonstration, action_petition (scale 1-5, higher=more active) |
+| Trust | trust_president, trust_parliament, trust_police (scale 1-4, higher=more trust) |
+| Democracy | dem_sat_national, dem_best_form, dem_always_preferable |
+| Economy | econ_national_now, econ_family_now (scale 1-5, higher=better) |
+| Social Media | sm_use_facebook, sm_use_twitter (1=Yes, 2=No, W6 only) |
+
+### Country Codes
+1=Japan, 2=Hong Kong, 3=Korea, 4=China, 5=Mongolia, 6=Philippines, 7=Taiwan, 8=Thailand, 9=Indonesia, 10=Singapore, 11=Vietnam, 12=Cambodia, 13=Malaysia, 14=Myanmar, 15=Australia, 18=India
+
+### Running the Pipeline
+```bash
+Rscript src/r/data_prep_modules/0_load_waves.R
+Rscript src/r/data_prep_modules/2_harmonize_all.R
+Rscript src/r/data_prep_modules/99_create_final_dataset.R
+```

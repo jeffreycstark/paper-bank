@@ -66,7 +66,7 @@ variables:
     type: ordinal
 
     source:
-      w1: null    # TODO: w1 asks different question (want to be democratic)
+      w1: q100
       w2: q94
       w3: q90
       w4: q93
@@ -208,7 +208,7 @@ variables:
     source:
       w1: q103
       w2: q98
-      w3: q94    # TODO: verify - may be 10pt scale
+      w3: q94    
       w4: q97
       w5: q104
       w6: q95
@@ -240,7 +240,7 @@ variables:
     type: ordinal
 
     source:
-      w1: null    # TODO: find w1 mapping
+      w1: null    # not asked
       w2: q110
       w3: q106
       w4: q108
@@ -303,7 +303,7 @@ variables:
     type: ordinal
 
     source:
-      w1: null
+      w1: q102 # NOTE: 5 years in wave 1
       w2: null
       w3: q93
       w4: q96
@@ -324,8 +324,8 @@ variables:
     qc:
       valid_range: [1, 10]
       validate:
-        - waves: [w3, w4, w5, w6]
-          phrase: "ten years from now|future"
+        - waves: [w1, w3, w4, w5, w6]
+          phrase: "ten years from now|five|future"
 
   # ===========================================================================
   # GROUP 5: Democracy Scale - Country Placement (Wave 1)
@@ -392,37 +392,6 @@ variables:
       validate:
         - waves: [w1]
           phrase: "want.*democratic|extent.*democratic"
-
-  - id: dem_country_five_years
-    concept: democracy
-    description: "Where do you expect our country to be in five years? (1=dictatorship, 10=democracy)"
-    type: ordinal
-
-    source:
-      w1: q102
-      w2: null
-      w3: null
-      w4: null
-      w5: null
-      w6: null
-    note: "Wave 1 only - 5-year expectation (cf. dem_country_future for 10-year)"
-
-    scale:
-      min: 1
-      max: 10
-      labels:
-        1: "Complete dictatorship"
-        10: "Complete democracy"
-
-    harmonize:
-      default:
-        method: identity
-
-    qc:
-      valid_range: [1, 10]
-      validate:
-        - waves: [w1]
-          phrase: "five years|expect.*country"
 
   # ===========================================================================
   # GROUP 7: Regime Comparison - Is Better Than Before? (Wave 1)
@@ -615,7 +584,7 @@ variables:
 
     source:
       w1: null
-      w2: null
+      w2: q103
       w3: null
       w4: q101
       w5: null
@@ -639,8 +608,8 @@ variables:
     qc:
       valid_range: [1, 4]
       validate:
-        - waves: [w4]
-          phrase: "power.*change.*government"
+        - waves: [w2, w4]
+          phrase: "power.*change"
 
   - id: dem_equal_media_access
     concept: democracy
@@ -649,12 +618,12 @@ variables:
 
     source:
       w1: null
-      w2: null
-      w3: null
+      w2: q105
+      w3: q99
       w4: q102
       w5: null
       w6: null
-    note: "Wave 4 - electoral fairness perception"
+    note: "electoral media fairness perception"
 
     scale:
       min: 1
@@ -673,7 +642,7 @@ variables:
     qc:
       valid_range: [1, 4]
       validate:
-        - waves: [w4]
+        - waves: [w2, w3, w4]
           phrase: "equal.*media|media.*election"
 
   - id: dem_elections_attention
@@ -684,11 +653,11 @@ variables:
     source:
       w1: null
       w2: null
-      w3: null
+      w3: q115
       w4: q116
       w5: null
       w6: null
-    note: "Wave 4 - electoral responsiveness perception"
+    note: "electoral responsiveness perception"
 
     scale:
       min: 1
@@ -707,7 +676,7 @@ variables:
     qc:
       valid_range: [1, 4]
       validate:
-        - waves: [w4]
+        - waves: [w3, w4]
           phrase: "elections.*attention|pay attention"
 
   # ===========================================================================
@@ -723,11 +692,11 @@ variables:
     source:
       w1: null
       w2: null
-      w3: null
+      w3: q122
       w4: q123
-      w5: null
-      w6: null
-    note: "Wave 4 - comparative democracy assessment for Japan"
+      w5: q130
+      w6: q122
+    note: "comparative democracy assessment for Japan"
 
     scale:
       min: 1
@@ -743,7 +712,7 @@ variables:
     qc:
       valid_range: [1, 10]
       validate:
-        - waves: [w4]
+        - waves: [w3, w4, w5, w6]
           phrase: "Japan"
 
   - id: dem_india_scale
@@ -754,11 +723,11 @@ variables:
     source:
       w1: null
       w2: null
-      w3: null
+      w3: q123
       w4: q124
-      w5: null
-      w6: null
-    note: "Wave 4 - comparative democracy assessment for India"
+      w5: q131
+      w6: q123
+    note: "comparative democracy assessment for India"
 
     scale:
       min: 1
@@ -774,7 +743,7 @@ variables:
     qc:
       valid_range: [1, 10]
       validate:
-        - waves: [w4]
+        - waves: [w3, w4, w5, w6]
           phrase: "India"
 
   - id: dem_always_preferable
