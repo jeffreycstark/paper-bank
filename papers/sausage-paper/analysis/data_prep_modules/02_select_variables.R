@@ -69,7 +69,8 @@ political_engagement <- c(
   "action_demonstration",
   "action_petition",
   "attended_campaign_rally",    # 88.4% coverage
-  "voted_national_election"        # W2-W6 only (W1 null)
+  "voted_national_election",    # Did you vote in last election? (76.8%)
+  "voting_frequency"            # How often voted since eligible (76.1%)
 )
 
 # Media/Information (potential mediators)
