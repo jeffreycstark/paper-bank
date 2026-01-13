@@ -1,20 +1,20 @@
 # Harmonization Run Summary
 
-**Date:** 2026-01-11 14:39:23
+**Date:** 2026-01-13 16:56:44
 
 **YAML Specs:** 27
-**Total Variables:** 330
+**Total Variables:** 329
 
 ## Variables per Wave
 
 | Wave | Variables |
 |------|----------|
-| W1 | 136 |
-| W2 | 111 |
-| W3 | 149 |
-| W4 | 210 |
-| W5 | 202 |
-| W6 | 200 |
+| W1 | 137 |
+| W2 | 113 |
+| W3 | 153 |
+| W4 | 211 |
+| W5 | 205 |
+| W6 | 213 |
 
 ## Variables per Concept
 
@@ -26,10 +26,10 @@
 | covid19 | 11 |
 | democracy_satisfaction | 2 |
 | democracy_tradeoffs | 10 |
-| democracy | 25 |
+| democracy | 24 |
 | demographics | 20 |
 | economic_attitudes | 12 |
-| economy | 6 |
+| economy | 7 |
 | electoral_mobilization | 24 |
 | globalization | 5 |
 | governance_performance | 6 |
@@ -39,7 +39,7 @@
 | meaning_of_democracy | 4 |
 | national_identity | 2 |
 | partisanship | 2 |
-| political_action | 48 |
+| political_action | 47 |
 | political_attitudes | 16 |
 | political_efficacy | 3 |
 | public_services | 10 |
@@ -50,9 +50,9 @@
 
 ## Output Files
 
-- `outputs/master_w1.rds` - 136 harmonized variables
-- `outputs/master_w2.rds` - 111 harmonized variables
-- `outputs/master_w3.rds` - 149 harmonized variables
-- `outputs/master_w4.rds` - 210 harmonized variables
-- `outputs/master_w5.rds` - 202 harmonized variables
-- `outputs/master_w6.rds` - 200 harmonized variables
+- `outputs/master_w1.rds` - 137 harmonized variables
+- `outputs/master_w2.rds` - 113 harmonized variables
+- `outputs/master_w3.rds` - 153 harmonized variables
+- `outputs/master_w4.rds` - 211 harmonized variables
+- `outputs/master_w5.rds` - 205 harmonized variables
+- `outputs/master_w6.rds` - 213 harmonized variables
