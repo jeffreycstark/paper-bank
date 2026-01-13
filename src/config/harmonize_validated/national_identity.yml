@@ -6,17 +6,14 @@ missing_conventions:
   treat_as_na:
     codes: [-1, 0, 7, 8, 9, 97, 98, 99]
     description: "Standard missing codes"
-
 variables:
   # ===========================================================================
   # GROUP 1: National Pride
   # ===========================================================================
-
   - id: nat_proud_citizen
     concept: national_identity
     description: "How proud are you to be a citizen of your country?"
     type: ordinal
-
     source:
       w1: null
       w2: q154
@@ -24,7 +21,6 @@ variables:
       w4: q161
       w5: q166
       w6: q166
-
     scale:
       min: 1
       max: 4
@@ -33,27 +29,22 @@ variables:
         2: "Not very proud"
         3: "Somewhat proud"
         4: "Very proud"
-
     harmonize:
       default:
         method: r_function
         fn: safe_reverse_4pt
-
     qc:
       valid_range: [1, 4]
       validate:
         - waves: [w2, w3, w4, w5, w6]
           phrase: "proud.*citizen"
-
   # ===========================================================================
   # GROUP 2: Emigration Willingness
   # ===========================================================================
-
   - id: nat_willing_emigrate
     concept: national_identity
     description: "Given the chance, how willing would you be to go and live in another country?"
     type: ordinal
-
     source:
       w1: null
       w2: q155
@@ -61,7 +52,6 @@ variables:
       w4: q162
       w5: q167
       w6: q167
-
     scale:
       min: 1
       max: 4
@@ -70,12 +60,10 @@ variables:
         2: "Not willing"
         3: "Willing"
         4: "Very willing"
-
     harmonize:
       default:
         method: r_function
         fn: safe_reverse_4pt
-
     qc:
       valid_range: [1, 4]
       validate:

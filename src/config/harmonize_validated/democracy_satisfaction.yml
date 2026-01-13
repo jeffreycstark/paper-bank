@@ -7,7 +7,6 @@ missing_conventions:
   treat_as_na:
     codes: [-1, 0, 7, 8, 9, 98, 99]
     description: "Standard missing codes"
-
 variables:
   # ============================================================================
   # Satisfaction with government
@@ -16,7 +15,6 @@ variables:
     concept: government_satisfaction
     description: "Satisfaction with current government/president"
     type: ordinal
-    
     source:
       w1: q104
       w2: q99
@@ -24,7 +22,6 @@ variables:
       w4: q98
       w5: q105
       w6: q96
-    
     scale:
       min: 1
       max: 4
@@ -33,7 +30,6 @@ variables:
         2: "Somewhat dissatisfied"
         3: "Somewhat satisfied"
         4: "Very satisfied"
-    
     harmonize:
       default:
         method: r_function
@@ -44,7 +40,6 @@ variables:
           method: r_function
           fn: collapse_middle5_to_4pt
           note: "W1 has 5pt scale with 5=Half/Half middle category; keeps 1-4, converts 5 to NA"
-    
     qc:
       valid_range: [1, 4]
       expected_direction: positive
@@ -53,7 +48,6 @@ variables:
           phrase: "government|president"
       notes:
         - "W1 has 5pt scale with midpoint; code 5 treated as NA"
-
   # ============================================================================
   # Household income satisfaction
   # "Does the total income of your household allow you to satisfactorily cover your needs?"
@@ -64,15 +58,13 @@ variables:
     concept: household_income_satisfaction
     description: "Whether household income satisfactorily covers needs"
     type: ordinal
-    
     source:
-      w1: null  # NOT AVAILABLE IN W1
+      w1: null # NOT AVAILABLE IN W1
       w2: se9a
       w3: se13a
       w4: se14a
       w5: SE14A
       w6: SE14a
-    
     scale:
       min: 1
       max: 4
@@ -81,7 +73,6 @@ variables:
         2: "Does not cover needs, some difficulties"
         3: "Covers needs, without much difficulty"
         4: "Covers needs well, can save"
-    
     harmonize:
       default:
         method: r_function
@@ -103,7 +94,6 @@ variables:
           method: r_function
           fn: collapse_5pt_to_4pt_then_reverse
           note: "W6 has 5pt scale; collapse top 2 (save a lot + save) before reversing"
-    
     qc:
       valid_range: [1, 4]
       expected_direction: positive

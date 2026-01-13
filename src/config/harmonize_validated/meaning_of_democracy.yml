@@ -8,18 +8,15 @@ missing_conventions:
   treat_as_na:
     codes: [-1, 0, 7, 8, 9, 97, 98, 99]
     description: "Standard missing codes"
-
 variables:
   # ===========================================================================
   # Essential Characteristics Sets (4 sets, W3/W4/W6 only)
   # Nominal: respondent picks 1 of 4 options
   # ===========================================================================
-
   - id: dem_meaning_set1
     concept: meaning_of_democracy
     description: "Most essential characteristic of democracy - Set 1 (equality/election/efficiency/expression)"
     type: nominal
-
     source:
       w1: null
       w2: null
@@ -27,7 +24,6 @@ variables:
       w4: q88
       w5: null
       w6: q85
-
     scale:
       min: 1
       max: 4
@@ -37,22 +33,18 @@ variables:
         3: "Government does not waste public money"
         4: "People free to express political views openly"
       note: "Options 1,3 = substantive/economic; Options 2,4 = procedural/political"
-
     harmonize:
       default:
         method: identity
-
     qc:
       valid_range: [1, 4]
       validate:
         - waves: [w3, w4, w6]
           phrase: "essential.*characteristic|gap.*rich.*poor|free.*fair.*election"
-
   - id: dem_meaning_set2
     concept: meaning_of_democracy
     description: "Most essential characteristic of democracy - Set 2 (oversight/basic needs/organize/services)"
     type: nominal
-
     source:
       w1: null
       w2: null
@@ -60,7 +52,6 @@ variables:
       w4: q89
       w5: null
       w6: q86
-
     scale:
       min: 1
       max: 4
@@ -70,22 +61,18 @@ variables:
         3: "People free to organize political groups"
         4: "Government provides quality public services"
       note: "Options 2,4 = substantive/economic; Options 1,3 = procedural/political"
-
     harmonize:
       default:
         method: identity
-
     qc:
       valid_range: [1, 4]
       validate:
         - waves: [w3, w4, w6]
           phrase: "oversight|basic necessit|organize.*group|public service"
-
   - id: dem_meaning_set3
     concept: meaning_of_democracy
     description: "Most essential characteristic of democracy - Set 3 (law-order/media freedom/jobs/multiparty)"
     type: nominal
-
     source:
       w1: null
       w2: null
@@ -93,7 +80,6 @@ variables:
       w4: q90
       w5: null
       w6: q87
-
     scale:
       min: 1
       max: 4
@@ -103,22 +89,18 @@ variables:
         3: "Government ensures job opportunities for all"
         4: "Multiple parties compete fairly in elections"
       note: "Options 1,3 = substantive/security-economic; Options 2,4 = procedural/political"
-
     harmonize:
       default:
         method: identity
-
     qc:
       valid_range: [1, 4]
       validate:
         - waves: [w3, w4, w6]
           phrase: "law and order|media.*free|job opportunit|multiple part"
-
   - id: dem_meaning_set4
     concept: meaning_of_democracy
     description: "Most essential characteristic of democracy - Set 4 (protests/anticorruption/courts/unemployment)"
     type: nominal
-
     source:
       w1: null
       w2: null
@@ -126,7 +108,6 @@ variables:
       w4: q91
       w5: null
       w6: q88
-
     scale:
       min: 1
       max: 4
@@ -136,11 +117,9 @@ variables:
         3: "Courts protect ordinary people from government abuse"
         4: "People receive state aid if unemployed"
       note: "Options 2,4 = substantive; Options 1,3 = procedural"
-
     harmonize:
       default:
         method: identity
-
     qc:
       valid_range: [1, 4]
       validate:
