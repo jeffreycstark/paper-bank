@@ -1,0 +1,346 @@
+---
+title: "Descriptive Analysis"
+subtitle: "I Don't Care How the Sausage Gets Made"
+author: "Jeffrey Stark"
+date: today
+format:
+  html:
+    toc: true
+    toc-depth: 3
+    toc-location: left
+    number-sections: true
+    code-fold: show
+    code-tools: true
+    df-print: paged
+    embed-resources: true
+    fig-width: 10
+    fig-height: 7
+execute:
+  warning: false
+  message: false
+  cache: true
+---
+
+# Setup
+
+```{r setup}
+# Core packages
+library(tidyverse)
+library(here)
+library(gt)
+library(gtExtras)
+library(gtsummary)
+library(scales)
+library(patchwork)
+library(RColorBrewer)
+
+here::i_am("papers/sausage-paper/analysis/02_descriptive_analysis.qmd")
+set.seed(2025)
+theme_set(theme_minimal(base_size = 12))
+
+# Fix namespace conflicts
+select <- dplyr::select
+filter <- dplyr::filter
+
+# Professional color palette (colorblind-friendly)
+regime_colors <- c(
+  "Democracy" = "#66c2a5",   # Teal
+  "Hybrid" = "#fc8d62",      # Orange
+  "Autocracy" = "#8da0cb"    # Purple
+)
+```
+
+## Load Data
+
+```{r load-data}
+# Load prepared analysis data
+analysis_data <- readRDS(here("papers/sausage-paper/analysis/sausage_analysis.rds"))
+
+cat("Loaded", nrow(analysis_data), "observations\n")
+cat("Countries:", length(unique(analysis_data$country)), "\n")
+cat("Waves:", paste(sort(unique(analysis_data$wave)), collapse = ", "), "\n")
+```
+
+# Sample Characteristics
+
+## Table 1: Demographic Summary
+
+```{r table1-demographics}
+analysis_data %>%
+  select(regime_type, age, female, education_tertile, is_urban) %>%
+  tbl_summary(
+    by = regime_type,
+    label = list(
+      age ~ "Age (years)",
+      female ~ "Female",
+      education_tertile ~ "Education Level",
+      is_urban ~ "Urban Residence"
+    ),
+    statistic = list(
+      all_continuous() ~ "{mean} ({sd})",
+      all_categorical() ~ "{n} ({p}%)"
+    ),
+    missing = "no"
+  ) %>%
+  add_overall() %>%
+  modify_header(label = "**Characteristic**") %>%
+  bold_labels()
+```
+
+## Country-Level Summary
+
+```{r country-summary}
+country_summary <- analysis_data %>%
+  group_by(country_name, regime_type) %>%
+  summarise(
+    n = n(),
+    mean_age = mean(age, na.rm = TRUE),
+    pct_female = mean(female, na.rm = TRUE) * 100,
+    pct_urban = mean(is_urban, na.rm = TRUE) * 100,
+    mean_education = mean(education_years, na.rm = TRUE),
+    .groups = "drop"
+  ) %>%
+  arrange(regime_type, desc(n))
+
+country_summary %>%
+  gt() %>%
+  tab_header(
+    title = "Sample Characteristics by Country",
+    subtitle = "Asian Barometer Survey, Waves 1-6"
+  ) %>%
+  fmt_number(columns = c(mean_age, pct_female, pct_urban, mean_education), decimals = 1) %>%
+  fmt_number(columns = n, use_seps = TRUE, decimals = 0) %>%
+  tab_spanner(label = "Demographics", columns = c(mean_age, pct_female, pct_urban, mean_education)) %>%
+  cols_label(
+    country_name = "Country",
+    regime_type = "Regime",
+    n = "N",
+    mean_age = "Age",
+    pct_female = "% Female",
+    pct_urban = "% Urban",
+    mean_education = "Educ (yrs)"
+  )
+```
+
+# Key Variable Distributions
+
+## DV: Economy vs. Democracy Priority
+
+```{r dv-by-regime}
+if ("econ_over_democracy" %in% names(analysis_data)) {
+  # Calculate means by regime
+  regime_means <- analysis_data %>%
+    group_by(regime_type) %>%
+    summarise(
+      mean_econ = mean(econ_over_democracy, na.rm = TRUE),
+      se = sd(econ_over_democracy, na.rm = TRUE) / sqrt(sum(!is.na(econ_over_democracy))),
+      n = sum(!is.na(econ_over_democracy))
+    )
+
+  # Bar plot with error bars
+  ggplot(regime_means, aes(x = regime_type, y = mean_econ, fill = regime_type)) +
+    geom_col(width = 0.7) +
+    geom_errorbar(aes(ymin = mean_econ - 1.96*se, ymax = mean_econ + 1.96*se),
+                  width = 0.2) +
+    scale_fill_manual(values = regime_colors) +
+    labs(
+      title = "Economy Priority by Regime Type",
+      subtitle = "Higher values = greater economy priority over democracy",
+      x = "Regime Type",
+      y = "Mean Economy Priority",
+      caption = "Error bars = 95% CI"
+    ) +
+    theme(legend.position = "none")
+}
+```
+
+## DV by Country (Top & Bottom)
+
+```{r dv-by-country}
+if ("econ_over_democracy" %in% names(analysis_data)) {
+  country_dv <- analysis_data %>%
+    group_by(country_name, regime_type) %>%
+    summarise(
+      mean_econ = mean(econ_over_democracy, na.rm = TRUE),
+      n = sum(!is.na(econ_over_democracy)),
+      .groups = "drop"
+    ) %>%
+    arrange(desc(mean_econ))
+
+  ggplot(country_dv, aes(x = reorder(country_name, mean_econ), y = mean_econ, fill = regime_type)) +
+    geom_col() +
+    scale_fill_manual(values = regime_colors) +
+    coord_flip() +
+    labs(
+      title = "Economy Priority by Country",
+      subtitle = "Countries ranked by mean economy priority",
+      x = "",
+      y = "Mean Economy Priority",
+      fill = "Regime Type"
+    )
+}
+```
+
+# Bivariate Relationships
+
+## H1: Regime Type and Economy Priority
+
+```{r h1-bivariate}
+if ("econ_over_democracy" %in% names(analysis_data)) {
+  # T-test: Democracy vs Autocracy
+  dem_data <- analysis_data %>% filter(regime_type == "Democracy")
+  auto_data <- analysis_data %>% filter(regime_type == "Autocracy")
+
+  if (nrow(dem_data) > 30 & nrow(auto_data) > 30) {
+    t_result <- t.test(dem_data$econ_over_democracy, auto_data$econ_over_democracy)
+
+    cat("H1 Bivariate Test: Democracy vs Autocracy\n")
+    cat("Democracy mean:", round(mean(dem_data$econ_over_democracy, na.rm = TRUE), 3), "\n")
+    cat("Autocracy mean:", round(mean(auto_data$econ_over_democracy, na.rm = TRUE), 3), "\n")
+    cat("Difference:", round(t_result$estimate[1] - t_result$estimate[2], 3), "\n")
+    cat("t =", round(t_result$statistic, 2), ", p =", format.pval(t_result$p.value, digits = 3), "\n")
+  }
+}
+```
+
+## H2: Education x Regime Interaction
+
+```{r h2-bivariate}
+if (all(c("econ_over_democracy", "education_tertile", "regime_type") %in% names(analysis_data))) {
+  edu_regime <- analysis_data %>%
+    filter(!is.na(education_tertile)) %>%
+    group_by(regime_type, education_tertile) %>%
+    summarise(
+      mean_econ = mean(econ_over_democracy, na.rm = TRUE),
+      se = sd(econ_over_democracy, na.rm = TRUE) / sqrt(sum(!is.na(econ_over_democracy))),
+      n = n(),
+      .groups = "drop"
+    )
+
+  ggplot(edu_regime, aes(x = education_tertile, y = mean_econ,
+                         color = regime_type, group = regime_type)) +
+    geom_point(size = 3) +
+    geom_line(linewidth = 1) +
+    geom_errorbar(aes(ymin = mean_econ - 1.96*se, ymax = mean_econ + 1.96*se),
+                  width = 0.2) +
+    scale_color_manual(values = regime_colors) +
+    labs(
+      title = "Education x Regime Type Interaction",
+      subtitle = "Testing for inverted-U in democracies (H2)",
+      x = "Education Level",
+      y = "Mean Economy Priority",
+      color = "Regime Type",
+      caption = "Error bars = 95% CI"
+    )
+}
+```
+
+## H3: Time Trends by Regime
+
+```{r h3-trends}
+if (all(c("econ_over_democracy", "wave", "regime_type") %in% names(analysis_data))) {
+  wave_trends <- analysis_data %>%
+    group_by(wave, regime_type) %>%
+    summarise(
+      mean_econ = mean(econ_over_democracy, na.rm = TRUE),
+      se = sd(econ_over_democracy, na.rm = TRUE) / sqrt(sum(!is.na(econ_over_democracy))),
+      .groups = "drop"
+    )
+
+  ggplot(wave_trends, aes(x = wave, y = mean_econ,
+                          color = regime_type, group = regime_type)) +
+    geom_point(size = 3) +
+    geom_line(linewidth = 1) +
+    scale_color_manual(values = regime_colors) +
+    labs(
+      title = "Economy Priority Over Time by Regime Type",
+      subtitle = "Testing for divergence (H3)",
+      x = "Survey Wave",
+      y = "Mean Economy Priority",
+      color = "Regime Type"
+    )
+}
+```
+
+# Correlation Matrix
+
+```{r correlations}
+# Select numeric variables for correlation
+numeric_vars <- analysis_data %>%
+  select(where(is.numeric)) %>%
+  select(-matches("^(country|idnumber|survey_year)$"))
+
+if (ncol(numeric_vars) >= 3) {
+  # Calculate correlations (pairwise complete)
+  cor_matrix <- cor(numeric_vars, use = "pairwise.complete.obs")
+
+  # Simple heatmap (if corrplot available)
+  if (requireNamespace("corrplot", quietly = TRUE)) {
+    corrplot::corrplot(
+      cor_matrix[1:min(15, nrow(cor_matrix)), 1:min(15, ncol(cor_matrix))],
+      method = "color",
+      type = "lower",
+      tl.cex = 0.7,
+      tl.col = "black",
+      title = "Correlation Matrix (Key Variables)",
+      mar = c(0, 0, 2, 0)
+    )
+  }
+}
+```
+
+# Missing Data Visualization
+
+```{r missing-viz}
+if (requireNamespace("naniar", quietly = TRUE)) {
+  key_vars <- c("econ_over_democracy", "age", "female", "education_z",
+                "is_urban", "regime_type")
+  existing_vars <- intersect(key_vars, names(analysis_data))
+
+  naniar::vis_miss(analysis_data[, existing_vars], cluster = TRUE) +
+    labs(title = "Missing Data Pattern for Key Variables")
+}
+```
+
+# Summary Statistics for Paper
+
+```{r summary-stats}
+# Create summary table for methods section
+summary_table <- analysis_data %>%
+  group_by(regime_type) %>%
+  summarise(
+    N = n(),
+    Countries = n_distinct(country),
+    `Mean Age` = mean(age, na.rm = TRUE),
+    `% Female` = mean(female, na.rm = TRUE) * 100,
+    `% Urban` = mean(is_urban, na.rm = TRUE) * 100,
+    `Mean Education (yrs)` = mean(education_years, na.rm = TRUE),
+    .groups = "drop"
+  )
+
+summary_table %>%
+  gt() %>%
+  tab_header(
+    title = "Table 1: Sample Characteristics by Regime Type",
+    subtitle = "Asian Barometer Survey, Waves 1-6 (2001-2020)"
+  ) %>%
+  fmt_number(columns = c(`Mean Age`, `% Female`, `% Urban`, `Mean Education (yrs)`),
+             decimals = 1) %>%
+  fmt_number(columns = N, use_seps = TRUE, decimals = 0)
+```
+
+# Export Figures
+
+```{r export-figs, eval=FALSE}
+# Save key figures for manuscript
+ggsave(
+  here("papers/sausage-paper/analysis/figures/fig1_dv_by_regime.png"),
+  width = 8, height = 6, dpi = 300
+)
+```
+
+# Session Info
+
+```{r session}
+sessionInfo()
+```

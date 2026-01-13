@@ -1,0 +1,334 @@
+---
+title: "Hypothesis Testing"
+subtitle: "I Don't Care How the Sausage Gets Made"
+author: "Jeffrey Stark"
+date: today
+format:
+  html:
+    toc: true
+    toc-depth: 4
+    toc-location: left
+    number-sections: true
+    code-fold: show
+    code-tools: true
+    df-print: paged
+    embed-resources: true
+    fig-width: 10
+    fig-height: 7
+execute:
+  warning: false
+  message: false
+  cache: true
+---
+
+# Setup
+
+```{r setup}
+# Core packages
+library(tidyverse)
+library(here)
+library(gt)
+library(gtsummary)
+library(broom)
+library(lme4)       # Mixed effects models
+library(lmerTest)   # P-values for lmer
+library(margins)    # Marginal effects
+library(effectsize) # Effect size calculations
+
+here::i_am("papers/sausage-paper/analysis/03_hypothesis_testing.qmd")
+set.seed(2025)
+theme_set(theme_minimal(base_size = 12))
+
+# Fix namespace conflicts
+select <- dplyr::select
+filter <- dplyr::filter
+```
+
+## Load Data
+
+```{r load-data}
+analysis_data <- readRDS(here("papers/sausage-paper/analysis/sausage_analysis.rds"))
+cat("Analysis sample: n =", nrow(analysis_data), "\n")
+```
+
+# Hypotheses Overview
+
+This analysis tests four hypotheses about democratic pragmatism in Asia:
+
+| Hypothesis | Prediction | Key Test |
+|------------|------------|----------|
+| **H1** (Grass is Greener) | Citizens in democracies prioritize economy more than those in autocracies | Regime main effect |
+| **H2** (Education x Regime) | Inverted-U education effect in democracies only | Interaction + quadratic |
+| **H3** (Elite Divergence) | Educated elites diverge across regimes over time | Three-way interaction |
+| **H4** (Resignation) | "Grass is greener" weakens in entrenched autocracies | Cambodia/Vietnam subgroup |
+
+# H1: Grass is Greener Effect
+
+## Model 1a: Basic OLS
+
+```{r h1-basic}
+# Basic model: Regime type predicting economy priority
+model_h1a <- lm(econ_over_democracy ~ is_democracy,
+                data = analysis_data)
+
+tidy(model_h1a, conf.int = TRUE) %>%
+  gt() %>%
+  tab_header(title = "H1 Test: Basic Regime Effect") %>%
+  fmt_number(columns = c(estimate, std.error, statistic, conf.low, conf.high),
+             decimals = 3)
+```
+
+## Model 1b: With Controls
+
+```{r h1-controls}
+model_h1b <- lm(econ_over_democracy ~ is_democracy + age_centered + female +
+                  education_z + is_urban,
+                data = analysis_data)
+
+tidy(model_h1b, conf.int = TRUE) %>%
+  gt() %>%
+  tab_header(title = "H1 Test: With Demographic Controls") %>%
+  fmt_number(columns = c(estimate, std.error, statistic, conf.low, conf.high),
+             decimals = 3)
+```
+
+## Model 1c: Multilevel (Countries as Random Effects)
+
+```{r h1-multilevel}
+model_h1c <- lmer(econ_over_democracy ~ is_democracy + age_centered + female +
+                    education_z + is_urban + (1 | country),
+                  data = analysis_data)
+
+summary(model_h1c)
+
+# Extract fixed effects
+tidy(model_h1c, effects = "fixed", conf.int = TRUE) %>%
+  gt() %>%
+  tab_header(title = "H1 Test: Multilevel Model (Country Random Effects)") %>%
+  fmt_number(columns = c(estimate, std.error, statistic, conf.low, conf.high),
+             decimals = 3)
+```
+
+## H1 Effect Size
+
+```{r h1-effect}
+# Cohen's d for democracy effect
+if ("is_democracy" %in% names(analysis_data)) {
+  dem_values <- analysis_data$econ_over_democracy[analysis_data$is_democracy == 1]
+  auto_values <- analysis_data$econ_over_democracy[analysis_data$is_democracy == 0]
+
+  d <- effectsize::cohens_d(dem_values, auto_values, pooled_sd = TRUE)
+  cat("H1 Effect Size (Cohen's d):", round(d$Cohens_d, 3), "\n")
+  cat("95% CI: [", round(d$CI_low, 3), ", ", round(d$CI_high, 3), "]\n")
+}
+```
+
+# H2: Education x Regime Interaction
+
+## Model 2a: Linear Interaction
+
+```{r h2-linear}
+model_h2a <- lm(econ_over_democracy ~ education_z * is_democracy +
+                  age_centered + female + is_urban,
+                data = analysis_data)
+
+tidy(model_h2a, conf.int = TRUE) %>%
+  gt() %>%
+  tab_header(title = "H2 Test: Education x Regime Interaction") %>%
+  fmt_number(columns = c(estimate, std.error, statistic, conf.low, conf.high),
+             decimals = 3)
+```
+
+## Model 2b: Quadratic Education (Testing Inverted-U)
+
+```{r h2-quadratic}
+model_h2b <- lm(econ_over_democracy ~ education_z + education_z_sq +
+                  education_z:is_democracy + education_z_sq:is_democracy +
+                  is_democracy + age_centered + female + is_urban,
+                data = analysis_data)
+
+tidy(model_h2b, conf.int = TRUE) %>%
+  gt() %>%
+  tab_header(title = "H2 Test: Quadratic Education x Regime") %>%
+  fmt_number(columns = c(estimate, std.error, statistic, conf.low, conf.high),
+             decimals = 3)
+```
+
+## H2 Visualization: Marginal Effects
+
+```{r h2-margins}
+if (requireNamespace("ggeffects", quietly = TRUE)) {
+  library(ggeffects)
+
+  # Predicted values at different education levels by regime
+  pred_h2 <- ggpredict(model_h2a, terms = c("education_z [-2:2]", "is_democracy"))
+
+  plot(pred_h2) +
+    labs(
+      title = "H2: Education Effect by Regime Type",
+      subtitle = "Predicted economy priority at different education levels",
+      x = "Education (standardized)",
+      y = "Predicted Economy Priority",
+      color = "Regime"
+    )
+}
+```
+
+# H3: Elite Divergence Over Time
+
+## Model 3a: Three-Way Interaction
+
+```{r h3-threeway}
+model_h3a <- lm(econ_over_democracy ~ education_z * is_democracy * wave_numeric +
+                  age_centered + female + is_urban,
+                data = analysis_data)
+
+# Focus on key coefficients
+tidy(model_h3a, conf.int = TRUE) %>%
+  filter(str_detect(term, "education|wave")) %>%
+  gt() %>%
+  tab_header(title = "H3 Test: Elite Divergence (Three-Way Interaction)") %>%
+  fmt_number(columns = c(estimate, std.error, statistic, conf.low, conf.high),
+             decimals = 3)
+```
+
+## H3 Visualization: Trends by Education x Regime
+
+```{r h3-trends}
+# Calculate means by wave, regime, and education
+if (all(c("wave", "education_tertile", "regime_type") %in% names(analysis_data))) {
+  elite_trends <- analysis_data %>%
+    filter(education_tertile == "High") %>%
+    group_by(wave, regime_type) %>%
+    summarise(
+      mean_econ = mean(econ_over_democracy, na.rm = TRUE),
+      se = sd(econ_over_democracy, na.rm = TRUE) / sqrt(sum(!is.na(econ_over_democracy))),
+      n = n(),
+      .groups = "drop"
+    )
+
+  regime_colors <- c("Democracy" = "#66c2a5", "Hybrid" = "#fc8d62", "Autocracy" = "#8da0cb")
+
+  ggplot(elite_trends, aes(x = wave, y = mean_econ,
+                           color = regime_type, group = regime_type)) +
+    geom_point(size = 3) +
+    geom_line(linewidth = 1) +
+    geom_errorbar(aes(ymin = mean_econ - 1.96*se, ymax = mean_econ + 1.96*se),
+                  width = 0.2) +
+    scale_color_manual(values = regime_colors) +
+    labs(
+      title = "H3: Elite Attitudes Over Time",
+      subtitle = "High-education respondents only",
+      x = "Wave",
+      y = "Mean Economy Priority",
+      color = "Regime Type"
+    )
+}
+```
+
+# H4: Resignation Effect (Cambodia, Vietnam)
+
+## Model 4a: Subgroup Analysis
+
+```{r h4-subgroup}
+# Filter to entrenched autocracies (Cambodia = 12, Vietnam = 11)
+entrenched <- analysis_data %>%
+  filter(country %in% c(11, 12))
+
+if (nrow(entrenched) > 100) {
+  model_h4a <- lm(econ_over_democracy ~ education_z * wave_numeric +
+                    age_centered + female + is_urban,
+                  data = entrenched)
+
+  tidy(model_h4a, conf.int = TRUE) %>%
+    gt() %>%
+    tab_header(title = "H4 Test: Resignation in Cambodia/Vietnam") %>%
+    fmt_number(columns = c(estimate, std.error, statistic, conf.low, conf.high),
+               decimals = 3)
+
+  cat("\nSubgroup sample: n =", nrow(entrenched), "\n")
+}
+```
+
+## H4 Comparison: Tightening vs Entrenched Autocracies
+
+```{r h4-comparison}
+# Compare China (tightening) vs Cambodia/Vietnam (entrenched)
+# China = 4, Cambodia = 12, Vietnam = 11
+
+autocracy_comparison <- analysis_data %>%
+  filter(country %in% c(4, 11, 12)) %>%
+  mutate(
+    autocracy_type = case_when(
+      country == 4 ~ "Tightening (China)",
+      country %in% c(11, 12) ~ "Entrenched (Cambodia/Vietnam)"
+    )
+  )
+
+if (nrow(autocracy_comparison) > 200) {
+  model_h4b <- lm(econ_over_democracy ~ education_z * wave_numeric * autocracy_type +
+                    age_centered + female + is_urban,
+                  data = autocracy_comparison)
+
+  # Focus on key interactions
+  tidy(model_h4b, conf.int = TRUE) %>%
+    filter(str_detect(term, "education|wave|autocracy")) %>%
+    gt() %>%
+    tab_header(title = "H4 Test: Tightening vs Entrenched Autocracies") %>%
+    fmt_number(columns = c(estimate, std.error, statistic, conf.low, conf.high),
+               decimals = 3)
+}
+```
+
+# Model Comparison
+
+```{r model-comparison}
+# Compare model fit statistics
+models <- list(
+  "H1: Basic" = model_h1a,
+  "H1: Controls" = model_h1b,
+  "H2: Interaction" = model_h2a,
+  "H2: Quadratic" = model_h2b,
+  "H3: Three-way" = model_h3a
+)
+
+model_stats <- map_dfr(models, glance, .id = "Model") %>%
+  select(Model, r.squared, adj.r.squared, AIC, BIC, nobs)
+
+model_stats %>%
+  gt() %>%
+  tab_header(title = "Model Comparison Statistics") %>%
+  fmt_number(columns = c(r.squared, adj.r.squared), decimals = 3) %>%
+  fmt_number(columns = c(AIC, BIC), decimals = 1)
+```
+
+# Summary of Findings
+
+```{r findings-summary}
+cat("\n")
+cat("=" , rep("=", 69), "\n", sep = "")
+cat("  HYPOTHESIS TESTING SUMMARY\n")
+cat("=" , rep("=", 69), "\n\n", sep = "")
+
+cat("H1 (Grass is Greener):\n")
+cat("  Democracy coefficient:", round(coef(model_h1b)["is_democracy"], 3), "\n")
+cat("  p-value:", format.pval(summary(model_h1b)$coefficients["is_democracy", 4], digits = 3), "\n\n")
+
+cat("H2 (Education x Regime):\n")
+cat("  Interaction coefficient:", round(coef(model_h2a)["education_z:is_democracy"], 3), "\n")
+cat("  p-value:", format.pval(summary(model_h2a)$coefficients["education_z:is_democracy", 4], digits = 3), "\n\n")
+
+cat("H3 (Elite Divergence):\n")
+cat("  See three-way interaction table above\n\n")
+
+cat("H4 (Resignation):\n")
+cat("  See subgroup analysis above\n\n")
+
+cat("=" , rep("=", 69), "\n", sep = "")
+```
+
+# Session Info
+
+```{r session}
+sessionInfo()
+```

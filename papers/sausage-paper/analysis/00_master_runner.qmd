@@ -1,0 +1,91 @@
+---
+title: "Master Analysis Runner"
+subtitle: "I Don't Care How the Sausage Gets Made"
+author: "Jeffrey Stark"
+date: today
+format:
+  html:
+    toc: true
+    code-fold: true
+    embed-resources: true
+execute:
+  warning: false
+  message: false
+---
+
+# Overview
+
+This document runs all analysis scripts in sequence for the "Sausage Paper" on democratic pragmatism in Asia.
+
+## Analysis Pipeline
+
+1. **Data Preparation** - Subset variables, add regime types, create composites
+2. **Descriptive Analysis** - Sample characteristics, variable distributions, cross-tabs
+3. **Hypothesis Testing** - Test H1-H4 with appropriate statistical models
+4. **Robustness Checks** - Alternative specifications, sensitivity analyses
+
+```{r setup}
+library(here)
+here::i_am("papers/sausage-paper/analysis/00_master_runner.qmd")
+
+# Track overall timing
+total_start <- Sys.time()
+```
+
+# 1. Data Preparation
+
+```{r data-prep}
+cat("Running data preparation modules...\n\n")
+source(here("papers/sausage-paper/analysis/data_prep_modules/00_run_all.R"))
+```
+
+# 2. Descriptive Analysis
+
+```{r descriptive, eval=FALSE}
+# Render descriptive analysis
+quarto::quarto_render(
+  here("papers/sausage-paper/analysis/02_descriptive_analysis.qmd"),
+  output_format = "html"
+)
+cat("Descriptive analysis complete.\n")
+```
+
+# 3. Hypothesis Testing
+
+```{r hypothesis, eval=FALSE}
+# Render hypothesis testing
+quarto::quarto_render(
+  here("papers/sausage-paper/analysis/03_hypothesis_testing.qmd"),
+  output_format = "html"
+)
+cat("Hypothesis testing complete.\n")
+```
+
+# 4. Robustness Checks
+
+```{r robustness, eval=FALSE}
+# Render robustness checks
+quarto::quarto_render(
+  here("papers/sausage-paper/analysis/04_robustness_checks.qmd"),
+  output_format = "html"
+)
+cat("Robustness checks complete.\n")
+```
+
+# Summary
+
+```{r summary}
+total_time <- round(difftime(Sys.time(), total_start, units = "mins"), 1)
+
+cat("\n")
+cat("=" , rep("=", 59), "\n", sep = "")
+cat("  ANALYSIS PIPELINE COMPLETE\n")
+cat("=" , rep("=", 59), "\n", sep = "")
+cat("  Total time:", total_time, "minutes\n")
+cat("  Outputs:\n")
+cat("    - analysis/sausage_analysis.rds\n")
+cat("    - analysis/02_descriptive_analysis.html\n")
+cat("    - analysis/03_hypothesis_testing.html\n")
+cat("    - analysis/04_robustness_checks.html\n")
+cat("=" , rep("=", 59), "\n", sep = "")
+```

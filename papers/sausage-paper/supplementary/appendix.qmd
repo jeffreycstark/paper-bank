@@ -1,0 +1,118 @@
+---
+title: "Supplementary Materials"
+subtitle: "I Don't Care How the Sausage Gets Made"
+author: "Jeffrey Stark"
+date: today
+format:
+  pdf:
+    documentclass: article
+    geometry: margin=1in
+    fontsize: 10pt
+    number-sections: true
+  html:
+    toc: true
+    code-fold: true
+execute:
+  warning: false
+  message: false
+  echo: false
+---
+
+```{r setup}
+#| include: false
+library(tidyverse)
+library(here)
+library(gt)
+library(knitr)
+
+here::i_am("papers/sausage-paper/supplementary/appendix.qmd")
+```
+
+# Appendix A: Variable Definitions
+
+## Dependent Variables
+
+| Variable | Question Text | Scale | Waves |
+|----------|---------------|-------|-------|
+| `econ_over_democracy` | [Question text] | 1-4 | W1-W6 |
+| `democracy_solves_problems` | [Question text] | 1-4 | W2-W6 |
+
+## Independent Variables
+
+| Variable | Definition | Coding |
+|----------|------------|--------|
+| Regime Type | Based on V-Dem classification | Democracy, Hybrid, Autocracy |
+| Education | Years of formal schooling | 0-25 years |
+| Survey Wave | ABS wave number | W1-W6 (2001-2020) |
+
+## Control Variables
+
+[Table of controls]
+
+# Appendix B: Country Classifications
+
+## V-Dem Regime Classifications
+
+```{r vdem-table}
+# TODO: Insert V-Dem classification table by country-year
+```
+
+## Alternative Classification Schemes
+
+[Discussion of alternative classification approaches]
+
+# Appendix C: Full Regression Tables
+
+## H1: Main Effects Models
+
+```{r h1-full}
+# TODO: Full model output
+```
+
+## H2: Interaction Models
+
+```{r h2-full}
+# TODO: Full model output
+```
+
+## H3: Time Trend Models
+
+```{r h3-full}
+# TODO: Full model output
+```
+
+# Appendix D: Robustness Checks
+
+## Alternative Specifications
+
+[Summary of robustness results]
+
+## Sensitivity to Sample Restrictions
+
+[Results with different sample restrictions]
+
+# Appendix E: Survey Question Wording
+
+## Wave 1 (2001-2003)
+
+[Question wording for W1]
+
+## Wave 2 (2005-2008)
+
+[Question wording for W2]
+
+## Waves 3-6
+
+[Changes in question wording across waves]
+
+# Appendix F: Missing Data Analysis
+
+## Missing Data Patterns
+
+```{r missing}
+# TODO: Missing data visualization
+```
+
+## Comparison of Complete vs. Full Sample
+
+[Analysis comparing results with different missing data treatments]

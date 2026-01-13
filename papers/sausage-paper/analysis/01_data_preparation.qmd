@@ -1,0 +1,141 @@
+---
+title: "Data Preparation"
+subtitle: "I Don't Care How the Sausage Gets Made"
+author: "Jeffrey Stark"
+date: today
+format:
+  html:
+    toc: true
+    toc-depth: 3
+    number-sections: true
+    code-fold: show
+    code-tools: true
+    df-print: paged
+    embed-resources: true
+execute:
+  warning: false
+  message: false
+---
+
+# Overview
+
+This document prepares the analysis dataset for the "Sausage Paper" examining democratic pragmatism across Asia. We use 6 waves of Asian Barometer Survey data covering 16 countries and ~110,000 respondents.
+
+## Setup
+
+```{r setup}
+library(tidyverse)
+library(here)
+library(gt)
+library(gtsummary)
+
+here::i_am("papers/sausage-paper/analysis/01_data_preparation.qmd")
+set.seed(2025)
+```
+
+# Run Data Preparation Pipeline
+
+The data preparation is handled by modular R scripts in `data_prep_modules/`:
+
+```{r run-modules}
+source(here("papers/sausage-paper/analysis/data_prep_modules/00_run_all.R"))
+```
+
+# Data Quality Summary
+
+## Sample Overview
+
+```{r sample-overview}
+# Load the prepared analysis dataset
+analysis_data <- readRDS(here("papers/sausage-paper/analysis/sausage_analysis.rds"))
+
+cat("Final analysis sample:\n")
+cat("  Observations:", nrow(analysis_data), "\n")
+cat("  Variables:", ncol(analysis_data), "\n")
+cat("  Countries:", length(unique(analysis_data$country)), "\n")
+cat("  Waves:", length(unique(analysis_data$wave)), "\n")
+```
+
+## Country Distribution
+
+```{r country-dist}
+analysis_data %>%
+  count(country_name, regime_type, name = "n") %>%
+  arrange(regime_type, desc(n)) %>%
+  gt() %>%
+  tab_header(
+    title = "Sample Distribution by Country",
+    subtitle = "Classified by Regime Type"
+  ) %>%
+  fmt_number(columns = n, use_seps = TRUE, decimals = 0) %>%
+  tab_options(table.font.size = 12)
+```
+
+## Wave Distribution
+
+```{r wave-dist}
+analysis_data %>%
+  count(wave, name = "n") %>%
+  gt() %>%
+  tab_header(title = "Sample Distribution by Wave") %>%
+  fmt_number(columns = n, use_seps = TRUE, decimals = 0)
+```
+
+## Regime Type by Wave
+
+```{r regime-wave}
+analysis_data %>%
+  count(wave, regime_type) %>%
+  pivot_wider(names_from = regime_type, values_from = n, values_fill = 0) %>%
+  gt() %>%
+  tab_header(
+    title = "Observations by Wave and Regime Type"
+  )
+```
+
+# Key Variable Distributions
+
+## Dependent Variable: Economy over Democracy
+
+```{r dv-dist}
+if ("econ_over_democracy" %in% names(analysis_data)) {
+  analysis_data %>%
+    filter(!is.na(econ_over_democracy)) %>%
+    ggplot(aes(x = factor(econ_over_democracy))) +
+    geom_bar(fill = "steelblue") +
+    facet_wrap(~regime_type, scales = "free_y") +
+    labs(
+      title = "Distribution of 'Economy over Democracy' by Regime Type",
+      x = "Response (higher = more economy priority)",
+      y = "Count"
+    ) +
+    theme_minimal()
+}
+```
+
+## Education Distribution by Regime Type
+
+```{r edu-dist}
+if ("education_tertile" %in% names(analysis_data)) {
+  analysis_data %>%
+    filter(!is.na(education_tertile)) %>%
+    count(regime_type, education_tertile) %>%
+    group_by(regime_type) %>%
+    mutate(pct = n / sum(n) * 100) %>%
+    ggplot(aes(x = education_tertile, y = pct, fill = regime_type)) +
+    geom_col(position = "dodge") +
+    labs(
+      title = "Education Distribution by Regime Type",
+      x = "Education Level",
+      y = "Percentage",
+      fill = "Regime"
+    ) +
+    theme_minimal()
+}
+```
+
+# Session Info
+
+```{r session-info}
+sessionInfo()
+```

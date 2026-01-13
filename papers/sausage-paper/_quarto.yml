@@ -1,0 +1,44 @@
+project:
+  type: default
+  output-dir: _output
+
+# Paper metadata
+title: "I Don't Care How the Sausage Gets Made"
+subtitle: "Democratic Pragmatism in Asia"
+author:
+  - name: Jeffrey Stark
+    affiliation: University
+    email: email@university.edu
+
+# Global execute options
+execute:
+  warning: false
+  message: false
+  echo: true
+  cache: true
+
+# Format defaults
+format:
+  html:
+    toc: true
+    toc-depth: 3
+    number-sections: true
+    code-fold: show
+    code-tools: true
+    theme: cosmo
+    embed-resources: true
+  pdf:
+    toc: true
+    number-sections: true
+    documentclass: article
+    geometry: margin=1in
+    fontsize: 11pt
+
+# Bibliography
+bibliography: manuscript/references.bib
+csl: manuscript/apa.csl
+
+# Paths
+resources:
+  - analysis/figures/
+  - analysis/tables/

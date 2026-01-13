@@ -1,0 +1,237 @@
+---
+title: "Supplementary Analyses"
+subtitle: "I Don't Care How the Sausage Gets Made"
+author: "Jeffrey Stark"
+date: today
+format:
+  html:
+    toc: true
+    toc-depth: 3
+    number-sections: true
+    code-fold: show
+    embed-resources: true
+execute:
+  warning: false
+  message: false
+  cache: true
+---
+
+# Setup
+
+```{r setup}
+library(tidyverse)
+library(here)
+library(gt)
+library(broom)
+
+here::i_am("papers/sausage-paper/analysis/05_supplementary_analyses.qmd")
+set.seed(2025)
+theme_set(theme_minimal(base_size = 12))
+
+select <- dplyr::select
+filter <- dplyr::filter
+```
+
+## Load Data
+
+```{r load-data}
+analysis_data <- readRDS(here("papers/sausage-paper/analysis/sausage_analysis.rds"))
+cat("Sample:", nrow(analysis_data), "observations\n")
+```
+
+# Country-Specific Analyses
+
+## Within-Country Regression Models
+
+Run the main model separately for each country to examine heterogeneity:
+
+```{r country-models}
+# Nest by country and run models
+country_models <- analysis_data %>%
+  group_by(country_name) %>%
+  nest() %>%
+  mutate(
+    model = map(data, ~lm(econ_over_democracy ~ education_z + age_centered +
+                            female + is_urban, data = .x)),
+    tidy_output = map(model, tidy, conf.int = TRUE)
+  )
+
+# Extract education coefficients
+edu_by_country <- country_models %>%
+  unnest(tidy_output) %>%
+  filter(term == "education_z") %>%
+  select(country_name, estimate, std.error, conf.low, conf.high, p.value) %>%
+  arrange(estimate)
+
+edu_by_country %>%
+  gt() %>%
+  tab_header(title = "Education Effect on Economy Priority by Country") %>%
+  fmt_number(columns = c(estimate, std.error, conf.low, conf.high), decimals = 3) %>%
+  fmt_number(columns = p.value, decimals = 4)
+```
+
+## Forest Plot of Country Effects
+
+```{r country-forest}
+ggplot(edu_by_country, aes(x = estimate, y = reorder(country_name, estimate))) +
+  geom_point(size = 3) +
+  geom_errorbarh(aes(xmin = conf.low, xmax = conf.high), height = 0.2) +
+  geom_vline(xintercept = 0, linetype = "dashed", color = "red") +
+  labs(
+    title = "Education Effect by Country",
+    subtitle = "Coefficient on standardized education",
+    x = "Effect of Education on Economy Priority",
+    y = ""
+  )
+```
+
+# Wave-Specific Analyses
+
+## Within-Wave Models
+
+```{r wave-models}
+wave_models <- analysis_data %>%
+  group_by(wave) %>%
+  nest() %>%
+  mutate(
+    model = map(data, ~lm(econ_over_democracy ~ is_democracy + education_z +
+                            age_centered + female + is_urban, data = .x)),
+    tidy_output = map(model, tidy, conf.int = TRUE)
+  )
+
+# Extract democracy coefficients
+dem_by_wave <- wave_models %>%
+  unnest(tidy_output) %>%
+  filter(term == "is_democracy") %>%
+  select(wave, estimate, std.error, conf.low, conf.high, p.value) %>%
+  arrange(wave)
+
+dem_by_wave %>%
+  gt() %>%
+  tab_header(title = "Democracy Effect by Survey Wave") %>%
+  fmt_number(columns = c(estimate, std.error, conf.low, conf.high), decimals = 3)
+```
+
+# Subgroup Analyses
+
+## By Age Cohort
+
+```{r age-subgroups}
+age_models <- analysis_data %>%
+  filter(!is.na(age_cohort)) %>%
+  group_by(age_cohort) %>%
+  nest() %>%
+  mutate(
+    model = map(data, ~lm(econ_over_democracy ~ is_democracy + education_z +
+                            female + is_urban, data = .x)),
+    tidy_output = map(model, tidy, conf.int = TRUE)
+  )
+
+dem_by_age <- age_models %>%
+  unnest(tidy_output) %>%
+  filter(term == "is_democracy") %>%
+  select(age_cohort, estimate, std.error, conf.low, conf.high) %>%
+  arrange(age_cohort)
+
+dem_by_age %>%
+  gt() %>%
+  tab_header(title = "Democracy Effect by Age Cohort") %>%
+  fmt_number(columns = c(estimate, std.error, conf.low, conf.high), decimals = 3)
+```
+
+## By Gender
+
+```{r gender-subgroups}
+gender_models <- analysis_data %>%
+  filter(!is.na(female)) %>%
+  group_by(female) %>%
+  nest() %>%
+  mutate(
+    model = map(data, ~lm(econ_over_democracy ~ is_democracy + education_z +
+                            age_centered + is_urban, data = .x)),
+    tidy_output = map(model, tidy, conf.int = TRUE)
+  )
+
+dem_by_gender <- gender_models %>%
+  unnest(tidy_output) %>%
+  filter(term == "is_democracy") %>%
+  mutate(gender = if_else(female == 1, "Female", "Male")) %>%
+  select(gender, estimate, std.error, conf.low, conf.high)
+
+dem_by_gender %>%
+  gt() %>%
+  tab_header(title = "Democracy Effect by Gender") %>%
+  fmt_number(columns = c(estimate, std.error, conf.low, conf.high), decimals = 3)
+```
+
+# Mediation Analysis
+
+## Potential Mediators
+
+Testing whether trust in institutions mediates the regime-pragmatism relationship:
+
+```{r mediation}
+# Step 1: Total effect (already established in H1)
+# Step 2: Effect of democracy on mediator
+# Step 3: Effect of mediator on DV controlling for democracy
+
+if ("institutional_trust_index" %in% names(analysis_data)) {
+  # Path a: Democracy -> Trust
+  model_a <- lm(institutional_trust_index ~ is_democracy + age_centered +
+                  female + education_z + is_urban, data = analysis_data)
+
+  # Path b: Trust -> Economy Priority (controlling for democracy)
+  model_b <- lm(econ_over_democracy ~ is_democracy + institutional_trust_index +
+                  age_centered + female + education_z + is_urban, data = analysis_data)
+
+  cat("Path a (Democracy -> Trust):\n")
+  cat("  Coefficient:", round(coef(model_a)["is_democracy"], 3), "\n")
+  cat("  p-value:", format.pval(summary(model_a)$coefficients["is_democracy", 4], 3), "\n\n")
+
+  cat("Path b (Trust -> Economy Priority, controlling for democracy):\n")
+  cat("  Coefficient:", round(coef(model_b)["institutional_trust_index"], 3), "\n")
+  cat("  p-value:", format.pval(summary(model_b)$coefficients["institutional_trust_index", 4], 3), "\n")
+}
+```
+
+# Alternative DV Analyses
+
+## Democracy Solves Problems
+
+```{r alt-dv}
+if ("democracy_solves_problems" %in% names(analysis_data)) {
+  model_alt <- lm(democracy_solves_problems ~ is_democracy + education_z +
+                    age_centered + female + is_urban, data = analysis_data)
+
+  tidy(model_alt, conf.int = TRUE) %>%
+    gt() %>%
+    tab_header(title = "Alternative DV: Democracy Solves Problems") %>%
+    fmt_number(columns = c(estimate, std.error, conf.low, conf.high), decimals = 3)
+}
+```
+
+# Power Analysis
+
+## Post-hoc Power Calculation
+
+```{r power}
+# Calculate observed effect sizes and power
+n_total <- nrow(analysis_data)
+n_democracy <- sum(analysis_data$is_democracy == 1, na.rm = TRUE)
+n_autocracy <- sum(analysis_data$is_democracy == 0, na.rm = TRUE)
+
+cat("Sample sizes:\n")
+cat("  Total:", n_total, "\n")
+cat("  Democracies:", n_democracy, "\n")
+cat("  Non-democracies:", n_autocracy, "\n\n")
+
+# With samples this large, power is essentially 1.0 for any meaningful effect
+cat("Note: With samples > 10,000 per group, statistical power > 0.99\n")
+cat("for detecting effects as small as d = 0.05\n")
+```
+
+# Session Info
+
+```{r session}
+sessionInfo()
+```

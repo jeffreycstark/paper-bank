@@ -1,0 +1,11 @@
+# Sausage Paper - Generated files to ignore
+*.rds
+*.html
+*.pdf
+figures/*.png
+figures/*.pdf
+tables/*.html
+tables/*.csv
+_output/
+.quarto/
+

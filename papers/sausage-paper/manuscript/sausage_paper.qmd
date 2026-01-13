@@ -1,0 +1,192 @@
+---
+title: "I Don't Care How the Sausage Gets Made"
+subtitle: "Democratic Pragmatism in Asia"
+author:
+  - name: Jeffrey Stark
+    affiliation: University
+    email: email@university.edu
+date: today
+abstract: |
+  When asked to choose between democracy and economic development, who prioritizes economic outcomes? Conventional wisdom suggests citizens in authoritarian regimes would trade democratic process for material gains. This paper finds the opposite. Using six waves of Asian Barometer Survey data spanning two decades (2001-2020) across 16 countries, I show that citizens in democracies are significantly more willing to prioritize economic outcomes over democratic process than citizens in authoritarian regimes. This "sausage mentality"---caring about what government delivers rather than how it operates---is most pronounced among the middle-educated in democracies, precisely the group modernization theory expects to be democracy's strongest defenders. I propose a "grass is greener" mechanism: democracy is idealized when absent, taken for granted when present. The findings challenge optimistic readings of modernization theory and suggest democratic consolidation may be more fragile than assumed.
+keywords:
+  - democracy
+  - authoritarianism
+  - political attitudes
+  - Asia
+  - economic development
+format:
+  pdf:
+    documentclass: article
+    geometry: margin=1in
+    fontsize: 11pt
+    linestretch: 1.5
+    number-sections: true
+    toc: false
+  html:
+    toc: true
+    toc-depth: 3
+    number-sections: true
+    code-fold: true
+bibliography: references.bib
+csl: apa.csl
+execute:
+  warning: false
+  message: false
+  echo: false
+---
+
+```{r setup}
+#| include: false
+library(tidyverse)
+library(here)
+library(gt)
+library(knitr)
+
+here::i_am("papers/sausage-paper/manuscript/sausage_paper.qmd")
+
+# Load analysis results
+# analysis_data <- readRDS(here("papers/sausage-paper/analysis/sausage_analysis.rds"))
+```
+
+# Introduction
+
+When asked to choose between democracy and economic development, who is more likely to prioritize economic outcomes? Conventional wisdom---rooted in modernization theory and decades of research on authoritarian resilience---suggests citizens living under authoritarianism would be most willing to trade democratic process for material gains. After all, this is precisely the bargain authoritarian regimes offer: prosperity in exchange for political quiescence.
+
+This paper finds the opposite. Using six waves of Asian Barometer Survey data spanning two decades (2001-2020) across 16 countries, I show that citizens in democracies are significantly *more* willing to prioritize economic outcomes over democratic process than citizens in authoritarian regimes. This "sausage mentality"---caring about what government delivers rather than how it operates---is most pronounced among the middle-educated in democracies, precisely the group modernization theory expects to be democracy's strongest defenders.
+
+## The Puzzle
+
+Three patterns demand explanation:
+
+1. **The democracy paradox**: Citizens in Taiwan, South Korea, and the Philippines---established democracies---are 15-20 percentage points more likely to prioritize economy over democracy than citizens in China, Vietnam, and Cambodia.
+
+2. **The education puzzle**: In democracies, middle-educated citizens show the strongest "sausage mentality" (68%), while the least and most educated are more pro-democracy. In authoritarian regimes, education has no such effect.
+
+3. **Elite divergence**: Rather than converging on liberal democratic values over time, educated elites in China and Taiwan have moved in opposite directions---Chinese elites became *more* pro-democracy while Taiwanese elites became more pragmatic.
+
+# Theory
+
+## The "Grass is Greener" Hypothesis
+
+Rose, Mishler, and Haerpfer [-@rose1998democracy], analyzing post-communist transitions, found that "people who have been denied democratic freedoms value new political rights more highly." This suggests a fundamental asymmetry: democracy is idealized when absent, taken for granted when present.
+
+I extend this logic to Asia, where variation in regime types and democratic experience provides a natural laboratory. The prediction: citizens in authoritarian regimes will express stronger *abstract* support for democracy (it represents an appealing alternative), while citizens in democracies will be more *pragmatic* (they live with democracy's frustrations daily).
+
+## Democratic Disillusionment vs. Authoritarian Idealization
+
+Chu and Diamond [-@chu2008democracy] document an apparent paradox in Asian public opinion: high levels of expressed support for democracy coexist with skepticism about democratic institutions and willingness to consider alternatives. I argue these are not contradictory but reflect different dimensions:
+
+- **Ideological support**: Abstract belief that democracy is good
+- **Pragmatic orientation**: Willingness to trade democratic process for outcomes when forced to choose
+
+Citizens can hold both simultaneously---and the gap between them may be larger in democracies, where lived experience reveals democracy's limitations, than in authoritarian regimes, where democracy remains an untested ideal.
+
+## Hypotheses
+
+**H1 (Grass is Greener)**: Citizens in authoritarian regimes will express higher abstract support for democracy while citizens in democracies will show greater willingness to trade democracy for economic outcomes.
+
+**H2 (Education × Regime Interaction)**: The relationship between education and democratic pragmatism will differ by regime type: inverted-U in democracies (middle education most pragmatic), flat or positive in authoritarian regimes.
+
+**H3 (Elite Divergence)**: Over time, educated elites across regime types will diverge rather than converge in their democratic orientations.
+
+**H4 (Resignation Effect)**: In long-entrenched authoritarian regimes with high elite-state integration (Cambodia, Vietnam), the "grass is greener" effect will weaken over time.
+
+# Data and Methods
+
+## Data Source
+
+I use the Asian Barometer Survey (ABS), a longitudinal public opinion survey covering political attitudes across Asia. The analysis includes all six waves conducted between 2001 and 2020, encompassing 16 countries and approximately 110,000 respondents.
+
+## Sample
+
+```{r sample-table}
+#| label: tbl-sample
+#| tbl-cap: "Sample Distribution by Country and Regime Type"
+
+# TODO: Generate from analysis data
+# Will be populated when analysis is run
+```
+
+## Key Variables
+
+**Dependent Variable**: Economy over democracy priority, measured by [question text]. Higher values indicate greater willingness to prioritize economic outcomes.
+
+**Independent Variables**:
+- Regime type (democracy, hybrid, autocracy) based on V-Dem classification
+- Education (years of schooling, standardized)
+- Survey wave (1-6)
+
+**Controls**: Age, gender, urban residence, income.
+
+## Analytical Strategy
+
+I estimate multilevel regression models with country random effects to account for the nested structure of the data. The main specification is:
+
+$$
+Y_{ijt} = \beta_0 + \beta_1 \text{Democracy}_j + \beta_2 \text{Education}_{ijt} + \beta_3 \text{Democracy}_j \times \text{Education}_{ijt} + \mathbf{X}'\gamma + u_j + \epsilon_{ijt}
+$$
+
+where $i$ indexes individuals, $j$ indexes countries, and $t$ indexes waves.
+
+# Results
+
+## H1: The Grass is Greener Effect
+
+```{r h1-results}
+#| label: tbl-h1
+#| tbl-cap: "H1 Results: Regime Type and Economy Priority"
+
+# TODO: Insert results table
+```
+
+## H2: Education × Regime Interaction
+
+```{r h2-results}
+#| label: fig-h2
+#| fig-cap: "Education Effect by Regime Type"
+
+# TODO: Insert interaction plot
+```
+
+## H3: Elite Divergence Over Time
+
+```{r h3-results}
+#| label: fig-h3
+#| fig-cap: "Elite Attitudes Over Time by Regime Type"
+
+# TODO: Insert trends plot
+```
+
+## H4: The Resignation Effect
+
+```{r h4-results}
+#| label: tbl-h4
+#| tbl-cap: "H4 Results: Tightening vs. Entrenched Autocracies"
+
+# TODO: Insert results
+```
+
+# Discussion
+
+## Theoretical Implications
+
+The findings challenge several assumptions in the democratization literature:
+
+1. **Modernization theory revisited**: The expectation that economic development and education produce pro-democratic attitudes appears conditional on regime context.
+
+2. **Democratic consolidation**: Citizens who *have* democracy may be its least reliable defenders, raising questions about the foundations of democratic stability.
+
+3. **Authoritarian resilience**: The "performance legitimacy" bargain may be less effective than assumed if citizens in autocracies maintain idealized visions of democracy.
+
+## Limitations
+
+[Discussion of limitations]
+
+# Conclusion
+
+[Conclusion text]
+
+# References
+
+::: {#refs}
+:::
