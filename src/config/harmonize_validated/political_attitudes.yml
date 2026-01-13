@@ -11,7 +11,7 @@ variables:
   # GROUP 1: Political Interest / Engagement
   # ===========================================================================
 
-  - id: pol_interest
+  - id: political_interest
     concept: political_attitudes
     description: "How interested would you say you are in politics?"
     type: ordinal

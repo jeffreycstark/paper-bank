@@ -12,7 +12,7 @@ variables:
   # GROUP 0: Satisfaction with Democracy (KEY VARIABLE)
   # ===========================================================================
 
-  - id: dem_sat_national
+  - id: democracy_satisfaction
     concept: democracy
     description: "On the whole, how satisfied or dissatisfied are you with the way democracy works in our country?"
     type: ordinal
@@ -200,7 +200,7 @@ variables:
         - "Category 5 (both equally) is not on the democracy-economy continuum"
         - "Consider recoding 5 to NA for ordinal analysis, or create binary/ternary version"
 
-  - id: dem_suitable_country
+  - id: democracy_suitability
     concept: democracy
     description: "Democracy is suitable for our country"
     type: ordinal
@@ -788,7 +788,7 @@ variables:
         - waves: [w1, w2, w3, w4, w5, w6]
           phrase: "democracy.*preferable|authoritarian.*preferable|closest.*opinion"
 
-  - id: dem_capable_solving
+  - id: democracy_efficacy
     concept: democracy_tradeoffs
     description: "Democracy is capable of solving society's problems vs. cannot solve"
     type: nominal

@@ -54,7 +54,7 @@ variables:
   # GROUP 2: Regime Type Preferences (support for non-democratic alternatives)
   # ===========================================================================
 
-  - id: auth_strong_leader
+  - id: strongman_rule
     concept: authoritarianism
     description: "We should get rid of parliament and elections and have a strong leader decide things"
     type: ordinal
@@ -93,7 +93,7 @@ variables:
         - waves: [w1, w2, w4, w5, w6]
           phrase: "strong leader|parliament.*election"
 
-  - id: auth_one_party
+  - id: single_party_rule
     concept: authoritarianism
     description: "Only one political party should be allowed to stand for election and hold office"
     type: ordinal
@@ -130,7 +130,7 @@ variables:
         - waves: [w1, w2, w3, w4, w5, w6]
           phrase: "one.*party|opposition.*party"
 
-  - id: auth_military_rule
+  - id: military_rule
     concept: authoritarianism
     description: "The army/military should come in to govern the country"
     type: ordinal
@@ -167,7 +167,7 @@ variables:
         - waves: [w1, w2, w3, w4, w5, w6]
           phrase: "army|military.*govern"
 
-  - id: auth_expert_rule
+  - id: expert_rule
     concept: authoritarianism
     description: "We should get rid of elections and parliaments and have experts make decisions"
     type: ordinal

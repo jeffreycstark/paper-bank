@@ -15,26 +15,26 @@ library(tidyverse)
 # These capture the "sausage mentality" - prioritizing outcomes over process
 core_dvs <- c(
   "dem_vs_econ",                # Q: Choose economy OR democracy (1-5 scale)
-  "dem_capable_solving",        # Q: Democracy can solve society's problems
+  "democracy_efficacy",         # Q: Democracy can solve society's problems
   "dem_always_preferable"       # Q: Democracy is always preferable
 )
 
 # Regime Attitudes
 regime_attitudes <- c(
-  "strongman_rule",             # Support for strong leader
-  "expert_rule",                # Support for technocratic rule
-  "military_rule",              # Support for military rule
-  "single_party_rule"           # Support for one-party rule
+  "strongman_rule",             # Support for strong leader (70.8%)
+  "expert_rule",                # Support for technocratic rule (73.2%)
+  "military_rule",              # Support for military rule (89.9%)
+  "single_party_rule"           # Support for one-party rule (81.0%)
 )
 
 # Trust Variables
 trust_vars <- c(
-  "trust_government",
+  "trust_national_government",  # Trust in national government (94.2%)
   "trust_parliament",
   "trust_courts",
   "trust_police",
   "trust_military",
-  "trust_parties"
+  "trust_political_parties"     # Trust in political parties (90.3%)
 )
 
 # Democratic Values
@@ -64,21 +64,20 @@ demographics <- c(
 # Political Engagement (potential mediators)
 political_engagement <- c(
   "political_interest",
-  "political_efficacy_internal",
-  "political_efficacy_external",
+  "efficacy_ability_participate",  # Internal efficacy (best match)
+  "efficacy_no_influence",         # External efficacy (temporary name)
   "action_demonstration",
   "action_petition",
   "action_campaign",
-  "voted_last_election"
+  "voted_national_election"        # W2-W6 only (W1 null)
 )
 
 # Media/Information (potential mediators)
 media_vars <- c(
-  "news_newspaper",
-  "news_tv",
-  "news_radio",
-  "news_internet",
-  "internet_frequency"
+  "pol_news_newspaper",     # 2.7% coverage
+  "pol_news_television",    # 1.5% coverage
+  "pol_news_radio",         # 3.2% coverage
+  "news_internet"           # Renamed from internet_frequency
 )
 
 # ==============================================================================

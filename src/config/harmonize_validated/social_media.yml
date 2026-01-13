@@ -12,7 +12,7 @@ variables:
   # GROUP 1: Internet Usage Frequency
   # ===========================================================================
 
-  - id: internet_frequency
+  - id: news_internet
     concept: social_media
     description: "How often do you use the internet, either through computer, tablet or smartphone?"
     type: ordinal
