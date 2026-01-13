@@ -297,7 +297,8 @@ if (requireNamespace("naniar", quietly = TRUE)) {
                 "is_urban", "regime_type")
   existing_vars <- intersect(key_vars, names(analysis_data))
 
-  naniar::vis_miss(analysis_data[, existing_vars], cluster = TRUE) +
+  # Use sample for visualization to avoid memory issues with clustering
+  naniar::vis_miss(analysis_data[, existing_vars], cluster = FALSE) +
     labs(title = "Missing Data Pattern for Key Variables")
 }
 ```

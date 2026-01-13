@@ -342,7 +342,7 @@ variables:
   # ===========================================================================
   # GROUP 4: Democracy Critiques (W5/W6)
   # ===========================================================================
-  - id: democrit_poor_economy
+  - id: demo_crit_poor_economy
     concept: democracy_critique
     description: "Under a democratic system, the country endures poor economic performance"
     type: ordinal

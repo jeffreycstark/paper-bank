@@ -9,3 +9,6 @@ tables/*.csv
 _output/
 .quarto/
 
+
+/.quarto/
+**/*.quarto_ipynb

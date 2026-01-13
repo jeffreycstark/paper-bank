@@ -40,8 +40,8 @@ trust_vars <- c(
 # Democratic Values
 dem_values <- c(
   "democracy_satisfaction",
-  "democracy_suitability",
-  "democracy_efficacy"
+  "democracy_suitability"
+  # Note: democracy_efficacy already in core_dvs
 )
 
 # Demographics (controls)

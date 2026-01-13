@@ -26,6 +26,7 @@ This document runs all analysis scripts in sequence for the "Sausage Paper" on d
 
 ```{r setup}
 library(here)
+library(withr)
 here::i_am("papers/sausage-paper/analysis/00_master_runner.qmd")
 
 # Track overall timing
@@ -36,7 +37,12 @@ total_start <- Sys.time()
 
 ```{r data-prep}
 cat("Running data preparation modules...\n\n")
-source(here("papers/sausage-paper/analysis/data_prep_modules/00_run_all.R"))
+
+# Run from project root to avoid here() conflicts
+withr::with_dir(
+  here::here(),
+  source(here("papers/sausage-paper/analysis/data_prep_modules/00_run_all.R"))
+)
 ```
 
 # 2. Descriptive Analysis

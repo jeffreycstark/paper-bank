@@ -83,7 +83,8 @@ missing_summary %>%
 
 ```{r missing-viz}
 if (requireNamespace("naniar", quietly = TRUE)) {
-  vis_miss(analysis_full[, existing_vars], cluster = TRUE) +
+  # cluster = FALSE to avoid memory issues with large datasets
+  vis_miss(analysis_full[, existing_vars], cluster = FALSE) +
     labs(title = "Missing Data Pattern")
 }
 ```
