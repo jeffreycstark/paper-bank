@@ -68,7 +68,7 @@ political_engagement <- c(
   "efficacy_no_influence",         # External efficacy (temporary name)
   "action_demonstration",
   "action_petition",
-  "action_campaign",
+  "attended_campaign_rally",    # 88.4% coverage
   "voted_national_election"        # W2-W6 only (W1 null)
 )
 
