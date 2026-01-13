@@ -324,3 +324,29 @@ validate_harmonization <- function(x, expected_min = 1, expected_max = 4, var_na
     return(TRUE)
   }
 }
+
+
+#' Recode voted_last_election W1
+#'
+#' W1 has 1=No, 2=Yes; reverse to match W2-W6 (1=Yes, 2=No)
+#' @param x Numeric vector (1-2)
+#' @return Reversed numeric vector
+#'
+#' @export
+recode_voted_w1 <- function(x) {
+  # W1: 1=No, 2=Yes → target: 1=Yes, 2=No
+  ifelse(x == 1, 2, ifelse(x == 2, 1, NA_real_))
+}
+
+
+#' Recode voted_last_election W2-W6
+#'
+#' Recode "not eligible" (3) to NA, keep 1=Yes, 2=No
+#' @param x Numeric vector (1-3)
+#' @return Numeric vector (1-2, with 3→NA)
+#'
+#' @export
+recode_voted_default <- function(x) {
+  # 1=Yes, 2=No, 3=Not eligible → NA
+  ifelse(x %in% c(1, 2), x, NA_real_)
+}

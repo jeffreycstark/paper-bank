@@ -437,13 +437,13 @@ variables:
         - waves: [w1, w2, w3, w4, w5, w6]
           phrase: "offered.*money|offered.*gift|candidate.*offer"
 
-  - id: voted_national_election
+  - id: voted_last_election
     concept: political_action
     description: "Did you vote in the last national election?"
     type: nominal
 
     source:
-      w1: null
+      w1: q027      # W1 uses different question
       w2: q38
       w3: q32
       w4: q33
@@ -457,14 +457,23 @@ variables:
         1: "Yes"
         2: "No"
         3: "Not yet eligible to vote"
+    # Note: W1 has only 1=No, 2=Yes (no "not eligible" option)
 
     harmonize:
+      w1:
+        method: r_function
+        fn: recode_voted_w1
+        note: "W1 scale reversed (1=No, 2=Yes) and lacks 'not eligible' option"
       default:
-        method: identity
+        method: r_function
+        fn: recode_voted_default
+        note: "Recode 3 (not eligible) to NA"
 
     qc:
-      valid_range: [1, 3]
+      valid_range: [1, 2]
       validate:
+        - waves: [w1]
+          phrase: "participated.*election"
         - waves: [w2, w3, w4, w5, w6]
           phrase: "vote.*national|did you vote"
 
@@ -630,36 +639,7 @@ variables:
         - waves: [w1]
           phrase: "frequently.*participate"
 
-  - id: voted_last_election_w1
-    concept: political_action
-    description: "Have you participated in last election?"
-    type: nominal
-
-    source:
-      w1: q027
-      w2: null
-      w3: null
-      w4: null
-      w5: null
-      w6: null
-    note: "Wave 1 only - cf. voted_national_election for w3+"
-
-    scale:
-      min: 1
-      max: 2
-      labels:
-        1: "No"
-        2: "Yes"
-
-    harmonize:
-      default:
-        method: identity
-
-    qc:
-      valid_range: [1, 2]
-      validate:
-        - waves: [w1]
-          phrase: "participated.*election"
+  # voted_last_election_w1 removed - now combined into voted_last_election above
 
   - id: helped_party_w1
     concept: political_action

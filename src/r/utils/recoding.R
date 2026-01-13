@@ -1141,3 +1141,44 @@ collapse_5pt_leader_to_3pt <- function(x,
   )
 }
 
+
+#' Recode voted_last_election W1
+#'
+#' W1 has 1=No, 2=Yes; reverse to match W2-W6 (1=Yes, 2=No)
+#' @param x Numeric vector (1-2)
+#' @return Reversed numeric vector
+recode_voted_w1 <- function(x,
+                            data = NULL,
+                            var_name = NULL,
+                            missing_codes = c(-1, 0, 7, 8, 9),
+                            validate_all = NULL) {
+  # W1: 1=No, 2=Yes → target: 1=Yes, 2=No
+  dplyr::case_when(
+    x %in% missing_codes ~ NA_real_,
+    x == 1 ~ 2,  # No → 2
+    x == 2 ~ 1,  # Yes → 1
+    TRUE ~ NA_real_
+  )
+}
+
+
+#' Recode voted_last_election W2-W6
+#'
+#' Recode "not eligible" (3) to NA, keep 1=Yes, 2=No
+#' @param x Numeric vector (1-3)
+#' @return Numeric vector (1-2, with 3→NA)
+recode_voted_default <- function(x,
+                                 data = NULL,
+                                 var_name = NULL,
+                                 missing_codes = c(-1, 0, 7, 8, 9),
+                                 validate_all = NULL) {
+  # 1=Yes, 2=No, 3=Not eligible → NA
+  dplyr::case_when(
+    x %in% missing_codes ~ NA_real_,
+    x == 1 ~ 1,  # Yes
+    x == 2 ~ 2,  # No
+    x == 3 ~ NA_real_,  # Not eligible → NA
+    TRUE ~ NA_real_
+  )
+}
+
