@@ -347,6 +347,221 @@ p_education <- pred_data %>%
 p_education
 ```
 
+# Robustness Tests
+
+## Pre-Trend Check (W3 → W4)
+
+If the W5→W6 trust collapse was caused by COVID/economic shocks, we should see **no differential trend** in the pre-COVID period (W3→W4). This is a critical falsification test.
+
+```{r pretrend-data}
+# Load full data and add W3
+abs_full <- readRDS(here("papers/sausage-paper/analysis/sausage_analysis_full.rds"))
+
+pretrend_data <- abs_full %>%
+  filter(country_name %in% countries_of_interest) %>%
+  filter(wave %in% c("w3", "w4", "w5", "w6")) %>%
+  mutate(
+    wave_num = case_when(
+      wave == "w3" ~ 0,  # 2010-2012
+      wave == "w4" ~ 1,  # 2014-2016
+      wave == "w5" ~ 2,  # 2018-2020
+      wave == "w6" ~ 3   # 2020-2022
+    ),
+    period = case_when(
+      wave %in% c("w3", "w4") ~ "Pre-COVID",
+      wave %in% c("w5", "w6") ~ "COVID era"
+    ),
+    country_name = factor(country_name, levels = countries_of_interest)
+  )
+
+cat("Pre-trend sample: n =", nrow(pretrend_data), "\n")
+cat("Waves:", paste(unique(pretrend_data$wave), collapse = ", "), "\n")
+```
+
+```{r pretrend-descriptive}
+# Descriptive: Trust by country and wave (W3-W6)
+pretrend_means <- pretrend_data %>%
+  group_by(country_name, wave) %>%
+  summarise(
+    trust = mean(trust_national_government, na.rm = TRUE),
+    se = sd(trust_national_government, na.rm = TRUE) / sqrt(sum(!is.na(trust_national_government))),
+    n = sum(!is.na(trust_national_government)),
+    .groups = "drop"
+  )
+
+# Visualize full trajectory
+ggplot(pretrend_means, aes(x = wave, y = trust, color = country_name, group = country_name)) +
+  geom_line(linewidth = 1.2) +
+  geom_point(size = 3) +
+  geom_errorbar(aes(ymin = trust - 1.96*se, ymax = trust + 1.96*se), width = 0.1) +
+  geom_vline(xintercept = 2.5, linetype = "dashed", color = "gray50", linewidth = 1) +
+  annotate("text", x = 2.5, y = 3.8, label = "COVID onset", hjust = -0.1, size = 3) +
+  scale_color_manual(values = country_colors) +
+  labs(
+    title = "Government Trust Trajectories: W3-W6",
+    subtitle = "Dashed line marks COVID onset; Thailand/Indonesia stable pre-COVID, then collapse",
+    x = "Wave",
+    y = "Trust in National Government (1-4)",
+    color = "Country"
+  )
+```
+
+```{r pretrend-model}
+# Formal pre-trend test: W3→W4 only
+pretrend_only <- pretrend_data %>% filter(wave %in% c("w3", "w4"))
+
+# Model: Does trust change W3→W4 differ by country?
+pretrend_model <- lm(trust_national_government ~ wave * country_name +
+                       age_centered + female + education_z + is_urban,
+                     data = pretrend_only)
+
+# Extract wave × country interactions (pre-trend differences)
+pretrend_results <- tidy(pretrend_model, conf.int = TRUE) %>%
+  filter(str_detect(term, "wave")) %>%
+  mutate(
+    country = case_when(
+      term == "wavew4" ~ "Indonesia (ref)",
+      TRUE ~ str_extract(term, "(?<=country_name)\\w+")
+    ),
+    significant = p.value < 0.05
+  )
+
+pretrend_results %>%
+  select(term, estimate, std.error, p.value, conf.low, conf.high) %>%
+  mutate(across(where(is.numeric), ~round(., 3))) %>%
+  gt() %>%
+  tab_header(
+    title = "Pre-Trend Test: W3 → W4 Changes",
+    subtitle = "Non-significant interactions = no differential pre-trends (good)"
+  )
+```
+
+```{r pretrend-change-table}
+# Change scores by period
+change_by_period <- pretrend_means %>%
+  select(country_name, wave, trust) %>%
+  pivot_wider(names_from = wave, values_from = trust) %>%
+  mutate(
+    `W3→W4 (pre-COVID)` = w4 - w3,
+    `W4→W5 (rally)` = w5 - w4,
+    `W5→W6 (collapse)` = w6 - w5
+  ) %>%
+  select(country_name, starts_with("W"))
+
+change_by_period %>%
+  mutate(across(where(is.numeric), ~round(., 2))) %>%
+  gt() %>%
+  tab_header(
+    title = "Trust Change by Period",
+    subtitle = "Pre-COVID period should show no systematic pattern"
+  ) %>%
+  data_color(
+    columns = `W5→W6 (collapse)`,
+    palette = c("#e74c3c", "white", "#2ecc71"),
+    domain = c(-1.2, 0.3)
+  )
+```
+
+## Placebo Test: Other Institutions
+
+If the trust decline is driven by government COVID/economic performance, we should see **larger effects for government** than for non-political institutions (courts, military, police).
+
+```{r placebo-institutions}
+# Calculate change for each institution
+institutions <- c("trust_national_government", "trust_parliament",
+                  "trust_courts", "trust_military", "trust_police")
+
+institution_changes <- map_dfr(institutions, function(var) {
+  pretrend_data %>%
+    filter(wave %in% c("w5", "w6")) %>%
+    group_by(country_name, wave) %>%
+    summarise(trust = mean(.data[[var]], na.rm = TRUE), .groups = "drop") %>%
+    pivot_wider(names_from = wave, values_from = trust) %>%
+    mutate(
+      change_w5_w6 = w6 - w5,
+      institution = var
+    ) %>%
+    select(country_name, institution, change_w5_w6)
+})
+
+# Wide format for comparison
+institution_wide <- institution_changes %>%
+  mutate(institution = str_remove(institution, "trust_") %>% str_to_title()) %>%
+  pivot_wider(names_from = institution, values_from = change_w5_w6)
+
+institution_wide %>%
+  mutate(across(where(is.numeric), ~round(., 2))) %>%
+  gt() %>%
+  tab_header(
+    title = "Trust Change (W5→W6) by Institution",
+    subtitle = "Government/Parliament should show larger declines than Courts/Military/Police"
+  ) %>%
+  data_color(
+    columns = where(is.numeric),
+    palette = c("#e74c3c", "white", "#2ecc71"),
+    domain = c(-1.2, 0.3)
+  )
+```
+
+```{r placebo-regression}
+# Formal test: Regress each institution on post_covid × country
+placebo_models <- map_dfr(institutions, function(var) {
+  model <- lm(as.formula(paste(var, "~ post_covid * country_name + age_centered + female + education_z + is_urban")),
+              data = analysis)
+
+  tidy(model, conf.int = TRUE) %>%
+    filter(str_detect(term, "post_covid")) %>%
+    mutate(institution = str_remove(var, "trust_") %>% str_to_title())
+})
+
+# Focus on main post_covid effect and Thailand/Indonesia interactions
+placebo_summary <- placebo_models %>%
+  filter(term %in% c("post_covid", "post_covid:country_nameThailand", "post_covid:country_nameIndonesia")) %>%
+  select(institution, term, estimate, std.error, p.value) %>%
+  mutate(
+    term = case_when(
+      term == "post_covid" ~ "Post-COVID (Indonesia ref)",
+      term == "post_covid:country_nameThailand" ~ "Post-COVID × Thailand",
+      term == "post_covid:country_nameIndonesia" ~ "Post-COVID × Indonesia",
+      TRUE ~ term
+    ),
+    across(where(is.numeric), ~round(., 3))
+  )
+
+placebo_summary %>%
+  pivot_wider(names_from = term, values_from = c(estimate, p.value)) %>%
+  gt() %>%
+  tab_header(
+    title = "Placebo Test: Post-COVID Effects Across Institutions",
+    subtitle = "Larger coefficients for Government/Parliament support performance-based explanation"
+  )
+```
+
+```{r placebo-viz}
+# Visualize institution-specific changes
+institution_plot_data <- institution_changes %>%
+  mutate(
+    institution = str_remove(institution, "trust_") %>%
+      str_replace("_", " ") %>%
+      str_to_title() %>%
+      str_replace("National Government", "Government"),
+    institution = factor(institution, levels = c("Government", "Parliament", "Courts", "Military", "Police"))
+  )
+
+ggplot(institution_plot_data, aes(x = institution, y = change_w5_w6, fill = country_name)) +
+  geom_col(position = position_dodge(width = 0.8), width = 0.7) +
+  geom_hline(yintercept = 0, linetype = "dashed") +
+  scale_fill_manual(values = country_colors) +
+  labs(
+    title = "Trust Change (W5→W6) by Institution and Country",
+    subtitle = "Thailand/Indonesia show larger drops for political institutions (Gov't, Parliament)",
+    x = NULL,
+    y = "Change in Trust (W5→W6)",
+    fill = "Country"
+  ) +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+```
+
 # Country Deep Dives
 
 ## Thailand: The Double Crisis
