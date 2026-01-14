@@ -9,8 +9,8 @@
 
 missing_conventions:
   treat_as_na:
-    codes: [-1, -2, 97, 98, 99]
-    description: "Standard missing codes"
+    codes: [-1, -2, 0, 7, 8, 9, 97, 98, 99]
+    description: "Standard missing codes (-2 kept for legacy compatibility)"
 variables:
   - id: trust_civil_service
     concept: institutional_trust

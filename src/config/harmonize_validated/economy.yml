@@ -3,7 +3,7 @@
 
 missing_conventions:
   treat_as_na:
-    codes: [-1, 0, 7, 8, 9]
+    codes: [-1, 0, 7, 8, 9, 97, 98, 99]
     description: "Standard missing codes"
 variables:
   # ============================================================================

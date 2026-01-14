@@ -4,8 +4,8 @@
 
 missing_conventions:
   treat_as_na:
-    codes: [-1, 97, 98, 99]
-    description: "Standard missing codes (note: 0 may mean 'no access' for some vars)"
+    codes: [-1, 0, 7, 8, 9, 97, 98, 99]
+    description: "Standard missing codes"
 variables:
   # ===========================================================================
   # GROUP 2: Internet Access (Wave 4 only)

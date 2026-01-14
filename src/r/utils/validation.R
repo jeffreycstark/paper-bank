@@ -451,10 +451,25 @@ validate_variable_wave <- function(raw_data, harmonized_data, var_spec,
                  var_spec$qc$valid_range %||%
                  NULL
 
+  # Get variable type (nominal variables skip correlation validation)
+  var_type <- var_spec$type %||% "ordinal"
+  is_nominal <- var_type == "nominal"
+
   # Run all checks
+  # Skip transformation (correlation) check for nominal/categorical variables
+  if (is_nominal) {
+    transformation_result <- list(
+      status = "skip",
+      check = "transformation",
+      message = "Skipped: nominal/categorical variable (correlation not meaningful)"
+    )
+  } else {
+    transformation_result <- validate_transformation(raw_vec, harmonized_vec, transform_type)
+  }
+
   checks <- list(
     coverage = validate_coverage(raw_vec, harmonized_vec, missing_codes),
-    transformation = validate_transformation(raw_vec, harmonized_vec, transform_type),
+    transformation = transformation_result,
     range = validate_range(harmonized_vec, valid_range),
     crosstab = validate_crosstab(raw_vec, harmonized_vec, missing_codes)
   )
