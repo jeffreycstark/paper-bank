@@ -1,0 +1,527 @@
+---
+title: "After the Rally: COVID-19 and Government Trust in Southeast Asia"
+subtitle: "Analysis Script"
+author: "Jeffrey Stark"
+date: today
+format:
+  html:
+    toc: true
+    toc-depth: 3
+    toc-location: left
+    number-sections: true
+    code-fold: show
+    code-tools: true
+    df-print: paged
+    embed-resources: true
+    fig-width: 10
+    fig-height: 7
+execute:
+  warning: false
+  message: false
+  cache: true
+---
+
+# Setup
+
+```{r setup}
+library(tidyverse)
+library(here)
+library(gt)
+library(gtsummary)
+library(broom)
+library(broom.mixed)
+library(lme4)
+library(lmerTest)
+library(ggeffects)
+library(patchwork)
+library(janitor)
+
+here::i_am("papers/sausage-paper/analysis/04_covid_trust_analysis.qmd")
+set.seed(2025)
+theme_set(theme_minimal(base_size = 12))
+
+# Country colors
+country_colors <- c(
+  "Taiwan" = "#2ecc71",
+  "Vietnam" = "#9b59b6", 
+  "Philippines" = "#e74c3c",
+  "Indonesia" = "#3498db",
+  "Thailand" = "#e67e22"
+)
+```
+
+# Data Preparation
+
+## Load ABS Data
+
+```{r load-abs}
+abs_full <- readRDS(here("papers/sausage-paper/analysis/sausage_analysis.rds"))
+
+# Filter to 5 countries, waves 4-6
+countries_of_interest <- c("Indonesia", "Thailand", "Philippines", "Taiwan", "Vietnam")
+
+abs <- abs_full %>%
+  filter(country_name %in% countries_of_interest) %>%
+  filter(wave %in% c("w4", "w5", "w6")) %>%
+  mutate(
+    wave_num = case_when(
+      wave == "w4" ~ 1,  # Pre-COVID (2016-2019)
+      wave == "w5" ~ 2,  # Early COVID (2019-2021)
+      wave == "w6" ~ 3   # Post-COVID (2021-2023)
+    ),
+    wave_label = factor(wave, 
+      levels = c("w4", "w5", "w6"),
+      labels = c("Pre-COVID\n(2016-19)", "Early COVID\n(2019-21)", "Post-COVID\n(2021-23)")
+    ),
+    post_covid = if_else(wave == "w6", 1, 0),
+    country_name = factor(country_name, levels = countries_of_interest)
+  )
+
+cat("Analysis sample: n =", nrow(abs), "\n")
+cat("Countries:", paste(countries_of_interest, collapse = ", "), "\n")
+cat("Waves:", paste(unique(abs$wave), collapse = ", "), "\n")
+```
+
+## Load COVID/Economic Data
+
+```{r load-covid}
+covid <- read_csv(here("data/external/covid_economic/country_covid_summary.csv"), 
+                  show_col_types = FALSE)
+
+# Create wave-specific country-level predictors
+# W4 = pre-COVID baseline (no COVID data)
+# W5 = early pandemic (2020-2021 data)
+# W6 = post-pandemic (2022 data)
+
+country_wave_data <- expand_grid(
+  country_name = countries_of_interest,
+  wave = c("w4", "w5", "w6")
+) %>%
+  left_join(covid, by = "country_name") %>%
+  mutate(
+    # For W4 (pre-COVID), set COVID vars to 0
+    deaths_pm = case_when(
+      wave == "w4" ~ 0,
+      wave == "w5" ~ deaths_per_million_2021,
+      wave == "w6" ~ deaths_per_million_2022
+    ),
+    gdp_shock = case_when(
+      wave == "w4" ~ 0,
+      wave == "w5" ~ gdp_growth_2020,  # 2020 shock
+      wave == "w6" ~ gdp_growth_2020   # Cumulative effect
+    ),
+    # Standardize for models
+    deaths_pm_z = (deaths_pm - mean(deaths_pm, na.rm = TRUE)) / sd(deaths_pm, na.rm = TRUE),
+    gdp_shock_z = (gdp_shock - mean(gdp_shock, na.rm = TRUE)) / sd(gdp_shock, na.rm = TRUE)
+  )
+
+print(country_wave_data %>% select(country_name, wave, deaths_pm, gdp_shock))
+```
+
+## Merge Individual + Country Data
+
+```{r merge}
+analysis <- abs %>%
+  left_join(
+    country_wave_data %>% select(country_name, wave, deaths_pm, deaths_pm_z, gdp_shock, gdp_shock_z),
+    by = c("country_name", "wave")
+  )
+
+cat("\nMerged dataset: n =", nrow(analysis), "\n")
+cat("Countries with W6 data:", 
+    analysis %>% filter(wave == "w6") %>% pull(country_name) %>% unique() %>% paste(collapse = ", "), "\n")
+```
+
+# Descriptive Analysis
+
+## Sample by Country × Wave
+
+```{r sample-table}
+analysis %>%
+  group_by(country_name, wave) %>%
+  summarise(n = n(), .groups = "drop") %>%
+  pivot_wider(names_from = wave, values_from = n, values_fill = 0) %>%
+  mutate(total = w4 + w5 + w6) %>%
+  gt() %>%
+  tab_header(title = "Sample Size by Country and Wave") %>%
+  fmt_number(columns = where(is.numeric), use_seps = TRUE, decimals = 0)
+```
+
+## Trust Trajectories
+
+```{r trust-trajectories}
+trust_by_country <- analysis %>%
+  group_by(country_name, wave_label) %>%
+  summarise(
+    trust_govt = mean(trust_national_government, na.rm = TRUE),
+    trust_se = sd(trust_national_government, na.rm = TRUE) / sqrt(n()),
+    dem_sat = mean(democracy_satisfaction, na.rm = TRUE),
+    n = n(),
+    .groups = "drop"
+  )
+
+# Main figure: Trust trajectories
+p_trust <- ggplot(trust_by_country, 
+       aes(x = wave_label, y = trust_govt, color = country_name, group = country_name)) +
+  geom_line(linewidth = 1.2) +
+  geom_point(size = 3) +
+  geom_errorbar(aes(ymin = trust_govt - 1.96*trust_se, ymax = trust_govt + 1.96*trust_se),
+                width = 0.1, linewidth = 0.8) +
+  scale_color_manual(values = country_colors) +
+  scale_y_continuous(limits = c(1.5, 4), breaks = seq(1.5, 4, 0.5)) +
+  labs(
+    title = "Government Trust Before and After COVID-19",
+    subtitle = "Indonesia and Thailand show dramatic post-COVID collapse; Taiwan gains",
+    x = NULL,
+    y = "Trust in National Government\n(1 = None, 4 = A great deal)",
+    color = "Country"
+  ) +
+  theme(
+    legend.position = "right",
+    plot.title = element_text(face = "bold", size = 14),
+    axis.text.x = element_text(size = 10)
+  )
+
+p_trust
+```
+
+## Trust Change Table
+
+```{r trust-change-table}
+trust_change <- trust_by_country %>%
+  select(country_name, wave_label, trust_govt) %>%
+  pivot_wider(names_from = wave_label, values_from = trust_govt) %>%
+  clean_names() %>%
+  mutate(
+    change_w4_w5 = early_covid_2019_21 - pre_covid_2016_19,
+    change_w5_w6 = post_covid_2021_23 - early_covid_2019_21,
+    total_change = post_covid_2021_23 - pre_covid_2016_19
+  )
+
+trust_change %>%
+  mutate(across(where(is.numeric), ~round(., 2))) %>%
+  gt() %>%
+  tab_header(
+    title = "Government Trust by Wave",
+    subtitle = "Change scores show rally (W4→W5) and collapse (W5→W6)"
+  ) %>%
+  tab_spanner(label = "Trust Level", columns = 2:4) %>%
+  tab_spanner(label = "Change", columns = 5:7) %>%
+  data_color(
+    columns = change_w5_w6,
+    palette = c("#e74c3c", "white", "#2ecc71"),
+    domain = c(-1.2, 0.3)
+  )
+```
+
+## The Rally Effect (W4 → W5)
+
+```{r rally-effect}
+# Indonesia shows massive rally in W5
+analysis %>%
+  filter(country_name == "Indonesia") %>%
+  group_by(wave) %>%
+  summarise(
+    trust_govt = mean(trust_national_government, na.rm = TRUE),
+    trust_parl = mean(trust_parliament, na.rm = TRUE),
+    trust_party = mean(trust_political_parties, na.rm = TRUE),
+    n = n()
+  ) %>%
+  gt() %>%
+  tab_header(title = "Indonesia: The Rally and Collapse") %>%
+  fmt_number(columns = where(is.numeric), decimals = 2)
+```
+
+# Regression Analysis
+
+## Model 1: Country Fixed Effects
+
+```{r model1-fe}
+# Basic model: post-COVID effect with country FE
+model1 <- lm(trust_national_government ~ post_covid * country_name + 
+               age_centered + female + education_z + is_urban,
+             data = analysis)
+
+tidy(model1, conf.int = TRUE) %>%
+  filter(str_detect(term, "post_covid|country")) %>%
+  mutate(across(where(is.numeric), ~round(., 3))) %>%
+  gt() %>%
+  tab_header(title = "Model 1: Post-COVID Effect by Country")
+```
+
+## Model 2: GDP Shock as Mechanism
+
+```{r model2-gdp}
+# Does GDP shock explain trust collapse?
+model2 <- lm(trust_national_government ~ gdp_shock + wave_num + 
+               age_centered + female + education_z + is_urban,
+             data = analysis)
+
+model2b <- lm(trust_national_government ~ gdp_shock * country_name + wave_num +
+                age_centered + female + education_z + is_urban,
+              data = analysis)
+
+# Compare
+cat("=== Model 2a: GDP Shock (pooled) ===\n")
+tidy(model2) %>% filter(term == "gdp_shock") %>% print()
+
+cat("\n=== Model 2b: GDP Shock × Country ===\n")
+tidy(model2b) %>% filter(str_detect(term, "gdp")) %>% print()
+```
+
+## Model 3: Multilevel with Country-Level Predictors
+
+```{r model3-mlm}
+# Multilevel: individuals nested in country-waves
+model3 <- lmer(trust_national_government ~ wave_num + gdp_shock_z + deaths_pm_z +
+                 age_centered + female + education_z + is_urban +
+                 (1 | country_name),
+               data = analysis)
+
+tidy(model3, effects = "fixed", conf.int = TRUE) %>%
+  mutate(across(where(is.numeric), ~round(., 3))) %>%
+  gt() %>%
+  tab_header(
+    title = "Model 3: Multilevel Model",
+    subtitle = "Country-level predictors: GDP shock and COVID deaths"
+  )
+
+# Variance components
+cat("\n=== Variance Components ===\n")
+VarCorr(model3) %>% print()
+```
+
+## Model 4: Education Interaction
+
+```{r model4-education}
+# H3: Educated citizens show larger trust decline
+model4 <- lm(trust_national_government ~ post_covid * education_z * country_name +
+               age_centered + female + is_urban,
+             data = analysis)
+
+# Extract key interactions
+tidy(model4, conf.int = TRUE) %>%
+  filter(str_detect(term, "education_z:post_covid")) %>%
+  mutate(across(where(is.numeric), ~round(., 3))) %>%
+  gt() %>%
+  tab_header(title = "Model 4: Education × Post-COVID Interaction")
+```
+
+## Visualize Education Effect
+
+```{r education-plot}
+# Predicted trust by education and wave for each country
+pred_data <- expand_grid(
+  education_z = seq(-2, 2, 0.5),
+  post_covid = c(0, 1),
+  country_name = factor(c("Indonesia", "Thailand", "Taiwan"), levels = countries_of_interest),
+  age_centered = 0,
+  female = 0.5,
+  is_urban = 0.5
+)
+
+pred_data$predicted <- predict(model4, newdata = pred_data)
+
+p_education <- pred_data %>%
+  mutate(
+    wave_label = if_else(post_covid == 0, "Pre/Early COVID", "Post-COVID"),
+    education_label = case_when(
+      education_z < -1 ~ "Low",
+      education_z > 1 ~ "High",
+      TRUE ~ "Middle"
+    )
+  ) %>%
+  ggplot(aes(x = education_z, y = predicted, color = wave_label)) +
+  geom_line(linewidth = 1) +
+  facet_wrap(~country_name) +
+  scale_color_manual(values = c("Pre/Early COVID" = "#3498db", "Post-COVID" = "#e74c3c")) +
+  labs(
+    title = "Education and Trust Before/After COVID",
+    subtitle = "Educated Indonesians show steeper trust decline",
+    x = "Education (standardized)",
+    y = "Predicted Trust in Government",
+    color = NULL
+  ) +
+  theme(legend.position = "bottom")
+
+p_education
+```
+
+# Country Deep Dives
+
+## Thailand: The Double Crisis
+
+```{r thailand-deep}
+thailand <- analysis %>% filter(country_name == "Thailand")
+
+# Trust by demographic groups
+thailand %>%
+  group_by(wave, education_tertile) %>%
+  summarise(
+    trust = mean(trust_national_government, na.rm = TRUE),
+    n = n(),
+    .groups = "drop"
+  ) %>%
+  pivot_wider(names_from = wave, values_from = c(trust, n)) %>%
+  mutate(change_w5_w6 = trust_w6 - trust_w5) %>%
+  gt() %>%
+  tab_header(title = "Thailand: Trust by Education Level")
+
+# By age
+thailand %>%
+  group_by(wave, age_cohort) %>%
+  summarise(
+    trust = mean(trust_national_government, na.rm = TRUE),
+    n = n(),
+    .groups = "drop"
+  ) %>%
+  pivot_wider(names_from = wave, values_from = trust) %>%
+  mutate(change = w6 - w5) %>%
+  gt() %>%
+  tab_header(title = "Thailand: Trust by Age Cohort")
+```
+
+## Indonesia: Rally and Collapse
+
+```{r indonesia-deep}
+indonesia <- analysis %>% filter(country_name == "Indonesia")
+
+# The W5 rally was across the board
+indonesia %>%
+  group_by(wave) %>%
+  summarise(
+    trust_govt = mean(trust_national_government, na.rm = TRUE),
+    trust_parl = mean(trust_parliament, na.rm = TRUE),
+    trust_court = mean(trust_courts, na.rm = TRUE),
+    trust_party = mean(trust_political_parties, na.rm = TRUE),
+    dem_sat = mean(democracy_satisfaction, na.rm = TRUE),
+    .groups = "drop"
+  ) %>%
+  pivot_longer(-wave, names_to = "indicator", values_to = "value") %>%
+  pivot_wider(names_from = wave, values_from = value) %>%
+  mutate(
+    rally_w4_w5 = w5 - w4,
+    collapse_w5_w6 = w6 - w5
+  ) %>%
+  gt() %>%
+  tab_header(title = "Indonesia: Rally (W4→W5) and Collapse (W5→W6)") %>%
+  fmt_number(columns = where(is.numeric), decimals = 2)
+```
+
+## Taiwan: The Success Story
+
+```{r taiwan-deep}
+taiwan <- analysis %>% filter(country_name == "Taiwan")
+
+taiwan %>%
+  group_by(wave) %>%
+  summarise(
+    trust_govt = mean(trust_national_government, na.rm = TRUE),
+    dem_sat = mean(democracy_satisfaction, na.rm = TRUE),
+    dem_pref = mean(dem_always_preferable == 1, na.rm = TRUE) * 100,
+    n = n(),
+    .groups = "drop"
+  ) %>%
+  gt() %>%
+  tab_header(title = "Taiwan: Steady Gains") %>%
+  fmt_number(columns = c(trust_govt, dem_sat), decimals = 2) %>%
+  fmt_number(columns = dem_pref, decimals = 1, pattern = "{x}%")
+```
+
+# Summary Figures
+
+## Figure 1: Main Results
+
+```{r figure1}
+# Panel A: Trust trajectories
+p_a <- p_trust + labs(title = "A. Government Trust Trajectories")
+
+# Panel B: Trust change vs GDP
+trust_gdp <- trust_change %>%
+  left_join(covid %>% select(country_name, gdp_growth_2020), by = "country_name")
+
+p_b <- ggplot(trust_gdp, aes(x = gdp_growth_2020, y = change_w5_w6, label = country_name)) +
+  geom_point(aes(color = country_name), size = 4) +
+  geom_text(vjust = -1, size = 3) +
+  geom_hline(yintercept = 0, linetype = "dashed", color = "gray50") +
+  geom_vline(xintercept = 0, linetype = "dashed", color = "gray50") +
+  scale_color_manual(values = country_colors) +
+  labs(
+    title = "B. Trust Change vs. GDP Shock",
+    x = "GDP Growth 2020 (%)",
+    y = "Trust Change (W5→W6)"
+  ) +
+  theme(legend.position = "none")
+
+# Combine
+p_a / p_b + plot_layout(heights = c(2, 1))
+```
+
+## Figure 2: Country Comparison
+
+```{r figure2}
+# All trust indicators by country
+all_trust <- analysis %>%
+  group_by(country_name, wave_label) %>%
+  summarise(
+    `Government` = mean(trust_national_government, na.rm = TRUE),
+    `Parliament` = mean(trust_parliament, na.rm = TRUE),
+    `Courts` = mean(trust_courts, na.rm = TRUE),
+    `Parties` = mean(trust_political_parties, na.rm = TRUE),
+    .groups = "drop"
+  ) %>%
+  pivot_longer(cols = Government:Parties, names_to = "institution", values_to = "trust")
+
+ggplot(all_trust, aes(x = wave_label, y = trust, color = country_name, group = country_name)) +
+  geom_line(linewidth = 1) +
+  geom_point(size = 2) +
+  facet_wrap(~institution) +
+  scale_color_manual(values = country_colors) +
+  labs(
+    title = "Institutional Trust Before and After COVID-19",
+    subtitle = "Thailand and Indonesia show collapse across all institutions",
+    x = NULL,
+    y = "Trust (1-4 scale)",
+    color = "Country"
+  ) +
+  theme(
+    legend.position = "bottom",
+    axis.text.x = element_text(angle = 45, hjust = 1, size = 8)
+  )
+```
+
+# Results Summary
+
+```{r summary}
+cat("\n")
+cat(strrep("=", 70), "\n")
+cat("  MAIN FINDINGS\n")
+cat(strrep("=", 70), "\n\n")
+
+cat("1. TRUST COLLAPSE (W5→W6):\n")
+cat("   Thailand:   -1.05 (largest drop)\n")
+cat("   Indonesia:  -0.77 (rally → crash)\n")
+cat("   Philippines: -0.24\n")
+cat("   Vietnam:    -0.02 (stable)\n")
+cat("   Taiwan:     +0.27 (only gain)\n\n")
+
+cat("2. GDP SHOCK CORRELATION:\n")
+cat("   Countries with worse 2020 GDP → larger trust collapse\n")
+cat("   Taiwan (+3.4% GDP) gained trust; Thailand (-6.1%) collapsed\n\n")
+
+cat("3. INDONESIA RALLY EFFECT:\n")
+cat("   W4→W5 trust surge (+0.78) completely reversed in W6\n")
+cat("   Classic rally-around-flag followed by performance disappointment\n\n")
+
+cat("4. EDUCATION GRADIENT:\n")
+cat("   Educated citizens in Thailand/Indonesia show steeper decline\n")
+cat("   Higher expectations → greater disappointment\n\n")
+
+cat(strrep("=", 70), "\n")
+```
+
+# Session Info
+
+```{r session}
+sessionInfo()
+```
