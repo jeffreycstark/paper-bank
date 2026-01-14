@@ -51,6 +51,7 @@ political_participation,numeric,26430,65217,71.2
 education_tertile,factor,0,91647,100
 age_cohort,factor,0,91647,100
 econ_over_democracy,numeric,0,91647,100
+econ_over_democracy_strict,numeric,11743,79904,87.2
 sausage_binary,numeric,0,91647,100
 econ_priority_z,numeric,0,91647,100
 is_democracy,numeric,0,91647,100
