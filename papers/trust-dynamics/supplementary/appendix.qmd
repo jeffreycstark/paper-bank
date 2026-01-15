@@ -25,7 +25,7 @@ library(here)
 library(gt)
 library(knitr)
 
-here::i_am("papers/sausage-paper/supplementary/appendix.qmd")
+here::i_am("papers/trust-dynamics/supplementary/appendix.qmd")
 ```
 
 # Appendix A: Variable Definitions

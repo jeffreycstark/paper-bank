@@ -34,7 +34,7 @@ library(scales)
 library(patchwork)
 library(RColorBrewer)
 
-here::i_am("papers/sausage-paper/analysis/02_descriptive_analysis.qmd")
+here::i_am("papers/trust-dynamics/analysis/02_descriptive_analysis.qmd")
 set.seed(2025)
 theme_set(theme_minimal(base_size = 12))
 
@@ -54,7 +54,7 @@ regime_colors <- c(
 
 ```{r load-data}
 # Load prepared analysis data
-analysis_data <- readRDS(here("papers/sausage-paper/analysis/sausage_analysis.rds"))
+analysis_data <- readRDS(here("papers/trust-dynamics/analysis/sausage_analysis.rds"))
 
 cat("Loaded", nrow(analysis_data), "observations\n")
 cat("Countries:", length(unique(analysis_data$country)), "\n")
@@ -335,7 +335,7 @@ summary_table %>%
 ```{r export-figs, eval=FALSE}
 # Save key figures for manuscript
 ggsave(
-  here("papers/sausage-paper/analysis/figures/fig1_dv_by_regime.png"),
+  here("papers/trust-dynamics/analysis/figures/fig1_dv_by_regime.png"),
   width = 8, height = 6, dpi = 300
 )
 ```

@@ -36,7 +36,7 @@ library(ggeffects)
 library(patchwork)
 library(janitor)
 
-here::i_am("papers/sausage-paper/analysis/04_covid_trust_analysis.qmd")
+here::i_am("papers/trust-dynamics/analysis/04_covid_trust_analysis.qmd")
 set.seed(2025)
 theme_set(theme_minimal(base_size = 12))
 
@@ -55,7 +55,7 @@ country_colors <- c(
 ## Load ABS Data
 
 ```{r load-abs}
-abs_full <- readRDS(here("papers/sausage-paper/analysis/sausage_analysis.rds"))
+abs_full <- readRDS(here("papers/trust-dynamics/analysis/sausage_analysis.rds"))
 
 # Filter to 5 countries, waves 4-6
 countries_of_interest <- c("Indonesia", "Thailand", "Philippines", "Taiwan", "Vietnam")
@@ -355,7 +355,7 @@ If the W5→W6 trust collapse was caused by COVID/economic shocks, we should see
 
 ```{r pretrend-data}
 # Load full data and add W3
-abs_full <- readRDS(here("papers/sausage-paper/analysis/sausage_analysis_full.rds"))
+abs_full <- readRDS(here("papers/trust-dynamics/analysis/sausage_analysis_full.rds"))
 
 pretrend_data <- abs_full %>%
   filter(country_name %in% countries_of_interest) %>%

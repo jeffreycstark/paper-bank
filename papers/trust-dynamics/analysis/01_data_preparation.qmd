@@ -29,7 +29,7 @@ library(here)
 library(gt)
 library(gtsummary)
 
-here::i_am("papers/sausage-paper/analysis/01_data_preparation.qmd")
+here::i_am("papers/trust-dynamics/analysis/01_data_preparation.qmd")
 set.seed(2025)
 ```
 
@@ -38,7 +38,7 @@ set.seed(2025)
 The data preparation is handled by modular R scripts in `data_prep_modules/`:
 
 ```{r run-modules}
-source(here("papers/sausage-paper/analysis/data_prep_modules/00_run_all.R"))
+source(here("papers/trust-dynamics/analysis/data_prep_modules/00_run_all.R"))
 ```
 
 # Data Quality Summary
@@ -47,7 +47,7 @@ source(here("papers/sausage-paper/analysis/data_prep_modules/00_run_all.R"))
 
 ```{r sample-overview}
 # Load the prepared analysis dataset
-analysis_data <- readRDS(here("papers/sausage-paper/analysis/sausage_analysis.rds"))
+analysis_data <- readRDS(here("papers/trust-dynamics/analysis/sausage_analysis.rds"))
 
 cat("Final analysis sample:\n")
 cat("  Observations:", nrow(analysis_data), "\n")

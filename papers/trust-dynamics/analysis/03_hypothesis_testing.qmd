@@ -35,7 +35,7 @@ library(lmerTest)
 library(broom.mixed)
 library(effectsize)
 
-here::i_am("papers/sausage-paper/analysis/03_hypothesis_testing.qmd")
+here::i_am("papers/trust-dynamics/analysis/03_hypothesis_testing.qmd")
 set.seed(2025)
 theme_set(theme_minimal(base_size = 12))
 
@@ -48,7 +48,7 @@ regime_colors <- c("Democracy" = "#66c2a5", "Hybrid" = "#fc8d62", "Autocracy" = 
 ## Load Data
 
 ```{r load-data}
-analysis_data <- readRDS(here("papers/sausage-paper/analysis/sausage_analysis.rds"))
+analysis_data <- readRDS(here("papers/trust-dynamics/analysis/sausage_analysis.rds"))
 cat("Analysis sample: n =", nrow(analysis_data), "\n")
 
 # DV coding verification

@@ -42,10 +42,10 @@ library(here)
 library(gt)
 library(knitr)
 
-here::i_am("papers/sausage-paper/manuscript/sausage_paper.qmd")
+here::i_am("papers/trust-dynamics/manuscript/sausage_paper.qmd")
 
 # Load analysis results
-# analysis_data <- readRDS(here("papers/sausage-paper/analysis/sausage_analysis.rds"))
+# analysis_data <- readRDS(here("papers/trust-dynamics/analysis/sausage_analysis.rds"))
 ```
 
 # Introduction

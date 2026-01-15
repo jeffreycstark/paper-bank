@@ -12,7 +12,7 @@ library(here)
 # Define output paths
 # ==============================================================================
 
-output_dir <- here("papers", "sausage-paper", "analysis")
+output_dir <- here("papers", "trust-dynamics", "analysis")
 
 # ==============================================================================
 # Export full dataset (with missing data flags)

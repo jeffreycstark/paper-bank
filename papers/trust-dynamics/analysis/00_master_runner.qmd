@@ -27,7 +27,7 @@ This document runs all analysis scripts in sequence for the "Sausage Paper" on d
 ```{r setup}
 library(here)
 library(withr)
-here::i_am("papers/sausage-paper/analysis/00_master_runner.qmd")
+here::i_am("papers/trust-dynamics/analysis/00_master_runner.qmd")
 
 # Track overall timing
 total_start <- Sys.time()
@@ -41,7 +41,7 @@ cat("Running data preparation modules...\n\n")
 # Run from project root to avoid here() conflicts
 withr::with_dir(
   here::here(),
-  source(here("papers/sausage-paper/analysis/data_prep_modules/00_run_all.R"))
+  source(here("papers/trust-dynamics/analysis/data_prep_modules/00_run_all.R"))
 )
 ```
 
@@ -50,7 +50,7 @@ withr::with_dir(
 ```{r descriptive, eval=FALSE}
 # Render descriptive analysis
 quarto::quarto_render(
-  here("papers/sausage-paper/analysis/02_descriptive_analysis.qmd"),
+  here("papers/trust-dynamics/analysis/02_descriptive_analysis.qmd"),
   output_format = "html"
 )
 cat("Descriptive analysis complete.\n")
@@ -61,7 +61,7 @@ cat("Descriptive analysis complete.\n")
 ```{r hypothesis, eval=FALSE}
 # Render hypothesis testing
 quarto::quarto_render(
-  here("papers/sausage-paper/analysis/03_hypothesis_testing.qmd"),
+  here("papers/trust-dynamics/analysis/03_hypothesis_testing.qmd"),
   output_format = "html"
 )
 cat("Hypothesis testing complete.\n")
@@ -72,7 +72,7 @@ cat("Hypothesis testing complete.\n")
 ```{r robustness, eval=FALSE}
 # Render robustness checks
 quarto::quarto_render(
-  here("papers/sausage-paper/analysis/04_robustness_checks.qmd"),
+  here("papers/trust-dynamics/analysis/04_robustness_checks.qmd"),
   output_format = "html"
 )
 cat("Robustness checks complete.\n")

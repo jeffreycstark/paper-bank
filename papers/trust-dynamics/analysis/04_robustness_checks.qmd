@@ -36,7 +36,7 @@ library(naniar)      # Missing data
 # Load MASS but exclude select()
 library(MASS, exclude = "select")
 
-here::i_am("papers/sausage-paper/analysis/04_robustness_checks.qmd")
+here::i_am("papers/trust-dynamics/analysis/04_robustness_checks.qmd")
 set.seed(2025)
 theme_set(theme_minimal(base_size = 12))
 
@@ -49,8 +49,8 @@ filter <- dplyr::filter
 
 ```{r load-data}
 # Load both full and complete-case datasets
-analysis_full <- readRDS(here("papers/sausage-paper/analysis/sausage_analysis_full.rds"))
-analysis_data <- readRDS(here("papers/sausage-paper/analysis/sausage_analysis.rds"))
+analysis_full <- readRDS(here("papers/trust-dynamics/analysis/sausage_analysis_full.rds"))
+analysis_data <- readRDS(here("papers/trust-dynamics/analysis/sausage_analysis.rds"))
 
 cat("Full dataset:", nrow(analysis_full), "observations\n")
 cat("Analysis sample:", nrow(analysis_data), "observations\n")

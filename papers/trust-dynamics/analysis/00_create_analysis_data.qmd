@@ -1,0 +1,448 @@
+---
+title: "Create Analysis Dataset"
+subtitle: "Trust Dynamics and Democratic Resilience in Asia"
+author: "Jeffrey Stark"
+date: today
+format:
+
+  html:
+    toc: true
+    toc-depth: 3
+    toc-location: left
+    number-sections: true
+    code-fold: show
+    code-tools: true
+    df-print: paged
+    embed-resources: true
+execute:
+  warning: false
+  message: false
+---
+
+# Overview
+
+This script creates the analysis-ready dataset for examining trust dynamics and democratic resilience across Asia using Asian Barometer Survey data (Waves 1-6, 2001-2022).
+
+**Key outputs:**
+
+- `abs_trust_panel.rds` — Full panel with all countries and waves
+- `abs_trust_panel_balanced.rds` — Balanced W2-W6 panel (7 countries)
+- `abs_trust_panel_core.rds` — Core 5 Southeast Asian countries
+
+```{r setup}
+library(tidyverse)
+library(here)
+library(gt)
+
+here::i_am("papers/trust-dynamics/analysis/00_create_analysis_data.qmd")
+set.seed(2025)
+```
+
+# Load Source Data
+
+```{r load-data}
+# Load the full sausage analysis dataset (all variables, all waves)
+sausage_full <- readRDS(here("papers/trust-dynamics/analysis/sausage_analysis_full.rds"))
+
+cat("Source dataset:", nrow(sausage_full), "observations,", ncol(sausage_full), "variables\n")
+cat("Countries:", length(unique(sausage_full$country_name)), "\n")
+cat("Waves:", paste(sort(unique(sausage_full$wave)), collapse = ", "), "\n")
+```
+
+# Variable Selection
+
+## Define Variable Groups
+
+```{r define-vars}
+# ============================================
+# IDENTIFIERS & STRUCTURE
+# ============================================
+id_vars <- c(
+  "country",           # Country code
+
+  "country_name",      # Country name
+  "wave",              # Wave (w1-w6)
+  "idnumber",          # Respondent ID
+  "survey_year"        # Approximate survey year
+)
+
+# ============================================
+# DEPENDENT VARIABLES: TRUST
+# ============================================
+trust_vars <- c(
+  "trust_national_government",
+  "trust_parliament",
+  "trust_military",
+  "trust_courts",
+  "trust_police",
+  "trust_political_parties"
+)
+
+# ============================================
+# DEPENDENT VARIABLES: DEMOCRATIC ATTITUDES
+# ============================================
+dem_attitude_vars <- c(
+  "democracy_satisfaction",
+  "democracy_suitability",
+  "democracy_efficacy",
+  "dem_always_preferable",
+  "dem_vs_econ",              # Original sausage DV
+  "econ_over_democracy"       # Recoded version
+)
+
+# ============================================
+# AUTHORITARIAN PREFERENCES
+# ============================================
+auth_vars <- c(
+  "strongman_rule",
+  "expert_rule", 
+  "military_rule",
+  "single_party_rule"
+)
+
+# ============================================
+# POLITICAL BEHAVIOR
+# ============================================
+behavior_vars <- c(
+  "action_demonstration",     # Protest participation (key for Thailand)
+  "action_petition",
+  "voted_last_election",
+  "political_interest"
+)
+
+# ============================================
+# INDIVIDUAL CONTROLS
+# ============================================
+control_vars <- c(
+  "age",
+  "age_centered",
+  "female",
+  "education_years",
+  "education_z",
+  "education_tertile",
+  "is_urban",
+  "hh_income",
+  "subjective_social_status",
+  "employed",
+  "religion",
+  "religiosity_practice"
+)
+
+# ============================================
+# COUNTRY-LEVEL VARIABLES
+# ============================================
+country_vars <- c(
+  "regime_type",
+  "is_democracy",
+  "vdem_electoral",
+  "vdem_liberal",
+  "vdem_regime"
+)
+
+# ============================================
+# EXISTING COMPOSITES (keep for continuity)
+# ============================================
+existing_composite_vars <- c(
+  "institutional_trust_index",
+  "authoritarian_attitudes",
+  "econ_over_democracy_strict",
+  "sausage_binary"
+)
+
+# Combine all
+all_selected_vars <- c(
+id_vars, trust_vars, dem_attitude_vars, auth_vars, 
+  behavior_vars, control_vars, country_vars, existing_composite_vars
+)
+
+# Check which exist
+available_vars <- intersect(all_selected_vars, names(sausage_full))
+missing_vars <- setdiff(all_selected_vars, names(sausage_full))
+
+cat("Requested variables:", length(all_selected_vars), "\n")
+cat("Available:", length(available_vars), "\n")
+cat("Missing:", length(missing_vars), "\n")
+if (length(missing_vars) > 0) {
+  cat("  Missing:", paste(missing_vars, collapse = ", "), "\n")
+}
+```
+
+## Select Variables
+
+```{r select-vars}
+abs_panel <- sausage_full %>%
+  select(all_of(available_vars))
+
+cat("Selected dataset:", nrow(abs_panel), "x", ncol(abs_panel), "\n")
+```
+
+# Create New Composites
+
+```{r create-composites}
+abs_panel <- abs_panel %>%
+  rowwise() %>%
+  mutate(
+    # ============================================
+    # TRUST COMPOSITES
+    # ============================================
+    
+    # Political trust: institutions accountable to voters
+    trust_political = mean(c(trust_national_government, trust_parliament, 
+                             trust_political_parties), na.rm = TRUE),
+    
+    # Non-political trust: institutions with (theoretically) more independence
+    trust_nonpolitical = mean(c(trust_courts, trust_military, trust_police), 
+                              na.rm = TRUE),
+    
+    # All institutions
+    trust_all = mean(c(trust_national_government, trust_parliament, 
+                       trust_courts, trust_military, trust_police,
+                       trust_political_parties), na.rm = TRUE),
+    
+    # ============================================
+    # AUTHORITARIAN PREFERENCE COMPOSITE
+    # ============================================
+    
+    # Mean of all authoritarian rule preferences
+    auth_pref_mean = mean(c(strongman_rule, expert_rule, military_rule, 
+                            single_party_rule), na.rm = TRUE)
+  ) %>%
+  ungroup() %>%
+  mutate(
+    # Handle NaN from all-NA rows
+    across(c(trust_political, trust_nonpolitical, trust_all, auth_pref_mean),
+           ~if_else(is.nan(.), NA_real_, .))
+  )
+
+cat("Added composites: trust_political, trust_nonpolitical, trust_all, auth_pref_mean\n")
+```
+
+# Add Wave Numeric and Time Variables
+
+```{r add-time-vars}
+abs_panel <- abs_panel %>%
+  mutate(
+    # Wave as numeric (for models)
+    wave_num = case_when(
+      wave == "w1" ~ 1,
+      wave == "w2" ~ 2,
+      wave == "w3" ~ 3,
+      wave == "w4" ~ 4,
+      wave == "w5" ~ 5,
+      wave == "w6" ~ 6
+    ),
+    
+    # Period indicators
+    pre_covid = if_else(wave %in% c("w1", "w2", "w3", "w4"), 1, 0),
+    covid_era = if_else(wave %in% c("w5", "w6"), 1, 0),
+    post_covid = if_else(wave == "w6", 1, 0),
+    
+    # Wave labels for plotting
+    wave_label = factor(wave,
+      levels = c("w1", "w2", "w3", "w4", "w5", "w6"),
+      labels = c("W1\n(2001-03)", "W2\n(2005-08)", "W3\n(2010-12)", 
+                 "W4\n(2014-16)", "W5\n(2018-20)", "W6\n(2020-22)")
+    )
+  )
+
+cat("Added: wave_num, pre_covid, covid_era, post_covid, wave_label\n")
+```
+
+# Define Country Groups
+
+```{r country-groups}
+# ============================================
+# COUNTRY GROUP DEFINITIONS
+# ============================================
+
+# Core 5: Southeast Asian democracies/hybrids (your primary focus)
+core_5 <- c("Indonesia", "Thailand", "Philippines", "Taiwan", "Vietnam")
+
+# Balanced W2-W6: Countries with all 5 waves
+balanced_7 <- c("Indonesia", "Korea", "Mongolia", "Philippines", 
+                "Taiwan", "Thailand", "Vietnam")
+
+# Countries with W1 data (for 20-year supplementary)
+has_w1 <- c("Japan", "Korea", "Mongolia", "Philippines", "Taiwan", "Thailand")
+
+# Add group indicators
+abs_panel <- abs_panel %>%
+  mutate(
+    in_core_5 = country_name %in% core_5,
+    in_balanced_7 = country_name %in% balanced_7,
+    has_w1_data = country_name %in% has_w1
+  )
+
+cat("Country groups defined:\n")
+cat("  Core 5:", paste(core_5, collapse = ", "), "\n")
+cat("  Balanced W2-W6:", paste(balanced_7, collapse = ", "), "\n")
+```
+
+# Merge External COVID/Economic Data
+
+```{r merge-covid}
+# Load COVID/economic data
+covid_path <- here("data/external/covid_economic/country_covid_summary.csv")
+
+if (file.exists(covid_path)) {
+  covid <- read_csv(covid_path, show_col_types = FALSE)
+  
+  abs_panel <- abs_panel %>%
+    left_join(
+      covid %>% select(country_name, 
+                       gdp_growth_2020, gdp_growth_2021, gdp_growth_2022,
+                       deaths_per_million_2020, deaths_per_million_2021, 
+                       deaths_per_million_2022,
+                       vaccination_pct_2022),
+      by = "country_name"
+    ) %>%
+    mutate(
+      # Standardized versions for modeling
+      gdp_shock_z = (gdp_growth_2020 - mean(gdp_growth_2020, na.rm = TRUE)) / 
+                    sd(gdp_growth_2020, na.rm = TRUE),
+      deaths_2021_z = (deaths_per_million_2021 - mean(deaths_per_million_2021, na.rm = TRUE)) / 
+                      sd(deaths_per_million_2021, na.rm = TRUE)
+    )
+  
+  cat("Merged COVID/economic data\n")
+  cat("  Variables added: gdp_growth_2020/21/22, deaths_per_million_2020/21/22, vaccination_pct_2022\n")
+} else {
+  cat("COVID data file not found, skipping merge\n")
+}
+```
+
+# Create Dataset Variants
+
+## Full Panel (All Countries, All Waves)
+
+```{r full-panel}
+abs_trust_panel <- abs_panel
+
+cat("\n=== FULL PANEL ===\n")
+cat("Observations:", nrow(abs_trust_panel), "\n")
+cat("Variables:", ncol(abs_trust_panel), "\n")
+cat("Countries:", length(unique(abs_trust_panel$country_name)), "\n")
+cat("Waves:", paste(sort(unique(abs_trust_panel$wave)), collapse = ", "), "\n")
+```
+
+## Balanced Panel (W2-W6, 7 Countries)
+
+```{r balanced-panel}
+abs_trust_panel_balanced <- abs_panel %>%
+  filter(in_balanced_7) %>%
+  filter(wave %in% c("w2", "w3", "w4", "w5", "w6"))
+
+cat("\n=== BALANCED PANEL (W2-W6) ===\n")
+cat("Observations:", nrow(abs_trust_panel_balanced), "\n")
+cat("Countries:", paste(sort(unique(abs_trust_panel_balanced$country_name)), collapse = ", "), "\n")
+cat("Waves:", paste(sort(unique(abs_trust_panel_balanced$wave)), collapse = ", "), "\n")
+
+# Verify balance
+abs_trust_panel_balanced %>%
+  count(country_name, wave) %>%
+  pivot_wider(names_from = wave, values_from = n) %>%
+  gt() %>%
+  tab_header(title = "Balanced Panel: Country × Wave")
+```
+
+## Core Panel (5 SE Asian Countries)
+
+```{r core-panel}
+abs_trust_panel_core <- abs_panel %>%
+  filter(in_core_5) %>%
+  filter(wave %in% c("w2", "w3", "w4", "w5", "w6"))
+
+cat("\n=== CORE PANEL (5 Countries, W2-W6) ===\n")
+cat("Observations:", nrow(abs_trust_panel_core), "\n
+")
+cat("Countries:", paste(sort(unique(abs_trust_panel_core$country_name)), collapse = ", "), "\n")
+
+# Verify
+abs_trust_panel_core %>%
+  count(country_name, wave) %>%
+  pivot_wider(names_from = wave, values_from = n) %>%
+  gt() %>%
+  tab_header(title = "Core Panel: Country × Wave")
+```
+
+# Variable Summary
+
+```{r var-summary}
+# Final variable list
+cat("\n=== FINAL VARIABLE LIST ===\n\n")
+
+var_groups <- list(
+  "Identifiers" = c("country", "country_name", "wave", "wave_num", "idnumber", "survey_year"),
+  "Trust (Individual)" = trust_vars,
+  "Trust (Composites)" = c("trust_political", "trust_nonpolitical", "trust_all"),
+  "Democratic Attitudes" = dem_attitude_vars,
+  "Authoritarian Preferences" = c(auth_vars, "auth_pref_mean"),
+  "Political Behavior" = behavior_vars,
+  "Individual Controls" = control_vars,
+  "Country-Level" = country_vars,
+  "COVID/Economic" = c("gdp_growth_2020", "gdp_shock_z", "deaths_per_million_2021", "deaths_2021_z"),
+  "Group Indicators" = c("in_core_5", "in_balanced_7", "pre_covid", "covid_era", "post_covid")
+)
+
+for (group_name in names(var_groups)) {
+  vars_in_data <- intersect(var_groups[[group_name]], names(abs_trust_panel))
+  cat(group_name, "(", length(vars_in_data), "):\n", sep = "")
+  cat("  ", paste(vars_in_data, collapse = ", "), "\n\n")
+}
+
+cat("Total variables:", ncol(abs_trust_panel), "\n")
+```
+
+# Save Datasets
+
+```{r save}
+output_dir <- here("papers/trust-dynamics/analysis")
+
+# Full panel
+saveRDS(abs_trust_panel, file.path(output_dir, "abs_trust_panel.rds"))
+cat("Saved: abs_trust_panel.rds (", nrow(abs_trust_panel), " obs)\n", sep = "")
+
+# Balanced panel
+saveRDS(abs_trust_panel_balanced, file.path(output_dir, "abs_trust_panel_balanced.rds"))
+cat("Saved: abs_trust_panel_balanced.rds (", nrow(abs_trust_panel_balanced), " obs)\n", sep = "")
+
+# Core panel
+saveRDS(abs_trust_panel_core, file.path(output_dir, "abs_trust_panel_core.rds"))
+cat("Saved: abs_trust_panel_core.rds (", nrow(abs_trust_panel_core), " obs)\n", sep = "")
+```
+
+# Quick Validation
+
+```{r validate}
+cat("\n=== VALIDATION CHECKS ===\n\n")
+
+# Trust variable coverage
+cat("Trust variable coverage (% non-missing):\n")
+abs_trust_panel_core %>%
+  summarise(across(all_of(trust_vars), ~100 * mean(!is.na(.)))) %>%
+  pivot_longer(everything(), names_to = "variable", values_to = "pct_valid") %>%
+  mutate(pct_valid = round(pct_valid, 1)) %>%
+  print()
+
+# Composite correlations
+cat("\nTrust composite correlations:\n")
+abs_trust_panel_core %>%
+  select(trust_political, trust_nonpolitical, trust_all) %>%
+  cor(use = "pairwise.complete.obs") %>%
+  round(2) %>%
+  print()
+
+# Sample by country and wave
+cat("\nCore panel sample sizes:\n")
+abs_trust_panel_core %>%
+  count(country_name, wave) %>%
+  pivot_wider(names_from = wave, values_from = n) %>%
+  mutate(total = rowSums(across(where(is.numeric)), na.rm = TRUE)) %>%
+  print()
+```
+
+# Session Info
+
+```{r session}
+sessionInfo()
+```

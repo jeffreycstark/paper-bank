@@ -24,7 +24,7 @@ library(here)
 library(gt)
 library(broom)
 
-here::i_am("papers/sausage-paper/analysis/05_supplementary_analyses.qmd")
+here::i_am("papers/trust-dynamics/analysis/05_supplementary_analyses.qmd")
 set.seed(2025)
 theme_set(theme_minimal(base_size = 12))
 
@@ -35,7 +35,7 @@ filter <- dplyr::filter
 ## Load Data
 
 ```{r load-data}
-analysis_data <- readRDS(here("papers/sausage-paper/analysis/sausage_analysis.rds"))
+analysis_data <- readRDS(here("papers/trust-dynamics/analysis/sausage_analysis.rds"))
 cat("Sample:", nrow(analysis_data), "observations\n")
 ```
 

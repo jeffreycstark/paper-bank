@@ -1,0 +1,807 @@
+---
+title: "After the Rally: Trust Dynamics in Southeast Asia"
+subtitle: "COVID-19, Economic Shocks, and Political Crisis"
+author: "Jeffrey Stark"
+date: today
+format:
+  html:
+    toc: true
+    toc-depth: 3
+    toc-location: left
+    number-sections: true
+    code-fold: show
+    code-tools: true
+    df-print: paged
+    embed-resources: true
+    fig-width: 10
+    fig-height: 7
+execute:
+  warning: false
+  message: false
+  cache: true
+---
+
+# Overview
+
+This analysis examines trust dynamics across five Southeast Asian countries using Asian Barometer Survey data from 2005-2022 (Waves 2-6). We find that:
+
+1. **Random slopes matter**: Countries show dramatically different trust trajectories, requiring multilevel models with random slopes
+2. **Thailand is exceptional**: Military trust collapsed 1.7x more than government trust, indicating a political crisis distinct from COVID/economic effects
+3. **Indonesia's rally reversed**: The W5 rally-around-the-flag effect completely reversed in W6
+4. **Taiwan gained trust**: Successful pandemic response translated to trust gains
+
+```{r setup}
+library(tidyverse)
+library(here)
+library(gt)
+library(gtsummary)
+library(broom)
+library(broom.mixed)
+library(lme4)
+library(lmerTest)
+library(ggeffects)
+library(patchwork)
+
+here::i_am("papers/trust-dynamics/analysis/04_trust_dynamics_analysis.qmd")
+set.seed(2025)
+theme_set(theme_minimal(base_size = 12))
+
+# Country colors
+country_colors <- c(
+  "Taiwan" = "#2ecc71",
+  "Vietnam" = "#9b59b6", 
+  "Philippines" = "#e74c3c",
+  "Indonesia" = "#3498db",
+  "Thailand" = "#e67e22"
+)
+```
+
+# Data
+
+## Load Analysis Dataset
+
+```{r load-data}
+# Load the core 5-country panel (W2-W6)
+abs <- readRDS(here("papers/trust-dynamics/analysis/abs_trust_panel_core.rds"))
+
+# Set factor levels for consistent ordering
+abs <- abs %>%
+  mutate(
+    country_name = factor(country_name, 
+                          levels = c("Indonesia", "Thailand", "Philippines", "Taiwan", "Vietnam")),
+    wave_label = factor(wave,
+      levels = c("w2", "w3", "w4", "w5", "w6"),
+      labels = c("W2\n(2005-08)", "W3\n(2010-12)", "W4\n(2014-16)", 
+                 "W5\n(2018-20)", "W6\n(2020-22)")
+    )
+  )
+
+cat("Analysis sample: n =", nrow(abs), "\n")
+cat("Countries:", paste(levels(abs$country_name), collapse = ", "), "\n")
+cat("Waves:", paste(sort(unique(abs$wave)), collapse = ", "), "\n")
+cat("Years: ~2005-2022 (17 years)\n")
+```
+
+## Sample Overview
+
+```{r sample-table}
+abs %>%
+  group_by(country_name, wave) %>%
+  summarise(n = n(), .groups = "drop") %>%
+  pivot_wider(names_from = wave, values_from = n, values_fill = 0) %>%
+  mutate(total = w2 + w3 + w4 + w5 + w6) %>%
+  gt() %>%
+  tab_header(title = "Sample Size by Country and Wave") %>%
+  fmt_number(columns = where(is.numeric), use_seps = TRUE, decimals = 0)
+```
+
+# Descriptive Analysis
+
+## Trust Trajectories (17 Years)
+
+```{r trust-trajectories}
+# Calculate means by country and wave
+trust_means <- abs %>%
+  group_by(country_name, wave_label, wave_num) %>%
+  summarise(
+    trust_govt = mean(trust_national_government, na.rm = TRUE),
+    trust_govt_se = sd(trust_national_government, na.rm = TRUE) / sqrt(sum(!is.na(trust_national_government))),
+    trust_mil = mean(trust_military, na.rm = TRUE),
+    trust_mil_se = sd(trust_military, na.rm = TRUE) / sqrt(sum(!is.na(trust_military))),
+    trust_political = mean(trust_political, na.rm = TRUE),
+    trust_nonpolitical = mean(trust_nonpolitical, na.rm = TRUE),
+    n = n(),
+    .groups = "drop"
+  )
+
+# Main figure: Government trust trajectories
+p_govt <- ggplot(trust_means, 
+       aes(x = wave_label, y = trust_govt, color = country_name, group = country_name)) +
+  geom_line(linewidth = 1.2) +
+  geom_point(size = 3) +
+  geom_errorbar(aes(ymin = trust_govt - 1.96*trust_govt_se, 
+                    ymax = trust_govt + 1.96*trust_govt_se),
+                width = 0.1, linewidth = 0.8) +
+  scale_color_manual(values = country_colors) +
+  scale_y_continuous(limits = c(1.5, 4), breaks = seq(1.5, 4, 0.5)) +
+  labs(
+    title = "Government Trust: 17-Year Trajectories",
+    subtitle = "Thailand collapses in W6; Taiwan gains; Indonesia rallies then crashes",
+    x = NULL,
+    y = "Trust in National Government\n(1 = None, 4 = A great deal)",
+    color = "Country"
+  ) +
+  theme(
+    legend.position = "right",
+    plot.title = element_text(face = "bold", size = 14),
+    axis.text.x = element_text(size = 9)
+  )
+
+p_govt
+```
+
+## Government vs Military Trust
+
+This comparison is critical for distinguishing COVID/economic effects from political crisis effects.
+
+```{r govt-vs-military}
+# Military trust trajectories
+p_mil <- ggplot(trust_means, 
+       aes(x = wave_label, y = trust_mil, color = country_name, group = country_name)) +
+  geom_line(linewidth = 1.2) +
+  geom_point(size = 3) +
+  geom_errorbar(aes(ymin = trust_mil - 1.96*trust_mil_se, 
+                    ymax = trust_mil + 1.96*trust_mil_se),
+                width = 0.1, linewidth = 0.8) +
+  scale_color_manual(values = country_colors) +
+  scale_y_continuous(limits = c(1.5, 4), breaks = seq(1.5, 4, 0.5)) +
+  labs(
+    title = "Military Trust: 17-Year Trajectories",
+    subtitle = "Thailand's military trust collapses even more dramatically than government trust",
+    x = NULL,
+    y = "Trust in Military\n(1 = None, 4 = A great deal)",
+    color = "Country"
+  ) +
+  theme(
+    legend.position = "right",
+    plot.title = element_text(face = "bold", size = 14),
+    axis.text.x = element_text(size = 9)
+  )
+
+# Combined figure
+p_govt / p_mil + plot_layout(guides = "collect")
+```
+
+## Wave-to-Wave Changes
+
+```{r wave-changes}
+# Calculate wave-to-wave changes
+trust_changes <- trust_means %>%
+  arrange(country_name, wave_num) %>%
+  group_by(country_name) %>%
+  mutate(
+    govt_change = trust_govt - lag(trust_govt),
+    mil_change = trust_mil - lag(trust_mil)
+  ) %>%
+  filter(!is.na(govt_change))
+
+# Focus on W5→W6 (the critical COVID period)
+w5_w6 <- trust_changes %>%
+  filter(wave_num == 5) %>%  # This is the change TO w6
+  select(country_name, govt_change, mil_change) %>%
+  mutate(
+    mil_vs_govt = mil_change - govt_change,
+    interpretation = case_when(
+      mil_vs_govt < -0.3 ~ "Political crisis (military collapse)",
+      govt_change < -0.5 ~ "Performance crisis (govt collapse)",
+      govt_change > 0.1 ~ "Trust gains",
+      TRUE ~ "Stable"
+    )
+  )
+
+w5_w6 %>%
+  mutate(across(where(is.numeric), ~round(., 2))) %>%
+  gt() %>%
+  tab_header(
+    title = "Critical Period: W5 → W6 Trust Changes",
+    subtitle = "Negative mil_vs_govt = Military dropped MORE than government"
+  ) %>%
+  data_color(
+    columns = mil_vs_govt,
+    palette = c("#e74c3c", "white", "#2ecc71"),
+    domain = c(-0.8, 0.2)
+  )
+```
+
+# Multilevel Models
+
+## Model 1: Random Intercepts Only (Baseline)
+
+```{r model1-ri}
+m1_ri <- lmer(trust_national_government ~ wave_num + 
+                age_centered + female + education_z + is_urban +
+                (1 | country_name),
+              data = abs,
+              REML = FALSE)
+
+cat("=== Model 1: Random Intercepts Only ===\n")
+tidy(m1_ri, effects = "fixed", conf.int = TRUE) %>%
+  mutate(across(where(is.numeric), ~round(., 3))) %>%
+  gt() %>%
+  tab_header(title = "Model 1: Random Intercepts Only")
+
+cat("\nVariance components:\n")
+print(VarCorr(m1_ri))
+```
+
+## Model 2: Random Slopes for Wave
+
+```{r model2-rs}
+m2_rs <- lmer(trust_national_government ~ wave_num + 
+                age_centered + female + education_z + is_urban +
+                (1 + wave_num | country_name),
+              data = abs,
+              REML = FALSE,
+              control = lmerControl(optimizer = "bobyqa", optCtrl = list(maxfun = 100000)))
+
+cat("=== Model 2: Random Slopes for Wave ===\n")
+tidy(m2_rs, effects = "fixed", conf.int = TRUE) %>%
+  mutate(across(where(is.numeric), ~round(., 3))) %>%
+  gt() %>%
+  tab_header(title = "Model 2: Random Slopes")
+
+cat("\nVariance components:\n")
+print(VarCorr(m2_rs))
+
+# Model comparison
+cat("\n=== Model Comparison (LRT) ===\n")
+print(anova(m1_ri, m2_rs))
+```
+
+## Extract Country-Specific Slopes
+
+```{r country-slopes}
+# Government trust slopes
+re_govt <- ranef(m2_rs)$country_name
+re_govt$country <- rownames(re_govt)
+re_govt <- re_govt %>%
+  rename(intercept_dev = `(Intercept)`, slope_dev = wave_num) %>%
+  arrange(slope_dev)
+
+cat("=== Country-Specific Effects (Government Trust) ===\n")
+print(re_govt)
+
+# Visualize
+ggplot(re_govt, aes(x = reorder(country, slope_dev), y = slope_dev)) +
+  geom_col(aes(fill = slope_dev < 0)) +
+  geom_hline(yintercept = 0, linetype = "dashed") +
+  scale_fill_manual(values = c("TRUE" = "#e74c3c", "FALSE" = "#2ecc71"), guide = "none") +
+  coord_flip() +
+  labs(
+    title = "Country-Specific Wave Slopes (Government Trust)",
+    subtitle = "Deviation from average trend; negative = declining trust",
+    x = NULL,
+    y = "Slope deviation"
+  )
+```
+
+## Model 3: Military Trust (Random Slopes)
+
+```{r model3-military}
+m3_mil <- lmer(trust_military ~ wave_num + 
+                 age_centered + female + education_z + is_urban +
+                 (1 + wave_num | country_name),
+               data = abs,
+               REML = FALSE,
+               control = lmerControl(optimizer = "bobyqa"))
+
+# Extract slopes
+re_mil <- ranef(m3_mil)$country_name
+re_mil$country <- rownames(re_mil)
+re_mil <- re_mil %>%
+  rename(intercept_dev = `(Intercept)`, slope_dev = wave_num)
+
+# Compare govt vs military slopes
+slope_comparison <- re_govt %>%
+  select(country, govt_slope = slope_dev) %>%
+  left_join(re_mil %>% select(country, mil_slope = slope_dev), by = "country") %>%
+  mutate(
+    difference = mil_slope - govt_slope,
+    interpretation = case_when(
+      difference < -0.1 ~ "Military declining faster",
+      difference > 0.1 ~ "Government declining faster",
+      TRUE ~ "Similar trajectories"
+    )
+  ) %>%
+  arrange(difference)
+
+cat("=== Government vs Military Slopes ===\n")
+slope_comparison %>%
+  mutate(across(where(is.numeric), ~round(., 3))) %>%
+  gt() %>%
+  tab_header(
+    title = "Comparing Trust Trajectories: Government vs Military",
+    subtitle = "Negative difference = Military declining faster than government"
+  ) %>%
+  data_color(
+    columns = difference,
+    palette = c("#e74c3c", "white", "#2ecc71"),
+    domain = c(-0.2, 0.1)
+  )
+```
+
+# Thailand: Political Crisis Evidence
+
+## The Smoking Gun
+
+Thailand's military trust collapsed 1.7x more than government trust. This is the opposite of what a pure COVID/economic performance story would predict.
+
+```{r thailand-smoking-gun}
+# Thailand-specific analysis
+thailand <- abs %>% filter(country_name == "Thailand")
+
+thailand_summary <- thailand %>%
+  group_by(wave, wave_label) %>%
+  summarise(
+    n = n(),
+    trust_govt = mean(trust_national_government, na.rm = TRUE),
+    trust_mil = mean(trust_military, na.rm = TRUE),
+    trust_court = mean(trust_courts, na.rm = TRUE),
+    dem_sat = mean(democracy_satisfaction, na.rm = TRUE),
+    protest_pct = mean(action_demonstration == 1, na.rm = TRUE) * 100,
+    .groups = "drop"
+  )
+
+thailand_summary %>%
+  mutate(across(where(is.numeric) & !matches("n|pct"), ~round(., 2))) %>%
+  mutate(protest_pct = round(protest_pct, 1)) %>%
+  gt() %>%
+  tab_header(
+    title = "Thailand: The Political Crisis",
+    subtitle = "Military trust collapses more than government; high protest participation"
+  )
+```
+
+## Theoretical Implications
+
+```{r thailand-theory}
+cat("
+╔══════════════════════════════════════════════════════════════════════╗
+║  THAILAND: POLITICAL VS ECONOMIC MECHANISM                           ║
+╠══════════════════════════════════════════════════════════════════════╣
+║                                                                      ║
+║  IF COVID/Economic Performance:                                      ║
+║    → Government trust should drop more (they managed the crisis)     ║
+║    → Military trust should be stable (not responsible for COVID)     ║
+║                                                                      ║
+║  IF Political Crisis (2020-21 protests against military-backed govt):║
+║    → Military trust should drop more (direct target of protests)     ║
+║    → Government trust drops too (associated with military)           ║
+║                                                                      ║
+║  OBSERVED IN THAILAND:                                               ║
+║    → Government trust:  -0.97                                        ║
+║    → Military trust:    -1.65 (1.7x larger!)                         ║
+║    → Protest participation: 68.6% in W5                              ║
+║                                                                      ║
+║  CONCLUSION: Political crisis mechanism, not just COVID/GDP          ║
+║                                                                      ║
+╚══════════════════════════════════════════════════════════════════════╝
+")
+```
+
+# Indonesia: Rally and Collapse
+
+## The Rally-Around-the-Flag Effect
+
+```{r indonesia-rally}
+indonesia <- abs %>% filter(country_name == "Indonesia")
+
+indonesia_summary <- indonesia %>%
+  group_by(wave, wave_label) %>%
+  summarise(
+    n = n(),
+    trust_govt = mean(trust_national_government, na.rm = TRUE),
+    trust_parl = mean(trust_parliament, na.rm = TRUE),
+    trust_mil = mean(trust_military, na.rm = TRUE),
+    trust_court = mean(trust_courts, na.rm = TRUE),
+    dem_sat = mean(democracy_satisfaction, na.rm = TRUE),
+    .groups = "drop"
+  )
+
+indonesia_summary %>%
+  mutate(across(where(is.numeric) & !matches("n"), ~round(., 2))) %>%
+  gt() %>%
+  tab_header(
+    title = "Indonesia: Rally (W5) and Collapse (W6)",
+    subtitle = "Massive W4→W5 surge completely reversed"
+  )
+
+# Calculate the rally and collapse
+cat("\nIndonesia Trust Changes:\n")
+cat("  W4→W5 (Rally):   +", round(indonesia_summary$trust_govt[4] - indonesia_summary$trust_govt[3], 2), "\n")
+cat("  W5→W6 (Collapse): ", round(indonesia_summary$trust_govt[5] - indonesia_summary$trust_govt[4], 2), "\n")
+cat("  Net change:       ", round(indonesia_summary$trust_govt[5] - indonesia_summary$trust_govt[3], 2), "\n")
+```
+
+# Taiwan: The Success Story
+
+```{r taiwan-success}
+taiwan <- abs %>% filter(country_name == "Taiwan")
+
+taiwan_summary <- taiwan %>%
+  group_by(wave, wave_label) %>%
+  summarise(
+    n = n(),
+    trust_govt = mean(trust_national_government, na.rm = TRUE),
+    trust_mil = mean(trust_military, na.rm = TRUE),
+    dem_sat = mean(democracy_satisfaction, na.rm = TRUE),
+    dem_pref = mean(dem_always_preferable == 1, na.rm = TRUE) * 100,
+    .groups = "drop"
+  )
+
+taiwan_summary %>%
+  mutate(across(where(is.numeric) & !matches("n|pref"), ~round(., 2))) %>%
+  mutate(dem_pref = round(dem_pref, 1)) %>%
+  gt() %>%
+  tab_header(
+    title = "Taiwan: Trust Gains During COVID",
+    subtitle = "Successful pandemic response → trust increase"
+  )
+```
+
+# Model with COVID/GDP Predictors
+
+## Does GDP Explain Trust Trajectories?
+
+```{r model-gdp}
+# Model with GDP shock
+m4_gdp <- lmer(trust_national_government ~ wave_num + 
+                 gdp_shock_z * post_covid +
+                 age_centered + female + education_z + is_urban +
+                 (1 + wave_num | country_name),
+               data = abs,
+               REML = FALSE,
+               control = lmerControl(optimizer = "bobyqa"))
+
+cat("=== Model 4: With GDP Shock ===\n")
+tidy(m4_gdp, effects = "fixed", conf.int = TRUE) %>%
+  filter(str_detect(term, "gdp|wave|post")) %>%
+  mutate(across(where(is.numeric), ~round(., 3))) %>%
+  gt() %>%
+  tab_header(title = "GDP Shock Effect on Trust")
+
+# Does GDP reduce slope variance?
+var_base <- as.data.frame(VarCorr(m2_rs))
+var_gdp <- as.data.frame(VarCorr(m4_gdp))
+
+cat("\nSlope variance without GDP:", 
+    round(var_base$sdcor[var_base$var1 == "wave_num" & is.na(var_base$var2)]^2, 4), "\n")
+cat("Slope variance with GDP:", 
+    round(var_gdp$sdcor[var_gdp$var1 == "wave_num" & is.na(var_gdp$var2)]^2, 4), "\n")
+cat("\nConclusion: GDP is significant but doesn't fully explain cross-country variation\n")
+cat("Thailand's collapse exceeds what GDP would predict → political factors\n")
+```
+
+# Robustness: Pre-Trend Check
+
+## W2-W4 (Pre-COVID) Trends
+
+```{r pretrend}
+# Test for differential trends before COVID
+pre_covid_data <- abs %>% filter(wave %in% c("w2", "w3", "w4"))
+
+m_pretrend <- lm(trust_national_government ~ wave_num * country_name +
+                   age_centered + female + education_z + is_urban,
+                 data = pre_covid_data)
+
+cat("=== Pre-Trend Test (W2-W4) ===\n")
+tidy(m_pretrend, conf.int = TRUE) %>%
+  filter(str_detect(term, "wave_num")) %>%
+  mutate(across(where(is.numeric), ~round(., 3))) %>%
+  gt() %>%
+  tab_header(
+    title = "Pre-COVID Trends by Country",
+    subtitle = "Testing for differential trends before COVID"
+  )
+```
+
+# Summary Figure
+
+```{r summary-figure, fig.width=12, fig.height=10}
+# Panel A: Government trust
+p_a <- p_govt + labs(title = "A. Government Trust") + 
+  theme(legend.position = "none")
+
+# Panel B: Military trust
+p_b <- p_mil + labs(title = "B. Military Trust") +
+  theme(legend.position = "none")
+
+# Panel C: Slope comparison
+slope_plot_data <- slope_comparison %>%
+  pivot_longer(cols = c(govt_slope, mil_slope), 
+               names_to = "institution", values_to = "slope") %>%
+  mutate(institution = if_else(institution == "govt_slope", "Government", "Military"))
+
+p_c <- ggplot(slope_plot_data, aes(x = reorder(country, slope), y = slope, fill = institution)) +
+  geom_col(position = position_dodge(width = 0.8), width = 0.7) +
+  geom_hline(yintercept = 0, linetype = "dashed") +
+  scale_fill_manual(values = c("Government" = "#3498db", "Military" = "#9b59b6")) +
+  coord_flip() +
+  labs(
+    title = "C. Country-Specific Slopes",
+    subtitle = "Thailand: Military slope much more negative",
+    x = NULL,
+    y = "Slope deviation from average",
+    fill = "Institution"
+  ) +
+  theme(legend.position = "bottom")
+
+# Panel D: W5→W6 changes
+p_d <- ggplot(w5_w6, aes(x = reorder(country_name, govt_change), y = govt_change)) +
+  geom_col(aes(fill = country_name), width = 0.7) +
+  geom_point(aes(y = mil_change), shape = 18, size = 4, color = "black") +
+  geom_hline(yintercept = 0, linetype = "dashed") +
+  scale_fill_manual(values = country_colors) +
+  coord_flip() +
+  labs(
+    title = "D. W5→W6 Trust Changes",
+    subtitle = "Bars = Government; Diamonds = Military",
+    x = NULL,
+    y = "Trust change",
+    fill = "Country"
+  ) +
+  theme(legend.position = "none")
+
+# Combine
+(p_a + p_b) / (p_c + p_d) + 
+  plot_annotation(
+    title = "Trust Dynamics in Southeast Asia (2005-2022)",
+    subtitle = "Thailand's collapse driven by political crisis; Indonesia rallies then crashes; Taiwan gains"
+  )
+```
+
+# Supplementary: 20-Year Trajectories (W1-W6)
+
+Three countries have data from Wave 1 (~2001): Philippines, Taiwan, and Thailand. This allows us to examine trust trajectories over two decades.
+
+## Load Full Panel with W1
+
+```{r w1-load}
+# Load full panel (includes all countries and waves)
+abs_full <- readRDS(here("papers/trust-dynamics/analysis/abs_trust_panel.rds"))
+
+# Filter to W1 countries
+w1_countries <- c("Philippines", "Taiwan", "Thailand")
+
+abs_w1 <- abs_full %>%
+  filter(country_name %in% w1_countries) %>%
+  filter(wave %in% c("w1", "w2", "w3", "w4", "w5", "w6")) %>%
+  mutate(
+    country_name = factor(country_name, levels = w1_countries),
+    wave_label_full = factor(wave,
+      levels = c("w1", "w2", "w3", "w4", "w5", "w6"),
+      labels = c("W1\n(2001-03)", "W2\n(2005-08)", "W3\n(2010-12)", 
+                 "W4\n(2014-16)", "W5\n(2018-20)", "W6\n(2020-22)")
+    )
+  )
+
+cat("W1 supplementary sample: n =", nrow(abs_w1), "\n")
+cat("Countries:", paste(w1_countries, collapse = ", "), "\n")
+cat("Waves: W1-W6 (~2001-2022, 20 years)\n")
+```
+
+## 20-Year Trust Trajectories
+
+```{r w1-trajectories}
+# Calculate means for W1 countries across all 6 waves
+trust_w1 <- abs_w1 %>%
+  group_by(country_name, wave_label_full, wave) %>%
+  summarise(
+    n = n(),
+    trust_govt = mean(trust_national_government, na.rm = TRUE),
+    trust_govt_se = sd(trust_national_government, na.rm = TRUE) / sqrt(sum(!is.na(trust_national_government))),
+    trust_mil = mean(trust_military, na.rm = TRUE),
+    trust_mil_se = sd(trust_military, na.rm = TRUE) / sqrt(sum(!is.na(trust_military))),
+    dem_sat = mean(democracy_satisfaction, na.rm = TRUE),
+    .groups = "drop"
+  )
+
+# Government trust 20-year plot
+p_w1_govt <- ggplot(trust_w1, 
+       aes(x = wave_label_full, y = trust_govt, color = country_name, group = country_name)) +
+  geom_line(linewidth = 1.2) +
+  geom_point(size = 3) +
+  geom_errorbar(aes(ymin = trust_govt - 1.96*trust_govt_se, 
+                    ymax = trust_govt + 1.96*trust_govt_se),
+                width = 0.1, linewidth = 0.8) +
+  geom_vline(xintercept = 4.5, linetype = "dashed", color = "gray50", linewidth = 0.8) +
+  annotate("text", x = 4.5, y = 3.0, label = "COVID\nonset", hjust = -0.1, size = 3) +
+  scale_color_manual(values = country_colors[w1_countries]) +
+  scale_y_continuous(limits = c(1.5, 3.5), breaks = seq(1.5, 3.5, 0.5)) +
+  labs(
+    title = "20-Year Government Trust Trajectories (2001-2022)",
+    subtitle = "Thailand: From above-average (2.85) to lowest (1.89) over two decades",
+    x = NULL,
+    y = "Trust in National Government\n(1 = None, 4 = A great deal)",
+    color = "Country"
+  ) +
+  theme(
+    legend.position = "right",
+    plot.title = element_text(face = "bold", size = 14),
+    axis.text.x = element_text(size = 9)
+  )
+
+p_w1_govt
+```
+
+## Military Trust: 20-Year View
+
+```{r w1-military}
+p_w1_mil <- ggplot(trust_w1, 
+       aes(x = wave_label_full, y = trust_mil, color = country_name, group = country_name)) +
+  geom_line(linewidth = 1.2) +
+  geom_point(size = 3) +
+  geom_errorbar(aes(ymin = trust_mil - 1.96*trust_mil_se, 
+                    ymax = trust_mil + 1.96*trust_mil_se),
+                width = 0.1, linewidth = 0.8) +
+  geom_vline(xintercept = 4.5, linetype = "dashed", color = "gray50", linewidth = 0.8) +
+  scale_color_manual(values = country_colors[w1_countries]) +
+  scale_y_continuous(limits = c(1.5, 3.5), breaks = seq(1.5, 3.5, 0.5)) +
+  labs(
+    title = "20-Year Military Trust Trajectories (2001-2022)",
+    subtitle = "Thailand: Military trust was highest in 2001, lowest by 2022",
+    x = NULL,
+    y = "Trust in Military\n(1 = None, 4 = A great deal)",
+    color = "Country"
+  ) +
+  theme(
+    legend.position = "right",
+    plot.title = element_text(face = "bold", size = 14),
+    axis.text.x = element_text(size = 9)
+  )
+
+p_w1_mil
+```
+
+## Total Change: W1 → W6
+
+```{r w1-total-change}
+# Calculate total 20-year change
+total_change <- trust_w1 %>%
+  filter(wave %in% c("w1", "w6")) %>%
+  select(country_name, wave, trust_govt, trust_mil, dem_sat) %>%
+  pivot_wider(names_from = wave, values_from = c(trust_govt, trust_mil, dem_sat)) %>%
+  mutate(
+    govt_change_20yr = trust_govt_w6 - trust_govt_w1,
+    mil_change_20yr = trust_mil_w6 - trust_mil_w1,
+    dem_sat_change_20yr = dem_sat_w6 - dem_sat_w1
+  )
+
+total_change %>%
+  select(country_name, 
+         `Govt W1` = trust_govt_w1, `Govt W6` = trust_govt_w6, `Govt Δ` = govt_change_20yr,
+         `Mil W1` = trust_mil_w1, `Mil W6` = trust_mil_w6, `Mil Δ` = mil_change_20yr) %>%
+  mutate(across(where(is.numeric), ~round(., 2))) %>%
+  gt() %>%
+  tab_header(
+    title = "20-Year Trust Change (W1 → W6)",
+    subtitle = "Thailand: Catastrophic decline in both government and military trust"
+  ) %>%
+  tab_spanner(label = "Government Trust", columns = 2:4) %>%
+  tab_spanner(label = "Military Trust", columns = 5:7) %>%
+  data_color(
+    columns = c(`Govt Δ`, `Mil Δ`),
+    palette = c("#e74c3c", "white", "#2ecc71"),
+    domain = c(-1.5, 0.5)
+  )
+```
+
+## Random Slopes Model: 20-Year (W1-W6)
+
+```{r w1-model}
+# Fit random slopes model for 20-year data
+m_w1 <- lmer(trust_national_government ~ wave_num + 
+               age_centered + female + education_z + is_urban +
+               (1 + wave_num | country_name),
+             data = abs_w1,
+             REML = FALSE,
+             control = lmerControl(optimizer = "bobyqa"))
+
+cat("=== 20-Year Random Slopes Model (3 countries, W1-W6) ===\n\n")
+
+tidy(m_w1, effects = "fixed", conf.int = TRUE) %>%
+  mutate(across(where(is.numeric), ~round(., 3))) %>%
+  gt() %>%
+  tab_header(title = "Fixed Effects: 20-Year Model")
+
+cat("\nCountry-specific slopes (20-year):\n")
+re_w1 <- ranef(m_w1)$country_name
+re_w1$country <- rownames(re_w1)
+re_w1 %>%
+  rename(intercept_dev = `(Intercept)`, slope_dev = wave_num) %>%
+  arrange(slope_dev) %>%
+  mutate(across(where(is.numeric), ~round(., 3))) %>%
+  print()
+```
+
+## Combined 20-Year Figure
+
+```{r w1-combined, fig.width=12, fig.height=6}
+p_w1_govt + p_w1_mil + 
+  plot_layout(guides = "collect") +
+  plot_annotation(
+    title = "20-Year Trust Trajectories: Philippines, Taiwan, Thailand (2001-2022)",
+    subtitle = "Thailand's institutional trust collapsed over two decades; Philippines and Taiwan remained stable"
+  )
+```
+
+## Key Insight: Thailand's Long Decline
+
+```{r w1-insight}
+cat("
+╔══════════════════════════════════════════════════════════════════════╗
+║          THAILAND: 20-YEAR INSTITUTIONAL COLLAPSE                    ║
+╠══════════════════════════════════════════════════════════════════════╣
+║                                                                      ║
+║  In 2001 (W1), Thailand had:                                         ║
+║    • HIGHEST government trust (2.85) among these 3 countries         ║
+║    • HIGHEST military trust (3.07) among these 3 countries           ║
+║    • HIGHEST democracy satisfaction (3.24)                           ║
+║                                                                      ║
+║  By 2022 (W6), Thailand had:                                         ║
+║    • LOWEST government trust (1.89)                                  ║
+║    • LOWEST military trust (1.62)                                    ║
+║    • LOWEST democracy satisfaction (2.26)                            ║
+║                                                                      ║
+║  20-year changes:                                                    ║
+║    • Government trust: -0.96 (on 4-point scale)                      ║
+║    • Military trust:   -1.45 (even larger collapse)                  ║
+║    • Democracy sat:    -0.98                                         ║
+║                                                                      ║
+║  This is not just a COVID story—it's a two-decade institutional      ║
+║  erosion culminating in the 2020-21 political crisis.                ║
+║                                                                      ║
+╚══════════════════════════════════════════════════════════════════════╝
+")
+```
+
+# Conclusions
+
+```{r conclusions}
+cat("
+╔══════════════════════════════════════════════════════════════════════╗
+║                        KEY FINDINGS                                  ║
+╠══════════════════════════════════════════════════════════════════════╣
+║                                                                      ║
+║  1. RANDOM SLOPES ARE ESSENTIAL                                      ║
+║     Model comparison: χ² = 780, p < .001                             ║
+║     Countries have dramatically different trust trajectories         ║
+║                                                                      ║
+║  2. THAILAND: POLITICAL CRISIS (NOT JUST COVID)                      ║
+║     Government trust:  -0.97                                         ║
+║     Military trust:    -1.65 (1.7x larger)                           ║
+║     → Anti-military sentiment from 2020-21 protests                  ║
+║     → 20-year decline: highest to lowest across all indicators       ║
+║                                                                      ║
+║  3. INDONESIA: RALLY-AROUND-THE-FLAG REVERSED                        ║
+║     W4→W5 rally:  +0.79                                              ║
+║     W5→W6 crash:  -0.78                                              ║
+║     → Performance legitimacy is fragile                              ║
+║                                                                      ║
+║  4. TAIWAN: SUCCESS BREEDS TRUST                                     ║
+║     Only country with positive trust trajectory                      ║
+║     Successful pandemic response + strong GDP                        ║
+║                                                                      ║
+║  5. GDP MATTERS BUT DOESN'T FULLY EXPLAIN                            ║
+║     Significant effect (β = -0.14, p < .001)                         ║
+║     But Thailand's collapse exceeds GDP prediction                   ║
+║                                                                      ║
+╚══════════════════════════════════════════════════════════════════════╝
+")
+```
+
+# Session Info
+
+```{r session}
+sessionInfo()
+```

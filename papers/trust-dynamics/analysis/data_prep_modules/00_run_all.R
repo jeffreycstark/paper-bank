@@ -7,7 +7,7 @@
 # Output: analysis/sausage_analysis.rds (analysis-ready dataset)
 #
 # Usage:
-#   source("papers/sausage-paper/analysis/data_prep_modules/00_run_all.R")
+#   source("papers/trust-dynamics/analysis/data_prep_modules/00_run_all.R")
 #
 # ==============================================================================
 
@@ -23,8 +23,8 @@ pipeline_start <- Sys.time()
 
 # Set up paths
 library(here)
-here::i_am("papers/sausage-paper/analysis/data_prep_modules/00_run_all.R")
-module_dir <- here("papers/sausage-paper/analysis/data_prep_modules")
+here::i_am("papers/trust-dynamics/analysis/data_prep_modules/00_run_all.R")
+module_dir <- here("papers/trust-dynamics/analysis/data_prep_modules")
 
 # ==============================================================================
 # Execute modules in sequence
@@ -71,6 +71,6 @@ cat("=" , rep("=", 69), "\n", sep = "")
 cat("  PIPELINE COMPLETE\n")
 cat("=" , rep("=", 69), "\n", sep = "")
 cat("  Total time:", pipeline_time, "seconds\n")
-cat("  Output: papers/sausage-paper/analysis/sausage_analysis.rds\n")
+cat("  Output: papers/trust-dynamics/analysis/sausage_analysis.rds\n")
 cat("  Finished:", format(Sys.time(), "%Y-%m-%d %H:%M:%S"), "\n")
 cat("=" , rep("=", 69), "\n\n", sep = "")
