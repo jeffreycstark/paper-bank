@@ -186,6 +186,24 @@ harmonize_variable <- function(
       # Preserve NA from source
       x_harm[is.na(x)] <- NA_real_
 
+    } else if (wave_rule$method == "derive") {
+
+      # Derive method: compute from multiple source columns
+      # Uses 'sources' list and 'fn' function name
+      fn_name <- wave_rule$fn
+      if (!exists(fn_name, mode = "function")) {
+        stop("❌ Derive function not found: ", fn_name)
+      }
+
+      fn <- get(fn_name, mode = "function")
+
+      # Call function with full wave data (function accesses needed columns)
+      x_harm <- fn(
+        data = df,
+        wave_name = wave_name,
+        sources = wave_rule$sources %||% NULL
+      )
+
     } else {
       stop("❌ Unknown harmonization method: ", wave_rule$method)
     }
@@ -264,4 +282,71 @@ harmonize_all <- function(spec, waves, silent = FALSE) {
   }
 
   results
+}
+
+# ==============================================================================
+# DERIVED VARIABLE FUNCTIONS
+# Functions for computing variables from multiple source columns
+# ==============================================================================
+
+#' Compute procedural preference index from 4-set battery
+#'
+#' Sums procedural choices across 4 forced-choice sets measuring
+#' procedural vs substantive democracy conceptions.
+#'
+#' @param data Data frame containing source columns
+#' @param wave_name Wave identifier (w3, w4, w6)
+#' @param sources List of source column names (q85-q88 or q88-q91)
+#'
+#' @return Numeric vector with 0-4 index (count of procedural choices)
+#'
+#' @details
+#' Recode rules for each set:
+#'   Set 1: {2,4}->1 (elections, expression), {1,3}->0 (redistribution, efficiency)
+#'   Set 2: {1,3}->1 (oversight, organize), {2,4}->0 (basic needs, services)
+#'   Set 3: {2,4}->1 (media, multiparty), {1,3}->0 (law-order, jobs)
+#'   Set 4: {1,3}->1 (protests, courts), {2,4}->0 (anticorruption, unemployment)
+#'
+#' @export
+compute_procedural_index <- function(data, wave_name = NULL, sources = NULL) {
+
+  # Get source column names from YAML or use defaults by wave
+  if (is.null(sources)) {
+    sources <- switch(wave_name,
+      w3 = c("q85", "q86", "q87", "q88"),
+      w4 = c("q88", "q89", "q90", "q91"),
+      w6 = c("q85", "q86", "q87", "q88"),
+      stop("Unknown wave for procedural index: ", wave_name)
+    )
+  }
+
+  # Helper to convert to numeric
+  to_num <- function(x) {
+    if (inherits(x, "haven_labelled")) {
+      as.numeric(haven::zap_labels(x))
+    } else {
+      suppressWarnings(as.numeric(x))
+    }
+  }
+
+  # Extract source columns
+  s1 <- to_num(data[[sources[1]]])
+  s2 <- to_num(data[[sources[2]]])
+  s3 <- to_num(data[[sources[3]]])
+  s4 <- to_num(data[[sources[4]]])
+
+  # Recode each set: 1 = procedural choice, 0 = substantive choice
+  # Set 1: 2,4 = procedural; 1,3 = substantive
+  r1 <- dplyr::case_when(s1 %in% c(2, 4) ~ 1L, s1 %in% c(1, 3) ~ 0L, TRUE ~ NA_integer_)
+  # Set 2: 1,3 = procedural; 2,4 = substantive
+  r2 <- dplyr::case_when(s2 %in% c(1, 3) ~ 1L, s2 %in% c(2, 4) ~ 0L, TRUE ~ NA_integer_)
+  # Set 3: 2,4 = procedural; 1,3 = substantive
+  r3 <- dplyr::case_when(s3 %in% c(2, 4) ~ 1L, s3 %in% c(1, 3) ~ 0L, TRUE ~ NA_integer_)
+  # Set 4: 1,3 = procedural; 2,4 = substantive
+  r4 <- dplyr::case_when(s4 %in% c(1, 3) ~ 1L, s4 %in% c(2, 4) ~ 0L, TRUE ~ NA_integer_)
+
+  # Sum: 0-4 index
+  index <- r1 + r2 + r3 + r4
+
+  as.numeric(index)
 }

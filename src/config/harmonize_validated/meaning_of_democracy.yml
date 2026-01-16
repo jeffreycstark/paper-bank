@@ -340,3 +340,97 @@ variables:
       validate:
         - waves: [w3, w4, w6]
           phrase: "protest|demonstration|corruption|court.*protect|unemploy"
+
+  # ===========================================================================
+  # ELECTORAL STATUS (Winner/Loser)
+  # Key variable for winner-loser gap analyses
+  # Source: "Did your candidate/party win the most recent election?"
+  # ===========================================================================
+
+  - id: electoral_status
+    concept: electoral_preferences
+    description: "Electoral winner/loser status - whether respondent's preferred party/candidate won most recent election"
+    type: nominal
+    source:
+      w1: null
+      w2: q39a
+      w3: q33a
+      w4: q34a
+      w5: null  # Not available in W5
+      w6: q34a
+    scale:
+      min: 1
+      max: 2
+      labels:
+        1: "Winner (voted for winning party/candidate)"
+        2: "Loser (voted for losing party/candidate)"
+      note: "Based on self-reported vote choice and election outcome"
+    harmonize:
+      default:
+        method: identity
+    qc:
+      valid_range: [1, 2]
+      validate:
+        - waves: [w2, w3, w4, w6]
+          phrase: "candidate|party|vote|win|election"
+      notes:
+        - "W1 and W5 do not include this question"
+        - "Coding consistent across all waves: 1=Winner, 2=Loser"
+        - "Missing/refused/don't know responses excluded"
+
+  # ===========================================================================
+  # PROCEDURAL PREFERENCE INDEX (0-4 scale)
+  # Derived from 4-set battery (W3/W4/W6) or single item (W2)
+  # Higher values = stronger procedural (vs substantive) orientation
+  # ===========================================================================
+
+  - id: procedural_preference_index
+    concept: meaning_of_democracy
+    description: "Procedural democracy preference index (0-4 scale) - count of procedural choices across 4 sets"
+    type: ordinal
+    source:
+      w1: null
+      w2: q92  # Single item, recoded to 0 or 4
+      w3: q85  # Placeholder - derived from q85-q88
+      w4: q88  # Placeholder - derived from q88-q91
+      w5: null  # Different format, not comparable
+      w6: q85  # Placeholder - derived from q85-q88
+    scale:
+      min: 0
+      max: 4
+      labels:
+        0: "All substantive choices"
+        1: "1 procedural choice"
+        2: "2 procedural choices"
+        3: "3 procedural choices"
+        4: "All procedural choices"
+      note: "W2 only produces 0 or 4 due to single-item measure"
+    harmonize:
+      w2:
+        method: recode
+        mapping:
+          1: 4  # elections -> procedural (scaled to max)
+          2: 4  # criticize -> procedural (scaled to max)
+          3: 0  # income gap -> substantive
+          4: 0  # basic needs -> substantive
+      w3:
+        method: derive
+        fn: compute_procedural_index
+        sources: [q85, q86, q87, q88]
+      w4:
+        method: derive
+        fn: compute_procedural_index
+        sources: [q88, q89, q90, q91]
+      w6:
+        method: derive
+        fn: compute_procedural_index
+        sources: [q85, q86, q87, q88]
+    qc:
+      valid_range: [0, 4]
+      notes:
+        - "W2 measure is NOT directly comparable (single item scaled to 0/4)"
+        - "W3/W4/W6 use 4-set battery producing true 0-4 range"
+        - "For cross-wave comparisons, consider using dem_procedural_vs_substantive (binary) instead"
+        - "Recode logic: procedural options (elections, expression, oversight, media freedom, courts, protests) coded 1"
+        - "Substantive options (redistribution, basic needs, jobs, governance) coded 0"
+        - "Uses compute_procedural_index function in src/r/harmonize/harmonize.R"
