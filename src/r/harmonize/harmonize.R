@@ -127,9 +127,13 @@ harmonize_variable <- function(
 
     # ---- select harmonization rule ----
     default_rule <- var_spec$harmonize$default %||% list(method = "identity")
-    # Support both v1 format (by_wave) and v2 format (exceptions)
+    # Support multiple YAML formats:
+    # - v1: harmonize.by_wave.w1, harmonize.by_wave.w2...
+    # - v2: harmonize.exceptions.w1, harmonize.exceptions.w2...
+    # - v3: harmonize.w1, harmonize.w2... (direct wave keys)
     wave_rule <- var_spec$harmonize$by_wave[[wave_name]] %||%
                  var_spec$harmonize$exceptions[[wave_name]] %||%
+                 var_spec$harmonize[[wave_name]] %||%
                  default_rule
 
     # ---- apply harmonization method ----
@@ -154,6 +158,33 @@ harmonize_variable <- function(
         var_name = src,
         validate_all = wave_rule$validate_all %||% NULL
       )
+
+    } else if (wave_rule$method == "recode") {
+
+      # Apply explicit value mapping from YAML
+      # mapping: {1: 1, 2: 0, 3: null, 4: null}
+      mapping <- wave_rule$mapping
+      if (is.null(mapping)) {
+        stop("❌ method 'recode' requires a 'mapping' field")
+      }
+
+      x_harm <- rep(NA_real_, length(x))
+
+      for (from_val in names(mapping)) {
+        to_val <- mapping[[from_val]]
+        from_num <- as.numeric(from_val)
+
+        if (is.null(to_val)) {
+          # null in YAML means map to NA
+          x_harm[x == from_num & !is.na(x)] <- NA_real_
+        } else {
+          # Map to the specified value
+          x_harm[x == from_num & !is.na(x)] <- as.numeric(to_val)
+        }
+      }
+
+      # Preserve NA from source
+      x_harm[is.na(x)] <- NA_real_
 
     } else {
       stop("❌ Unknown harmonization method: ", wave_rule$method)
