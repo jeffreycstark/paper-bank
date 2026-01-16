@@ -1,0 +1,311 @@
+---
+title: "Main Analysis"
+subtitle: "Winner/Loser Effect on Procedural Democracy"
+author: "Jeffrey Stark"
+date: today
+format:
+  html:
+    toc: true
+    toc-depth: 3
+    code-fold: show
+    df-print: paged
+execute:
+  warning: false
+  message: false
+---
+
+# Overview
+
+This script presents the main analysis:
+
+1. Overall loser effect by wave
+2. Country-level variation
+3. Trajectory analysis (Thailand, South Korea, Taiwan)
+4. Pooled regression models
+
+# Setup
+
+```{r setup}
+library(tidyverse)
+library(broom)
+library(here)
+library(knitr)
+library(kableExtra)
+
+here::i_am("papers/meaning-of-democracy/analysis/02_main_analysis.qmd")
+
+# Load data
+df <- readRDS(here("papers", "meaning-of-democracy", "analysis", "winner_loser_4waves.rds"))
+
+# Create binary loser variable for models
+df <- df %>%
+  mutate(loser = if_else(winner_loser == "Loser", 1L, 0L))
+
+cat("Analysis dataset:", nrow(df), "observations\n")
+```
+
+# Overall Loser Effect by Wave
+
+## Descriptive Statistics
+
+```{r wave-descriptives}
+by_wave <- df %>%
+  group_by(wave, wave_year, winner_loser) %>%
+  summarise(
+    n = n(),
+    pct_procedural = mean(procedural_single) * 100,
+    .groups = "drop"
+  ) %>%
+  pivot_wider(
+    names_from = winner_loser, 
+    values_from = c(n, pct_procedural)
+  ) %>%
+  mutate(
+    loser_effect = round(pct_procedural_Loser - pct_procedural_Winner, 1),
+    total_n = n_Winner + n_Loser
+  ) %>%
+  arrange(wave_year)
+
+by_wave %>%
+  select(wave, wave_year, total_n, 
+         `% Proc (Winner)` = pct_procedural_Winner,
+         `% Proc (Loser)` = pct_procedural_Loser,
+         `Loser Effect` = loser_effect) %>%
+  kable(digits = 1, caption = "Procedural Orientation by Winner/Loser Status") %>%
+  kable_styling(bootstrap_options = c("striped", "hover"))
+```
+
+## Statistical Tests
+
+```{r wave-tests}
+wave_tests <- df %>%
+  group_by(wave) %>%
+  summarise(
+    n = n(),
+    loser_pct = mean(procedural_single[winner_loser == "Loser"]) * 100,
+    winner_pct = mean(procedural_single[winner_loser == "Winner"]) * 100,
+    loser_effect = loser_pct - winner_pct,
+    chi_sq = chisq.test(table(winner_loser, procedural_single))$statistic,
+    p_value = chisq.test(table(winner_loser, procedural_single))$p.value,
+    .groups = "drop"
+  )
+
+wave_tests %>%
+  mutate(
+    sig = case_when(
+      p_value < 0.001 ~ "***",
+      p_value < 0.01 ~ "**",
+      p_value < 0.05 ~ "*",
+      TRUE ~ ""
+    )
+  ) %>%
+  select(wave, n, loser_effect, chi_sq, p_value, sig) %>%
+  kable(digits = c(0, 0, 1, 2, 4, 0),
+        col.names = c("Wave", "N", "Loser Effect (pp)", "χ²", "p-value", ""),
+        caption = "Chi-Square Tests of Loser Effect by Wave") %>%
+  kable_styling(bootstrap_options = c("striped", "hover"))
+```
+
+**Key Finding**: The loser effect is statistically significant in W2, W3, and W4 (p < 0.001) but not in W6 (p = 0.26). Losers are consistently 4-6 percentage points more likely to prioritize procedural democracy, except in the most recent wave.
+
+# Country-Level Analysis
+
+## Loser Effect by Country and Wave
+
+```{r country-wave}
+by_country_wave <- df %>%
+  group_by(country_name, wave, wave_year) %>%
+  filter(n() >= 50) %>%  # Minimum sample size
+
+  summarise(
+    n = n(),
+    pct_winner = round(sum(winner_loser == "Winner") / n() * 100, 1),
+    pct_proc_winner = mean(procedural_single[winner_loser == "Winner"]) * 100,
+    pct_proc_loser = mean(procedural_single[winner_loser == "Loser"]) * 100,
+    loser_effect = round(pct_proc_loser - pct_proc_winner, 1),
+    .groups = "drop"
+  )
+
+# Countries with 3+ waves
+countries_3plus <- by_country_wave %>%
+  count(country_name) %>%
+  filter(n >= 3) %>%
+  pull(country_name)
+
+cat("Countries with 3+ waves:", paste(countries_3plus, collapse = ", "), "\n")
+```
+
+## Trajectory Table
+
+```{r trajectory}
+trajectory <- by_country_wave %>%
+  filter(country_name %in% countries_3plus) %>%
+  select(country_name, wave, loser_effect) %>%
+  pivot_wider(names_from = wave, values_from = loser_effect) %>%
+  mutate(
+    earliest = coalesce(W2, W3),
+    latest = coalesce(W6, W4),
+    total_change = latest - earliest
+  ) %>%
+  arrange(desc(total_change))
+
+trajectory %>%
+  kable(digits = 1,
+        caption = "Loser Effect Trajectory by Country (percentage points)") %>%
+  kable_styling(bootstrap_options = c("striped", "hover"))
+```
+
+# Case Studies
+
+## Thailand: The Full Arc
+
+```{r thailand}
+thailand <- by_country_wave %>%
+  filter(country_name == "Thailand") %>%
+  arrange(wave_year)
+
+thailand %>%
+  mutate(
+    context = case_when(
+      wave == "W2" ~ "Post-2006 coup",
+      wave == "W3" ~ "Democrat govt (Abhisit)",
+      wave == "W4" ~ "2014 coup year",
+      wave == "W6" ~ "Military-backed civilian govt"
+    )
+  ) %>%
+  select(wave, wave_year, context, n, pct_winner, loser_effect) %>%
+  kable(col.names = c("Wave", "Year", "Context", "N", "% Winners", "Loser Effect"),
+        caption = "Thailand: Loser Effect Over Time") %>%
+  kable_styling(bootstrap_options = c("striped", "hover"))
+```
+
+**Interpretation**: 
+
+- **2006**: 95% of respondents identified as "winners" (supporting coup-backed government). With almost no losers, there was no meaningful loser effect (-0.9 pp).
+- **2010-2020**: As political polarization deepened and military rule persisted, the share identifying as winners fell from 95% to 32%, and the loser effect grew from near-zero to +17.5 pp.
+- **Total change**: +18.4 percentage points over 14 years.
+
+## South Korea: Power Alternation
+
+```{r korea}
+korea <- by_country_wave %>%
+  filter(country_name == "South Korea") %>%
+  arrange(wave_year)
+
+korea %>%
+  mutate(
+    context = case_when(
+      wave == "W3" ~ "Lee Myung-bak (conservative)",
+      wave == "W4" ~ "Park Geun-hye (conservative)", 
+      wave == "W6" ~ "Post-Moon Jae-in (progressive)"
+    )
+  ) %>%
+  select(wave, wave_year, context, n, pct_winner, loser_effect) %>%
+  kable(col.names = c("Wave", "Year", "Context", "N", "% Winners", "Loser Effect"),
+        caption = "South Korea: Loser Effect Over Time") %>%
+  kable_styling(bootstrap_options = c("striped", "hover"))
+```
+
+**Interpretation**: 
+
+- **2010-2014**: Under conservative governments, progressive "losers" showed massive procedural orientation gaps (+24.5 to +33 pp).
+- **2020**: After Moon Jae-in's progressive government and subsequent power alternation, the loser effect collapsed to -4.4 pp.
+- **Total change**: -28.9 percentage points—the mirror image of Thailand.
+
+## Taiwan: Diminishing Effect
+
+```{r taiwan}
+taiwan <- by_country_wave %>%
+  filter(country_name == "Taiwan") %>%
+  arrange(wave_year)
+
+taiwan %>%
+  mutate(
+    context = case_when(
+      wave == "W2" ~ "Chen Shui-bian (DPP)",
+      wave == "W4" ~ "Ma Ying-jeou (KMT)",
+      wave == "W6" ~ "Tsai Ing-wen (DPP)"
+    )
+  ) %>%
+  select(wave, wave_year, context, n, pct_winner, loser_effect) %>%
+  kable(col.names = c("Wave", "Year", "Context", "N", "% Winners", "Loser Effect"),
+        caption = "Taiwan: Loser Effect Over Time") %>%
+  kable_styling(bootstrap_options = c("striped", "hover"))
+```
+
+# Pooled Regression
+
+## Main Model
+
+```{r regression}
+# Logistic regression: procedural ~ loser + country + wave FE
+model <- glm(procedural_single ~ loser + country_name + wave,
+             data = df, family = binomial)
+
+# Extract loser coefficient
+loser_results <- tidy(model) %>%
+  filter(term == "loser") %>%
+  mutate(
+    odds_ratio = exp(estimate),
+    ci_low = exp(estimate - 1.96 * std.error),
+    ci_high = exp(estimate + 1.96 * std.error)
+  )
+
+cat("=== POOLED REGRESSION RESULTS ===\n\n")
+cat("Loser coefficient (log-odds):", round(loser_results$estimate, 3), "\n")
+cat("Odds ratio:", round(loser_results$odds_ratio, 3), "\n")
+cat("95% CI: [", round(loser_results$ci_low, 3), ",", round(loser_results$ci_high, 3), "]\n")
+cat("p-value:", format(loser_results$p.value, digits = 3), "\n")
+```
+
+**Interpretation**: Controlling for country and wave, electoral losers are **`r round((loser_results$odds_ratio - 1) * 100, 1)`% more likely** to prioritize procedural democracy than winners (OR = `r round(loser_results$odds_ratio, 2)`, p < 0.001).
+
+## Full Model Output
+
+```{r model-table}
+tidy(model) %>%
+  filter(!str_detect(term, "country_name")) %>%  # Hide country FE for readability
+  mutate(
+    odds_ratio = exp(estimate),
+    term = case_when(
+      term == "(Intercept)" ~ "Intercept",
+      term == "loser" ~ "Loser (vs. Winner)",
+      str_detect(term, "wave") ~ str_replace(term, "wave", "Wave "),
+      TRUE ~ term
+    )
+  ) %>%
+  select(term, estimate, std.error, odds_ratio, p.value) %>%
+  kable(digits = c(0, 3, 3, 3, 4),
+        col.names = c("Term", "Log-Odds", "SE", "Odds Ratio", "p-value"),
+        caption = "Logistic Regression: Procedural Democracy ~ Loser Status") %>%
+  kable_styling(bootstrap_options = c("striped", "hover")) %>%
+  footnote(general = "Country fixed effects included but not shown. Reference: Winner, Wave W2.")
+```
+
+# Summary of Key Findings
+
+1. **Overall loser effect**: Losers are ~19% more likely to prioritize procedural democracy (OR = 1.19, p < 0.001)
+
+2. **Temporal pattern**: Effect is robust in W2, W3, W4 (+4 to +6 pp) but disappears in W6 (-1.5 pp, n.s.)
+
+3. **Thailand trajectory**: Loser effect grew from -0.9 pp to +17.5 pp as democracy eroded (2006-2020)
+
+4. **South Korea trajectory**: Loser effect collapsed from +33 pp to -4.4 pp after power alternation
+
+5. **Implication**: Conceptions of democracy are not fixed—they respond to citizens' political position
+
+# Save Results
+
+```{r save}
+# Save country-wave summary
+write_csv(by_country_wave, 
+          here("papers", "meaning-of-democracy", "analysis", "data", 
+               "loser_effect_by_country_wave.csv"))
+
+# Save trajectory data
+write_csv(trajectory,
+          here("papers", "meaning-of-democracy", "analysis", "data",
+               "loser_effect_trajectory.csv"))
+
+cat("Results saved to analysis/data/\n")
+```

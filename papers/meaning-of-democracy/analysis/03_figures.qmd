@@ -1,0 +1,349 @@
+---
+title: "Figures"
+subtitle: "Publication-Quality Visualizations"
+author: "Jeffrey Stark"
+date: today
+format:
+  html:
+    toc: true
+    code-fold: true
+execute:
+  warning: false
+  message: false
+---
+
+# Overview
+
+This script generates publication-quality figures for the paper.
+
+# Setup
+
+```{r setup}
+library(tidyverse)
+library(here)
+library(patchwork)
+
+here::i_am("papers/meaning-of-democracy/analysis/03_figures.qmd")
+
+# Output directory
+fig_dir <- here("papers", "meaning-of-democracy", "figures")
+
+# Load data
+df <- readRDS(here("papers", "meaning-of-democracy", "analysis", "winner_loser_4waves.rds"))
+
+# Create country-wave summary
+by_country_wave <- df %>%
+  group_by(country_name, wave, wave_year) %>%
+  filter(n() >= 50) %>%
+  summarise(
+    n = n(),
+    pct_winner = round(sum(winner_loser == "Winner") / n() * 100, 1),
+    pct_proc_winner = mean(procedural_single[winner_loser == "Winner"]) * 100,
+    pct_proc_loser = mean(procedural_single[winner_loser == "Loser"]) * 100,
+    loser_effect = round(pct_proc_loser - pct_proc_winner, 1),
+    .groups = "drop"
+  )
+
+# Countries with 3+ waves
+countries_3plus <- by_country_wave %>%
+  count(country_name) %>%
+  filter(n >= 3) %>%
+  pull(country_name)
+
+# Theme
+theme_set(theme_minimal(base_size = 12))
+```
+
+# Figure 1: Thailand Trajectory
+
+The hero figure showing Thailand's dramatic arc from 2006-2020.
+
+```{r fig-thailand}
+#| fig-width: 10
+#| fig-height: 6
+#| label: fig-thailand
+#| fig-cap: "Thailand: As Democracy Eroded, Losers Embraced Procedural Values"
+
+thailand <- by_country_wave %>%
+  filter(country_name == "Thailand") %>%
+  arrange(wave_year)
+
+# Event labels
+events <- tibble(
+  wave_year = c(2006, 2010, 2014, 2020),
+  label = c("Post-2006\ncoup", "Democrat\ngovt", "2014\nCOUP", "Military-\nbacked")
+)
+
+fig1 <- ggplot(thailand, aes(x = wave_year, y = loser_effect)) +
+  # Zero reference
+  geom_hline(yintercept = 0, linetype = "dashed", color = "gray50", linewidth = 0.5) +
+  # Area fill
+  geom_area(alpha = 0.3, fill = "#E63946") +
+  # Line and points
+  geom_line(linewidth = 1.2, color = "#E63946") +
+  geom_point(size = 4, color = "#E63946") +
+  # Event labels
+
+  geom_text(data = events, 
+            aes(y = thailand$loser_effect + 4, label = label),
+            size = 3, lineheight = 0.9) +
+  # Value labels
+  geom_text(aes(label = paste0(ifelse(loser_effect > 0, "+", ""), loser_effect, " pp")),
+            vjust = 2.5, size = 3.5, fontface = "bold") +
+  # Scales
+  scale_x_continuous(breaks = c(2006, 2010, 2014, 2020),
+                     labels = c("2006\n(W2)", "2010\n(W3)", "2014\n(W4)", "2020\n(W6)")) +
+  scale_y_continuous(limits = c(-5, 22), breaks = seq(-5, 20, 5)) +
+  # Labels
+  labs(
+    x = NULL,
+    y = "Loser Effect (percentage points)",
+    caption = "Loser effect = % losers procedural − % winners procedural\nData: Asian Barometer Survey Waves 2-6"
+  ) +
+  theme(
+    plot.caption = element_text(color = "gray50", size = 9, hjust = 0),
+    panel.grid.minor = element_blank(),
+    panel.grid.major.x = element_blank()
+  )
+
+fig1
+
+ggsave(file.path(fig_dir, "fig1_thailand_trajectory.png"), fig1,
+       width = 10, height = 6, dpi = 300, bg = "white")
+ggsave(file.path(fig_dir, "fig1_thailand_trajectory.pdf"), fig1,
+       width = 10, height = 6, bg = "white")
+```
+
+# Figure 2: Thailand Dual Panel
+
+Shows both the loser effect and % winners declining together.
+
+```{r fig-thailand-dual}
+#| fig-width: 9
+#| fig-height: 8
+#| label: fig-thailand-dual
+#| fig-cap: "Thailand: Democratic Erosion in Two Metrics"
+
+# Top panel: Loser Effect
+p1 <- ggplot(thailand, aes(x = wave_year)) +
+  geom_hline(yintercept = 0, linetype = "dashed", color = "gray50") +
+  geom_area(aes(y = loser_effect), alpha = 0.3, fill = "#E63946") +
+  geom_line(aes(y = loser_effect), linewidth = 1.2, color = "#E63946") +
+  geom_point(aes(y = loser_effect), size = 4, color = "#E63946") +
+  geom_text(aes(y = loser_effect, 
+                label = paste0(ifelse(loser_effect > 0, "+", ""), loser_effect)),
+            vjust = -1.5, fontface = "bold", color = "#E63946") +
+  scale_x_continuous(breaks = c(2006, 2010, 2014, 2020)) +
+  scale_y_continuous(limits = c(-5, 22)) +
+  labs(y = "Percentage points", title = "Loser Effect") +
+  theme(plot.title = element_text(color = "#E63946", face = "bold"))
+
+# Bottom panel: % Winners
+p2 <- ggplot(thailand, aes(x = wave_year)) +
+  geom_area(aes(y = pct_winner), alpha = 0.3, fill = "#457B9D") +
+  geom_line(aes(y = pct_winner), linewidth = 1.2, color = "#457B9D") +
+  geom_point(aes(y = pct_winner), size = 4, color = "#457B9D") +
+  geom_text(aes(y = pct_winner, label = paste0(round(pct_winner), "%")),
+            vjust = -1.5, fontface = "bold", color = "#457B9D") +
+  scale_x_continuous(breaks = c(2006, 2010, 2014, 2020),
+                     labels = c("2006\n(W2)", "2010\n(W3)", "2014\n(W4)", "2020\n(W6)")) +
+  scale_y_continuous(limits = c(0, 105)) +
+  labs(y = "Percent", title = "% Identifying as Electoral Winners") +
+  theme(plot.title = element_text(color = "#457B9D", face = "bold"))
+
+fig2 <- p1 / p2 +
+  plot_annotation(
+    subtitle = "As fewer citizens 'won' elections, losers increasingly valued procedural democracy",
+    caption = "Data: Asian Barometer Survey Waves 2-6"
+  )
+
+fig2
+
+ggsave(file.path(fig_dir, "fig2_thailand_dual.png"), fig2,
+       width = 9, height = 8, dpi = 300, bg = "white")
+ggsave(file.path(fig_dir, "fig2_thailand_dual.pdf"), fig2,
+       width = 9, height = 8, bg = "white")
+```
+
+# Figure 3: Multi-Country Trajectories
+
+All countries with 3+ waves, highlighting Thailand and South Korea.
+
+```{r fig-multicountry}
+#| fig-width: 12
+#| fig-height: 7
+#| label: fig-multicountry
+#| fig-cap: "Trajectories of the Loser Effect Across Asia (2005-2022)"
+
+multi <- by_country_wave %>%
+  filter(country_name %in% countries_3plus)
+
+# Color palette
+colors <- c(
+  "Thailand" = "#E63946",
+  "South Korea" = "#1D3557",
+  "Taiwan" = "#457B9D",
+  "Philippines" = "#2A9D8F",
+  "Mongolia" = "#E9C46A",
+  "Japan" = "#F4A261",
+  "Hong Kong" = "#9B5DE5",
+  "China" = "#00BBF9",
+  "Vietnam" = "#00F5D4",
+  "Malaysia" = "#F15BB5"
+)
+
+fig3 <- ggplot(multi, aes(x = wave_year, y = loser_effect, 
+                           color = country_name, group = country_name)) +
+  # Zero reference
+  geom_hline(yintercept = 0, linetype = "dashed", color = "gray50") +
+  # Other countries (faded)
+  geom_line(data = filter(multi, !country_name %in% c("Thailand", "South Korea")),
+            linewidth = 0.8, alpha = 0.4) +
+  geom_point(data = filter(multi, !country_name %in% c("Thailand", "South Korea")),
+             size = 2, alpha = 0.4) +
+  # Highlighted countries
+  geom_line(data = filter(multi, country_name == "Thailand"),
+            linewidth = 1.8, color = "#E63946") +
+  geom_point(data = filter(multi, country_name == "Thailand"),
+             size = 4, color = "#E63946") +
+  geom_line(data = filter(multi, country_name == "South Korea"),
+            linewidth = 1.5, color = "#1D3557") +
+  geom_point(data = filter(multi, country_name == "South Korea"),
+             size = 3.5, color = "#1D3557") +
+  # End labels
+  geom_text(data = multi %>% group_by(country_name) %>% 
+              filter(wave_year == max(wave_year)),
+            aes(label = country_name), hjust = -0.1, size = 3) +
+  scale_color_manual(values = colors) +
+  scale_x_continuous(breaks = c(2006, 2010, 2014, 2020), limits = c(2004, 2025)) +
+  labs(
+    x = NULL,
+    y = "Loser Effect (percentage points)",
+    caption = "Data: Asian Barometer Survey. Countries with 3+ waves shown."
+  ) +
+  theme(
+    legend.position = "none",
+    panel.grid.minor = element_blank()
+  )
+
+fig3
+
+ggsave(file.path(fig_dir, "fig3_multicountry_trajectory.png"), fig3,
+       width = 12, height = 7, dpi = 300, bg = "white")
+ggsave(file.path(fig_dir, "fig3_multicountry_trajectory.pdf"), fig3,
+       width = 12, height = 7, bg = "white")
+```
+
+# Figure 4: Wave-Level Bar Chart
+
+Pooled loser effect by wave with significance indicators.
+
+```{r fig-wave-bar}
+#| fig-width: 9
+#| fig-height: 5
+#| label: fig-wave-bar
+#| fig-cap: "The Loser Effect Over Time: Pooled Across Countries"
+
+wave_summary <- tibble(
+  wave = c("W2\n2005-08", "W3\n2010-12", "W4\n2014-16", "W6\n2019-22"),
+  loser_effect = c(6.5, 4.3, 5.1, -1.5),
+  significant = c(TRUE, TRUE, TRUE, FALSE),
+  n = c(9208, 8237, 9828, 6762)
+)
+
+fig4 <- ggplot(wave_summary, aes(x = wave, y = loser_effect, fill = significant)) +
+  geom_hline(yintercept = 0, color = "gray30") +
+  geom_col(width = 0.6, alpha = 0.9) +
+  geom_text(aes(label = paste0(ifelse(loser_effect > 0, "+", ""), loser_effect, " pp"),
+                vjust = ifelse(loser_effect > 0, -0.5, 1.5)),
+            fontface = "bold") +
+  geom_text(aes(label = paste0("n=", format(n, big.mark = ",")), y = -2.5),
+            size = 3, color = "gray50") +
+  scale_fill_manual(values = c("TRUE" = "#2A9D8F", "FALSE" = "#E76F51"),
+                    labels = c("TRUE" = "Significant (p < 0.001)", 
+                               "FALSE" = "Not significant")) +
+  scale_y_continuous(limits = c(-3.5, 9)) +
+  labs(
+    x = NULL,
+    y = "Loser Effect (percentage points)",
+    fill = NULL,
+    caption = "Loser effect = % losers procedural − % winners procedural"
+  ) +
+  theme(
+    legend.position = "top",
+    panel.grid.major.x = element_blank()
+  )
+
+fig4
+
+ggsave(file.path(fig_dir, "fig4_wave_losereffect.png"), fig4,
+       width = 9, height = 5, dpi = 300, bg = "white")
+ggsave(file.path(fig_dir, "fig4_wave_losereffect.pdf"), fig4,
+       width = 9, height = 5, bg = "white")
+```
+
+# Figure 5: Slope Chart (First to Last Wave)
+
+```{r fig-slope}
+#| fig-width: 10
+#| fig-height: 7
+#| label: fig-slope
+#| fig-cap: "Change in Loser Effect: First to Last Wave"
+
+slope_data <- by_country_wave %>%
+  filter(country_name %in% countries_3plus) %>%
+  group_by(country_name) %>%
+  arrange(wave_year) %>%
+  summarise(
+    early = first(loser_effect),
+    late = last(loser_effect),
+    .groups = "drop"
+  ) %>%
+  mutate(
+    change = late - early,
+    direction = if_else(change > 0, "Increased", "Decreased")
+  )
+
+fig5 <- slope_data %>%
+  pivot_longer(cols = c(early, late), names_to = "period", values_to = "value") %>%
+  mutate(period = factor(period, levels = c("early", "late"),
+                         labels = c("First Wave", "Last Wave"))) %>%
+  ggplot(aes(x = period, y = value, group = country_name, color = direction)) +
+  geom_hline(yintercept = 0, linetype = "dashed", color = "gray50") +
+  geom_line(linewidth = 1, alpha = 0.7) +
+  geom_point(size = 3) +
+  geom_text(data = . %>% filter(period == "Last Wave"),
+            aes(label = paste0(country_name, " (", 
+                               ifelse(slope_data$change[match(country_name, slope_data$country_name)] > 0, "+", ""),
+                               round(slope_data$change[match(country_name, slope_data$country_name)], 1), ")")),
+            hjust = -0.05, size = 3) +
+  scale_color_manual(values = c("Increased" = "#E63946", "Decreased" = "#457B9D")) +
+  scale_x_discrete(expand = expansion(mult = c(0.1, 0.4))) +
+  labs(
+    x = NULL,
+    y = "Loser Effect (percentage points)",
+    color = NULL,
+    caption = "Countries with 3+ waves. Change shown in parentheses."
+  ) +
+  theme(
+    legend.position = "top",
+    panel.grid.major.x = element_blank()
+  )
+
+fig5
+
+ggsave(file.path(fig_dir, "fig5_slope_change.png"), fig5,
+       width = 10, height = 7, dpi = 300, bg = "white")
+ggsave(file.path(fig_dir, "fig5_slope_change.pdf"), fig5,
+       width = 10, height = 7, bg = "white")
+```
+
+# Summary
+
+All figures saved to `r fig_dir`:
+
+- `fig1_thailand_trajectory.png/pdf` - Thailand's 17-year arc
+- `fig2_thailand_dual.png/pdf` - Thailand dual panel
+- `fig3_multicountry_trajectory.png/pdf` - All countries comparison
+- `fig4_wave_losereffect.png/pdf` - Pooled loser effect by wave
+- `fig5_slope_change.png/pdf` - First-to-last wave slope chart

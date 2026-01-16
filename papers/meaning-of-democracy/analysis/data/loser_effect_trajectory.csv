@@ -1,0 +1,5 @@
+country_name,W3,W4,W6,change_W3_W4,change_W4_W6,change_W3_W6,consistent_positive
+Thailand,0.04,0.295,0.583,0.255,0.288,0.543,TRUE
+Mongolia,0.133,0.11,0.151,-0.023,0.041,0.018,TRUE
+Philippines,0.328,0.34,0.063,0.012,-0.277,-0.265,TRUE
+South Korea,0.684,0.879,-0.032,0.195,-0.911,-0.716,FALSE
