@@ -1,20 +1,20 @@
 # Harmonization Run Summary
 
-**Date:** 2026-01-13 16:56:44
+**Date:** 2026-01-16 21:07:03
 
 **YAML Specs:** 27
-**Total Variables:** 329
+**Total Variables:** 334
 
 ## Variables per Wave
 
 | Wave | Variables |
 |------|----------|
 | W1 | 137 |
-| W2 | 113 |
-| W3 | 153 |
-| W4 | 211 |
-| W5 | 205 |
-| W6 | 213 |
+| W2 | 118 |
+| W3 | 158 |
+| W4 | 216 |
+| W5 | 208 |
+| W6 | 218 |
 
 ## Variables per Concept
 
@@ -36,7 +36,7 @@
 | governance | 15 |
 | institutional_trust | 13 |
 | international_relations | 22 |
-| meaning_of_democracy | 4 |
+| meaning_of_democracy | 9 |
 | national_identity | 2 |
 | partisanship | 2 |
 | political_action | 47 |
@@ -51,8 +51,8 @@
 ## Output Files
 
 - `outputs/master_w1.rds` - 137 harmonized variables
-- `outputs/master_w2.rds` - 113 harmonized variables
-- `outputs/master_w3.rds` - 153 harmonized variables
-- `outputs/master_w4.rds` - 211 harmonized variables
-- `outputs/master_w5.rds` - 205 harmonized variables
-- `outputs/master_w6.rds` - 213 harmonized variables
+- `outputs/master_w2.rds` - 118 harmonized variables
+- `outputs/master_w3.rds` - 158 harmonized variables
+- `outputs/master_w4.rds` - 216 harmonized variables
+- `outputs/master_w5.rds` - 208 harmonized variables
+- `outputs/master_w6.rds` - 218 harmonized variables

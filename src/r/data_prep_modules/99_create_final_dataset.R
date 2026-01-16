@@ -20,8 +20,11 @@ wave_files <- list.files(output_dir, pattern = "^master_w[1-6]\\.rds$", full.nam
 cat("Loading master wave files...\n")
 wave_list <- lapply(wave_files, function(f) {
   wave_name <- gsub("master_|\\.rds", "", basename(f))
+  wave_num <- as.integer(gsub("w", "", wave_name))
   cat("  Loading", basename(f), "...")
   df <- readRDS(f)
+  # Add wave column
+  df$wave <- wave_num
   cat(format(nrow(df), big.mark = ","), "rows\n")
   df
 })
