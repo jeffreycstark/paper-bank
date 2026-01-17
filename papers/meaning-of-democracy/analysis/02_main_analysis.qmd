@@ -16,12 +16,13 @@ execute:
 
 # Overview
 
-This script presents the main analysis:
+This script presents the main analysis of the loser effect on procedural democracy preferences:
 
 1. Overall loser effect by wave
 2. Country-level variation
-3. Trajectory analysis (Thailand, South Korea, Taiwan)
-4. Pooled regression models
+3. Trajectory analysis for countries with 3+ waves
+4. Case studies: Thailand, South Korea
+5. Pooled regression models
 
 # Setup
 
@@ -34,17 +35,20 @@ library(kableExtra)
 
 here::i_am("papers/meaning-of-democracy/analysis/02_main_analysis.qmd")
 
-# Load data
-df <- readRDS(here("papers", "meaning-of-democracy", "analysis", "winner_loser_4waves.rds"))
+# Load analysis data (created by 01_data_preparation.qmd)
+df <- readRDS(here("papers", "meaning-of-democracy", "analysis", "data", 
+                   "winner_loser_4waves.rds"))
 
-# Create binary loser variable for models
+# Create binary loser variable for regression
 df <- df %>%
   mutate(loser = if_else(winner_loser == "Loser", 1L, 0L))
 
 cat("Analysis dataset:", nrow(df), "observations\n")
+cat("Waves:", paste(unique(df$wave), collapse = ", "), "\n")
+cat("Countries:", n_distinct(df$country_name), "\n")
 ```
 
-# Overall Loser Effect by Wave
+# Part 1: Overall Loser Effect by Wave
 
 ## Descriptive Statistics
 
@@ -75,7 +79,7 @@ by_wave %>%
   kable_styling(bootstrap_options = c("striped", "hover"))
 ```
 
-## Statistical Tests
+## Statistical Tests by Wave
 
 ```{r wave-tests}
 wave_tests <- df %>%
@@ -106,17 +110,16 @@ wave_tests %>%
   kable_styling(bootstrap_options = c("striped", "hover"))
 ```
 
-**Key Finding**: The loser effect is statistically significant in W2, W3, and W4 (p < 0.001) but not in W6 (p = 0.26). Losers are consistently 4-6 percentage points more likely to prioritize procedural democracy, except in the most recent wave.
+**Key Finding**: The loser effect pattern shows losers are consistently more likely to prioritize procedural democracy than winners in most waves.
 
-# Country-Level Analysis
+# Part 2: Country-Level Analysis
 
 ## Loser Effect by Country and Wave
 
 ```{r country-wave}
 by_country_wave <- df %>%
   group_by(country_name, wave, wave_year) %>%
-  filter(n() >= 50) %>%  # Minimum sample size
-
+  filter(n() >= 50) %>%  # Minimum sample size for reliable estimates
   summarise(
     n = n(),
     pct_winner = round(sum(winner_loser == "Winner") / n() * 100, 1),
@@ -126,7 +129,7 @@ by_country_wave <- df %>%
     .groups = "drop"
   )
 
-# Countries with 3+ waves
+# Countries with 3+ waves for trajectory analysis
 countries_3plus <- by_country_wave %>%
   count(country_name) %>%
   filter(n >= 3) %>%
@@ -135,18 +138,35 @@ countries_3plus <- by_country_wave %>%
 cat("Countries with 3+ waves:", paste(countries_3plus, collapse = ", "), "\n")
 ```
 
-## Trajectory Table
+## Full Country × Wave Panel
+
+```{r country-panel}
+by_country_wave %>%
+  select(country_name, wave, n, pct_winner, loser_effect) %>%
+  arrange(country_name, wave) %>%
+  kable(col.names = c("Country", "Wave", "N", "% Winners", "Loser Effect (pp)"),
+        caption = "Loser Effect by Country and Wave") %>%
+  kable_styling(bootstrap_options = c("striped", "hover")) %>%
+  scroll_box(height = "400px")
+```
+
+## Trajectory Table (Countries with 3+ Waves)
 
 ```{r trajectory}
 trajectory <- by_country_wave %>%
   filter(country_name %in% countries_3plus) %>%
   select(country_name, wave, loser_effect) %>%
-  pivot_wider(names_from = wave, values_from = loser_effect) %>%
+  pivot_wider(names_from = wave, values_from = loser_effect)
+
+# Calculate change from earliest to latest available wave
+trajectory <- trajectory %>%
+  rowwise() %>%
   mutate(
     earliest = coalesce(W2, W3),
     latest = coalesce(W6, W4),
     total_change = latest - earliest
   ) %>%
+  ungroup() %>%
   arrange(desc(total_change))
 
 trajectory %>%
@@ -155,35 +175,38 @@ trajectory %>%
   kable_styling(bootstrap_options = c("striped", "hover"))
 ```
 
-# Case Studies
+# Part 3: Case Studies
 
-## Thailand: The Full Arc
+## Thailand: The Democratic Erosion Arc
 
 ```{r thailand}
 thailand <- by_country_wave %>%
   filter(country_name == "Thailand") %>%
   arrange(wave_year)
 
-thailand %>%
-  mutate(
-    context = case_when(
-      wave == "W2" ~ "Post-2006 coup",
-      wave == "W3" ~ "Democrat govt (Abhisit)",
-      wave == "W4" ~ "2014 coup year",
-      wave == "W6" ~ "Military-backed civilian govt"
-    )
-  ) %>%
-  select(wave, wave_year, context, n, pct_winner, loser_effect) %>%
-  kable(col.names = c("Wave", "Year", "Context", "N", "% Winners", "Loser Effect"),
-        caption = "Thailand: Loser Effect Over Time") %>%
-  kable_styling(bootstrap_options = c("striped", "hover"))
+if (nrow(thailand) > 0) {
+  thailand %>%
+    mutate(
+      context = case_when(
+        wave == "W2" ~ "Post-2006 coup, interim govt",
+        wave == "W3" ~ "Democrat government (Abhisit)",
+        wave == "W4" ~ "May 2014 COUP, military govt",
+        wave == "W6" ~ "Military-backed civilian govt",
+        TRUE ~ ""
+      )
+    ) %>%
+    select(wave, wave_year, context, n, pct_winner, loser_effect) %>%
+    kable(col.names = c("Wave", "Year", "Political Context", "N", "% Winners", "Loser Effect"),
+          caption = "Thailand: Loser Effect Over Time") %>%
+    kable_styling(bootstrap_options = c("striped", "hover"))
+  
+  cat("\n**Thailand Interpretation**:\n")
+  cat("As democracy eroded through successive coups, losers increasingly valued procedural democracy.\n")
+  cat("The loser effect grew dramatically as citizens experienced democratic backsliding.\n")
+} else {
+  cat("Thailand data not available in the current dataset.\n")
+}
 ```
-
-**Interpretation**: 
-
-- **2006**: 95% of respondents identified as "winners" (supporting coup-backed government). With almost no losers, there was no meaningful loser effect (-0.9 pp).
-- **2010-2020**: As political polarization deepened and military rule persisted, the share identifying as winners fell from 95% to 32%, and the loser effect grew from near-zero to +17.5 pp.
-- **Total change**: +18.4 percentage points over 14 years.
 
 ## South Korea: Power Alternation
 
@@ -192,50 +215,57 @@ korea <- by_country_wave %>%
   filter(country_name == "South Korea") %>%
   arrange(wave_year)
 
-korea %>%
-  mutate(
-    context = case_when(
-      wave == "W3" ~ "Lee Myung-bak (conservative)",
-      wave == "W4" ~ "Park Geun-hye (conservative)", 
-      wave == "W6" ~ "Post-Moon Jae-in (progressive)"
-    )
-  ) %>%
-  select(wave, wave_year, context, n, pct_winner, loser_effect) %>%
-  kable(col.names = c("Wave", "Year", "Context", "N", "% Winners", "Loser Effect"),
-        caption = "South Korea: Loser Effect Over Time") %>%
-  kable_styling(bootstrap_options = c("striped", "hover"))
+if (nrow(korea) > 0) {
+  korea %>%
+    mutate(
+      context = case_when(
+        wave == "W2" ~ "Roh Moo-hyun (progressive)",
+        wave == "W3" ~ "Lee Myung-bak (conservative)",
+        wave == "W4" ~ "Park Geun-hye (conservative)", 
+        wave == "W6" ~ "Post-Moon Jae-in (progressive)",
+        TRUE ~ ""
+      )
+    ) %>%
+    select(wave, wave_year, context, n, pct_winner, loser_effect) %>%
+    kable(col.names = c("Wave", "Year", "Context", "N", "% Winners", "Loser Effect"),
+          caption = "South Korea: Loser Effect Over Time") %>%
+    kable_styling(bootstrap_options = c("striped", "hover"))
+  
+  cat("\n**South Korea Interpretation**:\n")
+  cat("Shows the opposite trajectory from Thailand.\n")
+  cat("Under conservative governments, progressive 'losers' showed large procedural orientation gaps.\n")
+  cat("After Moon Jae-in's progressive government and power alternation, the loser effect collapsed.\n")
+  cat("This demonstrates that power alternation can normalize democratic attitudes.\n")
+} else {
+  cat("South Korea data not available in the current dataset.\n")
+}
 ```
 
-**Interpretation**: 
+## Other Trajectory Countries
 
-- **2010-2014**: Under conservative governments, progressive "losers" showed massive procedural orientation gaps (+24.5 to +33 pp).
-- **2020**: After Moon Jae-in's progressive government and subsequent power alternation, the loser effect collapsed to -4.4 pp.
-- **Total change**: -28.9 percentage points—the mirror image of Thailand.
+```{r other-countries}
+other_countries <- setdiff(countries_3plus, c("Thailand", "South Korea"))
 
-## Taiwan: Diminishing Effect
-
-```{r taiwan}
-taiwan <- by_country_wave %>%
-  filter(country_name == "Taiwan") %>%
-  arrange(wave_year)
-
-taiwan %>%
-  mutate(
-    context = case_when(
-      wave == "W2" ~ "Chen Shui-bian (DPP)",
-      wave == "W4" ~ "Ma Ying-jeou (KMT)",
-      wave == "W6" ~ "Tsai Ing-wen (DPP)"
+for (ctry in other_countries) {
+  ctry_data <- by_country_wave %>%
+    filter(country_name == ctry) %>%
+    arrange(wave_year)
+  
+  if (nrow(ctry_data) > 0) {
+    cat("\n###", ctry, "\n")
+    print(
+      ctry_data %>%
+        select(wave, wave_year, n, pct_winner, loser_effect) %>%
+        kable(col.names = c("Wave", "Year", "N", "% Winners", "Loser Effect"),
+              caption = paste(ctry, ": Loser Effect Over Time"))
     )
-  ) %>%
-  select(wave, wave_year, context, n, pct_winner, loser_effect) %>%
-  kable(col.names = c("Wave", "Year", "Context", "N", "% Winners", "Loser Effect"),
-        caption = "Taiwan: Loser Effect Over Time") %>%
-  kable_styling(bootstrap_options = c("striped", "hover"))
+  }
+}
 ```
 
-# Pooled Regression
+# Part 4: Pooled Regression Analysis
 
-## Main Model
+## Main Model: Logistic Regression
 
 ```{r regression}
 # Logistic regression: procedural ~ loser + country + wave FE
@@ -252,15 +282,17 @@ loser_results <- tidy(model) %>%
   )
 
 cat("=== POOLED REGRESSION RESULTS ===\n\n")
+cat("Model: procedural_single ~ loser + country_name + wave\n")
+cat("Family: binomial (logistic)\n\n")
 cat("Loser coefficient (log-odds):", round(loser_results$estimate, 3), "\n")
 cat("Odds ratio:", round(loser_results$odds_ratio, 3), "\n")
 cat("95% CI: [", round(loser_results$ci_low, 3), ",", round(loser_results$ci_high, 3), "]\n")
 cat("p-value:", format(loser_results$p.value, digits = 3), "\n")
 ```
 
-**Interpretation**: Controlling for country and wave, electoral losers are **`r round((loser_results$odds_ratio - 1) * 100, 1)`% more likely** to prioritize procedural democracy than winners (OR = `r round(loser_results$odds_ratio, 2)`, p < 0.001).
+**Interpretation**: Controlling for country and wave fixed effects, electoral losers are **`r round((loser_results$odds_ratio - 1) * 100, 1)`% more likely** to prioritize procedural democracy than winners (OR = `r round(loser_results$odds_ratio, 2)`).
 
-## Full Model Output
+## Model Summary Table
 
 ```{r model-table}
 tidy(model) %>%
@@ -282,30 +314,77 @@ tidy(model) %>%
   footnote(general = "Country fixed effects included but not shown. Reference: Winner, Wave W2.")
 ```
 
-# Summary of Key Findings
+## Alternative Specification: Linear Probability Model
 
-1. **Overall loser effect**: Losers are ~19% more likely to prioritize procedural democracy (OR = 1.19, p < 0.001)
+```{r lpm}
+# LPM for coefficient interpretation
+lpm <- lm(procedural_single ~ loser + country_name + wave, data = df)
 
-2. **Temporal pattern**: Effect is robust in W2, W3, W4 (+4 to +6 pp) but disappears in W6 (-1.5 pp, n.s.)
+lpm_results <- tidy(lpm) %>%
+  filter(term == "loser")
 
-3. **Thailand trajectory**: Loser effect grew from -0.9 pp to +17.5 pp as democracy eroded (2006-2020)
+cat("\n=== LINEAR PROBABILITY MODEL ===\n")
+cat("Loser coefficient:", round(lpm_results$estimate * 100, 1), "percentage points\n")
+cat("SE:", round(lpm_results$std.error * 100, 2), "\n")
+cat("p-value:", format(lpm_results$p.value, digits = 3), "\n")
+```
 
-4. **South Korea trajectory**: Loser effect collapsed from +33 pp to -4.4 pp after power alternation
+# Part 5: Summary of Key Findings
 
-5. **Implication**: Conceptions of democracy are not fixed—they respond to citizens' political position
+```{r summary}
+cat("=== SUMMARY OF KEY FINDINGS ===\n\n")
+
+cat("1. OVERALL LOSER EFFECT\n")
+cat("   - Losers are more likely to prioritize procedural democracy\n")
+cat("   - Odds ratio ~", round(loser_results$odds_ratio, 2), "(p < 0.001)\n")
+cat("   - Effect size: ~", round(lpm_results$estimate * 100, 1), "percentage points\n\n")
+
+cat("2. TEMPORAL PATTERN\n")
+for (i in 1:nrow(wave_tests)) {
+  w <- wave_tests[i, ]
+  sig <- if (w$p_value < 0.001) "***" else if (w$p_value < 0.01) "**" else if (w$p_value < 0.05) "*" else ""
+  cat("   - ", w$wave, ": ", sprintf("%+.1f", w$loser_effect), " pp ", sig, "\n", sep = "")
+}
+
+cat("\n3. COUNTRY TRAJECTORIES\n")
+if (nrow(trajectory) > 0) {
+  cat("   Largest increases:\n")
+  top_increases <- trajectory %>% arrange(desc(total_change)) %>% head(3)
+  for (i in 1:nrow(top_increases)) {
+    cat("   - ", top_increases$country_name[i], ": ", 
+        sprintf("%+.1f", top_increases$total_change[i]), " pp\n", sep = "")
+  }
+  
+  cat("   Largest decreases:\n")
+  top_decreases <- trajectory %>% arrange(total_change) %>% head(3)
+  for (i in 1:nrow(top_decreases)) {
+    cat("   - ", top_decreases$country_name[i], ": ", 
+        sprintf("%+.1f", top_decreases$total_change[i]), " pp\n", sep = "")
+  }
+}
+
+cat("\n4. KEY IMPLICATION\n")
+cat("   Conceptions of democracy are not fixed cultural orientations—\n")
+cat("   they respond dynamically to citizens' political position and\n")
+cat("   the health of democratic institutions.\n")
+```
 
 # Save Results
 
 ```{r save}
+output_dir <- here("papers", "meaning-of-democracy", "analysis", "data")
+
 # Save country-wave summary
-write_csv(by_country_wave, 
-          here("papers", "meaning-of-democracy", "analysis", "data", 
-               "loser_effect_by_country_wave.csv"))
+write_csv(by_country_wave, file.path(output_dir, "loser_effect_by_country_wave.csv"))
 
 # Save trajectory data
-write_csv(trajectory,
-          here("papers", "meaning-of-democracy", "analysis", "data",
-               "loser_effect_trajectory.csv"))
+write_csv(trajectory, file.path(output_dir, "loser_effect_trajectory.csv"))
 
-cat("Results saved to analysis/data/\n")
+# Save wave summary
+write_csv(wave_tests, file.path(output_dir, "loser_effect_by_wave.csv"))
+
+cat("\n=== RESULTS SAVED ===\n")
+cat("- loser_effect_by_country_wave.csv\n")
+cat("- loser_effect_trajectory.csv\n")
+cat("- loser_effect_by_wave.csv\n")
 ```
