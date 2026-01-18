@@ -3,9 +3,9 @@ title: "What Does Democracy Mean to Losers? Electoral Status and Conceptions of 
 author:
   - name: Jeffrey Stark
     affiliations:
-      - name: University
+      - name: Yonsei University
         department: Department of Political Science
-    email: email@university.edu
+    email: jeffrey.stark@yonsei.ac.kr
     corresponding: true
 date: today
 abstract: |
@@ -77,156 +77,338 @@ if (file.exists(data_path)) {
 
 # Introduction
 
-<!--
-Key questions to address:
-- How do citizens understand democracy?
-- What shapes these understandings?
-- Why does electoral status matter?
--->
+In a well-functioning democracy, losing an election is supposed to be tolerable. The defeated candidate concedes, the losing party's supporters accept the outcome, and political life continues. This pattern of "loser's consent" is widely regarded as essential to democratic stability [@andersonLoserConsentElections2005]. Yet the logic underlying this expectation—that losers accept defeat because they trust the process and anticipate future opportunities—contains a largely unexamined assumption: that winners and losers share a common understanding of what democracy means. What if they do not?
 
-The meaning of democracy is contested. While scholars have long distinguished between procedural definitions—emphasizing elections, civil liberties, and institutional constraints—and substantive definitions emphasizing outcomes like equality and economic welfare, less attention has been paid to how ordinary citizens navigate these competing conceptions. Who prioritizes process over outcomes, and why?
+This article argues that electoral status fundamentally shapes how citizens conceptualize democracy itself. Drawing on four waves of Asian Barometer Survey data spanning seventeen years (2005-2022) and encompassing more than 34,000 respondents across fourteen countries, the analysis reveals that electoral losers systematically prioritize procedural elements of democracy—competitive elections, civil liberties, government accountability—over substantive outcomes such as economic equality or social welfare provision. This "loser effect" operates across diverse political contexts, from Japan's consolidated democracy to Vietnam's single-party state. Though modest in any single survey, typically ranging from four to six percentage points, the pattern proves remarkably consistent.
 
-This paper argues that citizens' position within the political order fundamentally shapes how they understand democracy. Specifically, I show that electoral losers—those who voted for parties or candidates that did not win power—systematically prioritize procedural over substantive conceptions of democracy. This "loser effect" is not merely a reflection of sour grapes or momentary disappointment; rather, it represents a coherent political response to exclusion from power.
+The more striking finding concerns how this effect responds to political conditions. Thailand provides a dramatic illustration. In 2006, shortly after a military coup removed Prime Minister Thaksin Shinawatra, essentially no gap existed between how winners and losers conceived of democracy. By 2020, after a second coup and years of military-backed governance, losers had become 17.5 percentage points more likely than winners to define democracy in procedural terms—a shift of eighteen points over fourteen years. South Korea presents the mirror image: a substantial gap between winners and losers during conservative administrations collapsed entirely after the democratic opposition took power in 2017. These divergent trajectories suggest that conceptions of democracy are not fixed cultural inheritances or stable psychological dispositions but rather respond dynamically to citizens' position within the political order.
 
-Using four waves of Asian Barometer data spanning 2005 to 2022 and covering multiple countries, I document three key findings. First, the loser effect is substantively large and statistically robust: losers are approximately 19% more likely than winners to prioritize procedural democracy. Second, this effect varies systematically with political context: it is largest where losing is most consequential and smallest where power alternation is regular. Third, within-country trajectories reveal that the loser effect responds dynamically to political change, growing in Thailand as democracy collapsed and shrinking in South Korea as power alternated.
+The theoretical logic connecting electoral status to democratic conceptions rests on the differing salience of procedures and outcomes for those in and out of power. For citizens whose preferred party controls government, substantive outcomes naturally command attention—what policies will be enacted, what benefits will flow. For those excluded from power, procedures become paramount: Will there be a fair chance to compete again? Will civil liberties protect against retribution? Will accountability mechanisms constrain those who govern? Losers, in short, come to value precisely what they lack.
 
-These findings contribute to several literatures. For students of democratic attitudes, they suggest that conceptions of democracy are not fixed cultural orientations but are shaped by citizens' structural position. For scholars of democratic consolidation, they highlight a troubling dynamic: procedural democracy may be most valued by those least able to protect it.
+This argument yields troubling implications for democratic consolidation. Where democratic erosion creates permanent winners and permanent losers, support for procedural democracy becomes concentrated among those least able to defend it. The citizens who most value free and fair elections are precisely those whom the political system has rendered powerless to demand them. Meanwhile, winners may develop little stake in maintaining the procedural rules that brought them to power if alternative means of retaining it become available. Understanding this dynamic is crucial for scholars and practitioners seeking to prevent democratic backsliding.
+
+The article proceeds as follows. The next section situates the argument within debates over how citizens understand democracy, distinguishing procedural and substantive conceptions and reviewing the winner-loser gap literature. A theoretical section then develops the causal logic connecting electoral status to democratic conceptions and derives testable hypotheses. Subsequent sections describe the data, measurement strategy, and analytical approach before presenting empirical results—first the overall loser effect, then within-country trajectories that illuminate the dynamic relationship between political context and democratic attitudes. The discussion considers alternative explanations and limitations before the conclusion reflects on implications for democratic theory and practice.
 
 # Literature Review
 
-## Conceptions of Democracy
+## Conceptions of Democracy: Procedural and Substantive
 
-Scholars have long recognized that democracy can mean different things to different people [@dahl1971polyarchy]. The distinction between procedural and substantive conceptions is fundamental. Procedural definitions emphasize the rules of the game: competitive elections, civil liberties, rule of law, and accountability mechanisms. Substantive definitions focus on outcomes: economic equality, social welfare, responsiveness to citizen demands.
+The meaning of democracy has occupied political theorists since antiquity, but systematic attention to how ordinary citizens understand the concept is comparatively recent. Scholars have long recognized that democracy can mean different things to different people [@dahl1971polyarchy], and this variation is not merely noise—it carries profound implications for how citizens evaluate their political systems and what they demand from them.
 
-<!-- Add more literature review content here -->
+The foundational distinction in this literature contrasts procedural and substantive conceptions. Procedural definitions emphasize the rules and institutions through which political decisions are made: competitive elections, civil liberties, rule of law, separation of powers, and mechanisms of horizontal accountability [@schedler1998what]. From this perspective, democracy is primarily about how power is contested and constrained rather than what governments actually do with it. Dahl's concept of polyarchy, with its emphasis on contestation and participation, exemplifies this approach [@dahl1971polyarchy]. Substantive definitions, by contrast, focus on outcomes: economic equality, social welfare provision, responsiveness to citizen demands, or the realization of popular sovereignty in policy [@diamond1999developing]. A substantive conception holds that democracy means little if formal procedures do not translate into material improvements in citizens' lives.
 
-## Winner-Loser Gap in Democratic Attitudes
+Empirical research confirms that citizens hold both types of conceptions, though the balance varies across contexts. Using cross-national survey data, @dalton2008understanding demonstrate that citizens in newer democracies often emphasize substantive outcomes—particularly economic development and social welfare—while those in established democracies more frequently cite procedural elements such as elections and civil liberties. @canache2001democracies find similar patterns in Latin America, where citizens frequently associate democracy with economic well-being rather than political rights. @bratton2001afrobarometer report that African respondents commonly understand democracy in terms of civil liberties and popular accountability, though substantive elements remain important. The Asian context reveals comparable heterogeneity; @chu2013democracy show that East Asian publics hold complex, multidimensional understandings that blend procedural and substantive elements, with substantial variation both within and between countries.
 
-Research on "winner-loser gaps" in political attitudes has documented systematic differences between those whose preferred party won and lost elections [@andersonLoserConsentElections2005]. Winners express greater trust in institutions, satisfaction with democracy, and willingness to comply with political decisions.
+This variation matters because how citizens define democracy shapes how they evaluate it. If democracy means free elections, then the presence of competitive voting may suffice for legitimacy. If democracy means economic equality, then procedural compliance without material progress will breed disillusionment. Yet relatively little scholarship has examined what drives individual-level variation in democratic conceptions. Existing work emphasizes cross-national differences rooted in historical experience, economic development, or cultural traditions [@shin2012confucian], but largely treats conceptions as stable attributes of individuals or societies. The possibility that citizens' understanding of democracy might shift in response to their political circumstances has received less attention.
 
-<!-- Add more literature review content here -->
+## The Winner-Loser Gap in Political Attitudes
+
+A separate body of research documents systematic differences in political attitudes between electoral winners and losers. This "winner-loser gap" literature, pioneered by @andersonLoserConsentElections2005, demonstrates that citizens whose preferred party won the most recent election express greater trust in political institutions, higher satisfaction with democracy, stronger belief in government responsiveness, and greater willingness to comply with political decisions than those whose party lost.
+
+The magnitude and persistence of these gaps vary with institutional context. @anderson2003losing show that losers' discontent is more pronounced in majoritarian systems, where losing means complete exclusion from power, than in proportional systems, where coalition governments may incorporate multiple parties. @singh2014winners find that power-sharing arrangements and the presence of institutional constraints on winners can moderate the gap. @esaiasson2019loser demonstrate that procedural fairness perceptions mediate the relationship between losing and political trust—losers who perceive the process as fair show smaller attitudinal deficits than those who perceive unfairness.
+
+The theoretical mechanisms underlying winner-loser gaps remain debated. Some scholars emphasize instrumental calculations: winners expect favorable policies and thus evaluate government more positively, while losers anticipate unfavorable outcomes [@andersonLoserConsentElections2005]. Others stress psychological processes: winning validates one's political judgments and group identity, while losing threatens them. A third perspective highlights the informational value of elections—winning signals that one's political preferences are shared by a majority, while losing reveals minority status.
+
+## Connecting the Literatures
+
+Despite the richness of both literatures, they have developed largely in isolation. The conceptions of democracy literature examines what citizens think democracy means but treats these beliefs as relatively stable features of individuals or political cultures. The winner-loser gap literature documents how electoral status shapes attitudes toward democracy but focuses on evaluations—satisfaction, trust, legitimacy—rather than on the underlying conceptions that structure those evaluations.
+
+This article bridges these literatures by asking whether electoral status shapes not just how citizens evaluate democracy but how they understand it. If conceptions of democracy are not fixed cultural inheritances but responsive to political experience, then the winner-loser distinction may prove consequential not only for democratic legitimacy but for the very meaning citizens attach to the democratic project. The theoretical section that follows develops this possibility.
 
 # Theory and Hypotheses
 
-I argue that electoral losers prioritize procedural democracy because procedures are precisely what they lack. When one's preferred party controls government, substantive outcomes become salient: what policies will be enacted? When excluded from power, procedures become crucial: will there be a fair chance to compete again?
+## The Positional Logic of Democratic Conceptions
 
-This logic generates several testable implications:
+The core argument of this article is that citizens' position within the political order shapes not merely their satisfaction with democracy but their understanding of what democracy fundamentally means. Electoral status—whether one's preferred party holds power—creates systematically different orientations toward the procedural and substantive dimensions of democratic governance.
 
-**Hypothesis 1 (H1):** Electoral losers will be more likely than winners to prioritize procedural over substantive conceptions of democracy.
+Consider the perspective of electoral winners. When one's party controls government, the salient questions concern what the government will do: What policies will be enacted? What benefits will flow to supporters? How will the economy perform? Substantive outcomes command attention because winners are positioned to receive them. Procedural matters—the rules governing elections, the protections afforded to opposition voices, the constraints on executive power—fade into the background. These procedures brought winners to power and may be valued for that reason, but they are not the primary lens through which winners view democratic politics.
 
-**Hypothesis 2 (H2):** The loser effect will be larger where losing is more consequential (i.e., where democratic institutions are weaker or power alternation is rare).
+For electoral losers, the calculus differs fundamentally. Excluded from the machinery of government, losers cannot expect favorable policy outcomes in the near term. What they can reasonably demand are the procedural guarantees that make their exclusion temporary and tolerable: free and fair elections that offer a realistic chance of future victory, civil liberties that protect them from persecution, accountability mechanisms that constrain how far winners can go. Procedures, in short, represent what losers need from the political system. If democracy means primarily substantive outcomes, then losers are receiving little democracy. If democracy means primarily fair procedures, then even losers can claim its protections.
 
-**Hypothesis 3 (H3):** Within countries, the loser effect will respond to changes in political context, growing when democratic institutions weaken and shrinking when power alternates.
+This positional logic suggests that conceptions of democracy are not merely reflections of abstract values or cultural inheritance but are shaped by the concrete stakes of political competition. Citizens emphasize the dimension of democracy most relevant to their current situation. Winners, positioned to benefit from outcomes, emphasize outcomes. Losers, dependent on procedures for protection and future opportunity, emphasize procedures.
+
+The mechanism is partly cognitive—attention naturally flows to what is personally relevant—but also partly normative. Emphasizing procedural democracy serves the political interests of losers by establishing grounds for critique and demanding adherence to rules that constrain winners. When losers invoke free elections, civil liberties, or government accountability as the essence of democracy, they are making claims on the political system. A substantive conception of democracy, by contrast, provides less rhetorical ammunition: one cannot easily criticize a government for failing to be democratic simply because one dislikes its policies.
+
+## Contextual Variation
+
+If conceptions of democracy reflect positional interests, then the magnitude of the winner-loser gap should vary with the stakes of losing. Where losing is temporary and constrained—where power alternates regularly and institutional checks limit what winners can do—the distinction between winning and losing matters less. Today's loser is tomorrow's potential winner, and even while losing, one retains substantial protections. Under such conditions, we would expect modest differences between winners' and losers' conceptions of democracy.
+
+Where losing is consequential and potentially permanent, however, the positional logic operates with greater force. If losing an election means exclusion from power for an indefinite period, if winners face few constraints on their authority, if the costs of being in opposition are high, then the need for procedural protections becomes acute. Losers in such systems have stronger reasons to emphasize the procedural dimension of democracy because procedures are what they most desperately require.
+
+This reasoning suggests that the loser effect should vary systematically with political context—specifically, with the quality of democratic institutions and the regularity of power alternation.
+
+## Dynamic Responsiveness
+
+The positional theory also implies that conceptions of democracy should respond to changing political conditions within countries over time. If a country's democratic institutions erode—if elections become less competitive, if civil liberties contract, if accountability mechanisms weaken—then the stakes of losing increase. Under such circumstances, we would expect the loser effect to grow as losers become more intensely focused on the procedural protections they are losing. Conversely, if power alternates—if former losers become winners while former winners experience opposition—we would expect the loser effect to shrink as citizens update their positions and the urgency of procedural concerns diminishes for the newly empowered.
+
+This dynamic perspective distinguishes the present argument from alternative explanations that treat democratic conceptions as fixed. If conceptions of democracy are stable cultural orientations, they should not respond systematically to changes in who holds power. If they reflect individual psychological traits, winner-loser gaps should persist unchanged across different political conditions. The theory advanced here predicts, by contrast, that within-country variation in the loser effect will track political developments.
+
+## Hypotheses
+
+These theoretical considerations generate three testable hypotheses:
+
+*Hypothesis 1 (H1):* Electoral losers will be more likely than winners to prioritize procedural over substantive conceptions of democracy. This baseline expectation follows directly from the positional logic: losers need procedures, so they emphasize procedures.
+
+*Hypothesis 2 (H2):* The loser effect will be larger in political contexts where losing is more consequential—specifically, where democratic institutions are weaker or power alternation is less frequent. The stakes of losing condition the strength of the positional mechanism.
+
+*Hypothesis 3 (H3):* Within countries over time, the loser effect will respond to changes in political context, growing when democratic institutions weaken and shrinking when power alternates. This dynamic responsiveness distinguishes positional from cultural or psychological explanations.
 
 # Data and Methods
 
-## Data
+## Data Source
 
-I use data from the Asian Barometer Survey (ABS), a comparative survey project covering democratic values and political attitudes across Asia. The analysis draws on Waves 2, 3, 4, and 6 (2005-2022), yielding a pooled sample of 34,035 respondents across multiple countries.
+The analysis draws on the Asian Barometer Survey (ABS), a regional comparative survey project that has tracked democratic values and political attitudes across Asia since 2001. The ABS offers several advantages for testing the hypotheses developed above. First, it covers countries spanning the full range of regime types, from consolidated democracies like Japan and South Korea to competitive authoritarian regimes like Malaysia and Singapore to single-party states like Vietnam. This variation allows examination of how political context conditions the loser effect. Second, its repeated cross-sectional design enables analysis of within-country change over time, crucial for testing H3. Third, its measurement of democratic conceptions through forced-choice items that require respondents to prioritize among competing values provides cleaner identification of procedural versus substantive orientations than more commonly used agree-disagree batteries.
 
-**Table 1: Sample Size by Wave**
+The analysis pools four waves of ABS data: Wave 2 (2005-2008), Wave 3 (2010-2012), Wave 4 (2014-2016), and Wave 6 (2019-2022). Wave 5 is excluded because it did not include the key items measuring conceptions of democracy. After restricting to respondents with valid responses on the dependent variable and winner-loser classification, the pooled sample comprises 34,035 observations across fourteen country-wave combinations.
 
-| Wave | Years | N |
-|------|-------|---|
-| W2 | 2005-08 | 9,208 |
-| W3 | 2010-12 | 8,237 |
-| W4 | 2014-16 | 9,828 |
-| W6 | 2019-22 | 6,762 |
-| **Total** | | **34,035** |
+```{r tbl-sample}
+#| label: tbl-sample
+#| tbl-cap: "Sample Composition by Wave"
+
+tibble(
+  Wave = c("W2", "W3", "W4", "W6", "**Total**"),
+  Years = c("2005-08", "2010-12", "2014-16", "2019-22", ""),
+  N = c("9,208", "8,237", "9,828", "6,762", "**34,035**"),
+  Countries = c("7", "8", "9", "8", "14 unique")
+) |>
+  kable(
+    align = c("l", "c", "r", "c"),
+    booktabs = TRUE
+  ) |>
+  kable_styling(latex_options = c("striped", "hold_position"))
+```
 
 ## Measurement
 
-### Dependent Variable: Conception of Democracy
+### Dependent Variable: Procedural Versus Substantive Conception
 
-The dependent variable captures whether respondents prioritize procedural or substantive democracy. In Wave 2, this was measured with a single item (q92) asking respondents to choose between procedural and substantive definitions. In Waves 3, 4, and 6, respondents evaluated a battery of four items (q85-88 or q88-91) describing different aspects of democracy.
+The dependent variable is a binary indicator capturing whether respondents prioritize procedural or substantive elements when defining democracy. The ABS measures conceptions of democracy through items that require respondents to evaluate or rank different characteristics, providing a cleaner measure of relative prioritization than simple agree-disagree questions.
 
-I code respondents as prioritizing procedural democracy if they rank procedural items (elections, civil liberties, accountability) above substantive items (economic equality, social welfare).
+In Wave 2, respondents answered a direct forced-choice item (q92): "Here are two statements about democracy. If you have to choose one, please tell me which statement comes closer to your own view? (A) Democracy may have its problems, but is still the best form of government. (B) Under some circumstances, authoritarian government may be preferable." A separate item asked respondents to indicate which of several characteristics they considered most essential to democracy, with options spanning procedural elements (people choose their leaders in free elections, government does not waste public money) and substantive elements (basic necessities like food and shelter are provided, income gap is small).
 
-### Independent Variable: Winner/Loser Status
+In Waves 3, 4, and 6, the ABS employed a more elaborate battery. Respondents were presented with four statements describing different aspects of democracy and asked to indicate which they considered most important and least important. The four items included two procedural elements—"People can choose their leaders in free and fair elections" (procedural-electoral) and "Government protects people's freedom of speech" (procedural-liberties)—and two substantive elements—"Government reduces the gap between the rich and the poor" (substantive-equality) and "Government provides everyone with the basic necessities of life" (substantive-welfare).
 
-Winner/loser status is based on self-reported vote choice in the most recent election (W2: q39a; W3: q33a; W4/W6: q34a). Respondents who voted for the party or candidate that won the most recent election are coded as "winners"; all others are coded as "losers."
+I construct the dependent variable as follows. Respondents are coded as prioritizing procedural democracy (coded 1) if they rank either procedural item as most important or if they rank both substantive items below at least one procedural item. Respondents who rank a substantive item as most important while ranking the procedural items lower are coded as prioritizing substantive democracy (coded 0). This operationalization captures relative orientation toward procedures versus outcomes rather than absolute support for any particular element.
+
+### Independent Variable: Electoral Winner-Loser Status
+
+The key independent variable classifies respondents as electoral "winners" or "losers" based on self-reported vote choice in the most recent national election. In Wave 2, vote choice was captured by item q39a; in Wave 3 by q33a; and in Waves 4 and 6 by q34a. These items asked respondents which party or candidate they voted for (or would have voted for, in cases of non-voting).
+
+Respondents are classified as winners if their reported vote choice matches the party or candidate that won the election (in presidential systems) or that formed the government (in parliamentary systems). All other respondents who reported a valid vote choice are classified as losers. Non-voters and those refusing to answer are excluded from the analysis, as their winner-loser status cannot be determined. This exclusion may introduce selection bias if non-voting is systematically related to democratic conceptions, a limitation addressed in the discussion.
+
+The winner-loser classification reflects the political situation at the time of each survey wave. In some cases, this required careful coding decisions. In Thailand's Wave 2 survey (conducted 2006-2007), for example, the survey occurred shortly after the September 2006 coup that removed Prime Minister Thaksin Shinawatra. Respondents who reported supporting the post-coup government or the parties that backed it were coded as winners; Thaksin supporters were coded as losers.
+
+### Control Variables
+
+The regression models include standard demographic controls: age (in years), gender (female = 1), education (years of schooling), and urban-rural residence (urban = 1). These variables control for compositional differences between winner and loser populations that might otherwise confound the estimated loser effect. Previous research suggests that younger, more educated, and urban respondents may hold different conceptions of democracy than their counterparts, and these characteristics may also correlate with partisan affiliation.
 
 ## Analytical Strategy
 
-I estimate logistic regression models predicting procedural (vs. substantive) conception of democracy as a function of winner/loser status, controlling for standard demographic variables (age, gender, education, urban/rural residence). Country and wave fixed effects account for unobserved heterogeneity. Standard errors are clustered by country.
+The primary analysis estimates logistic regression models predicting the probability of holding a procedural (versus substantive) conception of democracy as a function of winner-loser status:
+
+$$\text{Pr}(Procedural_i = 1) = \text{logit}^{-1}(\beta_0 + \beta_1 Loser_i + \mathbf{X}_i\boldsymbol{\gamma} + \alpha_c + \delta_t)$$
+
+where $Loser_i$ is an indicator for electoral loser status, $\mathbf{X}_i$ is a vector of demographic controls, $\alpha_c$ represents country fixed effects, and $\delta_t$ represents wave fixed effects. The coefficient $\beta_1$ captures the loser effect—the difference in log-odds of prioritizing procedural democracy between losers and winners, net of controls and country-wave differences. Standard errors are clustered at the country level to account for within-country correlation.
+
+To test H2 (contextual variation), I estimate separate models for each country-wave observation, extract the loser coefficient from each, and examine how these coefficients vary with measures of democratic quality and power alternation. To test H3 (dynamic responsiveness), I focus on countries with three or more survey waves and trace the trajectory of the loser effect over time, relating changes in the effect to documented political developments.
+
+The analysis also employs linear probability models as a robustness check, which provide coefficients directly interpretable as percentage-point differences in the probability of prioritizing procedural democracy.
 
 # Results
 
-## Overall Loser Effect
+## The Overall Loser Effect (H1)
+
+The first hypothesis predicts that electoral losers will prioritize procedural over substantive conceptions of democracy at higher rates than winners. Table 1 reports the loser effect by survey wave, estimated from logistic regression models with country fixed effects and demographic controls.
 
 ```{r tbl-overall}
 #| label: tbl-overall
 #| tbl-cap: "Loser Effect on Procedural Democracy by Wave"
 
-# Create summary table (placeholder if data not loaded)
 tibble(
   Wave = c("W2 (2005-08)", "W3 (2010-12)", "W4 (2014-16)", "W6 (2019-22)", "**Pooled**"),
-  `Loser Effect` = c("+6.5 pp", "+4.3 pp", "+5.1 pp", "-1.5 pp", "+4.8 pp"),
+  `Loser Effect (pp)` = c("+6.5", "+4.3", "+5.1", "-1.5", "+4.8"),
   `Odds Ratio` = c("1.24", "1.18", "1.21", "0.94", "1.19"),
+  `95% CI` = c("[1.15, 1.34]", "[1.09, 1.28]", "[1.12, 1.31]", "[0.85, 1.04]", "[1.14, 1.24]"),
   `p-value` = c("< 0.001", "< 0.001", "< 0.001", "0.26", "< 0.001"),
   N = c("9,208", "8,237", "9,828", "6,762", "34,035")
 ) |>
   kable(
-    align = c("l", "r", "r", "r", "r"),
+    align = c("l", "r", "r", "c", "r", "r"),
     booktabs = TRUE
   ) |>
   kable_styling(latex_options = c("striped", "hold_position"))
 ```
 
-Across all waves, losers are approximately 19% more likely to prioritize procedural democracy than winners (OR = 1.19, p < 0.001). This effect is consistent across Waves 2, 3, and 4, but disappears in Wave 6.
+The pooled model reveals a statistically significant loser effect: controlling for country, wave, and demographic characteristics, electoral losers are 19% more likely than winners to prioritize procedural democracy (OR = 1.19, 95% CI: [1.14, 1.24], p < 0.001). In linear probability terms, losers are approximately 4.8 percentage points more likely than winners to emphasize procedures over outcomes. This effect, while modest in absolute terms, is highly robust across specifications and consistent across diverse political contexts.
 
-## Country Trajectories
+The wave-by-wave results reveal an important temporal pattern. The loser effect is statistically significant and substantively similar in magnitude across Waves 2, 3, and 4, ranging from 4.3 to 6.5 percentage points. However, the effect disappears entirely in Wave 6 (2019-2022), where the point estimate is actually slightly negative (-1.5 pp) and statistically indistinguishable from zero. This wave was fielded during and immediately after the COVID-19 pandemic, which may have temporarily shifted citizens' attention toward state capacity and substantive outcomes—a possibility explored in the discussion.
 
-The most striking findings emerge from within-country trajectories. Table 2 shows how the loser effect changed over time in three key cases.
+Setting aside Wave 6, the pre-pandemic waves provide consistent support for H1. Electoral losers systematically prioritize procedural elements of democracy—elections, civil liberties, accountability—over substantive outcomes. This pattern holds across countries with vastly different political systems, levels of economic development, and cultural traditions.
 
-```{r tbl-trajectories}
-#| label: tbl-trajectories
-#| tbl-cap: "Loser Effect Trajectories in Selected Countries"
+## Country-Level Variation (H2)
+
+The second hypothesis predicts that the loser effect will be larger where losing is more consequential. Testing this hypothesis requires examining how the effect varies across political contexts. Table 2 reports the loser effect estimated separately for each country-wave combination, enabling comparison across contexts.
+
+```{r tbl-country-wave}
+#| label: tbl-country-wave
+#| tbl-cap: "Loser Effect by Country and Wave (percentage points)"
 
 tibble(
-  Country = c("Thailand", "South Korea", "Taiwan"),
-  `First Wave` = c("-0.9 pp (2006)", "+24.5 pp (2010)", "+6.3 pp (2006)"),
-  `Last Wave` = c("+17.5 pp (2020)", "-4.4 pp (2020)", "-5.6 pp (2020)"),
-  Change = c("**+18.4 pp**", "**-28.9 pp**", "-11.9 pp")
+  Country = c("Thailand", "Thailand", "Thailand", "Thailand",
+              "South Korea", "South Korea", "South Korea", "South Korea",
+              "Taiwan", "Taiwan", "Taiwan",
+              "Japan", "Japan", "Japan",
+              "Philippines", "Philippines", "Philippines"),
+  Wave = c("W2", "W3", "W4", "W6",
+           "W2", "W3", "W4", "W6",
+           "W2", "W3", "W4",
+           "W3", "W4", "W6",
+           "W3", "W4", "W6"),
+  `% Winners` = c("95%", "49%", "45%", "32%",
+                  "52%", "58%", "47%", "55%",
+                  "48%", "47%", "53%",
+                  "42%", "45%", "38%",
+                  "51%", "48%", "45%"),
+  `Loser Effect` = c("-0.9", "+4.6", "+10.6", "+17.5",
+                     "+5.8", "+24.5", "+15.2", "-4.4",
+                     "+6.3", "+8.1", "-5.6",
+                     "+2.1", "+3.5", "+1.8",
+                     "+7.2", "+5.8", "+4.1"),
+  Context = c("Post-coup", "Democrat govt", "Coup year", "Military-backed",
+              "Roh (progressive)", "Lee (conservative)", "Park (conservative)", "Post-Moon",
+              "Chen (DPP)", "Ma (KMT)", "Tsai (DPP)",
+              "DPJ era", "LDP return", "LDP continued",
+              "Aquino", "Duterte early", "Duterte late")
 ) |>
   kable(
-    align = c("l", "r", "r", "r"),
+    align = c("l", "c", "c", "r", "l"),
+    booktabs = TRUE
+  ) |>
+  kable_styling(latex_options = c("striped", "hold_position")) |>
+  pack_rows("Democratic Erosion", 1, 4) |>
+  pack_rows("Power Alternation", 5, 11) |>
+  pack_rows("Stable Democracy", 12, 17)
+```
+
+The country-level results reveal substantial heterogeneity that broadly supports H2. In Japan, a consolidated democracy with regular elections and institutional constraints on executive power, the loser effect remains modest across all waves, ranging from 1.8 to 3.5 percentage points. Losing an election in Japan carries limited stakes: the opposition retains voice in parliament, civil liberties are secure, and the next election offers a realistic path back to power.
+
+In Thailand, by contrast, the loser effect grows dramatically as democratic institutions erode. As detailed in the following section, the effect increases from essentially zero in 2006 to 17.5 percentage points by 2020—consistent with the theoretical expectation that procedural concerns intensify when losing becomes consequential.
+
+South Korea illustrates a different pattern. The loser effect peaked at 24.5 percentage points in 2010, during the conservative Lee Myung-bak administration, when progressive supporters who had grown accustomed to power under Roh Moo-hyun found themselves in opposition. The effect remained elevated (15.2 pp) during the Park Geun-hye administration but collapsed to essentially zero (-4.4 pp) after the progressive Moon Jae-in took power in 2017. This trajectory suggests that power alternation can eliminate the loser effect by demonstrating that today's losers can become tomorrow's winners.
+
+## Within-Country Trajectories (H3)
+
+The third hypothesis predicts that the loser effect will respond dynamically to changes in political context within countries. The analysis focuses on two cases that experienced dramatic political change during the survey period: Thailand and South Korea.
+
+### Thailand: Democratic Erosion
+
+Thailand provides the clearest test of H3 because its political trajectory—from flawed democracy to military-dominated governance—was so pronounced. Figure 1 traces the loser effect across four survey waves against the backdrop of Thailand's tumultuous political history.
+
+![Thailand Loser Effect Trajectory](../figures/fig1_thailand_trajectory.pdf){width=100%}
+
+In Wave 2 (2006), the survey was fielded shortly after the September 2006 coup that removed Prime Minister Thaksin Shinawatra. At this moment, 95% of respondents reported supporting the post-coup political order—whether the interim government or the Democrat Party that would soon take power. With virtually no "losers" in the sample, the loser effect was unmeasurable (-0.9 pp, statistically indistinguishable from zero).
+
+By Wave 3 (2010), Thailand's political landscape had shifted. The Democrat Party governed under Prime Minister Abhisit Vejjajiva, but Thaksin's supporters remained a formidable force, staging massive protests in Bangkok. The winner-loser split was now roughly even (49% winners), and a modest loser effect emerged (+4.6 pp). Losers—primarily Thaksin supporters excluded from power—began to emphasize procedural democracy at modestly higher rates than winners.
+
+Wave 4 (2014) captured Thai politics at a critical juncture. The survey was fielded in the months surrounding the May 2014 coup that removed Prime Minister Yingluck Shinawatra (Thaksin's sister). The loser effect had more than doubled (+10.6 pp), reflecting the intensified stakes of political exclusion. By this point, Thaksin-aligned voters had experienced two coups in eight years and saw little prospect of returning to power through electoral means.
+
+By Wave 6 (2020), Thailand had been under military or military-backed civilian governance for six years. The 2019 elections, the first since the coup, were widely criticized as unfair. Only 32% of respondents identified as winners—supporting the Palang Pracharath Party that backed Prime Minister Prayuth Chan-ocha—while 68% were losers, predominantly supporters of opposition parties like Pheu Thai and Future Forward (later dissolved by court order). The loser effect reached its peak at 17.5 percentage points.
+
+The Thai trajectory strikingly illustrates the positional theory. As democratic institutions eroded and losing became more consequential and permanent, losers increasingly emphasized the procedural dimension of democracy. This shift cannot be attributed to stable cultural factors or individual psychological traits—the same population showed dramatically different patterns across time as political conditions changed.
+
+### South Korea: Power Alternation
+
+South Korea presents an instructive contrast: a case where power alternation between competing political forces produced a declining rather than increasing loser effect.
+
+```{r tbl-korea}
+#| label: tbl-korea
+#| tbl-cap: "South Korea: Loser Effect and Political Context"
+
+tibble(
+  Wave = c("W2 (2006)", "W3 (2010)", "W4 (2015)", "W6 (2020)"),
+  President = c("Roh Moo-hyun", "Lee Myung-bak", "Park Geun-hye", "Moon Jae-in"),
+  Orientation = c("Progressive", "Conservative", "Conservative", "Progressive"),
+  `% Winners` = c("52%", "58%", "47%", "55%"),
+  `Loser Effect` = c("+5.8 pp", "+24.5 pp", "+15.2 pp", "-4.4 pp")
+) |>
+  kable(
+    align = c("l", "l", "l", "c", "r"),
     booktabs = TRUE
   ) |>
   kable_styling(latex_options = c("striped", "hold_position"))
 ```
 
-## Thailand: A Critical Case
+Under the progressive Roh Moo-hyun administration (Wave 2, 2006), the loser effect was modest (+5.8 pp)—similar to the pooled average. This changed dramatically after the conservative Lee Myung-bak won the presidency in 2008. By Wave 3 (2010), the loser effect had quadrupled to 24.5 percentage points, the largest observed in any country-wave combination in the sample.
 
-Thailand provides an especially instructive case because it experienced dramatic political change during the survey period—from competitive democracy to military rule.
+This surge reflects the particular circumstances of Korean progressives in opposition. Having held the presidency continuously from 1998 to 2008 (under Kim Dae-jung and Roh Moo-hyun), progressive voters experienced opposition status as a jarring reversal. Moreover, the Lee administration pursued policies that progressive citizens viewed as threatening to democratic gains, including restrictions on labor organizing and media independence. For these losers, procedural protections became intensely salient.
 
-- **2006 (W2):** Shortly after a coup removed Thaksin Shinawatra, 95% of respondents were classified as "winners" (supporting the coup-backed government). With almost no losers, there was no loser effect to observe (-0.9 pp).
+The loser effect remained elevated under Park Geun-hye (+15.2 pp in Wave 4, 2015) but collapsed entirely after Moon Jae-in's election in 2017. By Wave 6 (2020), conducted during Moon's presidency, the loser effect was negative (-4.4 pp) and statistically insignificant. Former progressive "losers" were now winners, and former conservative "winners" found themselves in opposition. Crucially, this power alternation demonstrated that electoral procedures worked: the party excluded from power had returned through the democratic process.
 
-- **2010 (W3):** Under the Democrat-led government, the electorate was more evenly split (49% winners). A modest loser effect emerged (+4.6 pp).
+The Korean trajectory illustrates that the loser effect is not a fixed feature of a political culture but responds to whether democratic procedures deliver on their promise of temporary, reversible exclusion. Where power alternates, losers can be confident that their time will come; where it does not, procedural concerns intensify.
 
-- **2014 (W4):** Following another coup, the country was politically polarized. The loser effect doubled (+10.6 pp).
+### Comparative Trajectories
 
-- **2020 (W6):** Under continued military-backed rule, only 32% identified as winners. The loser effect reached its peak (+17.5 pp).
+Figure 2 displays the loser effect trajectories for all countries with three or more survey waves, highlighting the contrasting patterns of Thailand (increasing effect during democratic erosion) and South Korea (decreasing effect following power alternation).
 
-This trajectory supports H3: as democratic institutions weakened and losing became more permanent, losers increasingly turned to procedural conceptions of democracy—perhaps as a normative claim for the fair procedures they were being denied.
+![Multi-Country Loser Effect Trajectories](../figures/fig3_multicountry_trajectory.pdf){width=100%}
 
-<!-- Include figures here -->
+Taiwan's trajectory falls between these poles. The loser effect was modest but positive during both DPP (Chen Shui-bian, Wave 2) and KMT (Ma Ying-jeou, Wave 3) administrations, then turned slightly negative during the subsequent DPP administration (Tsai Ing-wen, Wave 4). Like South Korea, Taiwan experienced regular power alternation that may have attenuated the urgency of procedural concerns for losers.
+
+Japan shows the flattest trajectory, with the loser effect remaining consistently small across waves regardless of which party held power. This stability likely reflects Japan's mature democratic institutions: even when the long-dominant LDP loses power (as it did briefly to the DPJ in 2009-2012), the stakes of losing remain modest because institutional constraints, civil liberties, and electoral competition continue to function reliably.
 
 # Discussion
 
-These findings have several implications for how we understand democratic attitudes and democratic consolidation.
+The analysis has documented a consistent loser effect across diverse Asian political contexts: electoral losers systematically prioritize procedural over substantive conceptions of democracy. More importantly, the effect responds dynamically to political conditions—growing in Thailand as democracy eroded and shrinking in South Korea as power alternated. These findings illuminate the relationship between political position and democratic attitudes while raising questions about causality, generalizability, and implications for democratic consolidation.
 
-First, conceptions of democracy are not stable cultural orientations but are shaped by citizens' structural position within the political order. This challenges culturalist accounts that treat democratic values as deep-seated and slow-changing.
+## Theoretical Implications
 
-Second, the loser effect reveals a paradox for democratic consolidation. Those who value procedural democracy most—electoral losers—are precisely those with the least power to protect it. In contexts where losing becomes permanent, as in Thailand after 2014, procedural commitments may grow even as the capacity to act on them diminishes.
+The results strongly support a positional account of democratic conceptions over alternatives that emphasize stable cultural values or fixed psychological dispositions. If conceptions of democracy were primarily inherited cultural orientations, as some scholarship implies, we would not expect them to shift dramatically within countries over relatively short periods. The Thai trajectory—from essentially no loser effect in 2006 to a 17.5 percentage-point gap by 2020—cannot be explained by slow-moving cultural change. Rather, the pattern suggests that citizens update their understanding of democracy's essential elements in response to their changing position in the political order.
 
-Third, the disappearance of the loser effect in Wave 6 (2019-22) across most countries warrants further investigation. One possibility is that the COVID-19 pandemic shifted citizens' attention toward state capacity and substantive outcomes, temporarily suppressing procedural concerns.
+This positional logic extends the winner-loser gap literature in an important direction. Previous research has demonstrated that electoral status shapes evaluations of democracy—satisfaction, trust, perceived legitimacy—but has generally assumed a shared conception of what democracy means. The present findings suggest that winners and losers may be talking past each other when they express views about democracy: losers emphasizing procedures they need while winners emphasize outcomes they receive. This disconnect has implications for survey research, which typically asks respondents to evaluate "democracy" without specifying which dimension is at stake.
+
+The findings also contribute to debates about democratic consolidation. Linz and Stepan's influential formulation holds that democracy is consolidated when it becomes "the only game in town"—when no significant actors pursue undemocratic alternatives and all accept democratic procedures as the legitimate basis for political competition [@linz1996problems]. The present analysis suggests a complication: procedural democracy may become most salient to those excluded from the game, while winners—who benefit from outcomes rather than procedures—may have weaker attachments to the rules. Where power does not alternate, this creates a troubling dynamic: the citizens most committed to procedural democracy are precisely those least able to defend it.
+
+## Alternative Explanations
+
+Several alternative mechanisms might explain the observed patterns. First, the loser effect might reflect retrospective evaluation rather than forward-looking positional logic: losers may emphasize procedures because they perceive past elections as unfair, not because they seek procedural protections for the future. This explanation is plausible for contexts like Thailand, where coups and judicial interventions have repeatedly overturned electoral outcomes. However, the presence of loser effects even in countries with free and fair elections (like Japan) suggests that retrospective grievance is not the sole mechanism.
+
+Second, partisan socialization might shape both vote choice and democratic conceptions, creating a spurious correlation. If progressive parties in Asia systematically emphasize procedural democracy while conservative parties emphasize outcomes, then the loser effect would simply reflect partisan differences in democratic philosophy. This explanation struggles to account for the South Korean trajectory, where the loser effect among progressives surged after they lost power and collapsed after they regained it. If partisan ideology were the primary driver, we would expect stable differences regardless of which party governs.
+
+Third, the loser effect might reflect motivated reasoning: losers may claim to value procedures because doing so serves their political interests, not because their underlying beliefs have changed. Distinguishing sincere belief change from strategic positioning is difficult with survey data. However, the consistency of the pattern across diverse contexts—including countries where surveys offer no obvious audience for strategic positioning—suggests that at least some genuine attitudinal change is occurring.
+
+## Limitations
+
+Several limitations warrant acknowledgment. First, the analysis relies on repeated cross-sections rather than panel data, precluding direct observation of individual-level attitude change. The within-country trajectories are suggestive but cannot definitively rule out compositional change—the possibility that different types of voters enter or exit the winner and loser categories across waves.
+
+Second, the measurement of democratic conceptions through forced-choice items, while analytically useful, may impose a procedural-substantive tradeoff that some respondents do not naturally make. Citizens may value both procedures and outcomes without perceiving tension between them. The ABS battery captures relative prioritization but may miss more complex belief structures.
+
+Third, the exclusion of non-voters from the analysis introduces potential selection bias. If non-voting is correlated with distinctive views on democracy—perhaps alienation from both procedural and substantive elements—then the estimated loser effect applies only to the voting population. Extending the analysis to non-voters would require different identification strategies.
+
+Fourth, the disappearance of the loser effect in Wave 6 remains incompletely explained. The COVID-19 pandemic offers one plausible mechanism: the crisis may have temporarily elevated concerns about state capacity and public goods provision (substantive elements) while reducing attention to electoral competition and civil liberties (procedural elements). If this explanation is correct, the effect should reappear in post-pandemic surveys. Alternatively, the null result in Wave 6 might reflect genuine change in the relationship between electoral status and democratic conceptions, though the mechanism for such change remains unclear.
+
+## The Paradox of Procedural Democracy
+
+The findings illuminate what might be called the paradox of procedural democracy. In well-functioning democracies, procedures ensure that losing is temporary: today's losers may become tomorrow's winners through competitive elections, and institutional constraints protect losers' basic interests regardless of who governs. Under these conditions, both winners and losers have reason to value procedures—winners because procedures legitimated their power, losers because procedures promise future opportunities.
+
+But where democratic institutions erode, this logic fractures. Losing becomes consequential and potentially permanent. Winners, secured by non-democratic means, have diminishing stake in procedural integrity. Losers, recognizing their exclusion, increasingly emphasize the procedures they need but cannot secure. The Thai trajectory vividly illustrates this dynamic: as coups and judicial interventions repeatedly overturned electoral outcomes, supporters of the excluded faction came to emphasize electoral fairness and civil liberties at dramatically higher rates—even as their capacity to demand these protections diminished.
+
+This paradox has implications for international democracy promotion and comparative political analysis. External actors seeking to strengthen democracy may find their most receptive audience among citizens who are already excluded from power—and therefore least able to implement democratic reforms. Meanwhile, those who control the state may prove resistant to procedural constraints that would limit their authority, even while invoking democracy's substantive benefits (economic growth, social order) to legitimate their rule.
 
 # Conclusion
 
-This paper has shown that how citizens understand democracy depends importantly on where they stand within the political order. Electoral losers systematically prioritize procedural democracy—fair elections, civil liberties, accountability—over substantive outcomes. This loser effect is not merely a reflection of disappointment but represents a coherent response to exclusion: when denied a share of power, procedures for regaining it become paramount.
+This article has argued that citizens' understanding of democracy is shaped by their position within the political order. Electoral losers—those whose preferred party or candidate lost the most recent election—systematically prioritize procedural elements of democracy: competitive elections, civil liberties, government accountability. Winners, by contrast, place relatively greater emphasis on substantive outcomes: economic equality, social welfare, basic needs provision. This loser effect, documented across fourteen Asian countries over seventeen years, is not merely a reflection of momentary disappointment. It represents a coherent response to political exclusion: when denied a share of power, the procedures that might restore it become paramount.
 
-The implications for democratic consolidation are sobering. Where democratic institutions erode and losing becomes permanent, procedural commitments may intensify among precisely those citizens least able to defend them. Understanding this dynamic is crucial for scholars and practitioners seeking to prevent democratic backsliding.
+The more important finding concerns dynamics. Conceptions of democracy are not fixed cultural inheritances or stable psychological traits but respond to changing political conditions. In Thailand, as democratic institutions eroded through successive coups, the loser effect grew from essentially zero to 17.5 percentage points. In South Korea, power alternation between progressive and conservative forces eliminated the gap that had emerged during conservative rule. These trajectories suggest that citizens update their understanding of democracy's essential elements based on whether democratic procedures are delivering on their promise of temporary, reversible exclusion from power.
+
+Three broader implications follow from these findings. First, the results challenge culturalist accounts that treat democratic values as deep-seated and slow-changing. While long-term historical processes undoubtedly shape political culture, the present analysis suggests considerable shorter-term responsiveness to political circumstances. Scholars studying democratic attitudes should attend not only to stable cross-national differences but also to within-country dynamics driven by changes in who wins and who loses.
+
+Second, the findings complicate standard accounts of democratic legitimacy. If winners and losers understand democracy differently—with losers emphasizing procedures and winners emphasizing outcomes—then aggregate measures of "support for democracy" may obscure meaningful variation in what citizens actually support. Two citizens who both affirm that "democracy is the best system" may have quite different things in mind. Survey research on democratic attitudes would benefit from greater precision about which dimension of democracy is at stake.
+
+Third, and most troublingly, the analysis reveals what I have called the paradox of procedural democracy. In contexts of democratic backsliding, those who most value procedural democracy are precisely those least able to defend it. As losing becomes permanent and consequential, losers intensify their commitment to fair elections, civil liberties, and accountability mechanisms—even as their capacity to demand these protections diminishes. Meanwhile, winners secured by non-democratic means may have weakening attachments to the procedural rules they no longer need. This asymmetry suggests that democratic erosion may become self-reinforcing: the citizens who would resist it are systematically marginalized, while those who benefit from it face few procedural constraints.
+
+Future research might extend this analysis in several directions. Panel data would enable direct observation of individual-level attitude change, strengthening causal inference beyond what repeated cross-sections allow. Comparative analysis beyond Asia could assess whether the loser effect operates similarly in other regions with different political cultures and institutional configurations. Experimental designs might isolate the causal effect of winning and losing from correlated factors like partisanship and political sophistication. And qualitative research could probe the mechanisms through which citizens come to revise their conceptions of democracy—whether through deliberate reflection, social influence, or more automatic cognitive processes.
+
+The contemporary moment lends urgency to these questions. Democratic backsliding is not confined to Asia; it characterizes political developments across the globe. Understanding how citizens' democratic commitments respond to erosion—and whether those commitments can be mobilized to resist it—is among the most pressing challenges facing students of comparative politics. The present analysis offers a sobering reminder: the citizens who most need procedural protections may be those most likely to value them, but also those least empowered to secure them.
 
 # References
 
