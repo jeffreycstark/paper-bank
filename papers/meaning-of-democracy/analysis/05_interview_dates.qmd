@@ -1,0 +1,231 @@
+---
+title: "Interview Date Extraction"
+subtitle: "Meaning of Democracy Paper"
+author: "Jeffrey Stark"
+date: today
+format:
+  html:
+    toc: true
+    toc-depth: 3
+    code-fold: show
+    df-print: paged
+execute:
+  warning: false
+  message: false
+---
+
+# Overview
+
+This script extracts actual interview dates (month/year) from the master ABS dataset to determine the correct date ranges for each wave-country combination. This will correct the approximate ranges currently used in manuscript Table 1.
+
+# Setup
+
+```{r setup}
+library(tidyverse)
+library(here)
+library(lubridate)
+
+here::i_am("papers/meaning-of-democracy/analysis/05_interview_dates.qmd")
+
+# Output directory
+output_dir <- here("papers", "meaning-of-democracy", "analysis", "data")
+if (!dir.exists(output_dir)) dir.create(output_dir, recursive = TRUE)
+
+# Master dataset
+master_file <- here("data", "processed", "abs_econdev_authpref.rds")
+```
+
+# Load Master Dataset
+
+```{r load}
+abs <- readRDS(master_file)
+
+cat("Master dataset:", nrow(abs), "rows,", ncol(abs), "columns\n")
+cat("Waves:", paste(sort(unique(abs$wave)), collapse = ", "), "\n\n")
+```
+
+# Check for Interview Month/Year Variables
+
+```{r check-date-vars}
+# Look for month and year variables
+# Common names: int_month, int_year, interview_month, interview_year, se1_month, se1_year, month, year
+
+date_related <- names(abs)[grep("month|year|date|se1|se2", names(abs), ignore.case = TRUE)]
+cat("Date-related columns found:\n")
+print(date_related)
+
+# Check if interview_month and interview_year exist
+has_month <- any(grepl("month", names(abs), ignore.case = TRUE))
+has_year <- any(grepl("year", names(abs), ignore.case = TRUE))
+
+cat("\nMonth variable present:", has_month, "\n")
+cat("Year variable present:", has_year, "\n")
+
+# If not present, stop and report
+if (!has_month | !has_year) {
+  cat("\n*** ATTENTION ***\n")
+  cat("Interview month and/or year variables are not in the master dataset.\n")
+  cat("Please add 'int_month' and 'int_year' to abs_econdev_authpref.rds\n")
+  cat("These should come from the original ABS wave files.\n")
+}
+```
+
+# Extract Interview Date Ranges (if variables exist)
+```{r extract-dates}
+# Country name lookup
+get_country_name <- function(code) {
+  code <- as.integer(code)
+  case_when(
+    code == 1 ~ "Japan",
+    code == 2 ~ "Hong Kong",
+    code == 3 ~ "South Korea",
+    code == 4 ~ "China",
+    code == 5 ~ "Mongolia",
+    code == 6 ~ "Philippines",
+    code == 7 ~ "Taiwan",
+    code == 8 ~ "Thailand",
+    code == 9 ~ "Indonesia",
+    code == 10 ~ "Singapore",
+    code == 11 ~ "Vietnam",
+    code == 12 ~ "Cambodia",
+    code == 13 ~ "Malaysia",
+    code == 14 ~ "Myanmar",
+    code == 15 ~ "Australia",
+    code == 18 ~ "India",
+    TRUE ~ NA_character_
+  )
+}
+
+# Identify the actual column names for month and year
+# Adjust these based on what's found above
+month_col <- names(abs)[grep("^int_month$|^interview_month$|^month$", names(abs), ignore.case = TRUE)][1]
+year_col <- names(abs)[grep("^int_year$|^interview_year$|^year$", names(abs), ignore.case = TRUE)][1]
+
+if (!is.na(month_col) & !is.na(year_col)) {
+  cat("Using month column:", month_col, "\n")
+  cat("Using year column:", year_col, "\n\n")
+
+  # Compute interview date ranges by country and wave
+  interview_dates <- abs %>%
+    filter(wave %in% c(2, 3, 4, 6)) %>%
+    mutate(
+      country_name = get_country_name(country),
+      int_month = as.integer(.data[[month_col]]),
+      int_year = as.integer(.data[[year_col]]),
+      # Create date (first of month)
+      int_date = make_date(int_year, int_month, 1)
+    ) %>%
+    filter(!is.na(country_name), !is.na(int_date)) %>%
+    group_by(wave, country_name) %>%
+    summarise(
+      n = n(),
+      earliest_month = min(int_date, na.rm = TRUE),
+      latest_month = max(int_date, na.rm = TRUE),
+      .groups = "drop"
+    ) %>%
+    mutate(
+      earliest_str = format(earliest_month, "%b %Y"),
+      latest_str = format(latest_month, "%b %Y"),
+      date_range = if_else(
+        earliest_str == latest_str,
+        earliest_str,
+        paste(earliest_str, "-", latest_str)
+      )
+    )
+
+  cat("=== INTERVIEW DATE RANGES BY COUNTRY AND WAVE ===\n")
+  interview_dates %>%
+    select(wave, country_name, n, date_range) %>%
+    arrange(wave, country_name) %>%
+    print(n = 50)
+
+} else {
+  cat("Month or year column not found. Cannot compute date ranges.\n")
+  cat("Found month_col:", month_col, "\n")
+  cat("Found year_col:", year_col, "\n")
+}
+```
+
+# Aggregate Wave-Level Date Ranges
+
+```{r wave-level}
+if (exists("interview_dates")) {
+  # Compute overall date range for each wave
+  wave_date_ranges <- interview_dates %>%
+    group_by(wave) %>%
+    summarise(
+      n_countries = n_distinct(country_name),
+      n_total = sum(n),
+      wave_start = min(earliest_month),
+      wave_end = max(latest_month),
+      .groups = "drop"
+    ) %>%
+    mutate(
+      wave_label = paste0("W", wave),
+      start_str = format(wave_start, "%b %Y"),
+      end_str = format(wave_end, "%b %Y"),
+      date_range = paste(start_str, "-", end_str),
+      # For manuscript: just years
+      year_range = paste(year(wave_start), "-", substr(year(wave_end), 3, 4))
+    )
+
+  cat("\n=== WAVE-LEVEL DATE RANGES ===\n")
+  wave_date_ranges %>%
+    select(wave_label, date_range, year_range, n_countries, n_total) %>%
+    knitr::kable(
+      col.names = c("Wave", "Full Date Range", "Year Range", "Countries", "N"),
+      caption = "Corrected Date Ranges for Manuscript Table 1"
+    )
+}
+```
+
+# Save Results
+
+```{r save}
+if (exists("interview_dates") & exists("wave_date_ranges")) {
+  # Save country-level dates
+  saveRDS(interview_dates,
+          file.path(output_dir, "interview_dates_by_country.rds"))
+  write_csv(interview_dates %>% select(-earliest_month, -latest_month),
+            file.path(output_dir, "interview_dates_by_country.csv"))
+
+  # Save wave-level summary
+  saveRDS(wave_date_ranges,
+          file.path(output_dir, "wave_date_ranges.rds"))
+  write_csv(wave_date_ranges %>% select(-wave_start, -wave_end),
+            file.path(output_dir, "wave_date_ranges.csv"))
+
+  cat("\n=== SAVED ===\n")
+  cat("Country-level: interview_dates_by_country.rds/.csv\n")
+  cat("Wave-level: wave_date_ranges.rds/.csv\n")
+
+  # Print the corrected values for manuscript
+  cat("\n=== FOR MANUSCRIPT TABLE 1 ===\n")
+  cat("Update the Years column with these corrected ranges:\n\n")
+  wave_date_ranges %>%
+    select(wave_label, year_range) %>%
+    mutate(output = paste0(wave_label, ": ", year_range)) %>%
+    pull(output) %>%
+    cat(sep = "\n")
+
+} else {
+  cat("\nNo results to save - date variables not found in dataset.\n")
+  cat("\nACTION REQUIRED:\n")
+  cat("Add interview month (int_month) and year (int_year) to the master dataset.\n")
+  cat("These should be extracted from the original ABS wave files.\n")
+}
+```
+
+# Variable Requirements
+
+If interview dates need to be added to the master dataset, add these two variables:
+
+| Variable | Description | Expected Values |
+|----------|-------------|-----------------|
+| `int_month` | Interview month | 1-12 |
+| `int_year` | Interview year | 2005-2022 |
+
+These should be extracted from the original ABS codebooks, typically found as:
+- `se1` (interview date as YYYYMMDD or separate)
+- `date` variables in the raw files
+- Fieldwork documentation

@@ -1182,3 +1182,95 @@ recode_voted_default <- function(x,
   )
 }
 
+
+#' Extract month from Date column (for W3 ir9)
+#'
+#' W3 stores interview date as a Date object; extract month component.
+#' Handles both Date objects and numeric representations (days since 1970-01-01).
+#' @param x Date vector or numeric (days since epoch)
+#' @param data Full wave data frame (used to access original Date column)
+#' @param var_name Variable name to read from data
+#' @return Numeric vector (1-12)
+extract_month_from_date <- function(x,
+                                    data = NULL,
+                                    var_name = NULL,
+                                    validate_all = NULL) {
+  # Try to get original Date from data if available
+  if (!is.null(data) && !is.null(var_name) && var_name %in% names(data)) {
+    orig <- data[[var_name]]
+    if (inherits(orig, "Date")) {
+      months <- as.integer(format(orig, "%m"))
+      years <- as.integer(format(orig, "%Y"))
+      # Filter out obviously wrong dates
+      months[years < 2000 | years > 2030] <- NA_integer_
+      return(as.numeric(months))
+    }
+  }
+
+  # Fallback: if x is Date
+  if (inherits(x, "Date")) {
+    months <- as.integer(format(x, "%m"))
+    years <- as.integer(format(x, "%Y"))
+    months[years < 2000 | years > 2030] <- NA_integer_
+    return(as.numeric(months))
+  }
+
+  # Fallback: if x is numeric (days since 1970-01-01), convert back to Date
+  if (is.numeric(x)) {
+    dates <- as.Date(x, origin = "1970-01-01")
+    months <- as.integer(format(dates, "%m"))
+    years <- as.integer(format(dates, "%Y"))
+    # Filter out obviously wrong dates
+    months[years < 2000 | years > 2030] <- NA_integer_
+    return(as.numeric(months))
+  }
+
+  # If nothing works, return NA
+
+  rep(NA_real_, length(x))
+}
+
+
+#' Extract year from Date column (for W3 ir9)
+#'
+#' W3 stores interview date as a Date object; extract year component.
+#' Handles both Date objects and numeric representations (days since 1970-01-01).
+#' @param x Date vector or numeric (days since epoch)
+#' @param data Full wave data frame (used to access original Date column)
+#' @param var_name Variable name to read from data
+#' @return Numeric vector (e.g., 2010, 2011, 2012)
+extract_year_from_date <- function(x,
+                                   data = NULL,
+                                   var_name = NULL,
+                                   validate_all = NULL) {
+  # Try to get original Date from data if available
+  if (!is.null(data) && !is.null(var_name) && var_name %in% names(data)) {
+    orig <- data[[var_name]]
+    if (inherits(orig, "Date")) {
+      years <- as.integer(format(orig, "%Y"))
+      # Filter out obviously wrong dates
+      years[years < 2000 | years > 2030] <- NA_integer_
+      return(as.numeric(years))
+    }
+  }
+
+  # Fallback: if x is Date
+  if (inherits(x, "Date")) {
+    years <- as.integer(format(x, "%Y"))
+    years[years < 2000 | years > 2030] <- NA_integer_
+    return(as.numeric(years))
+  }
+
+  # Fallback: if x is numeric (days since 1970-01-01), convert back to Date
+  if (is.numeric(x)) {
+    dates <- as.Date(x, origin = "1970-01-01")
+    years <- as.integer(format(dates, "%Y"))
+    # Filter out obviously wrong dates
+    years[years < 2000 | years > 2030] <- NA_integer_
+    return(as.numeric(years))
+  }
+
+  # If nothing works, return NA
+  rep(NA_real_, length(x))
+}
+

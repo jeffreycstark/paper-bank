@@ -373,6 +373,7 @@ cat("   the health of democratic institutions.\n")
 
 ```{r save}
 output_dir <- here("papers", "meaning-of-democracy", "analysis", "data")
+results_dir <- here("papers", "meaning-of-democracy", "analysis", "results")
 
 # Save country-wave summary
 write_csv(by_country_wave, file.path(output_dir, "loser_effect_by_country_wave.csv"))
@@ -383,8 +384,137 @@ write_csv(trajectory, file.path(output_dir, "loser_effect_trajectory.csv"))
 # Save wave summary
 write_csv(wave_tests, file.path(output_dir, "loser_effect_by_wave.csv"))
 
+# ============================================================
+# COMPREHENSIVE RESULTS FOR MANUSCRIPT
+# ============================================================
+
+# Sample statistics by wave
+sample_by_wave <- df %>%
+  group_by(wave) %>%
+  summarise(
+    n = n(),
+    n_countries = n_distinct(country_name),
+    .groups = "drop"
+  )
+
+total_n <- nrow(df)
+total_countries <- n_distinct(df$country_name)
+
+# Wave tests with formatted values
+wave_results <- wave_tests %>%
+  mutate(
+    loser_effect_fmt = sprintf("%+.1f", loser_effect),
+    odds_ratio = exp(log(loser_pct / (100 - loser_pct)) - log(winner_pct / (100 - winner_pct))),
+    odds_ratio_fmt = sprintf("%.2f", odds_ratio),
+    p_fmt = case_when(
+      p_value < 0.001 ~ "< 0.001",
+      p_value < 0.01 ~ sprintf("%.3f", p_value),
+      TRUE ~ sprintf("%.2f", p_value)
+    ),
+    sig = p_value < 0.05
+  )
+
+# Pooled regression statistics
+pooled_stats <- list(
+  odds_ratio = loser_results$odds_ratio,
+  odds_ratio_fmt = sprintf("%.2f", loser_results$odds_ratio),
+  pct_increase = round((loser_results$odds_ratio - 1) * 100, 0),
+  ci_low = loser_results$ci_low,
+  ci_high = loser_results$ci_high,
+  ci_fmt = sprintf("[%.2f, %.2f]", loser_results$ci_low, loser_results$ci_high),
+  lpm_effect = lpm_results$estimate * 100,
+  lpm_effect_fmt = sprintf("%.1f", lpm_results$estimate * 100)
+)
+
+# Country-wave detailed results
+country_wave_detail <- by_country_wave %>%
+  mutate(
+    pct_winner_fmt = sprintf("%.0f%%", pct_winner),
+    loser_effect_fmt = sprintf("%+.1f", loser_effect)
+  )
+
+# Get specific country data for case studies
+thailand_data <- country_wave_detail %>%
+  filter(country_name == "Thailand") %>%
+  arrange(wave_year)
+
+korea_data <- country_wave_detail %>%
+  filter(country_name == "South Korea") %>%
+  arrange(wave_year)
+
+taiwan_data <- country_wave_detail %>%
+  filter(country_name == "Taiwan") %>%
+  arrange(wave_year)
+
+japan_data <- country_wave_detail %>%
+  filter(country_name == "Japan") %>%
+  arrange(wave_year)
+
+philippines_data <- country_wave_detail %>%
+  filter(country_name == "Philippines") %>%
+  arrange(wave_year)
+
+# Key statistics for abstract
+# Thailand: change from W2 to W6
+thai_w2 <- thailand_data %>% filter(wave == "W2") %>% pull(loser_effect)
+thai_w6 <- thailand_data %>% filter(wave == "W6") %>% pull(loser_effect)
+thai_change <- thai_w6 - thai_w2
+
+# Korea: peak effect
+korea_peak <- korea_data %>% summarise(max_effect = max(loser_effect)) %>% pull(max_effect)
+
+# Effect range in pre-pandemic waves (W2-W4)
+effect_range <- wave_results %>%
+  filter(wave %in% c("W2", "W3", "W4")) %>%
+  summarise(min_effect = min(loser_effect), max_effect = max(loser_effect))
+
+# Compile all results into a list
+manuscript_results <- list(
+  # Sample
+  total_n = total_n,
+  total_n_fmt = format(total_n, big.mark = ","),
+  total_countries = total_countries,
+  sample_by_wave = sample_by_wave,
+
+  # Wave-level results
+  wave_results = wave_results,
+
+  # Pooled regression
+  pooled = pooled_stats,
+
+  # Country-wave detail
+  country_wave = country_wave_detail,
+
+  # Case study data
+  thailand = thailand_data,
+  korea = korea_data,
+  taiwan = taiwan_data,
+  japan = japan_data,
+  philippines = philippines_data,
+
+  # Trajectory data
+  trajectory = trajectory,
+
+  # Key stats for abstract
+  abstract = list(
+    thailand_w6_effect = thai_w6,
+    thailand_change = thai_change,
+    korea_peak = korea_peak,
+    effect_range_min = effect_range$min_effect,
+    effect_range_max = effect_range$max_effect
+  ),
+
+  # Metadata
+  generated = Sys.time(),
+  waves_included = unique(df$wave)
+)
+
+# Save comprehensive results
+saveRDS(manuscript_results, file.path(results_dir, "manuscript_results.rds"))
+
 cat("\n=== RESULTS SAVED ===\n")
 cat("- loser_effect_by_country_wave.csv\n")
 cat("- loser_effect_trajectory.csv\n")
 cat("- loser_effect_by_wave.csv\n")
+cat("- results/manuscript_results.rds (comprehensive results for manuscript)\n")
 ```

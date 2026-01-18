@@ -4,7 +4,11 @@
 missing_conventions:
   treat_as_na:
     codes: [-1, 0, 7, 8, 9, 97, 98, 99]
-    description: "Standard missing codes"
+    description: "Standard missing codes for survey items"
+  # Country/ID variables should NOT treat 7, 8, 9 as missing (those are valid country codes)
+  treat_as_na_identifiers:
+    codes: [-1, 97, 98, 99]
+    description: "Missing codes for identifiers (preserves country codes 7=Taiwan, 8=Thailand, 9=Indonesia)"
 variables:
   - id: age
     concept: demographics
@@ -35,6 +39,8 @@ variables:
     concept: identifiers
     description: "Country code (numeric)"
     type: nominal
+    missing:
+      use_convention: treat_as_na_identifiers
     source:
       w1: country
       w2: country
@@ -42,7 +48,7 @@ variables:
       w4: country
       w5: COUNTRY
       w6: country
-    note: "W1-W5 have numeric codes, W6 has text names mapped to codes"
+    note: "W1-W5 have numeric codes, W6 has text names mapped to codes. IMPORTANT: Uses treat_as_na_identifiers to preserve country codes 7, 8, 9 (Taiwan, Thailand, Indonesia)"
     scale:
       min: 1
       max: 18
@@ -333,6 +339,80 @@ variables:
       validate:
         - waves: [w1, w2, w3, w4, w5, w6]
           phrase: "id|interview|case"
+
+  - id: int_month
+    concept: identifiers
+    description: "Interview month (1-12)"
+    type: ordinal
+    missing:
+      use_convention: treat_as_na_identifiers
+    source:
+      w1: ir007_1
+      w2: ir9_1
+      w3: ir9
+      w4: month
+      w5: Month
+      w6: month
+    note: "W3 stores date as Date object - month extracted via extract_month_from_date()"
+    scale:
+      min: 1
+      max: 12
+      labels:
+        1: "January"
+        2: "February"
+        3: "March"
+        4: "April"
+        5: "May"
+        6: "June"
+        7: "July"
+        8: "August"
+        9: "September"
+        10: "October"
+        11: "November"
+        12: "December"
+    harmonize:
+      default:
+        method: identity
+      w3:
+        method: r_function
+        fn: extract_month_from_date
+        note: "W3 ir9 is a Date object - extract month component"
+    qc:
+      valid_range: [1, 12]
+      validate:
+        - waves: [w1, w2, w3, w4, w5, w6]
+          phrase: "month|date|interview"
+
+  - id: int_year
+    concept: identifiers
+    description: "Interview year"
+    type: ordinal
+    missing:
+      use_convention: treat_as_na_identifiers
+    source:
+      w1: ir007_3
+      w2: ir9_3
+      w3: ir9
+      w4: year
+      w5: Year
+      w6: year
+    note: "W3 stores date as Date object - year extracted via extract_year_from_date()"
+    scale:
+      min: 2001
+      max: 2025
+    harmonize:
+      default:
+        method: identity
+      w3:
+        method: r_function
+        fn: extract_year_from_date
+        note: "W3 ir9 is a Date object - extract year component"
+    qc:
+      valid_range: [2001, 2025]
+      validate:
+        - waves: [w1, w2, w3, w4, w5, w6]
+          phrase: "year|date|interview"
+
   - id: main_earner
     concept: demographics
     description: "Are you the main earner in your household?"
