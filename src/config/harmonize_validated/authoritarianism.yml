@@ -484,7 +484,7 @@ variables:
     source:
       w1: q121
       w2: q124
-      w3: null # W3 q129a is binary - excluded
+      w3: q129
       w4: q130
       w5: q137
       w6: q129
