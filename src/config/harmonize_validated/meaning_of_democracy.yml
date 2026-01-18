@@ -356,7 +356,7 @@ variables:
       w2: q39a
       w3: q33a
       w4: q34a
-      w5: null  # Not available in W5
+      w5: q34a  # Fixed: q34a exists in W5 with 14,918 valid responses
       w6: q34a
     scale:
       min: 1
@@ -371,10 +371,11 @@ variables:
     qc:
       valid_range: [1, 2]
       validate:
-        - waves: [w2, w3, w4, w6]
+        - waves: [w2, w3, w4, w5, w6]
           phrase: "candidate|party|vote|win|election"
       notes:
-        - "W1 and W5 do not include this question"
+        - "W1 does not include this question"
+        - "W5 uses q34a (same as W4/W6): 9,737 winners, 5,181 losers"
         - "Coding consistent across all waves: 1=Winner, 2=Loser"
         - "Missing/refused/don't know responses excluded"
 
@@ -393,7 +394,7 @@ variables:
       w2: q92  # Single item, recoded to 0 or 4
       w3: q85  # Placeholder - derived from q85-q88
       w4: q88  # Placeholder - derived from q88-q91
-      w5: null  # Different format, not comparable
+      w5: q98  # Single item with 4 options, recoded to 0 or 4
       w6: q85  # Placeholder - derived from q85-q88
     scale:
       min: 0
@@ -404,7 +405,7 @@ variables:
         2: "2 procedural choices"
         3: "3 procedural choices"
         4: "All procedural choices"
-      note: "W2 only produces 0 or 4 due to single-item measure"
+      note: "W2/W5 only produce 0 or 4 due to single-item measure"
     harmonize:
       w2:
         method: recode
@@ -421,6 +422,13 @@ variables:
         method: derive
         fn: compute_procedural_index
         sources: [q88, q89, q90, q91]
+      w5:
+        method: recode
+        mapping:
+          1: 4  # free expression -> procedural
+          2: 0  # basic necessities -> substantive
+          3: 4  # free elections -> procedural
+          4: 4  # clean politics -> procedural
       w6:
         method: derive
         fn: compute_procedural_index
@@ -428,8 +436,9 @@ variables:
     qc:
       valid_range: [0, 4]
       notes:
-        - "W2 measure is NOT directly comparable (single item scaled to 0/4)"
+        - "W2/W5 measures are NOT directly comparable (single item scaled to 0/4)"
         - "W3/W4/W6 use 4-set battery producing true 0-4 range"
+        - "W5 q98: 1=expression(P), 2=basic needs(S), 3=elections(P), 4=clean politics(P)"
         - "For cross-wave comparisons, consider using dem_procedural_vs_substantive (binary) instead"
         - "Recode logic: procedural options (elections, expression, oversight, media freedom, courts, protests) coded 1"
         - "Substantive options (redistribution, basic needs, jobs, governance) coded 0"

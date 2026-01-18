@@ -1,6 +1,6 @@
 # Harmonization Run Summary
 
-**Date:** 2026-01-16 21:07:03
+**Date:** 2026-01-17 17:00:37
 
 **YAML Specs:** 27
 **Total Variables:** 334
@@ -10,11 +10,11 @@
 | Wave | Variables |
 |------|----------|
 | W1 | 137 |
-| W2 | 118 |
-| W3 | 158 |
+| W2 | 119 |
+| W3 | 159 |
 | W4 | 216 |
-| W5 | 208 |
-| W6 | 218 |
+| W5 | 211 |
+| W6 | 219 |
 
 ## Variables per Concept
 
@@ -51,8 +51,8 @@
 ## Output Files
 
 - `outputs/master_w1.rds` - 137 harmonized variables
-- `outputs/master_w2.rds` - 118 harmonized variables
-- `outputs/master_w3.rds` - 158 harmonized variables
+- `outputs/master_w2.rds` - 119 harmonized variables
+- `outputs/master_w3.rds` - 159 harmonized variables
 - `outputs/master_w4.rds` - 216 harmonized variables
-- `outputs/master_w5.rds` - 208 harmonized variables
-- `outputs/master_w6.rds` - 218 harmonized variables
+- `outputs/master_w5.rds` - 211 harmonized variables
+- `outputs/master_w6.rds` - 219 harmonized variables

@@ -1238,12 +1238,12 @@ variables:
     type: nominal
     source:
       w1: null
-      w2: null
-      w3: null
+      w2: q39a  # Fixed: W2 has winner/loser in q39a
+      w3: q33a  # Fixed: W3 has winner/loser in q33a
       w4: q34a
-      w5: null
-      w6: null
-    note: "Wave 4 - derived variable for winner/loser status"
+      w5: q34a  # Fixed: W5 has winner/loser in q34a (9,737 winners, 5,181 losers)
+      w6: q34a  # Fixed: W6 has winner/loser in q34a
+    note: "Winner/loser status across W2-W6"
     scale:
       min: 1
       max: 2
@@ -1256,7 +1256,7 @@ variables:
     qc:
       valid_range: [1, 2]
       validate:
-        - waves: [w4]
+        - waves: [w2, w3, w4, w5, w6]
           phrase: "winning|losing"
   # ===========================================================================
   # GROUP 4: Voting Behavior
