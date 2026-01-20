@@ -1,0 +1,409 @@
+---
+title: "Party Identification: Winner/Loser Coding"
+author: "ABS Analysis"
+date: today
+format:
+  html:
+    toc: true
+    code-fold: true
+execute:
+  warning: false
+  message: false
+---
+
+```{r setup}
+library(haven)
+library(dplyr)
+library(tidyr)
+library(ggplot2)
+library(knitr)
+
+# Project root
+proj_root <- here::here()
+```
+
+## Overview
+
+This document processes the party identification question from the Asian Barometer Survey to create winner/loser variables based on the most recent election prior to each survey wave.
+
+**Key challenge:** The party ID variable name changes across waves:
+
+| Wave | Variable |
+|------|----------|
+| W2   | q54      |
+| W3   | q47      |
+| W4   | q53      |
+| W5   | q56      |
+| W6   | q54      |
+
+## Election Context by Wave
+
+Based on the analysis in `election_data_winner_loser_analysis.md`:
+
+```{r election-context}
+# Define which coalition won each election by country and wave
+election_winners <- tribble(
+  ~country, ~wave, ~winning_coalition, ~election_date, ~winner_party, ~notes,
+
+  # Taiwan - Presidential elections
+  "Taiwan", "W2", "pan_green", "2004-03", "DPP (Chen Shui-bian)", "50.1% vs 49.9%",
+  "Taiwan", "W3", "pan_blue", "2008-03", "KMT (Ma Ying-jeou)", "58.4% vs 41.6%",
+  "Taiwan", "W4", "pan_blue", "2012-01", "KMT (Ma Ying-jeou)", "51.6% vs 45.6%",
+  "Taiwan", "W5", "pan_green", "2016-01", "DPP (Tsai Ing-wen)", "56.1% vs 31.0%",
+  "Taiwan", "W6", "pan_green", "2020-01", "DPP (Tsai Ing-wen)", "57.1% vs 38.6%",
+
+ # South Korea - Presidential elections (not surveyed in W2)
+  "Korea", "W3", "conservative", "2007-12", "GNP (Lee Myung-bak)", "48.7% vs 26.1%",
+  "Korea", "W4", "conservative", "2012-12", "Saenuri (Park Geun-hye)", "51.6% vs 48.0%",
+  "Korea", "W5", "progressive", "2017-05", "Democratic (Moon Jae-in)", "41.1% plurality",
+  "Korea", "W6", "conservative", "2022-03", "PPP (Yoon Suk Yeol)", "48.6% vs 47.8%",
+
+  # Thailand - Parliamentary elections (not surveyed in W2)
+  "Thailand", "W3", "pro_thaksin", "2007-12", "PPP", "233/480 seats",
+  "Thailand", "W4", NA, NA, NA, "NO VALID ELECTION - May 2014 coup",
+  "Thailand", "W5", "pro_thaksin", "2011-07", "Pheu Thai", "265/500 seats (pre-coup)",
+  "Thailand", "W6", "pro_military", "2019-03", "PPRP formed govt", "Pheu Thai won votes but military govt"
+)
+
+kable(election_winners, caption = "Election Winners by Country and Wave")
+```
+
+## Load Party ID Crosswalk
+
+```{r load-crosswalk}
+party_crosswalk <- readRDS(file.path(proj_root, "data/processed/party_id_crosswalk.rds"))
+
+# Preview
+party_crosswalk %>%
+  filter(country == "Taiwan", wave == "W6") %>%
+  select(code, party_name, coalition) %>%
+  kable(caption = "Example: Taiwan W6 Party Codes")
+```
+
+## Load Raw Survey Data
+
+```{r load-data}
+# Load each wave
+w2 <- read_sav(file.path(proj_root, "data/raw/wave2/Wave2_20250609.sav"))
+w3 <- read_sav(file.path(proj_root, "data/raw/wave3/ABS3 merge20250609.sav"))
+w4 <- read_sav(file.path(proj_root, "data/raw/wave4/W4_v15_merged20250609_release.sav"))
+w5 <- read_sav(file.path(proj_root, "data/raw/wave5/20230505_W5_merge_15.sav"))
+
+# W6 country-specific files
+w6_taiwan <- read_sav(file.path(proj_root, "data/raw/wave6/W6_Taiwan_EN_20240402.sav"))
+w6_korea <- read_sav(file.path(proj_root, "data/raw/wave6/W6_Korea_Release_20241220.sav"))
+w6_thailand <- read_sav(file.path(proj_root, "data/raw/wave6/W6_8_Thailand_Release_20250108.sav"))
+```
+
+## Extract Party ID by Wave
+
+```{r extract-party-id}
+# Function to extract party ID with standardized column names
+extract_party_id <- function(data, wave, party_var, country_var = "country",
+                              id_var = NULL, countries = c(3, 7, 8)) {
+  # Country codes: 3=Korea, 7=Taiwan, 8=Thailand
+
+  # Handle different country variable names
+  if (country_var == "COUNTRY") {
+    data <- data %>% rename(country = COUNTRY)
+  }
+
+  # Get the party variable (handle uppercase Q54 for Taiwan W6)
+  if (party_var %in% names(data)) {
+    party_col <- party_var
+  } else if (toupper(party_var) %in% names(data)) {
+    party_col <- toupper(party_var)
+  } else {
+    stop(paste("Party variable", party_var, "not found in data"))
+  }
+
+  result <- data %>%
+    filter(country %in% countries) %>%
+    transmute(
+      wave = wave,
+      country = country,
+      country_name = case_when(
+        country == 3 ~ "Korea",
+        country == 7 ~ "Taiwan",
+        country == 8 ~ "Thailand",
+        TRUE ~ as.character(country)
+      ),
+      party_id_raw = as.numeric(.data[[party_col]])
+    )
+
+  return(result)
+}
+
+# Extract from each wave
+# W2: Taiwan only (Korea and Thailand not surveyed)
+party_w2 <- extract_party_id(w2, "W2", "q54", "country", countries = 7)
+
+# W3: All three countries
+party_w3 <- extract_party_id(w3, "W3", "q47", "country")
+
+# W4: All three countries
+party_w4 <- extract_party_id(w4, "W4", "q53", "country")
+
+# W5: All three countries
+party_w5 <- extract_party_id(w5, "W5", "q56", "COUNTRY")
+
+# W6: Separate files, need to handle differently
+party_w6_taiwan <- w6_taiwan %>%
+  transmute(
+    wave = "W6",
+    country = 7,
+    country_name = "Taiwan",
+    party_id_raw = as.numeric(Q54)  # Uppercase in Taiwan file
+  )
+
+party_w6_korea <- w6_korea %>%
+  transmute(
+    wave = "W6",
+    country = 3,
+    country_name = "Korea",
+    party_id_raw = as.numeric(q54)
+  )
+
+party_w6_thailand <- w6_thailand %>%
+  transmute(
+    wave = "W6",
+    country = 8,
+    country_name = "Thailand",
+    party_id_raw = as.numeric(q54)
+  )
+
+party_w6 <- bind_rows(party_w6_taiwan, party_w6_korea, party_w6_thailand)
+
+# Combine all waves
+party_all <- bind_rows(party_w2, party_w3, party_w4, party_w5, party_w6)
+
+cat("Total observations:", nrow(party_all), "\n")
+cat("By wave:\n")
+party_all %>% count(wave) %>% print()
+```
+
+## Match Party Codes to Coalition
+
+```{r match-coalition}
+# Join with crosswalk to get coalition membership
+party_coded <- party_all %>%
+  left_join(
+    party_crosswalk %>%
+      select(country, code, wave, party_name, party_lineage, coalition),
+    by = c("country_name" = "country", "party_id_raw" = "code", "wave" = "wave")
+  )
+
+# Check match rate
+cat("\nMatch rate by country and wave:\n")
+party_coded %>%
+  group_by(country_name, wave) %>%
+  summarise(
+    n = n(),
+    matched = sum(!is.na(coalition)),
+    match_pct = round(100 * matched / n, 1),
+    .groups = "drop"
+  ) %>%
+  print()
+```
+
+## Determine Winner/Loser Status
+
+```{r winner-loser}
+# Create winner/loser variable based on election context
+party_final <- party_coded %>%
+  left_join(
+    election_winners %>% select(country, wave, winning_coalition),
+    by = c("country_name" = "country", "wave")
+  ) %>%
+  mutate(
+    # Determine winner/loser status
+    electoral_status = case_when(
+      # Missing party ID
+      is.na(party_id_raw) | party_id_raw < 0 ~ NA_character_,
+
+      # No valid election (Thailand W4)
+      is.na(winning_coalition) ~ "no_valid_election",
+
+      # "Other" or unmatched parties
+      is.na(coalition) | coalition == "other" ~ "other_party",
+
+      # Taiwan: pan_green vs pan_blue
+      country_name == "Taiwan" & coalition == winning_coalition ~ "winner",
+      country_name == "Taiwan" & coalition != winning_coalition &
+        coalition %in% c("pan_green", "pan_blue") ~ "loser",
+      country_name == "Taiwan" & coalition == "neutral" ~ "other_party",
+
+      # Korea: progressive vs conservative
+      country_name == "Korea" & coalition == winning_coalition ~ "winner",
+      country_name == "Korea" & coalition != winning_coalition &
+        coalition %in% c("progressive", "conservative") ~ "loser",
+
+      # Thailand: Complex - pro_thaksin, anti_thaksin, pro_military, progressive
+      country_name == "Thailand" & coalition == winning_coalition ~ "winner",
+      country_name == "Thailand" & coalition != winning_coalition &
+        coalition %in% c("pro_thaksin", "anti_thaksin", "pro_military", "progressive") ~ "loser",
+
+      TRUE ~ "other_party"
+    ),
+
+    # Create binary winner variable
+    is_winner = case_when(
+      electoral_status == "winner" ~ 1L,
+      electoral_status == "loser" ~ 0L,
+      TRUE ~ NA_integer_
+    ),
+
+    # Create 4-category variable
+    electoral_category = case_when(
+      electoral_status == "winner" ~ "Winner",
+      electoral_status == "loser" ~ "Active Loser",
+      electoral_status == "other_party" ~ "Minor Party",
+      electoral_status == "no_valid_election" ~ "No Valid Election",
+      TRUE ~ NA_character_
+    )
+  )
+```
+
+## Summary Statistics
+
+```{r summary-stats}
+# Summary by country and wave
+cat("Electoral Status by Country and Wave:\n\n")
+party_final %>%
+  filter(!is.na(party_id_raw), party_id_raw > 0) %>%
+  count(country_name, wave, electoral_status) %>%
+  pivot_wider(names_from = electoral_status, values_from = n, values_fill = 0) %>%
+  kable()
+```
+
+```{r visualize}
+#| fig-width: 10
+#| fig-height: 6
+
+# Visualize winner/loser distribution
+party_final %>%
+  filter(!is.na(electoral_category)) %>%
+  count(country_name, wave, electoral_category) %>%
+  group_by(country_name, wave) %>%
+  mutate(pct = 100 * n / sum(n)) %>%
+  ungroup() %>%
+  ggplot(aes(x = wave, y = pct, fill = electoral_category)) +
+  geom_col(position = "stack") +
+  facet_wrap(~country_name) +
+  scale_fill_manual(
+    values = c(
+      "Winner" = "#2E7D32",
+      "Active Loser" = "#C62828",
+      "Minor Party" = "#757575",
+      "No Valid Election" = "#FFA000"
+    )
+  ) +
+  labs(
+    title = "Electoral Status of Party Identifiers",
+    subtitle = "Based on most recent election prior to survey",
+    x = "Wave",
+    y = "Percentage",
+    fill = "Electoral Status"
+  ) +
+  theme_minimal() +
+  theme(legend.position = "bottom")
+```
+
+## Thailand W4 Special Note
+
+```{r thailand-w4-note}
+cat("
+IMPORTANT: Thailand W4 (Aug-Oct 2014)
+
+Thailand W4 was surveyed during/after the May 2014 military coup.
+- The February 2014 election was annulled by the Constitutional Court
+- No valid prior election to use for winner/loser coding
+- These respondents are coded as 'no_valid_election'
+
+Options for analysis:
+1. Exclude Thailand W4 from winner/loser analysis
+
+2. Use the July 2011 election (same as W5) as reference
+3. Code based on whether party would have won if election was valid
+
+Recommendation: Exclude Thailand W4 from winner/loser analysis.
+")
+```
+
+## Thailand W6 Special Note
+
+```{r thailand-w6-note}
+cat("
+IMPORTANT: Thailand W6 (Mar-Jul 2022)
+
+The March 2019 election was the first after the 2014 coup.
+- Pheu Thai won the most seats (136) and votes
+- BUT Palang Pracharath (military-backed) formed the government
+- 'Winner' here means the party that FORMED THE GOVERNMENT
+
+Current coding:
+- pro_military (PPRP) = winner (formed government)
+- pro_thaksin (Pheu Thai) = loser (won votes but didn't form government)
+- progressive (Move Forward) = loser
+
+Alternative interpretation:
+- Could code based on vote share rather than government formation
+- Would flip winner/loser for W6 Thailand
+")
+```
+
+## Save Output
+
+```{r save-output}
+# Select final variables
+party_output <- party_final %>%
+  select(
+    wave, country, country_name,
+    party_id_raw, party_name, party_lineage, coalition,
+    winning_coalition, electoral_status, is_winner, electoral_category
+  )
+
+# Save
+saveRDS(party_output, file.path(proj_root, "data/processed/party_winner_loser.rds"))
+write.csv(party_output, file.path(proj_root, "data/processed/party_winner_loser.csv"),
+          row.names = FALSE)
+
+cat("Saved party_winner_loser.rds and party_winner_loser.csv\n")
+cat("Total observations:", nrow(party_output), "\n")
+cat("\nFinal counts:\n")
+party_output %>%
+  filter(!is.na(electoral_status)) %>%
+  count(electoral_category) %>%
+  print()
+```
+
+## Merge with Main Dataset
+
+To merge this with the main harmonized dataset:
+
+```{r merge-example, eval=FALSE}
+# Load main dataset
+d <- readRDS("data/processed/abs_econdev_authpref.rds")
+
+# The party_winner_loser data needs row identifiers to merge
+# This requires going back and extracting IDs from raw data
+
+# For now, this serves as a template for the coding logic
+# Full integration requires:
+# 1. Extract respondent IDs from each wave
+# 2. Add IDs to party_output
+# 3. Merge with main dataset by wave + ID
+```
+
+## Codebook
+
+| Variable | Description |
+|----------|-------------|
+| `party_id_raw` | Original party code from ABS (country-prefixed: 7xx=Taiwan, 3xx=Korea, 8xx=Thailand) |
+| `party_name` | Party name as labeled in survey |
+| `party_lineage` | Party family/succession group |
+| `coalition` | Coalition membership (pan_green/pan_blue, progressive/conservative, pro_thaksin/anti_thaksin/pro_military) |
+| `winning_coalition` | Which coalition won the most recent election |
+| `electoral_status` | winner, loser, other_party, no_valid_election |
+| `is_winner` | Binary: 1=winner, 0=loser, NA=other |
+| `electoral_category` | 4-category: Winner, Active Loser, Minor Party, No Valid Election |
