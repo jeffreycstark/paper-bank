@@ -1201,32 +1201,37 @@ variables:
     description: "Did you vote in the last national election?"
     type: nominal
     source:
-      w1: q027 # W1 uses different question
-      w2: q38
+      w1: q027 # W1 uses different question ("participated in last election")
+      w2: q38  # W2 also has reversed scale (1=No, 2=Yes)
       w3: q32
       w4: q33
       w5: q33
       w6: q33
     scale:
-      min: 1
-      max: 3
+      min: 0
+      max: 1
       labels:
+        0: "No"
         1: "Yes"
-        2: "No"
-        3: "Not yet eligible to vote"
-    # Note: W1 has only 1=No, 2=Yes (no "not eligible" option)
+    # Note: W1 and W2 have reversed original scale (1=No, 2=Yes)
+    # W3-W6 have 1=Yes, 2=No, with 0 or 3=Not eligible
+    # "Not eligible", "proxy voting" (W6: 1103, 1104) → NA
 
     harmonize:
       w1:
         method: r_function
         fn: recode_voted_w1
-        note: "W1 scale reversed (1=No, 2=Yes) and lacks 'not eligible' option"
+        note: "W1 scale reversed (1=No→0, 2=Yes→1)"
+      w2:
+        method: r_function
+        fn: recode_voted_w1
+        note: "W2 also has reversed scale (1=No→0, 2=Yes→1)"
       default:
         method: r_function
         fn: recode_voted_default
-        note: "Recode 3 (not eligible) to NA"
+        note: "W3-W6: 1=Yes→1, 2=No→0, not eligible/proxy→NA"
     qc:
-      valid_range: [1, 2]
+      valid_range: [0, 1]
       validate:
         - waves: [w1]
           phrase: "participated.*election"

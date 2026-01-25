@@ -1142,20 +1142,23 @@ collapse_5pt_leader_to_3pt <- function(x,
 }
 
 
-#' Recode voted_last_election W1
+#' Recode voted_last_election W1 and W2
 #'
-#' W1 has 1=No, 2=Yes; reverse to match W2-W6 (1=Yes, 2=No)
-#' @param x Numeric vector (1-2)
-#' @return Reversed numeric vector
+#' W1 and W2 have reversed scale: 1=No, 2=Yes; recode to 0=No, 1=Yes
+#' W1 missing: 97=Not applicable, 98=Don't remember, 99=No answer
+#' W2 missing: 0=Not applicable, 8=Can't choose, 9=Decline to answer
+#' @param x Numeric vector
+#' @return Numeric vector (0=No, 1=Yes, others→NA)
 recode_voted_w1 <- function(x,
                             data = NULL,
                             var_name = NULL,
-                            missing_codes = c(-1, 0, 7, 8, 9),
+                            missing_codes = c(-1, 0, 7, 8, 9, 97, 98, 99),
                             validate_all = NULL) {
-  # W1: 1=No, 2=Yes → target: 1=Yes, 2=No
+  # W1/W2: 1=No, 2=Yes → target: 0=No, 1=Yes
+  # All other values (missing codes, not applicable) → NA
   dplyr::case_when(
     x %in% missing_codes ~ NA_real_,
-    x == 1 ~ 2,  # No → 2
+    x == 1 ~ 0,  # No → 0
     x == 2 ~ 1,  # Yes → 1
     TRUE ~ NA_real_
   )
@@ -1164,20 +1167,23 @@ recode_voted_w1 <- function(x,
 
 #' Recode voted_last_election W2-W6
 #'
-#' Recode "not eligible" (3) to NA, keep 1=Yes, 2=No
-#' @param x Numeric vector (1-3)
-#' @return Numeric vector (1-2, with 3→NA)
+#' Recode to 0=No, 1=Yes; "not eligible" and proxy voting → NA
+#' @param x Numeric vector
+#' @return Numeric vector (0=No, 1=Yes, others→NA)
 recode_voted_default <- function(x,
                                  data = NULL,
                                  var_name = NULL,
-                                 missing_codes = c(-1, 0, 7, 8, 9),
+                                 missing_codes = c(-1, 7, 8, 9, 10),
                                  validate_all = NULL) {
-  # 1=Yes, 2=No, 3=Not eligible → NA
+  # 1=Yes→1, 2=No→0, 0/3=Not eligible→NA, 1103/1104=proxy voting→NA
   dplyr::case_when(
     x %in% missing_codes ~ NA_real_,
-    x == 1 ~ 1,  # Yes
-    x == 2 ~ 2,  # No
-    x == 3 ~ NA_real_,  # Not eligible → NA
+    x == 0 ~ NA_real_,     # Not applicable/not eligible (W4)
+    x == 1 ~ 1,            # Yes → 1
+    x == 2 ~ 0,            # No → 0
+    x == 3 ~ NA_real_,     # Not yet eligible → NA
+    x == 1103 ~ NA_real_,
+    x == 1104 ~ NA_real_,
     TRUE ~ NA_real_
   )
 }

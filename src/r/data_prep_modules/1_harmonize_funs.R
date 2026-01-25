@@ -326,27 +326,40 @@ validate_harmonization <- function(x, expected_min = 1, expected_max = 4, var_na
 }
 
 
-#' Recode voted_last_election W1
+#' Recode voted_last_election W1 and W2
 #'
-#' W1 has 1=No, 2=Yes; reverse to match W2-W6 (1=Yes, 2=No)
-#' @param x Numeric vector (1-2)
-#' @return Reversed numeric vector
+#' W1 and W2 have reversed scale: 1=No, 2=Yes; recode to 0=No, 1=Yes
+#' All other values (missing, not applicable) → NA
+#' @param x Numeric vector
+#' @return Numeric vector (0=No, 1=Yes, others→NA)
 #'
 #' @export
 recode_voted_w1 <- function(x) {
-  # W1: 1=No, 2=Yes → target: 1=Yes, 2=No
-  ifelse(x == 1, 2, ifelse(x == 2, 1, NA_real_))
+  # W1/W2: 1=No, 2=Yes → target: 0=No, 1=Yes
+  dplyr::case_when(
+    x == 1 ~ 0,  # No → 0
+    x == 2 ~ 1,  # Yes → 1
+    TRUE ~ NA_real_
+  )
 }
 
 
 #' Recode voted_last_election W2-W6
 #'
-#' Recode "not eligible" (3) to NA, keep 1=Yes, 2=No
-#' @param x Numeric vector (1-3)
-#' @return Numeric vector (1-2, with 3→NA)
+#' Recode to 0=No, 1=Yes; "not eligible" and proxy voting → NA
+#' @param x Numeric vector
+#' @return Numeric vector (0=No, 1=Yes, others→NA)
 #'
 #' @export
 recode_voted_default <- function(x) {
-  # 1=Yes, 2=No, 3=Not eligible → NA
-  ifelse(x %in% c(1, 2), x, NA_real_)
+  # 1=Yes→1, 2=No→0, 0/3=Not eligible→NA, 1103/1104=proxy voting→NA
+  dplyr::case_when(
+    x == 0 ~ NA_real_,     # Not applicable/not eligible (W4)
+    x == 1 ~ 1,            # Yes → 1
+    x == 2 ~ 0,            # No → 0
+    x == 3 ~ NA_real_,     # Not yet eligible → NA
+    x == 1103 ~ NA_real_,
+    x == 1104 ~ NA_real_,
+    TRUE ~ NA_real_
+  )
 }
