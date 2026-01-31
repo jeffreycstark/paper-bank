@@ -144,7 +144,7 @@ A separate body of research documents systematic differences in political attitu
 
 The magnitude and persistence of these gaps vary with institutional context. @Anderson1997-dh show that losers' discontent is more pronounced in majoritarian systems, where losing means complete exclusion from power, than in proportional systems, where coalition governments may incorporate multiple parties. @Singh2012-hj find that power-sharing arrangements and the presence of institutional constraints on winners can moderate the gap. @Esaiasson2020-av demonstrate that procedural fairness perceptions mediate the relationship between losing and political trust—losers who perceive the process as fair show smaller attitudinal deficits than those who perceive unfairness.
 
-The theoretical mechanisms underlying winner-loser gaps remain debated. Some scholars emphasize instrumental calculations: winners expect favorable policies and thus evaluate government more positively, while losers anticipate unfavorable outcomes [@Anderson2005-uk]. Others stress psychological processes: winning validates one's political judgments and group identity, while losing threatens them. A third perspective highlights the informational value of elections—winning signals that one's political preferences are shared by a majority, while losing reveals minority status.
+The theoretical mechanisms underlying winner-loser gaps remain debated. Some scholars emphasize instrumental calculations: winners expect favorable policies and thus evaluate government more positively, while losers anticipate unfavorable outcomes [@Anderson2005-uk]. Others stress psychological processes: winning validates one’s political judgments and group identity, while losing threatens them [@Tajfel2004-hy; @Huddy2001-vy; @Anderson2002-cv; @Taber2006-kx]. A third perspective highlights the informational value of elections—winning signals that one’s political preferences are shared by a majority, while losing reveals minority status [@Fiorina1978-wf; @Fiorina1981-FIXME; @Lupia1998-rk; @Duch2008-zu; @Esaiasson2011-po].
 
 ## Connecting the Literatures
 
@@ -315,7 +315,7 @@ bind_rows(wave_tbl, pooled_row) |>
   kable_styling(latex_options = c("striped", "hold_position"))
 ```
 
-The pooled model reveals a statistically significant loser effect: controlling for country, wave, and demographic characteristics, electoral losers are `r res$pooled$pct_increase`% more likely than winners to prioritize procedural democracy (OR = `r res$pooled$odds_ratio_fmt`, 95% CI: `r res$pooled$ci_fmt`, p < 0.001). In linear probability terms, losers are approximately `r res$pooled$lpm_effect_fmt` percentage points more likely than winners to emphasize procedures over outcomes. This effect, while modest in absolute terms, is highly robust across specifications and consistent across diverse political contexts.
+The pooled model reveals a statistically significant loser effect: controlling for country, wave, and demographic characteristics, electoral losers are `r res$pooled$pct_increase`% more likely than winners to prioritize procedural democracy (OR = `r res$pooled$odds_ratio_fmt`, 95% CI: `r res$pooled$ci_fmt`, p \< 0.001). In linear probability terms, losers are approximately `r res$pooled$lpm_effect_fmt` percentage points more likely than winners to emphasize procedures over outcomes. This effect, while modest in absolute terms, is highly robust across specifications and consistent across diverse political contexts.
 
 ```{r wave-effect-range}
 #| include: false
@@ -426,7 +426,7 @@ The third hypothesis predicts that the loser effect will respond dynamically to 
 
 Thailand provides the clearest test of H3 because its political trajectory—from flawed democracy to military-dominated governance—was so pronounced. Figure 1 traces the loser effect across four survey waves against the backdrop of Thailand's tumultuous political history.
 
-![Thailand Loser Effect Trajectory](../figures/fig1_thailand_trajectory.pdf){width=100%}
+![Thailand Loser Effect Trajectory](../figures/fig1_thailand_trajectory.pdf){width="100%"}
 
 ```{r thailand-detail}
 #| include: false
@@ -506,7 +506,7 @@ The Korean trajectory illustrates that the loser effect is not a fixed feature o
 
 Figure 2 displays the loser effect trajectories for all countries with three or more survey waves, highlighting the contrasting patterns of Thailand (increasing effect during democratic erosion) and South Korea (decreasing effect following power alternation).
 
-![Multi-Country Loser Effect Trajectories](../figures/fig3_multicountry_trajectory.pdf){width=100%}
+![Multi-Country Loser Effect Trajectories](../figures/fig3_multicountry_trajectory.pdf){width="100%"}
 
 Taiwan's trajectory falls between these poles. The loser effect was modest but positive during both DPP (Chen Shui-bian, Wave 2) and KMT (Ma Ying-jeou, Wave 3) administrations, then turned slightly negative during the subsequent DPP administration (Tsai Ing-wen, Wave 4). Like South Korea, Taiwan experienced regular power alternation that may have attenuated the urgency of procedural concerns for losers.
 
