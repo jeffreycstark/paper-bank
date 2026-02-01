@@ -137,8 +137,11 @@ if ("procedural_preference_index" %in% names(abs)) {
 ```{r process}
 # Filter to waves with both electoral_status and procedural_preference_index
 # W2, W3, W4, W6 have these variables (W1 and W5 do not)
+# IMPORTANT: Also filter to only voters (voted_last_election == 1)
+# W2 has ~654 cases with electoral_status but voted_last_election != 1
 combined <- abs %>%
   filter(wave %in% c(2, 3, 4, 6)) %>%
+  filter(voted_last_election == 1) %>%  # Only include actual voters
   filter(!is.na(electoral_status), !is.na(procedural_preference_index)) %>%
   mutate(
     # Format wave label
