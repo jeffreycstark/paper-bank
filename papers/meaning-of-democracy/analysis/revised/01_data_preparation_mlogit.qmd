@@ -162,6 +162,8 @@ get_country_name <- function(code) {
 ```{r process-w2}
 w2_data <- abs %>%
   filter(wave == 2) %>%
+  # Exclude one-party states (China=4, Vietnam=11) - winner/loser concept doesn't apply
+  filter(!country %in% c(4, 11)) %>%
   # IMPORTANT: Restrict to actual voters for clean winner/loser operationalization
   filter(voted_last_election == 1) %>%
   filter(!is.na(electoral_status), !is.na(dem_essential_harmonized)) %>%
@@ -181,9 +183,19 @@ w2_data <- abs %>%
                         labels = w2_items$item_label)
   ) %>%
   filter(!is.na(country_name)) %>%
+  mutate(
+    # Demographics
+    age = as.numeric(age),
+    female = if_else(gender == 2, 1L, 0L),
+    education = as.numeric(education_level),
+    urban = if_else(urban_rural == 1, 1L, 0L)
+  ) %>%
   select(
     wave_label, wave_year, country_name, country,
     loser, winner_loser,
+    # Demographics
+    age, female, education, urban,
+    # DV
     dem_choice,
     dem_essential_harmonized
   )
@@ -202,7 +214,9 @@ print(prop.table(table(w2_data$winner_loser, w2_data$dem_choice), margin = 1) %>
 ```{r process-w346}
 w346_data <- abs %>%
   filter(wave %in% c(3, 4, 6)) %>%
-  # Restrict to actual voters (consistent with W2; already implicit in W3/4/6 
+  # Exclude one-party states (China=4, Vietnam=11) - winner/loser concept doesn't apply
+  filter(!country %in% c(4, 11)) %>%
+  # Restrict to actual voters (consistent with W2; already implicit in W3/4/6
   # since electoral_status is only coded for voters in these waves)
   filter(voted_last_election == 1) %>%
   filter(!is.na(electoral_status)) %>%
@@ -250,11 +264,27 @@ w346_data <- w346_data %>%
                           NA_character_) %>% factor(levels = set4_items$item_label)
   )
 
-# Select final columns
+# Add demographic controls
+w346_data <- w346_data %>%
+  mutate(
+    # Age (continuous)
+    age = as.numeric(age),
+    # Female indicator (gender: 1=Male, 2=Female in harmonized data)
+    female = if_else(gender == 2, 1L, 0L),
+    # Education (use education_level as ordinal, or education_years)
+    education = as.numeric(education_level),
+    # Urban indicator (urban_rural: varies by wave, typically 1=Urban, 2=Rural)
+    urban = if_else(urban_rural == 1, 1L, 0L)
+  )
+
+# Select final columns including demographics
 w346_analysis <- w346_data %>%
   select(
     wave_label, wave_year, wave, country_name, country,
     loser, winner_loser,
+    # Demographics
+    age, female, education, urban,
+    # DV items
     dem_meaning_set1, dem_meaning_set2, dem_meaning_set3, dem_meaning_set4,
     set1_choice, set2_choice, set3_choice, set4_choice,
     set1_valid, set2_valid, set3_valid, set4_valid
