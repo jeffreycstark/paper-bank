@@ -242,6 +242,7 @@ if (!is.null(cw_ames)) {
   cw_display <- cw_ames %>%
     filter(set %in% c("Set1", "Set2")) %>%
     mutate(
+      sig = replace_na(sig, ""),
       ame_fmt = sprintf("%+.1f%s", ame * 100, sig),
       item_short = if_else(item %in% names(item_labels),
                            item_labels[item],
@@ -306,6 +307,7 @@ if (!is.null(cw_ames)) {
   cw_display <- cw_ames %>%
     filter(set %in% c("Set3", "Set4")) %>%
     mutate(
+      sig = replace_na(sig, ""),
       ame_fmt = sprintf("%+.1f%s", ame * 100, sig),
       item_short = if_else(item %in% names(item_labels),
                            item_labels[item],
@@ -448,6 +450,7 @@ if (!is.null(pooled_results)) {
   if (nrow(w2_results) > 0) {
     w2_results %>%
       mutate(
+        sig = replace_na(sig, ""),
         ame_pp = sprintf("%+.1f", ame * 100),
         se_pp = sprintf("(%.1f)", se * 100),
         ci = sprintf("[%+.1f, %+.1f]", ci_low * 100, ci_high * 100)
