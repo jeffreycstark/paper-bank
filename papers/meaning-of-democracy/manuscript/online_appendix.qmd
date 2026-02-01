@@ -218,27 +218,61 @@ if (!is.null(w346_data)) {
 #| tbl-cap: "Country-Wave AMEs: Sets 1-2"
 
 if (!is.null(cw_ames)) {
-  # Format for display
+  # Create short item labels for column headers
+  item_labels <- c(
+    "Free elections" = "Elections",
+    "Party competition" = "Parties",
+    "Basic necessities" = "Necessities",
+    "Reduce inequality" = "Inequality",
+    "Gov explain" = "Explain",
+    "Free speech" = "Speech",
+    "Jobs for all" = "Jobs",
+    "Narrow income gap" = "Income gap",
+    "Free media" = "Media",
+    "Fair elections" = "Fair elect",
+    "Low unemployment" = "Unemp",
+    "Welfare for poor" = "Welfare",
+    "Check government" = "Check gov",
+    "Minority rights" = "Minority",
+    "Equal income" = "Equal inc",
+    "No corruption" = "No corrupt"
+  )
+
+  # Format for display with short labels
   cw_display <- cw_ames %>%
     filter(set %in% c("Set1", "Set2")) %>%
     mutate(
-      ame_fmt = sprintf("%+.1f%s", ame * 100, sig)
+      ame_fmt = sprintf("%+.1f%s", ame * 100, sig),
+      item_short = if_else(item %in% names(item_labels),
+                           item_labels[item],
+                           substr(item, 1, 10))
     ) %>%
-    select(country_name, wave_label, set, item, ame_fmt) %>%
+    select(country_name, wave_label, set, item_short, ame_fmt) %>%
     pivot_wider(
-      names_from = c(set, item),
+      names_from = c(set, item_short),
       values_from = ame_fmt,
-      names_sep = ": "
+      names_sep = "_"
     ) %>%
     arrange(country_name, wave_label)
 
+  # Get column names for header grouping
+  col_names <- names(cw_display)
+  set1_cols <- sum(grepl("^Set1_", col_names))
+  set2_cols <- sum(grepl("^Set2_", col_names))
+
+  # Clean column names (remove Set prefix)
+  names(cw_display) <- gsub("^Set[12]_", "", names(cw_display))
+
   cw_display %>%
     rename(Country = country_name, Wave = wave_label) %>%
-    kable(booktabs = TRUE, longtable = TRUE, font_size = 7) %>%
-    kable_styling(latex_options = c("hold_position", "repeat_header", "striped"),
-                  font_size = 7) %>%
-    column_spec(1, width = "1.5cm") %>%
-    column_spec(2, width = "0.8cm")
+    kable(booktabs = TRUE, longtable = TRUE, align = c("l", "c", rep("r", set1_cols + set2_cols))) %>%
+    kable_styling(latex_options = c("hold_position", "repeat_header", "scale_down"),
+                  font_size = 8) %>%
+    add_header_above(c(" " = 2, "Set 1" = set1_cols, "Set 2" = set2_cols)) %>%
+    column_spec(1, width = "1.8cm") %>%
+    column_spec(2, width = "0.6cm") %>%
+    row_spec(seq(3, nrow(cw_display), by = 3), extra_css = "border-bottom: 1px solid #ccc;",
+             extra_latex_after = "\\midrule")
 } else {
   cat("**Warning:** Country-wave AME file not found.")
 }
@@ -248,26 +282,61 @@ if (!is.null(cw_ames)) {
 #| tbl-cap: "Country-Wave AMEs: Sets 3-4"
 
 if (!is.null(cw_ames)) {
+  # Create short item labels for column headers
+  item_labels <- c(
+    "Free elections" = "Elections",
+    "Party competition" = "Parties",
+    "Basic necessities" = "Necessities",
+    "Reduce inequality" = "Inequality",
+    "Gov explain" = "Explain",
+    "Free speech" = "Speech",
+    "Jobs for all" = "Jobs",
+    "Narrow income gap" = "Income gap",
+    "Free media" = "Media",
+    "Fair elections" = "Fair elect",
+    "Low unemployment" = "Unemp",
+    "Welfare for poor" = "Welfare",
+    "Check government" = "Check gov",
+    "Minority rights" = "Minority",
+    "Equal income" = "Equal inc",
+    "No corruption" = "No corrupt"
+  )
+
+  # Format for display with short labels
   cw_display <- cw_ames %>%
     filter(set %in% c("Set3", "Set4")) %>%
     mutate(
-      ame_fmt = sprintf("%+.1f%s", ame * 100, sig)
+      ame_fmt = sprintf("%+.1f%s", ame * 100, sig),
+      item_short = if_else(item %in% names(item_labels),
+                           item_labels[item],
+                           substr(item, 1, 10))
     ) %>%
-    select(country_name, wave_label, set, item, ame_fmt) %>%
+    select(country_name, wave_label, set, item_short, ame_fmt) %>%
     pivot_wider(
-      names_from = c(set, item),
+      names_from = c(set, item_short),
       values_from = ame_fmt,
-      names_sep = ": "
+      names_sep = "_"
     ) %>%
     arrange(country_name, wave_label)
 
+  # Get column names for header grouping
+  col_names <- names(cw_display)
+  set3_cols <- sum(grepl("^Set3_", col_names))
+  set4_cols <- sum(grepl("^Set4_", col_names))
+
+  # Clean column names (remove Set prefix)
+  names(cw_display) <- gsub("^Set[34]_", "", names(cw_display))
+
   cw_display %>%
     rename(Country = country_name, Wave = wave_label) %>%
-    kable(booktabs = TRUE, longtable = TRUE) %>%
-    kable_styling(latex_options = c("hold_position", "repeat_header", "striped"),
-                  font_size = 7) %>%
-    column_spec(1, width = "1.5cm") %>%
-    column_spec(2, width = "0.8cm")
+    kable(booktabs = TRUE, longtable = TRUE, align = c("l", "c", rep("r", set3_cols + set4_cols))) %>%
+    kable_styling(latex_options = c("hold_position", "repeat_header", "scale_down"),
+                  font_size = 8) %>%
+    add_header_above(c(" " = 2, "Set 3" = set3_cols, "Set 4" = set4_cols)) %>%
+    column_spec(1, width = "1.8cm") %>%
+    column_spec(2, width = "0.6cm") %>%
+    row_spec(seq(3, nrow(cw_display), by = 3), extra_css = "border-bottom: 1px solid #ccc;",
+             extra_latex_after = "\\midrule")
 } else {
   cat("**Warning:** Country-wave AME file not found.")
 }
