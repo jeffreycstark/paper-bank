@@ -76,13 +76,15 @@ get_country_name <- function(code) {
 
 # Wave year lookup (approximate midpoint of fieldwork)
 get_wave_year <- function(wave) {
+  # Approximate midpoint of fieldwork for each wave
+  # Based on actual interview dates from 05_interview_dates.qmd
   case_when(
-    wave == 1 ~ 2001,
-    wave == 2 ~ 2006,
-    wave == 3 ~ 2010,
-    wave == 4 ~ 2014,
-    wave == 5 ~ 2017,
-    wave == 6 ~ 2020,
+    wave == 1 ~ 2001L,
+    wave == 2 ~ 2006L,  # Jul 2004 - Dec 2008, bulk 2006-07
+    wave == 3 ~ 2011L,  # Jan 2010 - Nov 2012
+    wave == 4 ~ 2015L,  # Jun 2014 - Apr 2016
+    wave == 5 ~ 2017L,
+    wave == 6 ~ 2022L,  # Jul 2021 - Feb 2023
     TRUE ~ NA_integer_
   )
 }
