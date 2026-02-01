@@ -1,0 +1,467 @@
+---
+title: "Multinomial Logit Analysis"
+subtitle: "Meaning of Democracy Paper (Revised)"
+author: "Jeffrey Stark"
+date: today
+format:
+  html:
+    toc: true
+    toc-depth: 3
+    code-fold: show
+    df-print: paged
+execute:
+  warning: false
+  message: false
+---
+
+# Overview
+
+This script estimates multinomial logit models for each question set, then extracts
+marginal effects of loser status on the probability of choosing each item.
+
+**Approach:**
+- 4 multinomial logits for W3/W4/W6 (one per question set)
+- 1 multinomial logit for W2 (baseline validation)
+- Convert to average marginal effects (AMEs) for interpretation
+- No arbitrary binary coding—patterns emerge from the data
+
+# Setup
+
+```{r setup}
+library(tidyverse)
+library(nnet)        # multinom()
+library(margins)     # marginal effects
+library(broom)       # tidy model output
+library(knitr)
+library(kableExtra)
+library(here)
+
+here::i_am("papers/meaning-of-democracy/analysis/revised/02_multinomial_analysis.qmd")
+
+# Load prepared data
+data_dir <- here("papers", "meaning-of-democracy", "analysis", "revised", "data")
+results_dir <- here("papers", "meaning-of-democracy", "analysis", "revised", "results")
+if (!dir.exists(results_dir)) dir.create(results_dir, recursive = TRUE)
+
+w2_data <- readRDS(file.path(data_dir, "w2_baseline.rds"))
+w346_data <- readRDS(file.path(data_dir, "w346_main.rds"))
+item_meta <- readRDS(file.path(data_dir, "item_metadata.rds"))
+```
+
+# Helper Functions
+
+```{r helpers}
+# Extract marginal effects from multinomial logit
+# Returns AME of 'loser' on probability of each choice
+get_loser_ames <- function(model, data) {
+  # Get predicted probabilities for each observation
+  probs_all <- predict(model, type = "probs")
+  
+  # Create counterfactual datasets
+  data_loser <- data_winner <- data
+  data_loser$loser <- 1
+  data_winner$loser <- 0
+  
+  # Predict under each counterfactual
+  probs_loser <- predict(model, newdata = data_loser, type = "probs")
+  probs_winner <- predict(model, newdata = data_winner, type = "probs")
+  
+  # AME = mean difference in predicted probability
+  ames <- colMeans(probs_loser - probs_winner)
+  
+  return(ames)
+}
+
+# Bootstrap standard errors for AMEs
+bootstrap_ames <- function(model_formula, data, n_boot = 500, seed = 42) {
+  set.seed(seed)
+  
+  # Fit original model to get choice levels
+  orig_model <- multinom(model_formula, data = data, trace = FALSE)
+  choice_levels <- colnames(predict(orig_model, type = "probs"))
+  
+  # Bootstrap
+  boot_ames <- matrix(NA, nrow = n_boot, ncol = length(choice_levels))
+  colnames(boot_ames) <- choice_levels
+  
+  for (i in 1:n_boot) {
+    # Resample
+    boot_idx <- sample(nrow(data), replace = TRUE)
+    boot_data <- data[boot_idx, ]
+    
+    # Fit model
+    boot_model <- tryCatch(
+      multinom(model_formula, data = boot_data, trace = FALSE),
+      error = function(e) NULL
+    )
+    
+    if (!is.null(boot_model)) {
+      boot_ames[i, ] <- get_loser_ames(boot_model, boot_data)
+    }
+  }
+  
+  # Calculate SEs
+  ses <- apply(boot_ames, 2, sd, na.rm = TRUE)
+  
+  return(ses)
+}
+
+# Format results into a nice table
+format_ame_results <- function(ames, ses, item_labels, set_name) {
+  tibble(
+    set = set_name,
+    item = names(ames),
+    item_label = item_labels,
+    ame = ames,
+    se = ses,
+    z = ames / ses,
+    p = 2 * pnorm(-abs(z)),
+    ci_low = ames - 1.96 * ses,
+    ci_high = ames + 1.96 * ses,
+    ame_pct = sprintf("%+.1f", ames * 100),
+    sig = case_when(
+      p < 0.001 ~ "***",
+      p < 0.01 ~ "**",
+      p < 0.05 ~ "*",
+      p < 0.10 ~ "†",
+      TRUE ~ ""
+    )
+  )
+}
+```
+
+# Main Analysis: W3/W4/W6
+
+## Set 1: Gap, Elections, Waste, Expression
+
+```{r set1-model}
+# Filter to valid Set 1 responses
+set1_data <- w346_data %>%
+  filter(set1_valid) %>%
+  mutate(
+    choice = set1_choice,
+    country_f = factor(country_name),
+    wave_f = factor(wave_label)
+  )
+
+cat("Set 1 N:", nrow(set1_data), "\n")
+cat("Choice distribution:\n")
+print(table(set1_data$choice))
+
+# Multinomial logit with country and wave FEs
+set1_model <- multinom(
+  choice ~ loser + country_f + wave_f,
+  data = set1_data,
+  trace = FALSE
+)
+
+cat("\nModel summary:\n")
+summary(set1_model)
+```
+
+```{r set1-ames}
+# Get AMEs
+set1_ames <- get_loser_ames(set1_model, set1_data)
+cat("\nLoser AMEs (Set 1):\n")
+print(round(set1_ames, 4))
+
+# Bootstrap SEs (reduced iterations for speed; increase for final)
+cat("\nBootstrapping SEs (this may take a minute)...\n")
+set1_ses <- bootstrap_ames(
+  choice ~ loser + country_f + wave_f,
+  data = set1_data,
+  n_boot = 200
+)
+
+# Format results
+set1_labels <- c("Reduce gap rich/poor", "Free elections", "No waste", "Free expression")
+set1_results <- format_ame_results(set1_ames, set1_ses, set1_labels, "Set1")
+
+cat("\n=== SET 1 RESULTS ===\n")
+set1_results %>%
+  select(item_label, ame_pct, se, p, sig) %>%
+  kable(digits = 3, caption = "Loser effect on item choice probability (Set 1)")
+```
+
+## Set 2: Oversight, Necessities, Organize, Services
+
+```{r set2-model}
+set2_data <- w346_data %>%
+  filter(set2_valid) %>%
+  mutate(
+    choice = set2_choice,
+    country_f = factor(country_name),
+    wave_f = factor(wave_label)
+  )
+
+cat("Set 2 N:", nrow(set2_data), "\n")
+
+set2_model <- multinom(
+  choice ~ loser + country_f + wave_f,
+  data = set2_data,
+  trace = FALSE
+)
+
+set2_ames <- get_loser_ames(set2_model, set2_data)
+set2_ses <- bootstrap_ames(
+  choice ~ loser + country_f + wave_f,
+  data = set2_data,
+  n_boot = 200
+)
+
+set2_labels <- c("Legislature oversight", "Basic necessities", "Organize groups", "Quality services")
+set2_results <- format_ame_results(set2_ames, set2_ses, set2_labels, "Set2")
+
+cat("\n=== SET 2 RESULTS ===\n")
+set2_results %>%
+  select(item_label, ame_pct, se, p, sig) %>%
+  kable(digits = 3, caption = "Loser effect on item choice probability (Set 2)")
+```
+
+## Set 3: Law/Order, Media, Jobs, Parties
+
+```{r set3-model}
+set3_data <- w346_data %>%
+  filter(set3_valid) %>%
+  mutate(
+    choice = set3_choice,
+    country_f = factor(country_name),
+    wave_f = factor(wave_label)
+  )
+
+cat("Set 3 N:", nrow(set3_data), "\n")
+
+set3_model <- multinom(
+  choice ~ loser + country_f + wave_f,
+  data = set3_data,
+  trace = FALSE
+)
+
+set3_ames <- get_loser_ames(set3_model, set3_data)
+set3_ses <- bootstrap_ames(
+  choice ~ loser + country_f + wave_f,
+  data = set3_data,
+  n_boot = 200
+)
+
+set3_labels <- c("Law and order", "Media freedom", "Jobs for all", "Party competition")
+set3_results <- format_ame_results(set3_ames, set3_ses, set3_labels, "Set3")
+
+cat("\n=== SET 3 RESULTS ===\n")
+set3_results %>%
+  select(item_label, ame_pct, se, p, sig) %>%
+  kable(digits = 3, caption = "Loser effect on item choice probability (Set 3)")
+```
+
+## Set 4: Protest, Corruption, Courts, Unemployment
+
+```{r set4-model}
+set4_data <- w346_data %>%
+  filter(set4_valid) %>%
+  mutate(
+    choice = set4_choice,
+    country_f = factor(country_name),
+    wave_f = factor(wave_label)
+  )
+
+cat("Set 4 N:", nrow(set4_data), "\n")
+
+set4_model <- multinom(
+  choice ~ loser + country_f + wave_f,
+  data = set4_data,
+  trace = FALSE
+)
+
+set4_ames <- get_loser_ames(set4_model, set4_data)
+set4_ses <- bootstrap_ames(
+  choice ~ loser + country_f + wave_f,
+  data = set4_data,
+  n_boot = 200
+)
+
+set4_labels <- c("Protest freedom", "Clean politics", "Court protection", "Unemployment aid")
+set4_results <- format_ame_results(set4_ames, set4_ses, set4_labels, "Set4")
+
+cat("\n=== SET 4 RESULTS ===\n")
+set4_results %>%
+  select(item_label, ame_pct, se, p, sig) %>%
+  kable(digits = 3, caption = "Loser effect on item choice probability (Set 4)")
+```
+
+# Baseline Validation: W2
+
+```{r w2-model}
+w2_analysis <- w2_data %>%
+  mutate(
+    choice = dem_choice,
+    country_f = factor(country_name)
+  )
+
+cat("W2 N:", nrow(w2_analysis), "\n")
+cat("Choice distribution:\n")
+print(table(w2_analysis$choice))
+
+w2_model <- multinom(
+  choice ~ loser + country_f,
+  data = w2_analysis,
+  trace = FALSE
+)
+
+w2_ames <- get_loser_ames(w2_model, w2_analysis)
+w2_ses <- bootstrap_ames(
+  choice ~ loser + country_f,
+  data = w2_analysis,
+  n_boot = 200
+)
+
+w2_labels <- c("Elections", "Criticize power", "Income equality", "Basic necessities")
+w2_results <- format_ame_results(w2_ames, w2_ses, w2_labels, "W2")
+
+cat("\n=== W2 BASELINE RESULTS ===\n")
+w2_results %>%
+  select(item_label, ame_pct, se, p, sig) %>%
+  kable(digits = 3, caption = "Loser effect on item choice probability (W2 Baseline)")
+```
+
+# Combined Results
+
+```{r combined-results}
+# Combine all results
+all_results <- bind_rows(
+  set1_results,
+  set2_results,
+  set3_results,
+  set4_results,
+  w2_results
+) %>%
+  # Add item type from metadata
+
+left_join(
+    item_meta %>% select(set, item_label, item_type, item_subtype),
+    by = c("set", "item_label")
+  )
+
+cat("\n=== ALL LOSER EFFECTS ===\n")
+all_results %>%
+  arrange(item_type, desc(ame)) %>%
+  select(set, item_label, item_type, ame_pct, sig) %>%
+  kable(caption = "Loser effect on choosing each item (percentage points)")
+```
+
+## Summary by Item Type
+
+```{r summary-by-type}
+# Summarize by procedural/substantive/governance
+type_summary <- all_results %>%
+  group_by(item_type) %>%
+  summarise(
+    n_items = n(),
+    mean_ame = mean(ame),
+    median_ame = median(ame),
+    n_positive = sum(ame > 0),
+    n_sig_positive = sum(ame > 0 & p < 0.05),
+    n_sig_negative = sum(ame < 0 & p < 0.05),
+    .groups = "drop"
+  )
+
+cat("\n=== SUMMARY BY ITEM TYPE ===\n")
+type_summary %>%
+  mutate(
+    mean_ame_pct = sprintf("%+.2f", mean_ame * 100),
+    pattern = paste0(n_positive, "/", n_items, " positive")
+  ) %>%
+  select(item_type, n_items, mean_ame_pct, pattern, n_sig_positive, n_sig_negative) %>%
+  kable(caption = "Does the loser effect differ by item type?")
+```
+
+# Visualize Results
+
+```{r plot-results, fig.width=10, fig.height=8}
+# Coefficient plot
+all_results %>%
+  mutate(
+    item_label = fct_reorder(item_label, ame),
+    item_type = factor(item_type, levels = c("procedural", "substantive", "governance"))
+  ) %>%
+  ggplot(aes(x = ame * 100, y = item_label, color = item_type)) +
+  geom_vline(xintercept = 0, linetype = "dashed", color = "gray50") +
+  geom_errorbarh(aes(xmin = ci_low * 100, xmax = ci_high * 100), height = 0.2) +
+  geom_point(size = 3) +
+  scale_color_manual(
+    values = c("procedural" = "#2166AC", "substantive" = "#B2182B", "governance" = "#666666"),
+    name = "Item Type"
+  ) +
+  labs(
+    x = "Loser Effect (percentage points)",
+    y = NULL,
+    title = "Effect of Loser Status on Item Choice Probability",
+    subtitle = "Positive = losers more likely to choose; Negative = winners more likely",
+    caption = "Note: 95% confidence intervals from bootstrap (200 iterations)"
+  ) +
+  theme_minimal() +
+  theme(
+    legend.position = "bottom",
+    panel.grid.minor = element_blank()
+  )
+
+ggsave(
+  file.path(results_dir, "fig_loser_effects_all_items.png"),
+  width = 10, height = 8, dpi = 300
+)
+ggsave(
+  file.path(results_dir, "fig_loser_effects_all_items.pdf"),
+  width = 10, height = 8
+)
+```
+
+# Save Results
+
+```{r save-results}
+# Save all results
+results_list <- list(
+  all_results = all_results,
+  type_summary = type_summary,
+  w2_results = w2_results,
+  set1_results = set1_results,
+  set2_results = set2_results,
+  set3_results = set3_results,
+  set4_results = set4_results,
+  item_metadata = item_meta,
+  models = list(
+    w2 = w2_model,
+    set1 = set1_model,
+    set2 = set2_model,
+    set3 = set3_model,
+    set4 = set4_model
+  )
+)
+
+saveRDS(results_list, file.path(results_dir, "mlogit_results.rds"))
+cat("\nResults saved to:", file.path(results_dir, "mlogit_results.rds"), "\n")
+
+# Also save CSV of main results for easy viewing
+write_csv(all_results, file.path(results_dir, "loser_effects_all_items.csv"))
+cat("CSV saved to:", file.path(results_dir, "loser_effects_all_items.csv"), "\n")
+```
+
+# Interpretation Guide
+
+## Expected Pattern (if theory is correct)
+
+**Procedural items** (losers should choose MORE):
+- Elections, Party competition (electoral path back to power)
+- Free expression, Media freedom, Protest, Organize groups (protect opposition voice)
+- Legislature oversight, Court protection (constrain winners)
+
+**Substantive items** (winners should choose MORE):
+- Reduce gap, Income equality (redistribution from power)
+- Basic necessities, Jobs, Unemployment aid (welfare delivery)
+
+**Governance items** (unclear prediction):
+- No waste, Quality services, Law and order, Clean politics
+- These might appeal to both sides, or neither
+
+## What to report
+
+If the pattern holds:
+> "Across 16 items in four question sets, losers are systematically more likely to choose items related to elections (+X pp), civil liberties (+Y pp), and accountability mechanisms (+Z pp). Winners are more likely to choose items related to economic equality (−A pp) and welfare provision (−B pp). This pattern emerges without any ex ante coding decisions—the data reveal that losers and winners conceptualize democracy differently."

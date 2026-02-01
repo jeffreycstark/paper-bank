@@ -1,0 +1,374 @@
+---
+title: "Data Preparation - Multinomial Logit Approach"
+subtitle: "Meaning of Democracy Paper (Revised)"
+author: "Jeffrey Stark"
+date: today
+format:
+  html:
+    toc: true
+    toc-depth: 3
+    code-fold: show
+    df-print: paged
+execute:
+  warning: false
+  message: false
+---
+
+# Overview
+
+This script prepares data for the revised analysis using multinomial logit.
+Instead of collapsing the 4-item choices into a binary procedural/substantive variable,
+we keep the full categorical structure and model choice probabilities directly.
+
+**Key change:** No arbitrary recoding. The DV for each question is the 4-category choice.
+
+# Setup
+
+```{r setup}
+library(tidyverse)
+library(here)
+
+here::i_am("papers/meaning-of-democracy/analysis/revised/01_data_preparation_mlogit.qmd")
+
+# Output directory
+output_dir <- here("papers", "meaning-of-democracy", "analysis", "revised", "data")
+if (!dir.exists(output_dir)) dir.create(output_dir, recursive = TRUE)
+
+# Master dataset
+master_file <- here("data", "processed", "abs_econdev_authpref.rds")
+```
+
+# Item Labels
+
+Define what each response value means for each question set.
+
+```{r item-labels}
+# W2 q92 (dem_essential_harmonized)
+w2_items <- tibble(
+  value = 1:4,
+  item_label = c(
+    "Elections",
+    "Criticize power", 
+    "Income equality",
+    "Basic necessities"
+  ),
+  item_type = c("procedural", "procedural", "substantive", "substantive"),
+  item_subtype = c("electoral", "liberal", "redistribution", "welfare")
+)
+
+# W3/W4/W6 Set 1 (q85)
+set1_items <- tibble(
+  value = 1:4,
+  item_label = c(
+    "Reduce gap rich/poor",
+    "Free elections",
+    "No waste",
+    "Free expression"
+  ),
+  item_type = c("substantive", "procedural", "governance", "procedural"),
+  item_subtype = c("redistribution", "electoral", "quality", "liberal")
+)
+
+# W3/W4/W6 Set 2 (q86)
+set2_items <- tibble(
+  value = 1:4,
+  item_label = c(
+    "Legislature oversight",
+    "Basic necessities",
+    "Organize groups",
+    "Quality services"
+  ),
+  item_type = c("procedural", "substantive", "procedural", "governance"),
+  item_subtype = c("accountability", "welfare", "liberal", "quality")
+)
+
+# W3/W4/W6 Set 3 (q87)
+set3_items <- tibble(
+  value = 1:4,
+  item_label = c(
+    "Law and order",
+    "Media freedom",
+    "Jobs for all",
+    "Party competition"
+  ),
+  item_type = c("governance", "procedural", "substantive", "procedural"),
+  item_subtype = c("quality", "liberal", "welfare", "electoral")
+)
+
+# W3/W4/W6 Set 4 (q88)
+set4_items <- tibble(
+  value = 1:4,
+  item_label = c(
+    "Protest freedom",
+    "Clean politics",
+    "Court protection",
+    "Unemployment aid"
+  ),
+  item_type = c("procedural", "governance", "procedural", "substantive"),
+  item_subtype = c("liberal", "quality", "accountability", "welfare")
+)
+
+# Combine all item metadata
+item_metadata <- bind_rows(
+  w2_items %>% mutate(set = "W2", question = "dem_essential_harmonized"),
+  set1_items %>% mutate(set = "Set1", question = "dem_meaning_set1"),
+  set2_items %>% mutate(set = "Set2", question = "dem_meaning_set2"),
+  set3_items %>% mutate(set = "Set3", question = "dem_meaning_set3"),
+  set4_items %>% mutate(set = "Set4", question = "dem_meaning_set4")
+)
+
+cat("=== ITEM METADATA ===\n")
+print(item_metadata, n = 24)
+```
+
+# Load and Process Data
+
+```{r load-data}
+abs <- readRDS(master_file)
+
+cat("Master dataset:", nrow(abs), "rows,", ncol(abs), "columns\n")
+cat("Waves:", paste(sort(unique(abs$wave)), collapse = ", "), "\n")
+```
+
+## Country Name Helper
+
+```{r country-helper}
+get_country_name <- function(code) {
+  code <- as.integer(code)
+  case_when(
+    code == 1 ~ "Japan",
+    code == 2 ~ "Hong Kong",
+    code == 3 ~ "South Korea",
+    code == 4 ~ "China",
+    code == 5 ~ "Mongolia",
+    code == 6 ~ "Philippines",
+    code == 7 ~ "Taiwan",
+    code == 8 ~ "Thailand",
+    code == 9 ~ "Indonesia",
+    code == 10 ~ "Singapore",
+    code == 11 ~ "Vietnam",
+    code == 12 ~ "Cambodia",
+    code == 13 ~ "Malaysia",
+    code == 14 ~ "Myanmar",
+    code == 15 ~ "Australia",
+    code == 18 ~ "India",
+    TRUE ~ NA_character_
+  )
+}
+```
+
+## Process W2 Data (Baseline)
+
+```{r process-w2}
+w2_data <- abs %>%
+  filter(wave == 2) %>%
+  # IMPORTANT: Restrict to actual voters for clean winner/loser operationalization
+  filter(voted_last_election == 1) %>%
+  filter(!is.na(electoral_status), !is.na(dem_essential_harmonized)) %>%
+  # Keep only valid responses (1-4)
+  filter(dem_essential_harmonized %in% 1:4) %>%
+  mutate(
+    wave_label = "W2",
+    wave_year = 2006,
+    country_name = get_country_name(country),
+    
+    # Winner/loser (1=Winner, 2=Loser in harmonized data)
+    loser = if_else(electoral_status == 2, 1L, 0L),
+    winner_loser = if_else(loser == 1, "Loser", "Winner"),
+    
+    # DV: Keep as factor for multinomial logit
+    dem_choice = factor(dem_essential_harmonized, levels = 1:4,
+                        labels = w2_items$item_label)
+  ) %>%
+  filter(!is.na(country_name)) %>%
+  select(
+    wave_label, wave_year, country_name, country,
+    loser, winner_loser,
+    dem_choice,
+    dem_essential_harmonized
+  )
+
+cat("\n=== W2 BASELINE DATA ===\n")
+cat("N:", nrow(w2_data), "\n")
+cat("Countries:", n_distinct(w2_data$country_name), "\n")
+cat("\nChoice distribution:\n")
+print(table(w2_data$dem_choice))
+cat("\nBy winner/loser:\n")
+print(prop.table(table(w2_data$winner_loser, w2_data$dem_choice), margin = 1) %>% round(3))
+```
+
+## Process W3/W4/W6 Data (Main Analysis)
+
+```{r process-w346}
+w346_data <- abs %>%
+  filter(wave %in% c(3, 4, 6)) %>%
+  # Restrict to actual voters (consistent with W2; already implicit in W3/4/6 
+  # since electoral_status is only coded for voters in these waves)
+  filter(voted_last_election == 1) %>%
+  filter(!is.na(electoral_status)) %>%
+  mutate(
+    wave_label = paste0("W", wave),
+    wave_year = case_when(
+      wave == 3 ~ 2011,  # Jan 2010 - Nov 2012
+      wave == 4 ~ 2015,  # Jun 2014 - Apr 2016
+      wave == 6 ~ 2022   # Jul 2021 - Feb 2023
+    ),
+    country_name = get_country_name(country),
+    
+    # Winner/loser
+    loser = if_else(electoral_status == 2, 1L, 0L),
+    winner_loser = if_else(loser == 1, "Loser", "Winner")
+  ) %>%
+  filter(!is.na(country_name))
+
+# Create factor versions of each set choice
+# Only include observations with valid responses (1-4)
+w346_data <- w346_data %>%
+  mutate(
+    # Set 1
+    set1_valid = dem_meaning_set1 %in% 1:4,
+    set1_choice = if_else(set1_valid, 
+                          factor(dem_meaning_set1, levels = 1:4, labels = set1_items$item_label),
+                          NA_character_) %>% factor(levels = set1_items$item_label),
+    
+    # Set 2
+    set2_valid = dem_meaning_set2 %in% 1:4,
+    set2_choice = if_else(set2_valid,
+                          factor(dem_meaning_set2, levels = 1:4, labels = set2_items$item_label),
+                          NA_character_) %>% factor(levels = set2_items$item_label),
+    
+    # Set 3
+    set3_valid = dem_meaning_set3 %in% 1:4,
+    set3_choice = if_else(set3_valid,
+                          factor(dem_meaning_set3, levels = 1:4, labels = set3_items$item_label),
+                          NA_character_) %>% factor(levels = set3_items$item_label),
+    
+    # Set 4
+    set4_valid = dem_meaning_set4 %in% 1:4,
+    set4_choice = if_else(set4_valid,
+                          factor(dem_meaning_set4, levels = 1:4, labels = set4_items$item_label),
+                          NA_character_) %>% factor(levels = set4_items$item_label)
+  )
+
+# Select final columns
+w346_analysis <- w346_data %>%
+  select(
+    wave_label, wave_year, wave, country_name, country,
+    loser, winner_loser,
+    dem_meaning_set1, dem_meaning_set2, dem_meaning_set3, dem_meaning_set4,
+    set1_choice, set2_choice, set3_choice, set4_choice,
+    set1_valid, set2_valid, set3_valid, set4_valid
+  )
+
+cat("\n=== W3/W4/W6 MAIN DATA ===\n")
+cat("Total N:", nrow(w346_analysis), "\n")
+cat("Countries:", n_distinct(w346_analysis$country_name), "\n")
+
+cat("\nValid responses per set:\n")
+cat("  Set 1:", sum(w346_analysis$set1_valid), "\n")
+cat("  Set 2:", sum(w346_analysis$set2_valid), "\n")
+cat("  Set 3:", sum(w346_analysis$set3_valid), "\n")
+cat("  Set 4:", sum(w346_analysis$set4_valid), "\n")
+
+cat("\nBy wave:\n")
+w346_analysis %>%
+  group_by(wave_label) %>%
+  summarise(
+    n = n(),
+    n_loser = sum(loser),
+    pct_loser = round(mean(loser) * 100, 1),
+    set1_valid = sum(set1_valid),
+    .groups = "drop"
+  ) %>%
+  print()
+```
+
+## Sample Overview by Set
+
+```{r sample-overview}
+cat("\n=== SET 1 CHOICE DISTRIBUTION ===\n")
+cat("Overall:\n")
+print(table(w346_analysis$set1_choice, useNA = "ifany"))
+
+cat("\nBy winner/loser (row proportions):\n")
+w346_analysis %>%
+  filter(set1_valid) %>%
+  with(prop.table(table(winner_loser, set1_choice), margin = 1)) %>%
+  round(3) %>%
+  print()
+
+cat("\n=== SET 2 CHOICE DISTRIBUTION ===\n")
+cat("By winner/loser (row proportions):\n")
+w346_analysis %>%
+  filter(set2_valid) %>%
+  with(prop.table(table(winner_loser, set2_choice), margin = 1)) %>%
+  round(3) %>%
+  print()
+
+cat("\n=== SET 3 CHOICE DISTRIBUTION ===\n")
+cat("By winner/loser (row proportions):\n")
+w346_analysis %>%
+  filter(set3_valid) %>%
+  with(prop.table(table(winner_loser, set3_choice), margin = 1)) %>%
+  round(3) %>%
+  print()
+
+cat("\n=== SET 4 CHOICE DISTRIBUTION ===\n")
+cat("By winner/loser (row proportions):\n")
+w346_analysis %>%
+  filter(set4_valid) %>%
+  with(prop.table(table(winner_loser, set4_choice), margin = 1)) %>%
+  round(3) %>%
+  print()
+```
+
+# Save Datasets
+
+```{r save}
+# Save W2 baseline
+saveRDS(w2_data, file.path(output_dir, "w2_baseline.rds"))
+cat("Saved:", file.path(output_dir, "w2_baseline.rds"), "\n")
+
+# Save W3/W4/W6 main analysis
+saveRDS(w346_analysis, file.path(output_dir, "w346_main.rds"))
+cat("Saved:", file.path(output_dir, "w346_main.rds"), "\n")
+
+# Save item metadata
+saveRDS(item_metadata, file.path(output_dir, "item_metadata.rds"))
+cat("Saved:", file.path(output_dir, "item_metadata.rds"), "\n")
+
+cat("\nAll files saved to:", output_dir, "\n")
+```
+
+# Codebook
+
+## W2 Baseline (`w2_baseline.rds`)
+
+| Variable | Description |
+|----------|-------------|
+| `wave_label` | "W2" |
+| `wave_year` | 2006 |
+| `country_name` | Country name |
+| `loser` | 1 = loser, 0 = winner |
+| `winner_loser` | "Loser" or "Winner" |
+| `dem_choice` | Factor: chosen item (Elections, Criticize power, Income equality, Basic necessities) |
+| `dem_essential_harmonized` | Raw numeric (1-4) |
+
+## W3/W4/W6 Main (`w346_main.rds`)
+
+| Variable | Description |
+|----------|-------------|
+| `wave_label` | "W3", "W4", or "W6" |
+| `wave_year` | 2010, 2014, or 2020 |
+| `country_name` | Country name |
+| `loser` | 1 = loser, 0 = winner |
+| `winner_loser` | "Loser" or "Winner" |
+| `set1_choice` | Factor: Set 1 choice |
+| `set2_choice` | Factor: Set 2 choice |
+| `set3_choice` | Factor: Set 3 choice |
+| `set4_choice` | Factor: Set 4 choice |
+| `set1_valid` ... `set4_valid` | Logical: valid response for that set |
+
+## Item Metadata (`item_metadata.rds`)
+
+Maps each value (1-4) to item labels and types (procedural/substantive/governance) for each question set.
