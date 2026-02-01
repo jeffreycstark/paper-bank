@@ -1,0 +1,409 @@
+---
+title: "Online Appendix: What Does Democracy Mean to Losers?"
+author:
+  - name: Jeffrey Stark
+    affiliations:
+      - name: Yonsei University
+        department: Department of Sociology
+    email: jeffrey.stark@yonsei.ac.kr
+date: today
+format:
+  pdf:
+    documentclass: article
+    classoption: [letterpaper, 12pt]
+    geometry: margin=1in
+    linestretch: 2
+    number-sections: true
+    colorlinks: true
+    linkcolor: blue
+    urlcolor: blue
+    citecolor: blue
+    keep-tex: true
+  html:
+    toc: true
+    toc-depth: 3
+    number-sections: true
+    theme: cosmo
+bibliography: Winners-losers.bib
+csl: apa.csl
+execute:
+  echo: false
+  warning: false
+  message: false
+---
+
+```{r setup}
+library(tidyverse)
+library(knitr)
+library(kableExtra)
+library(here)
+
+here::i_am("papers/meaning-of-democracy/manuscript/online_appendix.qmd")
+
+# Results directory (multinomial logit analysis outputs)
+results_dir <- here("papers", "meaning-of-democracy", "analysis", "revised", "results")
+data_dir <- here("papers", "meaning-of-democracy", "analysis", "data")
+
+# Helper function to safely load files
+safe_read <- function(path, type = "rds") {
+  if (!file.exists(path)) {
+    warning(paste("File not found:", path))
+    return(NULL)
+  }
+  if (type == "rds") readRDS(path)
+  else if (type == "csv") read_csv(path, show_col_types = FALSE)
+  else stop("Unknown type")
+}
+
+# Load data files
+item_meta <- safe_read(file.path(data_dir, "item_metadata.rds"))
+w2_data <- safe_read(file.path(data_dir, "w2_baseline.rds"))
+w346_data <- safe_read(file.path(data_dir, "w346_main.rds"))
+
+# Load results files
+cw_ames <- safe_read(file.path(results_dir, "country_wave_item_ames.csv"), "csv")
+cw_gap <- safe_read(file.path(results_dir, "country_wave_proc_sub_gap.csv"), "csv")
+pooled_results <- safe_read(file.path(results_dir, "loser_effects_all_items.csv"), "csv")
+mlogit_results <- safe_read(file.path(results_dir, "mlogit_results.rds"))
+```
+
+# Survey Items and Coding {#sec-items}
+
+This section documents the survey items used to measure conceptions of democracy across the Asian Barometer Survey waves.
+
+## Item Reference Table
+
+```{r tbl-items}
+#| tbl-cap: "Survey Items by Set and Type"
+
+if (!is.null(item_meta)) {
+  item_meta %>%
+    select(set, value, item_label, item_type, item_subtype) %>%
+    rename(
+      Set = set,
+      Value = value,
+      `Item Label` = item_label,
+      `Item Type` = item_type,
+      Subtype = item_subtype
+    ) %>%
+    kable(booktabs = TRUE) %>%
+    kable_styling(latex_options = c("hold_position", "striped"),
+                  font_size = 10) %>%
+    pack_rows("Wave 2", 1, 4) %>%
+    pack_rows("Set 1 (W3/W4/W6)", 5, 8) %>%
+    pack_rows("Set 2 (W3/W4/W6)", 9, 12) %>%
+    pack_rows("Set 3 (W3/W4/W6)", 13, 16) %>%
+    pack_rows("Set 4 (W3/W4/W6)", 17, 20)
+} else {
+  cat("**Warning:** Item metadata file not found.")
+}
+```
+
+**Note:** Wave 2 employed a single forced-choice item with four response options, while Waves 3, 4, and 6 used four separate item sets (Sets 1--4), each presenting four response options. The W2 instrument differs from the later waves and is analyzed separately.
+
+# Sample Composition {#sec-sample}
+
+## Sample Size by Country and Wave
+
+```{r tbl-sample}
+#| tbl-cap: "Sample Composition by Country and Wave"
+
+if (!is.null(w2_data) && !is.null(w346_data)) {
+  # Combine data
+  w2_summary <- w2_data %>%
+    mutate(wave_label = "W2") %>%
+    group_by(country_name, wave_label) %>%
+    summarise(
+      N = n(),
+      N_winner = sum(loser == 0),
+      N_loser = sum(loser == 1),
+      pct_loser = mean(loser) * 100,
+      .groups = "drop"
+    )
+
+  w346_summary <- w346_data %>%
+    group_by(country_name, wave_label) %>%
+    summarise(
+      N = n(),
+      N_winner = sum(loser == 0),
+      N_loser = sum(loser == 1),
+      pct_loser = mean(loser) * 100,
+      .groups = "drop"
+    )
+
+  sample_summary <- bind_rows(w2_summary, w346_summary) %>%
+    arrange(country_name, wave_label)
+
+  # Wide format for display
+  sample_wide <- sample_summary %>%
+    select(country_name, wave_label, N) %>%
+    pivot_wider(names_from = wave_label, values_from = N, values_fill = 0) %>%
+    mutate(Total = rowSums(across(where(is.numeric)), na.rm = TRUE)) %>%
+    arrange(country_name)
+
+  # Add column totals
+  col_totals <- sample_wide %>%
+    summarise(across(where(is.numeric), sum)) %>%
+    mutate(country_name = "**Total**")
+
+  sample_wide <- bind_rows(sample_wide, col_totals)
+
+  sample_wide %>%
+    rename(Country = country_name) %>%
+    kable(booktabs = TRUE, format.args = list(big.mark = ",")) %>%
+    kable_styling(latex_options = c("hold_position", "striped"))
+} else {
+  cat("**Warning:** Data files not found. Cannot generate sample table.")
+}
+```
+
+## Response Distributions by Winner/Loser Status
+
+```{r tbl-response-dist}
+#| tbl-cap: "Response Distributions by Electoral Status (Pooled)"
+
+if (!is.null(w346_data)) {
+  # Function to compute cross-tabs for a set
+  compute_crosstab <- function(data, set_num) {
+    choice_var <- paste0("set", set_num, "_choice")
+    valid_var <- paste0("set", set_num, "_valid")
+
+    data %>%
+      filter(.data[[valid_var]]) %>%
+      mutate(choice = .data[[choice_var]]) %>%
+      group_by(loser, choice) %>%
+      summarise(n = n(), .groups = "drop") %>%
+      group_by(loser) %>%
+      mutate(pct = n / sum(n) * 100) %>%
+      ungroup() %>%
+      select(loser, choice, pct) %>%
+      pivot_wider(names_from = loser, values_from = pct, names_prefix = "loser_") %>%
+      mutate(
+        Winner = loser_0,
+        Loser = loser_1,
+        Diff = loser_1 - loser_0,
+        Set = paste0("Set ", set_num)
+      ) %>%
+      select(Set, Item = choice, Winner, Loser, Diff)
+  }
+
+  # Compute for all sets
+  all_crosstabs <- map_dfr(1:4, ~compute_crosstab(w346_data, .x))
+
+  all_crosstabs %>%
+    mutate(
+      Winner = sprintf("%.1f%%", Winner),
+      Loser = sprintf("%.1f%%", Loser),
+      Diff = sprintf("%+.1f", Diff)
+    ) %>%
+    kable(booktabs = TRUE, align = c("l", "l", "r", "r", "r")) %>%
+    kable_styling(latex_options = c("hold_position", "striped"),
+                  font_size = 9) %>%
+    pack_rows("Set 1", 1, 4) %>%
+    pack_rows("Set 2", 5, 8) %>%
+    pack_rows("Set 3", 9, 12) %>%
+    pack_rows("Set 4", 13, 16)
+} else {
+  cat("**Warning:** W346 data file not found.")
+}
+```
+
+**Note:** Diff = Loser - Winner. Positive values indicate losers are more likely to choose that item.
+
+# Full Country-Wave Results {#sec-country-wave}
+
+## Item-Level Average Marginal Effects
+
+```{r tbl-cw-ames-sets12}
+#| tbl-cap: "Country-Wave AMEs: Sets 1-2"
+
+if (!is.null(cw_ames)) {
+  # Format for display
+  cw_display <- cw_ames %>%
+    filter(set %in% c("Set1", "Set2")) %>%
+    mutate(
+      ame_fmt = sprintf("%+.1f%s", ame * 100, sig)
+    ) %>%
+    select(country_name, wave_label, set, item, ame_fmt) %>%
+    pivot_wider(
+      names_from = c(set, item),
+      values_from = ame_fmt,
+      names_sep = ": "
+    ) %>%
+    arrange(country_name, wave_label)
+
+  cw_display %>%
+    rename(Country = country_name, Wave = wave_label) %>%
+    kable(booktabs = TRUE, longtable = TRUE, font_size = 7) %>%
+    kable_styling(latex_options = c("hold_position", "repeat_header", "striped"),
+                  font_size = 7) %>%
+    column_spec(1, width = "1.5cm") %>%
+    column_spec(2, width = "0.8cm")
+} else {
+  cat("**Warning:** Country-wave AME file not found.")
+}
+```
+
+```{r tbl-cw-ames-sets34}
+#| tbl-cap: "Country-Wave AMEs: Sets 3-4"
+
+if (!is.null(cw_ames)) {
+  cw_display <- cw_ames %>%
+    filter(set %in% c("Set3", "Set4")) %>%
+    mutate(
+      ame_fmt = sprintf("%+.1f%s", ame * 100, sig)
+    ) %>%
+    select(country_name, wave_label, set, item, ame_fmt) %>%
+    pivot_wider(
+      names_from = c(set, item),
+      values_from = ame_fmt,
+      names_sep = ": "
+    ) %>%
+    arrange(country_name, wave_label)
+
+  cw_display %>%
+    rename(Country = country_name, Wave = wave_label) %>%
+    kable(booktabs = TRUE, longtable = TRUE) %>%
+    kable_styling(latex_options = c("hold_position", "repeat_header", "striped"),
+                  font_size = 7) %>%
+    column_spec(1, width = "1.5cm") %>%
+    column_spec(2, width = "0.8cm")
+} else {
+  cat("**Warning:** Country-wave AME file not found.")
+}
+```
+
+**Note:** Values are average marginal effects in percentage points. Significance: \*\*\* p<0.001, \*\* p<0.01, \* p<0.05, † p<0.10.
+
+## Procedural-Substantive Gap by Country-Wave
+
+```{r tbl-cw-gap}
+#| tbl-cap: "Procedural-Substantive Gap by Country and Wave"
+
+if (!is.null(cw_gap)) {
+  cw_gap %>%
+    select(country_name, wave_label, wave,
+           starts_with("proc_sub_gap"), starts_with("mean_n")) %>%
+    mutate(
+      gap_pp = sprintf("%+.1f", proc_sub_gap * 100),
+      ci = sprintf("[%+.1f, %+.1f]",
+                   proc_sub_gap_ci_low * 100,
+                   proc_sub_gap_ci_high * 100),
+      N = if("mean_n_procedural" %in% names(.)) {
+        round(mean_n_procedural)
+      } else NA_integer_
+    ) %>%
+    select(Country = country_name, Wave = wave_label,
+           `Gap (pp)` = gap_pp, `95% CI` = ci) %>%
+    arrange(Country, Wave) %>%
+    kable(booktabs = TRUE) %>%
+    kable_styling(latex_options = c("hold_position", "striped"))
+} else {
+  cat("**Warning:** Country-wave gap file not found.")
+}
+```
+
+**Note:** Gap = (Mean Procedural AME) - (Mean Substantive AME). Positive values indicate losers favor procedural items more than substantive items relative to winners.
+
+# Country Trajectory Plots {#sec-trajectories}
+
+```{r fig-trajectories}
+#| fig-cap: "Procedural-Substantive Gap Trajectories by Country"
+#| fig-width: 12
+#| fig-height: 10
+
+if (!is.null(cw_gap)) {
+  # Filter to countries with 2+ waves
+  multi_wave <- cw_gap %>%
+    group_by(country_name) %>%
+    filter(n() >= 2) %>%
+    ungroup()
+
+  # Order by magnitude of change
+  country_order <- multi_wave %>%
+    group_by(country_name) %>%
+    summarise(
+      max_gap = max(proc_sub_gap, na.rm = TRUE),
+      min_gap = min(proc_sub_gap, na.rm = TRUE),
+      change = max_gap - min_gap
+    ) %>%
+    arrange(desc(change)) %>%
+    pull(country_name)
+
+  multi_wave <- multi_wave %>%
+    mutate(country_name = factor(country_name, levels = country_order))
+
+  ggplot(multi_wave, aes(x = wave, y = proc_sub_gap * 100)) +
+    geom_ribbon(aes(ymin = proc_sub_gap_ci_low * 100,
+                    ymax = proc_sub_gap_ci_high * 100),
+                fill = "steelblue", alpha = 0.3) +
+    geom_line(color = "steelblue", linewidth = 1) +
+    geom_point(color = "steelblue", size = 2) +
+    geom_hline(yintercept = 0, linetype = "dashed", color = "gray50") +
+    facet_wrap(~country_name, ncol = 4) +
+    scale_x_continuous(breaks = c(3, 4, 6),
+                       labels = c("W3", "W4", "W6")) +
+    labs(
+      x = "Wave",
+      y = "Procedural − Substantive Gap (pp)",
+      title = "Country-Level Trajectories of the Loser Effect",
+      subtitle = "Shaded regions show 95% confidence intervals"
+    ) +
+    theme_minimal(base_size = 11) +
+    theme(
+      strip.text = element_text(face = "bold"),
+      panel.grid.minor = element_blank()
+    )
+} else {
+  cat("**Warning:** Country-wave gap file not found. Cannot generate trajectory plot.")
+}
+```
+
+**Note:** Countries are ordered by the magnitude of change in the procedural-substantive gap across waves, with Thailand (largest change) first. Positive gap values indicate losers prioritize procedural items more than substantive items, relative to winners.
+
+# Demographic Controls Comparison {#sec-controls}
+
+<!-- TODO: Add controlled vs uncontrolled comparison when both are available -->
+
+This section would compare pooled average marginal effects estimated with and without demographic controls (age, gender, education, urban residence) to assess the stability of the loser effect. Currently, only the controlled estimates are available.
+
+# Wave 2 Detailed Results {#sec-w2}
+
+```{r tbl-w2-results}
+#| tbl-cap: "Wave 2 Multinomial Logit Results"
+
+if (!is.null(pooled_results)) {
+  w2_results <- pooled_results %>%
+    filter(set == "W2")
+
+  if (nrow(w2_results) > 0) {
+    w2_results %>%
+      mutate(
+        ame_pp = sprintf("%+.1f", ame * 100),
+        se_pp = sprintf("(%.1f)", se * 100),
+        ci = sprintf("[%+.1f, %+.1f]", ci_low * 100, ci_high * 100)
+      ) %>%
+      select(
+        Item = item_label,
+        Type = item_type,
+        `AME (pp)` = ame_pp,
+        SE = se_pp,
+        `95% CI` = ci,
+        Sig = sig
+      ) %>%
+      kable(booktabs = TRUE, align = c("l", "l", "r", "r", "c", "c")) %>%
+      kable_styling(latex_options = c("hold_position"))
+  } else {
+    cat("No W2 results found in pooled results file.")
+  }
+} else {
+  cat("**Warning:** Pooled results file not found.")
+}
+```
+
+**Note:** Wave 2 employed a single forced-choice item asking respondents to identify the "most essential characteristic of democracy" from four options. Unlike Sets 1--4 in later waves, these options directly compared procedural (elections, criticize power) and substantive (income equality, basic necessities) conceptions within a single item. The AMEs represent the percentage-point difference in the probability of selecting each option between electoral losers and winners, controlling for country fixed effects and demographic characteristics.
+
+# References {-}
+
+::: {#refs}
+:::

@@ -48,7 +48,7 @@ w346_data <- readRDS(file.path(data_dir, "w346_main.rds"))
 item_meta <- readRDS(file.path(data_dir, "item_metadata.rds"))
 
 # Bootstrap iterations (use 999 for final production run)
-n_boot <- 200  # Set to 999 for final run
+n_boot <- 999  # Final run with full bootstrap iterations
 cat("Bootstrap iterations:", n_boot, "\n")
 ```
 
@@ -475,7 +475,9 @@ estimate_cw_ames_with_se <- function(data, set_num, n_boot = 100) {
   if (length(unique(df$loser)) < 2) return(NULL)
   if (length(unique(df$choice)) < 2) return(NULL)
 
-  # Fit multinomial logit (no country/wave FE since single country-wave)
+  # Fit multinomial logit: choice ~ loser only (no demographic controls)
+  # Justification: Small N per country-wave makes controls unreliable;
+  # within-context estimation already accounts for country-wave heterogeneity
   model <- tryCatch(
     multinom(choice ~ loser, data = df, trace = FALSE),
     error = function(e) NULL
