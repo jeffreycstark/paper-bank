@@ -1,0 +1,497 @@
+item,ame,n,n_loser,pct_loser,country_name,wave_label,wave,set,value,item_type,item_subtype
+Reduce gap rich/poor,-0.02745683621850142,1015,589,58.029556650246306,Australia,W6,6,Set1,1,substantive,redistribution
+Free elections,0.004699494827125156,1015,589,58.029556650246306,Australia,W6,6,Set1,2,procedural,electoral
+No waste,0.020098213949305804,1015,589,58.029556650246306,Australia,W6,6,Set1,3,governance,quality
+Free expression,0.0026591274420701585,1015,589,58.029556650246306,Australia,W6,6,Set1,4,procedural,liberal
+Legislature oversight,0.024730178898471934,1014,587,57.88954635108481,Australia,W6,6,Set2,1,procedural,accountability
+Basic necessities,-0.049530083928559496,1014,587,57.88954635108481,Australia,W6,6,Set2,2,substantive,welfare
+Organize groups,0.0304841419701028,1014,587,57.88954635108481,Australia,W6,6,Set2,3,procedural,liberal
+Quality services,-0.005684236940014747,1014,587,57.88954635108481,Australia,W6,6,Set2,4,governance,quality
+Law and order,0.02053351950195164,1016,589,57.97244094488189,Australia,W6,6,Set3,1,governance,quality
+Media freedom,0.04278543045713688,1016,589,57.97244094488189,Australia,W6,6,Set3,2,procedural,liberal
+Jobs for all,-0.03443269532653029,1016,589,57.97244094488189,Australia,W6,6,Set3,3,substantive,welfare
+Party competition,-0.028886254632556965,1016,589,57.97244094488189,Australia,W6,6,Set3,4,procedural,electoral
+Protest freedom,-0.010204678296737114,1013,587,57.9466929911155,Australia,W6,6,Set4,1,procedural,liberal
+Clean politics,0.06415243051576835,1013,587,57.9466929911155,Australia,W6,6,Set4,2,governance,quality
+Court protection,-0.031560535412818794,1013,587,57.9466929911155,Australia,W6,6,Set4,3,procedural,accountability
+Unemployment aid,-0.02238721680621218,1013,587,57.9466929911155,Australia,W6,6,Set4,4,substantive,welfare
+Reduce gap rich/poor,-0.027988344291233383,886,171,19.30022573363431,Cambodia,W3,3,Set1,1,substantive,redistribution
+Free elections,-0.05713757919425656,886,171,19.30022573363431,Cambodia,W3,3,Set1,2,procedural,electoral
+No waste,0.0027881741912607195,886,171,19.30022573363431,Cambodia,W3,3,Set1,3,governance,quality
+Free expression,0.08233774929423043,886,171,19.30022573363431,Cambodia,W3,3,Set1,4,procedural,liberal
+Legislature oversight,0.023248108049575136,884,170,19.230769230769234,Cambodia,W3,3,Set2,1,procedural,accountability
+Basic necessities,-0.07282952595066526,884,170,19.230769230769234,Cambodia,W3,3,Set2,2,substantive,welfare
+Organize groups,0.12156935579719572,884,170,19.230769230769234,Cambodia,W3,3,Set2,3,procedural,liberal
+Quality services,-0.07198793789610924,884,170,19.230769230769234,Cambodia,W3,3,Set2,4,governance,quality
+Law and order,-0.08553601747483705,889,171,19.23509561304837,Cambodia,W3,3,Set3,1,governance,quality
+Media freedom,0.03755724013546688,889,171,19.23509561304837,Cambodia,W3,3,Set3,2,procedural,liberal
+Jobs for all,-0.11568088698312468,889,171,19.23509561304837,Cambodia,W3,3,Set3,3,substantive,welfare
+Party competition,0.16365966432249474,889,171,19.23509561304837,Cambodia,W3,3,Set3,4,procedural,electoral
+Protest freedom,0.09479030896199905,888,170,19.144144144144143,Cambodia,W3,3,Set4,1,procedural,liberal
+Clean politics,0.014172755378655885,888,170,19.144144144144143,Cambodia,W3,3,Set4,2,governance,quality
+Court protection,-0.01959701992121958,888,170,19.144144144144143,Cambodia,W3,3,Set4,3,procedural,accountability
+Unemployment aid,-0.08936604441943527,888,170,19.144144144144143,Cambodia,W3,3,Set4,4,substantive,welfare
+Reduce gap rich/poor,-0.04173529240703998,902,296,32.8159645232816,Cambodia,W4,4,Set1,1,substantive,redistribution
+Free elections,-0.03779084829617118,902,296,32.8159645232816,Cambodia,W4,4,Set1,2,procedural,electoral
+No waste,-0.032539258143621956,902,296,32.8159645232816,Cambodia,W4,4,Set1,3,governance,quality
+Free expression,0.112065398846834,902,296,32.8159645232816,Cambodia,W4,4,Set1,4,procedural,liberal
+Legislature oversight,0.0127179830485867,898,295,32.85077951002227,Cambodia,W4,4,Set2,1,procedural,accountability
+Basic necessities,-0.05752701749066879,898,295,32.85077951002227,Cambodia,W4,4,Set2,2,substantive,welfare
+Organize groups,0.07907017956105603,898,295,32.85077951002227,Cambodia,W4,4,Set2,3,procedural,liberal
+Quality services,-0.03426114511897269,898,295,32.85077951002227,Cambodia,W4,4,Set2,4,governance,quality
+Law and order,-0.053948776493236504,901,296,32.852386237513876,Cambodia,W4,4,Set3,1,governance,quality
+Media freedom,0.08204140598949074,901,296,32.852386237513876,Cambodia,W4,4,Set3,2,procedural,liberal
+Jobs for all,-0.10191822560465401,901,296,32.852386237513876,Cambodia,W4,4,Set3,3,substantive,welfare
+Party competition,0.073825596108401,901,296,32.852386237513876,Cambodia,W4,4,Set3,4,procedural,electoral
+Protest freedom,0.08907030944782542,894,293,32.774049217002236,Cambodia,W4,4,Set4,1,procedural,liberal
+Clean politics,0.029128483364044153,894,293,32.774049217002236,Cambodia,W4,4,Set4,2,governance,quality
+Court protection,0.00255025971554598,894,293,32.774049217002236,Cambodia,W4,4,Set4,3,procedural,accountability
+Unemployment aid,-0.12074905252741555,894,293,32.774049217002236,Cambodia,W4,4,Set4,4,substantive,welfare
+Reduce gap rich/poor,-0.035563264672684405,806,54,6.699751861042183,Cambodia,W6,6,Set1,1,substantive,redistribution
+Free elections,-0.170551407456114,806,54,6.699751861042183,Cambodia,W6,6,Set1,2,procedural,electoral
+No waste,0.009014343004500222,806,54,6.699751861042183,Cambodia,W6,6,Set1,3,governance,quality
+Free expression,0.19710032912429376,806,54,6.699751861042183,Cambodia,W6,6,Set1,4,procedural,liberal
+Legislature oversight,-0.07316438541635459,807,56,6.939281288723668,Cambodia,W6,6,Set2,1,procedural,accountability
+Basic necessities,-0.15612584732324916,807,56,6.939281288723668,Cambodia,W6,6,Set2,2,substantive,welfare
+Organize groups,0.1955494148928404,807,56,6.939281288723668,Cambodia,W6,6,Set2,3,procedural,liberal
+Quality services,0.03374081784675633,807,56,6.939281288723668,Cambodia,W6,6,Set2,4,governance,quality
+Law and order,-0.1390407041584224,786,54,6.870229007633588,Cambodia,W6,6,Set3,1,governance,quality
+Media freedom,0.044170985215081594,786,54,6.870229007633588,Cambodia,W6,6,Set3,2,procedural,liberal
+Jobs for all,-0.07847577601076912,786,54,6.870229007633588,Cambodia,W6,6,Set3,3,substantive,welfare
+Party competition,0.17334549495410886,786,54,6.870229007633588,Cambodia,W6,6,Set3,4,procedural,electoral
+Protest freedom,0.023655705484646378,768,54,7.03125,Cambodia,W6,6,Set4,1,procedural,liberal
+Clean politics,-0.030347698546283015,768,54,7.03125,Cambodia,W6,6,Set4,2,governance,quality
+Court protection,0.061469455473331346,768,54,7.03125,Cambodia,W6,6,Set4,3,procedural,accountability
+Unemployment aid,-0.054777462411694754,768,54,7.03125,Cambodia,W6,6,Set4,4,substantive,welfare
+Reduce gap rich/poor,0.009278900100182534,1383,263,19.016630513376718,China,W4,4,Set1,1,substantive,redistribution
+Free elections,0.009892494338624467,1383,263,19.016630513376718,China,W4,4,Set1,2,procedural,electoral
+No waste,0.015513787549611304,1383,263,19.016630513376718,China,W4,4,Set1,3,governance,quality
+Free expression,-0.03468518198841733,1383,263,19.016630513376718,China,W4,4,Set1,4,procedural,liberal
+Legislature oversight,-0.012434268487058765,1362,261,19.162995594713657,China,W4,4,Set2,1,procedural,accountability
+Basic necessities,-0.03584013927208437,1362,261,19.162995594713657,China,W4,4,Set2,2,substantive,welfare
+Organize groups,0.013663982129931643,1362,261,19.162995594713657,China,W4,4,Set2,3,procedural,liberal
+Quality services,0.034610425629211246,1362,261,19.162995594713657,China,W4,4,Set2,4,governance,quality
+Law and order,-0.02797224929127469,1360,260,19.11764705882353,China,W4,4,Set3,1,governance,quality
+Media freedom,0.05188489032092067,1360,260,19.11764705882353,China,W4,4,Set3,2,procedural,liberal
+Jobs for all,-0.011884647957067344,1360,260,19.11764705882353,China,W4,4,Set3,3,substantive,welfare
+Party competition,-0.012027993072578654,1360,260,19.11764705882353,China,W4,4,Set3,4,procedural,electoral
+Protest freedom,0.036422267838603396,1331,257,19.30879038317055,China,W4,4,Set4,1,procedural,liberal
+Clean politics,0.03465274997920222,1331,257,19.30879038317055,China,W4,4,Set4,2,governance,quality
+Court protection,-0.010527590494600511,1331,257,19.30879038317055,China,W4,4,Set4,3,procedural,accountability
+Unemployment aid,-0.06054742732320588,1331,257,19.30879038317055,China,W4,4,Set4,4,substantive,welfare
+Reduce gap rich/poor,-0.13915510926088165,416,286,68.75,Hong Kong,W3,3,Set1,1,substantive,redistribution
+Free elections,0.18041760175704724,416,286,68.75,Hong Kong,W3,3,Set1,2,procedural,electoral
+No waste,-0.04475927312368097,416,286,68.75,Hong Kong,W3,3,Set1,3,governance,quality
+Free expression,0.003496780627514592,416,286,68.75,Hong Kong,W3,3,Set1,4,procedural,liberal
+Legislature oversight,0.16162057131625768,411,281,68.3698296836983,Hong Kong,W3,3,Set2,1,procedural,accountability
+Basic necessities,-0.077771682698603,411,281,68.3698296836983,Hong Kong,W3,3,Set2,2,substantive,welfare
+Organize groups,0.05888320582159683,411,281,68.3698296836983,Hong Kong,W3,3,Set2,3,procedural,liberal
+Quality services,-0.14273209443925328,411,281,68.3698296836983,Hong Kong,W3,3,Set2,4,governance,quality
+Law and order,-0.12212048133140568,413,284,68.76513317191282,Hong Kong,W3,3,Set3,1,governance,quality
+Media freedom,0.04850328297591703,413,284,68.76513317191282,Hong Kong,W3,3,Set3,2,procedural,liberal
+Jobs for all,-0.02063437868480295,413,284,68.76513317191282,Hong Kong,W3,3,Set3,3,substantive,welfare
+Party competition,0.09425157704029154,413,284,68.76513317191282,Hong Kong,W3,3,Set3,4,procedural,electoral
+Protest freedom,0.16265293774621628,417,286,68.5851318944844,Hong Kong,W3,3,Set4,1,procedural,liberal
+Clean politics,-0.1191482855612951,417,286,68.5851318944844,Hong Kong,W3,3,Set4,2,governance,quality
+Court protection,0.011318022377942234,417,286,68.5851318944844,Hong Kong,W3,3,Set4,3,procedural,accountability
+Unemployment aid,-0.05482267456286298,417,286,68.5851318944844,Hong Kong,W3,3,Set4,4,substantive,welfare
+Reduce gap rich/poor,-0.19230846558375447,187,91,48.663101604278076,Hong Kong,W4,4,Set1,1,substantive,redistribution
+Free elections,0.23351708104825455,187,91,48.663101604278076,Hong Kong,W4,4,Set1,2,procedural,electoral
+No waste,-0.05792057755972561,187,91,48.663101604278076,Hong Kong,W4,4,Set1,3,governance,quality
+Free expression,0.016711962095226626,187,91,48.663101604278076,Hong Kong,W4,4,Set1,4,procedural,liberal
+Legislature oversight,0.061810990064427675,187,91,48.663101604278076,Hong Kong,W4,4,Set2,1,procedural,accountability
+Basic necessities,-0.20685436592714337,187,91,48.663101604278076,Hong Kong,W4,4,Set2,2,substantive,welfare
+Organize groups,0.19082758060228794,187,91,48.663101604278076,Hong Kong,W4,4,Set2,3,procedural,liberal
+Quality services,-0.045784204739570664,187,91,48.663101604278076,Hong Kong,W4,4,Set2,4,governance,quality
+Law and order,-0.09062863866586436,184,91,49.45652173913043,Hong Kong,W4,4,Set3,1,governance,quality
+Media freedom,0.12536944231463942,184,91,49.45652173913043,Hong Kong,W4,4,Set3,2,procedural,liberal
+Jobs for all,-0.15656466666373345,184,91,49.45652173913043,Hong Kong,W4,4,Set3,3,substantive,welfare
+Party competition,0.12182386301495765,184,91,49.45652173913043,Hong Kong,W4,4,Set3,4,procedural,electoral
+Protest freedom,0.18555192643654242,187,91,48.663101604278076,Hong Kong,W4,4,Set4,1,procedural,liberal
+Clean politics,-0.04647295732580643,187,91,48.663101604278076,Hong Kong,W4,4,Set4,2,governance,quality
+Court protection,-0.020376909577648147,187,91,48.663101604278076,Hong Kong,W4,4,Set4,3,procedural,accountability
+Unemployment aid,-0.11870205953308847,187,91,48.663101604278076,Hong Kong,W4,4,Set4,4,substantive,welfare
+Reduce gap rich/poor,0.016721983077053578,1014,431,42.50493096646943,Indonesia,W3,3,Set1,1,substantive,redistribution
+Free elections,-0.020961301131852707,1014,431,42.50493096646943,Indonesia,W3,3,Set1,2,procedural,electoral
+No waste,4.6607259227980565e-4,1014,431,42.50493096646943,Indonesia,W3,3,Set1,3,governance,quality
+Free expression,0.0037732454625191126,1014,431,42.50493096646943,Indonesia,W3,3,Set1,4,procedural,liberal
+Legislature oversight,-0.02014601214597759,1020,428,41.96078431372549,Indonesia,W3,3,Set2,1,procedural,accountability
+Basic necessities,-0.03633585024049851,1020,428,41.96078431372549,Indonesia,W3,3,Set2,2,substantive,welfare
+Organize groups,-0.017493041294050243,1020,428,41.96078431372549,Indonesia,W3,3,Set2,3,procedural,liberal
+Quality services,0.07397490368052678,1020,428,41.96078431372549,Indonesia,W3,3,Set2,4,governance,quality
+Law and order,0.011033837711787975,1001,417,41.658341658341655,Indonesia,W3,3,Set3,1,governance,quality
+Media freedom,-0.026674598168315675,1001,417,41.658341658341655,Indonesia,W3,3,Set3,2,procedural,liberal
+Jobs for all,0.03339294913311348,1001,417,41.658341658341655,Indonesia,W3,3,Set3,3,substantive,welfare
+Party competition,-0.017752188676586757,1001,417,41.658341658341655,Indonesia,W3,3,Set3,4,procedural,electoral
+Protest freedom,-0.02532601271360235,1006,416,41.35188866799205,Indonesia,W3,3,Set4,1,procedural,liberal
+Clean politics,0.011000710870249493,1006,416,41.35188866799205,Indonesia,W3,3,Set4,2,governance,quality
+Court protection,-0.03736996178667571,1006,416,41.35188866799205,Indonesia,W3,3,Set4,3,procedural,accountability
+Unemployment aid,0.05169526363002975,1006,416,41.35188866799205,Indonesia,W3,3,Set4,4,substantive,welfare
+Reduce gap rich/poor,-0.0015725652790154858,1030,542,52.62135922330097,Indonesia,W4,4,Set1,1,substantive,redistribution
+Free elections,0.028476972683587336,1030,542,52.62135922330097,Indonesia,W4,4,Set1,2,procedural,electoral
+No waste,0.0053842291301219435,1030,542,52.62135922330097,Indonesia,W4,4,Set1,3,governance,quality
+Free expression,-0.032288636534693806,1030,542,52.62135922330097,Indonesia,W4,4,Set1,4,procedural,liberal
+Legislature oversight,0.004857773310918836,1006,530,52.683896620278325,Indonesia,W4,4,Set2,1,procedural,accountability
+Basic necessities,-0.019758812194016782,1006,530,52.683896620278325,Indonesia,W4,4,Set2,2,substantive,welfare
+Organize groups,-0.03383938038093646,1006,530,52.683896620278325,Indonesia,W4,4,Set2,3,procedural,liberal
+Quality services,0.04874041926403546,1006,530,52.683896620278325,Indonesia,W4,4,Set2,4,governance,quality
+Law and order,-0.034779243068342514,999,519,51.95195195195195,Indonesia,W4,4,Set3,1,governance,quality
+Media freedom,0.026343950062423172,999,519,51.95195195195195,Indonesia,W4,4,Set3,2,procedural,liberal
+Jobs for all,0.001160447794809949,999,519,51.95195195195195,Indonesia,W4,4,Set3,3,substantive,welfare
+Party competition,0.007274845211108653,999,519,51.95195195195195,Indonesia,W4,4,Set3,4,procedural,electoral
+Protest freedom,0.010042344502676846,1008,528,52.38095238095239,Indonesia,W4,4,Set4,1,procedural,liberal
+Clean politics,-0.03503905815637558,1008,528,52.38095238095239,Indonesia,W4,4,Set4,2,governance,quality
+Court protection,0.04848288594394021,1008,528,52.38095238095239,Indonesia,W4,4,Set4,3,procedural,accountability
+Unemployment aid,-0.023486172290240876,1008,528,52.38095238095239,Indonesia,W4,4,Set4,4,substantive,welfare
+Reduce gap rich/poor,0.009585742263293446,1262,422,33.43898573692552,Indonesia,W6,6,Set1,1,substantive,redistribution
+Free elections,-0.0621810384610673,1262,422,33.43898573692552,Indonesia,W6,6,Set1,2,procedural,electoral
+No waste,0.02421007988112649,1262,422,33.43898573692552,Indonesia,W6,6,Set1,3,governance,quality
+Free expression,0.028385216316647453,1262,422,33.43898573692552,Indonesia,W6,6,Set1,4,procedural,liberal
+Legislature oversight,-0.007222166278541702,1249,419,33.54683746997598,Indonesia,W6,6,Set2,1,procedural,accountability
+Basic necessities,-0.04216569486538366,1249,419,33.54683746997598,Indonesia,W6,6,Set2,2,substantive,welfare
+Organize groups,0.007007166423200366,1249,419,33.54683746997598,Indonesia,W6,6,Set2,3,procedural,liberal
+Quality services,0.04238069472072638,1249,419,33.54683746997598,Indonesia,W6,6,Set2,4,governance,quality
+Law and order,-0.10874628922954675,1259,423,33.598093725178714,Indonesia,W6,6,Set3,1,governance,quality
+Media freedom,0.058050950966863434,1259,423,33.598093725178714,Indonesia,W6,6,Set3,2,procedural,liberal
+Jobs for all,0.059060612338519,1259,423,33.598093725178714,Indonesia,W6,6,Set3,3,substantive,welfare
+Party competition,-0.00836527407583228,1259,423,33.598093725178714,Indonesia,W6,6,Set3,4,procedural,electoral
+Protest freedom,0.04452705466257305,1249,419,33.54683746997598,Indonesia,W6,6,Set4,1,procedural,liberal
+Clean politics,-0.032398210703607294,1249,419,33.54683746997598,Indonesia,W6,6,Set4,2,governance,quality
+Court protection,-9.573878760831034e-4,1249,419,33.54683746997598,Indonesia,W6,6,Set4,3,procedural,accountability
+Unemployment aid,-0.011171456082880829,1249,419,33.54683746997598,Indonesia,W6,6,Set4,4,substantive,welfare
+Reduce gap rich/poor,0.010778803966678397,1316,560,42.5531914893617,Japan,W3,3,Set1,1,substantive,redistribution
+Free elections,0.027447891774824318,1316,560,42.5531914893617,Japan,W3,3,Set1,2,procedural,electoral
+No waste,-0.07658690657801065,1316,560,42.5531914893617,Japan,W3,3,Set1,3,governance,quality
+Free expression,0.03836021083650638,1316,560,42.5531914893617,Japan,W3,3,Set1,4,procedural,liberal
+Legislature oversight,0.014485889484021108,1274,541,42.464678178963894,Japan,W3,3,Set2,1,procedural,accountability
+Basic necessities,-0.003373358714046656,1274,541,42.464678178963894,Japan,W3,3,Set2,2,substantive,welfare
+Organize groups,0.002691166486942997,1274,541,42.464678178963894,Japan,W3,3,Set2,3,procedural,liberal
+Quality services,-0.013803697256917886,1274,541,42.464678178963894,Japan,W3,3,Set2,4,governance,quality
+Law and order,-0.029206248840406904,1298,551,42.449922958397536,Japan,W3,3,Set3,1,governance,quality
+Media freedom,-0.013493397943666005,1298,551,42.449922958397536,Japan,W3,3,Set3,2,procedural,liberal
+Jobs for all,0.023219542323698272,1298,551,42.449922958397536,Japan,W3,3,Set3,3,substantive,welfare
+Party competition,0.01948010446037403,1298,551,42.449922958397536,Japan,W3,3,Set3,4,procedural,electoral
+Protest freedom,-0.03697374329073486,1301,553,42.50576479631053,Japan,W3,3,Set4,1,procedural,liberal
+Clean politics,-0.01765763401457483,1301,553,42.50576479631053,Japan,W3,3,Set4,2,governance,quality
+Court protection,0.006562234543875874,1301,553,42.50576479631053,Japan,W3,3,Set4,3,procedural,accountability
+Unemployment aid,0.04806914276143414,1301,553,42.50576479631053,Japan,W3,3,Set4,4,substantive,welfare
+Reduce gap rich/poor,-0.003372417507349302,733,335,45.70259208731242,Japan,W4,4,Set1,1,substantive,redistribution
+Free elections,-0.04276962077376892,733,335,45.70259208731242,Japan,W4,4,Set1,2,procedural,electoral
+No waste,-0.0181797683516813,733,335,45.70259208731242,Japan,W4,4,Set1,3,governance,quality
+Free expression,0.06432180663279945,733,335,45.70259208731242,Japan,W4,4,Set1,4,procedural,liberal
+Legislature oversight,0.02736479747436249,701,323,46.07703281027104,Japan,W4,4,Set2,1,procedural,accountability
+Basic necessities,-0.03684739889635141,701,323,46.07703281027104,Japan,W4,4,Set2,2,substantive,welfare
+Organize groups,-0.013393411537393972,701,323,46.07703281027104,Japan,W4,4,Set2,3,procedural,liberal
+Quality services,0.022876012959382987,701,323,46.07703281027104,Japan,W4,4,Set2,4,governance,quality
+Law and order,-0.06018492078787579,711,329,46.27285513361463,Japan,W4,4,Set3,1,governance,quality
+Media freedom,0.07934500709207079,711,329,46.27285513361463,Japan,W4,4,Set3,2,procedural,liberal
+Jobs for all,-0.06919976747370044,711,329,46.27285513361463,Japan,W4,4,Set3,3,substantive,welfare
+Party competition,0.05003968116950828,711,329,46.27285513361463,Japan,W4,4,Set3,4,procedural,electoral
+Protest freedom,0.03498678319043221,709,333,46.96755994358251,Japan,W4,4,Set4,1,procedural,liberal
+Clean politics,-0.04908807334440403,709,333,46.96755994358251,Japan,W4,4,Set4,2,governance,quality
+Court protection,0.007079659255700406,709,333,46.96755994358251,Japan,W4,4,Set4,3,procedural,accountability
+Unemployment aid,0.0070216308982719,709,333,46.96755994358251,Japan,W4,4,Set4,4,substantive,welfare
+Reduce gap rich/poor,-0.04959988668467911,571,85,14.886164623467602,Malaysia,W3,3,Set1,1,substantive,redistribution
+Free elections,0.007940837317710756,571,85,14.886164623467602,Malaysia,W3,3,Set1,2,procedural,electoral
+No waste,0.019195861594281355,571,85,14.886164623467602,Malaysia,W3,3,Set1,3,governance,quality
+Free expression,0.022463187772687666,571,85,14.886164623467602,Malaysia,W3,3,Set1,4,procedural,liberal
+Legislature oversight,0.15477933069562824,565,85,15.04424778761062,Malaysia,W3,3,Set2,1,procedural,accountability
+Basic necessities,-0.10208507983193911,565,85,15.04424778761062,Malaysia,W3,3,Set2,2,substantive,welfare
+Organize groups,0.05563774903470266,565,85,15.04424778761062,Malaysia,W3,3,Set2,3,procedural,liberal
+Quality services,-0.10833199989839007,565,85,15.04424778761062,Malaysia,W3,3,Set2,4,governance,quality
+Law and order,-0.09573525931390489,566,86,15.19434628975265,Malaysia,W3,3,Set3,1,governance,quality
+Media freedom,0.11589041335083275,566,86,15.19434628975265,Malaysia,W3,3,Set3,2,procedural,liberal
+Jobs for all,-0.09002122335056882,566,86,15.19434628975265,Malaysia,W3,3,Set3,3,substantive,welfare
+Party competition,0.06986606931364092,566,86,15.19434628975265,Malaysia,W3,3,Set3,4,procedural,electoral
+Protest freedom,-0.011172791977521145,562,85,15.12455516014235,Malaysia,W3,3,Set4,1,procedural,liberal
+Clean politics,0.13668765515071463,562,85,15.12455516014235,Malaysia,W3,3,Set4,2,governance,quality
+Court protection,0.0227402408999442,562,85,15.12455516014235,Malaysia,W3,3,Set4,3,procedural,accountability
+Unemployment aid,-0.14825510407313855,562,85,15.12455516014235,Malaysia,W3,3,Set4,4,substantive,welfare
+Reduce gap rich/poor,-0.0865218265252336,658,144,21.88449848024316,Malaysia,W4,4,Set1,1,substantive,redistribution
+Free elections,-0.024967757053971668,658,144,21.88449848024316,Malaysia,W4,4,Set1,2,procedural,electoral
+No waste,0.13326852669658643,658,144,21.88449848024316,Malaysia,W4,4,Set1,3,governance,quality
+Free expression,-0.021778943117382328,658,144,21.88449848024316,Malaysia,W4,4,Set1,4,procedural,liberal
+Legislature oversight,0.05745862862268567,655,144,21.984732824427482,Malaysia,W4,4,Set2,1,procedural,accountability
+Basic necessities,0.003804924378919951,655,144,21.984732824427482,Malaysia,W4,4,Set2,2,substantive,welfare
+Organize groups,0.01629377937302112,655,144,21.984732824427482,Malaysia,W4,4,Set2,3,procedural,liberal
+Quality services,-0.07755733237462646,655,144,21.984732824427482,Malaysia,W4,4,Set2,4,governance,quality
+Law and order,-0.07388189318439227,652,144,22.085889570552148,Malaysia,W4,4,Set3,1,governance,quality
+Media freedom,0.09302036999668852,652,144,22.085889570552148,Malaysia,W4,4,Set3,2,procedural,liberal
+Jobs for all,-0.091481943347256,652,144,22.085889570552148,Malaysia,W4,4,Set3,3,substantive,welfare
+Party competition,0.07234346653495989,652,144,22.085889570552148,Malaysia,W4,4,Set3,4,procedural,electoral
+Protest freedom,0.07597959695938353,654,142,21.712538226299692,Malaysia,W4,4,Set4,1,procedural,liberal
+Clean politics,-0.10043713435602623,654,142,21.712538226299692,Malaysia,W4,4,Set4,2,governance,quality
+Court protection,0.03009689421647249,654,142,21.712538226299692,Malaysia,W4,4,Set4,3,procedural,accountability
+Unemployment aid,-0.0056393568198309955,654,142,21.712538226299692,Malaysia,W4,4,Set4,4,substantive,welfare
+Reduce gap rich/poor,0.00500932321386898,1005,404,40.19900497512438,Mongolia,W3,3,Set1,1,substantive,redistribution
+Free elections,0.032869422440238286,1005,404,40.19900497512438,Mongolia,W3,3,Set1,2,procedural,electoral
+No waste,-0.032490793622675304,1005,404,40.19900497512438,Mongolia,W3,3,Set1,3,governance,quality
+Free expression,-0.005387952031431193,1005,404,40.19900497512438,Mongolia,W3,3,Set1,4,procedural,liberal
+Legislature oversight,-0.048461908014971154,990,394,39.7979797979798,Mongolia,W3,3,Set2,1,procedural,accountability
+Basic necessities,-0.0022058408739320705,990,394,39.7979797979798,Mongolia,W3,3,Set2,2,substantive,welfare
+Organize groups,-0.014129881995695143,990,394,39.7979797979798,Mongolia,W3,3,Set2,3,procedural,liberal
+Quality services,0.0647976308845983,990,394,39.7979797979798,Mongolia,W3,3,Set2,4,governance,quality
+Law and order,0.005583414437147066,1003,403,40.17946161515454,Mongolia,W3,3,Set3,1,governance,quality
+Media freedom,0.013771497404572359,1003,403,40.17946161515454,Mongolia,W3,3,Set3,2,procedural,liberal
+Jobs for all,-0.02879267509010127,1003,403,40.17946161515454,Mongolia,W3,3,Set3,3,substantive,welfare
+Party competition,0.009437763248381921,1003,403,40.17946161515454,Mongolia,W3,3,Set3,4,procedural,electoral
+Protest freedom,-0.036410646918210145,998,398,39.879759519038075,Mongolia,W3,3,Set4,1,procedural,liberal
+Clean politics,-0.049754746080123605,998,398,39.879759519038075,Mongolia,W3,3,Set4,2,governance,quality
+Court protection,0.03677709372992429,998,398,39.879759519038075,Mongolia,W3,3,Set4,3,procedural,accountability
+Unemployment aid,0.049388299268407855,998,398,39.879759519038075,Mongolia,W3,3,Set4,4,substantive,welfare
+Reduce gap rich/poor,0.040565941559954424,1027,337,32.81402142161636,Mongolia,W4,4,Set1,1,substantive,redistribution
+Free elections,-0.03080035246839042,1027,337,32.81402142161636,Mongolia,W4,4,Set1,2,procedural,electoral
+No waste,-5.722478197875969e-4,1027,337,32.81402142161636,Mongolia,W4,4,Set1,3,governance,quality
+Free expression,-0.00919334127177628,1027,337,32.81402142161636,Mongolia,W4,4,Set1,4,procedural,liberal
+Legislature oversight,0.010124006196856406,1019,335,32.87536800785084,Mongolia,W4,4,Set2,1,procedural,accountability
+Basic necessities,3.1602027473798255e-4,1019,335,32.87536800785084,Mongolia,W4,4,Set2,2,substantive,welfare
+Organize groups,0.00854364262825413,1019,335,32.87536800785084,Mongolia,W4,4,Set2,3,procedural,liberal
+Quality services,-0.018983669099848548,1019,335,32.87536800785084,Mongolia,W4,4,Set2,4,governance,quality
+Law and order,-0.01796100328586579,1023,336,32.84457478005865,Mongolia,W4,4,Set3,1,governance,quality
+Media freedom,4.4189773406046336e-4,1023,336,32.84457478005865,Mongolia,W4,4,Set3,2,procedural,liberal
+Jobs for all,0.030957433013720816,1023,336,32.84457478005865,Mongolia,W4,4,Set3,3,substantive,welfare
+Party competition,-0.013438327461914338,1023,336,32.84457478005865,Mongolia,W4,4,Set3,4,procedural,electoral
+Protest freedom,-0.009517299676100899,1028,334,32.490272373540854,Mongolia,W4,4,Set4,1,procedural,liberal
+Clean politics,-0.010266830729554813,1028,334,32.490272373540854,Mongolia,W4,4,Set4,2,governance,quality
+Court protection,0.01949134414771228,1028,334,32.490272373540854,Mongolia,W4,4,Set4,3,procedural,accountability
+Unemployment aid,2.927862579434337e-4,1028,334,32.490272373540854,Mongolia,W4,4,Set4,4,substantive,welfare
+Reduce gap rich/poor,-0.050354335865397254,825,183,22.181818181818183,Mongolia,W6,6,Set1,1,substantive,redistribution
+Free elections,0.008428135832615462,825,183,22.181818181818183,Mongolia,W6,6,Set1,2,procedural,electoral
+No waste,-0.02446321698681713,825,183,22.181818181818183,Mongolia,W6,6,Set1,3,governance,quality
+Free expression,0.06638941701959972,825,183,22.181818181818183,Mongolia,W6,6,Set1,4,procedural,liberal
+Legislature oversight,-0.037248374675247414,811,177,21.8249075215783,Mongolia,W6,6,Set2,1,procedural,accountability
+Basic necessities,-0.04287187092533557,811,177,21.8249075215783,Mongolia,W6,6,Set2,2,substantive,welfare
+Organize groups,0.03138457015156961,811,177,21.8249075215783,Mongolia,W6,6,Set2,3,procedural,liberal
+Quality services,0.048735675449013735,811,177,21.8249075215783,Mongolia,W6,6,Set2,4,governance,quality
+Law and order,-0.10796417668872393,815,176,21.595092024539877,Mongolia,W6,6,Set3,1,governance,quality
+Media freedom,0.10881718391226097,815,176,21.595092024539877,Mongolia,W6,6,Set3,2,procedural,liberal
+Jobs for all,0.005122238454672052,815,176,21.595092024539877,Mongolia,W6,6,Set3,3,substantive,welfare
+Party competition,-0.005975245678209024,815,176,21.595092024539877,Mongolia,W6,6,Set3,4,procedural,electoral
+Protest freedom,0.056721205651330354,833,182,21.84873949579832,Mongolia,W6,6,Set4,1,procedural,liberal
+Clean politics,0.02575793928618353,833,182,21.84873949579832,Mongolia,W6,6,Set4,2,governance,quality
+Court protection,-0.0571343407831701,833,182,21.84873949579832,Mongolia,W6,6,Set4,3,procedural,accountability
+Unemployment aid,-0.02534480415434393,833,182,21.84873949579832,Mongolia,W6,6,Set4,4,substantive,welfare
+Reduce gap rich/poor,-0.09670534353816002,738,367,49.728997289972895,Myanmar,W4,4,Set1,1,substantive,redistribution
+Free elections,0.04635840074545174,738,367,49.728997289972895,Myanmar,W4,4,Set1,2,procedural,electoral
+No waste,-0.017986381195419277,738,367,49.728997289972895,Myanmar,W4,4,Set1,3,governance,quality
+Free expression,0.06833332398812617,738,367,49.728997289972895,Myanmar,W4,4,Set1,4,procedural,liberal
+Legislature oversight,0.05266062628404394,720,356,49.44444444444444,Myanmar,W4,4,Set2,1,procedural,accountability
+Basic necessities,-0.074731031212536575,720,356,49.44444444444444,Myanmar,W4,4,Set2,2,substantive,welfare
+Organize groups,0.10263494815034342,720,356,49.44444444444444,Myanmar,W4,4,Set2,3,procedural,liberal
+Quality services,-0.08056454322184738,720,356,49.44444444444444,Myanmar,W4,4,Set2,4,governance,quality
+Law and order,-0.03207856133873692,723,357,49.37759336099585,Myanmar,W4,4,Set3,1,governance,quality
+Media freedom,0.08201475480797701,723,357,49.37759336099585,Myanmar,W4,4,Set3,2,procedural,liberal
+Jobs for all,-0.11502654529975691,723,357,49.37759336099585,Myanmar,W4,4,Set3,3,substantive,welfare
+Party competition,0.06509035183051977,723,357,49.37759336099585,Myanmar,W4,4,Set3,4,procedural,electoral
+Protest freedom,0.07202236282473466,722,361,50,Myanmar,W4,4,Set4,1,procedural,liberal
+Clean politics,-0.013849953596712072,722,361,50,Myanmar,W4,4,Set4,2,governance,quality
+Court protection,0.049861250859806354,722,361,50,Myanmar,W4,4,Set4,3,procedural,accountability
+Unemployment aid,-0.10803366008782835,722,361,50,Myanmar,W4,4,Set4,4,substantive,welfare
+Reduce gap rich/poor,-0.01836428580362844,748,415,55.481283422459896,Philippines,W3,3,Set1,1,substantive,redistribution
+Free elections,-0.0026999752605439014,748,415,55.481283422459896,Philippines,W3,3,Set1,2,procedural,electoral
+No waste,-0.051882800678466,748,415,55.481283422459896,Philippines,W3,3,Set1,3,governance,quality
+Free expression,0.07294706174263876,748,415,55.481283422459896,Philippines,W3,3,Set1,4,procedural,liberal
+Legislature oversight,-0.04419869200176144,748,415,55.481283422459896,Philippines,W3,3,Set2,1,procedural,accountability
+Basic necessities,-4.772011702079415e-4,748,415,55.481283422459896,Philippines,W3,3,Set2,2,substantive,welfare
+Organize groups,0.08365719193362361,748,415,55.481283422459896,Philippines,W3,3,Set2,3,procedural,liberal
+Quality services,-0.038981298761652315,748,415,55.481283422459896,Philippines,W3,3,Set2,4,governance,quality
+Law and order,-0.027704857248395144,748,415,55.481283422459896,Philippines,W3,3,Set3,1,governance,quality
+Media freedom,0.11122741018266322,748,415,55.481283422459896,Philippines,W3,3,Set3,2,procedural,liberal
+Jobs for all,-0.08618662865134576,748,415,55.481283422459896,Philippines,W3,3,Set3,3,substantive,welfare
+Party competition,0.0026640757170772736,748,415,55.481283422459896,Philippines,W3,3,Set3,4,procedural,electoral
+Protest freedom,-0.010616994962945337,743,413,55.585464333781964,Philippines,W3,3,Set4,1,procedural,liberal
+Clean politics,-0.009457881888162573,743,413,55.585464333781964,Philippines,W3,3,Set4,2,governance,quality
+Court protection,-0.0087313395305586,743,413,55.585464333781964,Philippines,W3,3,Set4,3,procedural,accountability
+Unemployment aid,0.028806216381666583,743,413,55.585464333781964,Philippines,W3,3,Set4,4,substantive,welfare
+Reduce gap rich/poor,0.00934063148762476,885,179,20.225988700564972,Philippines,W4,4,Set1,1,substantive,redistribution
+Free elections,-0.005695426493801045,885,179,20.225988700564972,Philippines,W4,4,Set1,2,procedural,electoral
+No waste,-0.008976136431343387,885,179,20.225988700564972,Philippines,W4,4,Set1,3,governance,quality
+Free expression,0.005330931437519813,885,179,20.225988700564972,Philippines,W4,4,Set1,4,procedural,liberal
+Legislature oversight,0.01606864288907769,883,176,19.932049830124576,Philippines,W4,4,Set2,1,procedural,accountability
+Basic necessities,0.002001981312728392,883,176,19.932049830124576,Philippines,W4,4,Set2,2,substantive,welfare
+Organize groups,0.04332283348606579,883,176,19.932049830124576,Philippines,W4,4,Set2,3,procedural,liberal
+Quality services,-0.06139345768787092,883,176,19.932049830124576,Philippines,W4,4,Set2,4,governance,quality
+Law and order,-0.045521441352263825,884,176,19.90950226244344,Philippines,W4,4,Set3,1,governance,quality
+Media freedom,0.0814398750724751,884,176,19.90950226244344,Philippines,W4,4,Set3,2,procedural,liberal
+Jobs for all,-0.03790971880842185,884,176,19.90950226244344,Philippines,W4,4,Set3,3,substantive,welfare
+Party competition,0.0019912850882114965,884,176,19.90950226244344,Philippines,W4,4,Set3,4,procedural,electoral
+Protest freedom,0.04501026453419143,873,175,20.04581901489118,Philippines,W4,4,Set4,1,procedural,liberal
+Clean politics,-0.030708137134744216,873,175,20.04581901489118,Philippines,W4,4,Set4,2,governance,quality
+Court protection,0.045010176748324644,873,175,20.04581901489118,Philippines,W4,4,Set4,3,procedural,accountability
+Unemployment aid,-0.0593123041477722,873,175,20.04581901489118,Philippines,W4,4,Set4,4,substantive,welfare
+Reduce gap rich/poor,0.013507126831948709,858,255,29.72027972027972,Philippines,W6,6,Set1,1,substantive,redistribution
+Free elections,-0.08121099363180076,858,255,29.72027972027972,Philippines,W6,6,Set1,2,procedural,electoral
+No waste,-0.04020798572930961,858,255,29.72027972027972,Philippines,W6,6,Set1,3,governance,quality
+Free expression,0.10791185252916086,858,255,29.72027972027972,Philippines,W6,6,Set1,4,procedural,liberal
+Legislature oversight,-0.047130756088078145,857,255,29.75495915985998,Philippines,W6,6,Set2,1,procedural,accountability
+Basic necessities,0.006807546070483278,857,255,29.75495915985998,Philippines,W6,6,Set2,2,substantive,welfare
+Organize groups,0.023047521890314792,857,255,29.75495915985998,Philippines,W6,6,Set2,3,procedural,liberal
+Quality services,0.017275688127279788,857,255,29.75495915985998,Philippines,W6,6,Set2,4,governance,quality
+Law and order,-0.026538113770978807,858,257,29.953379953379955,Philippines,W6,6,Set3,1,governance,quality
+Media freedom,0.010041608194653717,858,257,29.953379953379955,Philippines,W6,6,Set3,2,procedural,liberal
+Jobs for all,0.013039097771832467,858,257,29.953379953379955,Philippines,W6,6,Set3,3,substantive,welfare
+Party competition,0.0034574078044924497,858,257,29.953379953379955,Philippines,W6,6,Set3,4,procedural,electoral
+Protest freedom,-0.043334511881052334,855,255,29.82456140350877,Philippines,W6,6,Set4,1,procedural,liberal
+Clean politics,-0.07196103312626471,855,255,29.82456140350877,Philippines,W6,6,Set4,2,governance,quality
+Court protection,0.09058834580043154,855,255,29.82456140350877,Philippines,W6,6,Set4,3,procedural,accountability
+Unemployment aid,0.024707199206886733,855,255,29.82456140350877,Philippines,W6,6,Set4,4,substantive,welfare
+Reduce gap rich/poor,0.023920863576513907,506,88,17.391304347826086,Singapore,W4,4,Set1,1,substantive,redistribution
+Free elections,-0.15789637220175223,506,88,17.391304347826086,Singapore,W4,4,Set1,2,procedural,electoral
+No waste,0.04665015596868712,506,88,17.391304347826086,Singapore,W4,4,Set1,3,governance,quality
+Free expression,0.08732535265655125,506,88,17.391304347826086,Singapore,W4,4,Set1,4,procedural,liberal
+Legislature oversight,-0.08633875543012953,500,86,17.2,Singapore,W4,4,Set2,1,procedural,accountability
+Basic necessities,-0.027637092406921193,500,86,17.2,Singapore,W4,4,Set2,2,substantive,welfare
+Organize groups,0.07976626312645808,500,86,17.2,Singapore,W4,4,Set2,3,procedural,liberal
+Quality services,0.034209584710593655,500,86,17.2,Singapore,W4,4,Set2,4,governance,quality
+Law and order,-0.10541040256445748,508,88,17.322834645669293,Singapore,W4,4,Set3,1,governance,quality
+Media freedom,0.11850854148084089,508,88,17.322834645669293,Singapore,W4,4,Set3,2,procedural,liberal
+Jobs for all,0.015042390480760783,508,88,17.322834645669293,Singapore,W4,4,Set3,3,substantive,welfare
+Party competition,-0.028140529397143507,508,88,17.322834645669293,Singapore,W4,4,Set3,4,procedural,electoral
+Protest freedom,0.02328828348715234,493,88,17.849898580121703,Singapore,W4,4,Set4,1,procedural,liberal
+Clean politics,-0.015572861182832312,493,88,17.849898580121703,Singapore,W4,4,Set4,2,governance,quality
+Court protection,0.03569057931647957,493,88,17.849898580121703,Singapore,W4,4,Set4,3,procedural,accountability
+Unemployment aid,-0.04340600162079893,493,88,17.849898580121703,Singapore,W4,4,Set4,4,substantive,welfare
+Reduce gap rich/poor,-0.022090634640058254,743,261,35.1278600269179,South Korea,W3,3,Set1,1,substantive,redistribution
+Free elections,-0.09599090689278002,743,261,35.1278600269179,South Korea,W3,3,Set1,2,procedural,electoral
+No waste,-0.012233176930312334,743,261,35.1278600269179,South Korea,W3,3,Set1,3,governance,quality
+Free expression,0.13031471846315296,743,261,35.1278600269179,South Korea,W3,3,Set1,4,procedural,liberal
+Legislature oversight,0.02344800329265017,711,253,35.58368495077356,South Korea,W3,3,Set2,1,procedural,accountability
+Basic necessities,-0.06385951124321373,711,253,35.58368495077356,South Korea,W3,3,Set2,2,substantive,welfare
+Organize groups,-0.027936970875059596,711,253,35.58368495077356,South Korea,W3,3,Set2,3,procedural,liberal
+Quality services,0.06834847882562176,711,253,35.58368495077356,South Korea,W3,3,Set2,4,governance,quality
+Law and order,-0.05138647935170506,735,258,35.10204081632653,South Korea,W3,3,Set3,1,governance,quality
+Media freedom,0.06657324535375164,735,258,35.10204081632653,South Korea,W3,3,Set3,2,procedural,liberal
+Jobs for all,-0.04234275279580046,735,258,35.10204081632653,South Korea,W3,3,Set3,3,substantive,welfare
+Party competition,0.027155986793752352,735,258,35.10204081632653,South Korea,W3,3,Set3,4,procedural,electoral
+Protest freedom,-0.006045760343688753,738,262,35.50135501355013,South Korea,W3,3,Set4,1,procedural,liberal
+Clean politics,0.025594561055352832,738,262,35.50135501355013,South Korea,W3,3,Set4,2,governance,quality
+Court protection,-0.010696604162063084,738,262,35.50135501355013,South Korea,W3,3,Set4,3,procedural,accountability
+Unemployment aid,-0.008852196549600682,738,262,35.50135501355013,South Korea,W3,3,Set4,4,substantive,welfare
+Reduce gap rich/poor,-0.015976400244138347,779,291,37.35558408215661,South Korea,W4,4,Set1,1,substantive,redistribution
+Free elections,-0.005609922803904643,779,291,37.35558408215661,South Korea,W4,4,Set1,2,procedural,electoral
+No waste,-0.026034017251387015,779,291,37.35558408215661,South Korea,W4,4,Set1,3,governance,quality
+Free expression,0.04762034029942918,779,291,37.35558408215661,South Korea,W4,4,Set1,4,procedural,liberal
+Legislature oversight,0.026695246253772974,760,283,37.23684210526316,South Korea,W4,4,Set2,1,procedural,accountability
+Basic necessities,-0.009733583956773557,760,283,37.23684210526316,South Korea,W4,4,Set2,2,substantive,welfare
+Organize groups,-0.013433427966467829,760,283,37.23684210526316,South Korea,W4,4,Set2,3,procedural,liberal
+Quality services,-0.0035282343305312186,760,283,37.23684210526316,South Korea,W4,4,Set2,4,governance,quality
+Law and order,-0.10399294002754678,756,276,36.507936507936506,South Korea,W4,4,Set3,1,governance,quality
+Media freedom,0.0638622977317903,756,276,36.507936507936506,South Korea,W4,4,Set3,2,procedural,liberal
+Jobs for all,0.021017399294713357,756,276,36.507936507936506,South Korea,W4,4,Set3,3,substantive,welfare
+Party competition,0.01911324300104093,756,276,36.507936507936506,South Korea,W4,4,Set3,4,procedural,electoral
+Protest freedom,0.03264375250116672,769,285,37.061118335500645,South Korea,W4,4,Set4,1,procedural,liberal
+Clean politics,0.027280571486219096,769,285,37.061118335500645,South Korea,W4,4,Set4,2,governance,quality
+Court protection,-0.07408268082054352,769,285,37.061118335500645,South Korea,W4,4,Set4,3,procedural,accountability
+Unemployment aid,0.014158356833156386,769,285,37.061118335500645,South Korea,W4,4,Set4,4,substantive,welfare
+Reduce gap rich/poor,-0.04654351802800903,870,372,42.758620689655174,South Korea,W6,6,Set1,1,substantive,redistribution
+Free elections,9.71958044575982e-4,870,372,42.758620689655174,South Korea,W6,6,Set1,2,procedural,electoral
+No waste,0.029602290471785017,870,372,42.758620689655174,South Korea,W6,6,Set1,3,governance,quality
+Free expression,0.01596926951164731,870,372,42.758620689655174,South Korea,W6,6,Set1,4,procedural,liberal
+Legislature oversight,0.032116131111866716,865,369,42.65895953757226,South Korea,W6,6,Set2,1,procedural,accountability
+Basic necessities,-0.09070887981775402,865,369,42.65895953757226,South Korea,W6,6,Set2,2,substantive,welfare
+Organize groups,-0.00176589736867465,865,369,42.65895953757226,South Korea,W6,6,Set2,3,procedural,liberal
+Quality services,0.06035864607456176,865,369,42.65895953757226,South Korea,W6,6,Set2,4,governance,quality
+Law and order,0.006546497250155066,867,374,43.13725490196079,South Korea,W6,6,Set3,1,governance,quality
+Media freedom,-0.015858901463275676,867,374,43.13725490196079,South Korea,W6,6,Set3,2,procedural,liberal
+Jobs for all,-0.016687251595295056,867,374,43.13725490196079,South Korea,W6,6,Set3,3,substantive,welfare
+Party competition,0.0259996558084161,867,374,43.13725490196079,South Korea,W6,6,Set3,4,procedural,electoral
+Protest freedom,-0.02362697831877363,871,375,43.05396096440873,South Korea,W6,6,Set4,1,procedural,liberal
+Clean politics,0.031696459996349735,871,375,43.05396096440873,South Korea,W6,6,Set4,2,governance,quality
+Court protection,-0.045566635041768125,871,375,43.05396096440873,South Korea,W6,6,Set4,3,procedural,accountability
+Unemployment aid,0.0374971533641924,871,375,43.05396096440873,South Korea,W6,6,Set4,4,substantive,welfare
+Reduce gap rich/poor,-0.03820614450457996,1112,367,33.00359712230216,Taiwan,W3,3,Set1,1,substantive,redistribution
+Free elections,-0.010701140720681075,1112,367,33.00359712230216,Taiwan,W3,3,Set1,2,procedural,electoral
+No waste,-0.014955256714145446,1112,367,33.00359712230216,Taiwan,W3,3,Set1,3,governance,quality
+Free expression,0.06386254193940663,1112,367,33.00359712230216,Taiwan,W3,3,Set1,4,procedural,liberal
+Legislature oversight,0.022808720040314152,1100,365,33.18181818181819,Taiwan,W3,3,Set2,1,procedural,accountability
+Basic necessities,0.032582307505054586,1100,365,33.18181818181819,Taiwan,W3,3,Set2,2,substantive,welfare
+Organize groups,0.049820750263713035,1100,365,33.18181818181819,Taiwan,W3,3,Set2,3,procedural,liberal
+Quality services,-0.10521177780908499,1100,365,33.18181818181819,Taiwan,W3,3,Set2,4,governance,quality
+Law and order,-0.14687271940409782,1093,359,32.84537968892955,Taiwan,W3,3,Set3,1,governance,quality
+Media freedom,0.024917663069274197,1093,359,32.84537968892955,Taiwan,W3,3,Set3,2,procedural,liberal
+Jobs for all,0.047614422248502083,1093,359,32.84537968892955,Taiwan,W3,3,Set3,3,substantive,welfare
+Party competition,0.07434063408632488,1093,359,32.84537968892955,Taiwan,W3,3,Set3,4,procedural,electoral
+Protest freedom,0.08543699332790772,1100,360,32.72727272727273,Taiwan,W3,3,Set4,1,procedural,liberal
+Clean politics,-0.07237421141932569,1100,360,32.72727272727273,Taiwan,W3,3,Set4,2,governance,quality
+Court protection,-0.0026277921256598214,1100,360,32.72727272727273,Taiwan,W3,3,Set4,3,procedural,accountability
+Unemployment aid,-0.010434989782922847,1100,360,32.72727272727273,Taiwan,W3,3,Set4,4,substantive,welfare
+Reduce gap rich/poor,-0.01786176709923744,1123,504,44.879786286731964,Taiwan,W4,4,Set1,1,substantive,redistribution
+Free elections,-0.021318434633097218,1123,504,44.879786286731964,Taiwan,W4,4,Set1,2,procedural,electoral
+No waste,-0.024104995283957042,1123,504,44.879786286731964,Taiwan,W4,4,Set1,3,governance,quality
+Free expression,0.06328519701629248,1123,504,44.879786286731964,Taiwan,W4,4,Set1,4,procedural,liberal
+Legislature oversight,0.05250652798680207,1116,500,44.80286738351255,Taiwan,W4,4,Set2,1,procedural,accountability
+Basic necessities,-0.019467499885584952,1116,500,44.80286738351255,Taiwan,W4,4,Set2,2,substantive,welfare
+Organize groups,0.04346740568584063,1116,500,44.80286738351255,Taiwan,W4,4,Set2,3,procedural,liberal
+Quality services,-0.07650643378705978,1116,500,44.80286738351255,Taiwan,W4,4,Set2,4,governance,quality
+Law and order,-0.11552728910498876,1110,497,44.77477477477477,Taiwan,W4,4,Set3,1,governance,quality
+Media freedom,0.04954156455894825,1110,497,44.77477477477477,Taiwan,W4,4,Set3,2,procedural,liberal
+Jobs for all,0.015407710942051763,1110,497,44.77477477477477,Taiwan,W4,4,Set3,3,substantive,welfare
+Party competition,0.05057801360398883,1110,497,44.77477477477477,Taiwan,W4,4,Set3,4,procedural,electoral
+Protest freedom,0.051304155602038125,1115,502,45.02242152466368,Taiwan,W4,4,Set4,1,procedural,liberal
+Clean politics,-0.0986560666237008,1115,502,45.02242152466368,Taiwan,W4,4,Set4,2,governance,quality
+Court protection,0.06614567951570056,1115,502,45.02242152466368,Taiwan,W4,4,Set4,3,procedural,accountability
+Unemployment aid,-0.018793768494039007,1115,502,45.02242152466368,Taiwan,W4,4,Set4,4,substantive,welfare
+Reduce gap rich/poor,0.01337276156591636,1008,318,31.547619047619047,Taiwan,W6,6,Set1,1,substantive,redistribution
+Free elections,-0.0454980260278982,1008,318,31.547619047619047,Taiwan,W6,6,Set1,2,procedural,electoral
+No waste,0.06893191252916772,1008,318,31.547619047619047,Taiwan,W6,6,Set1,3,governance,quality
+Free expression,-0.03680664806718728,1008,318,31.547619047619047,Taiwan,W6,6,Set1,4,procedural,liberal
+Legislature oversight,-0.0027059367844663026,1012,320,31.620553359683797,Taiwan,W6,6,Set2,1,procedural,accountability
+Basic necessities,0.07618939204116257,1012,320,31.620553359683797,Taiwan,W6,6,Set2,2,substantive,welfare
+Organize groups,-0.016070277952792346,1012,320,31.620553359683797,Taiwan,W6,6,Set2,3,procedural,liberal
+Quality services,-0.05741317730390512,1012,320,31.620553359683797,Taiwan,W6,6,Set2,4,governance,quality
+Law and order,-0.0444333174657814,1012,319,31.521739130434785,Taiwan,W6,6,Set3,1,governance,quality
+Media freedom,0.05911323927568227,1012,319,31.521739130434785,Taiwan,W6,6,Set3,2,procedural,liberal
+Jobs for all,0.02120029795664154,1012,319,31.521739130434785,Taiwan,W6,6,Set3,3,substantive,welfare
+Party competition,-0.0358802197665427,1012,319,31.521739130434785,Taiwan,W6,6,Set3,4,procedural,electoral
+Protest freedom,-0.09138832985353057,1008,319,31.646825396825395,Taiwan,W6,6,Set4,1,procedural,liberal
+Clean politics,0.10349264207348616,1008,319,31.646825396825395,Taiwan,W6,6,Set4,2,governance,quality
+Court protection,-0.004143353450594561,1008,319,31.646825396825395,Taiwan,W6,6,Set4,3,procedural,accountability
+Unemployment aid,-0.007960958769356978,1008,319,31.646825396825395,Taiwan,W6,6,Set4,4,substantive,welfare
+Reduce gap rich/poor,-0.00954568061076682,824,418,50.728155339805824,Thailand,W3,3,Set1,1,substantive,redistribution
+Free elections,-0.007271637303179592,824,418,50.728155339805824,Thailand,W3,3,Set1,2,procedural,electoral
+No waste,-0.007212307384451204,824,418,50.728155339805824,Thailand,W3,3,Set1,3,governance,quality
+Free expression,0.02402962529839779,824,418,50.728155339805824,Thailand,W3,3,Set1,4,procedural,liberal
+Legislature oversight,2.962958086067946e-4,825,422,51.15151515151515,Thailand,W3,3,Set2,1,procedural,accountability
+Basic necessities,0.05270738837801808,825,422,51.15151515151515,Thailand,W3,3,Set2,2,substantive,welfare
+Organize groups,0.031501544205674484,825,422,51.15151515151515,Thailand,W3,3,Set2,3,procedural,liberal
+Quality services,-0.08450522839230086,825,422,51.15151515151515,Thailand,W3,3,Set2,4,governance,quality
+Law and order,-0.013159592129154508,798,408,51.127819548872175,Thailand,W3,3,Set3,1,governance,quality
+Media freedom,0.016176508362452772,798,408,51.127819548872175,Thailand,W3,3,Set3,2,procedural,liberal
+Jobs for all,-0.009879059946059643,798,408,51.127819548872175,Thailand,W3,3,Set3,3,substantive,welfare
+Party competition,0.006862143712761533,798,408,51.127819548872175,Thailand,W3,3,Set3,4,procedural,electoral
+Protest freedom,0.004280429338334693,807,417,51.6728624535316,Thailand,W3,3,Set4,1,procedural,liberal
+Clean politics,0.010071289635823774,807,417,51.6728624535316,Thailand,W3,3,Set4,2,governance,quality
+Court protection,-0.0345132397422851,807,417,51.6728624535316,Thailand,W3,3,Set4,3,procedural,accountability
+Unemployment aid,0.02016152076812585,807,417,51.6728624535316,Thailand,W3,3,Set4,4,substantive,welfare
+Reduce gap rich/poor,-0.12386394861799443,396,220,55.55555555555556,Thailand,W4,4,Set1,1,substantive,redistribution
+Free elections,1.993290419666227e-7,396,220,55.55555555555556,Thailand,W4,4,Set1,2,procedural,electoral
+No waste,0.0545454691665544,396,220,55.55555555555556,Thailand,W4,4,Set1,3,governance,quality
+Free expression,0.06931828012239803,396,220,55.55555555555556,Thailand,W4,4,Set1,4,procedural,liberal
+Legislature oversight,0.05399182530665442,387,213,55.03875968992248,Thailand,W4,4,Set2,1,procedural,accountability
+Basic necessities,-0.11801794742251609,387,213,55.03875968992248,Thailand,W4,4,Set2,2,substantive,welfare
+Organize groups,0.04265678043354464,387,213,55.03875968992248,Thailand,W4,4,Set2,3,procedural,liberal
+Quality services,0.021369341682317272,387,213,55.03875968992248,Thailand,W4,4,Set2,4,governance,quality
+Law and order,2.7920919977608705e-5,382,211,55.235602094240846,Thailand,W4,4,Set3,1,governance,quality
+Media freedom,0.00748281466210058,382,211,55.235602094240846,Thailand,W4,4,Set3,2,procedural,liberal
+Jobs for all,-0.03747073074728923,382,211,55.235602094240846,Thailand,W4,4,Set3,3,substantive,welfare
+Party competition,0.029959995165210678,382,211,55.235602094240846,Thailand,W4,4,Set3,4,procedural,electoral
+Protest freedom,0.10315126025724893,389,217,55.78406169665809,Thailand,W4,4,Set4,1,procedural,liberal
+Clean politics,-0.1049764137361776,389,217,55.78406169665809,Thailand,W4,4,Set4,2,governance,quality
+Court protection,0.0069419057260527205,389,217,55.78406169665809,Thailand,W4,4,Set4,3,procedural,accountability
+Unemployment aid,-0.005116752247123154,389,217,55.78406169665809,Thailand,W4,4,Set4,4,substantive,welfare
+Reduce gap rich/poor,-0.02703079001917807,330,223,67.57575757575758,Thailand,W6,6,Set1,1,substantive,redistribution
+Free elections,0.10192148143662656,330,223,67.57575757575758,Thailand,W6,6,Set1,2,procedural,electoral
+No waste,-0.05988808724852603,330,223,67.57575757575758,Thailand,W6,6,Set1,3,governance,quality
+Free expression,-0.01500260416892292,330,223,67.57575757575758,Thailand,W6,6,Set1,4,procedural,liberal
+Legislature oversight,0.11904808635812947,332,224,67.46987951807229,Thailand,W6,6,Set2,1,procedural,accountability
+Basic necessities,-0.22073341318768924,332,224,67.46987951807229,Thailand,W6,6,Set2,2,substantive,welfare
+Organize groups,0.09556804280899488,332,224,67.46987951807229,Thailand,W6,6,Set2,3,procedural,liberal
+Quality services,0.0061172840205667165,332,224,67.46987951807229,Thailand,W6,6,Set2,4,governance,quality
+Law and order,0.042728258695803385,327,222,67.88990825688074,Thailand,W6,6,Set3,1,governance,quality
+Media freedom,0.0758042124593412,327,222,67.88990825688074,Thailand,W6,6,Set3,2,procedural,liberal
+Jobs for all,-0.16447824997587138,327,222,67.88990825688074,Thailand,W6,6,Set3,3,substantive,welfare
+Party competition,0.045945778820725376,327,222,67.88990825688074,Thailand,W6,6,Set3,4,procedural,electoral
+Protest freedom,0.11951245004044388,329,223,67.78115501519757,Thailand,W6,6,Set4,1,procedural,liberal
+Clean politics,0.06366749195708232,329,223,67.78115501519757,Thailand,W6,6,Set4,2,governance,quality
+Court protection,0.056264988536231186,329,223,67.78115501519757,Thailand,W6,6,Set4,3,procedural,accountability
+Unemployment aid,-0.239444930533756,329,223,67.78115501519757,Thailand,W6,6,Set4,4,substantive,welfare
