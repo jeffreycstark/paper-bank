@@ -19,6 +19,12 @@ format:
     urlcolor: blue
     citecolor: blue
     keep-tex: true
+    include-in-header:
+      text: |
+        \renewcommand{\thesection}{\Alph{section}}
+        \renewcommand{\thesubsection}{\Alph{section}.\arabic{subsection}}
+        \renewcommand{\thetable}{\Alph{section}\arabic{table}}
+        \renewcommand{\thefigure}{\Alph{section}\arabic{figure}}
   html:
     toc: true
     toc-depth: 3
