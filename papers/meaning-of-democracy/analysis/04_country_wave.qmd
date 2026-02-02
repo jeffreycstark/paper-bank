@@ -1,0 +1,580 @@
+---
+title: "Country-Wave Analysis"
+subtitle: "Meaning of Democracy Paper"
+author: "Jeffrey Stark"
+date: today
+format:
+  html:
+    toc: true
+    toc-depth: 3
+    code-fold: show
+    df-print: paged
+execute:
+  warning: false
+  message: false
+---
+
+# Overview
+
+This script estimates separate multinomial logit models for each country-wave
+combination to examine:
+
+- **H2**: How the loser effect varies across contexts
+- **H3**: How the loser effect changes over time within countries
+
+Results are saved for reproduction in the online appendix.
+
+# Setup
+
+```{r setup}
+library(tidyverse)
+library(nnet)
+library(knitr)
+library(kableExtra)
+library(here)
+
+here::i_am("papers/meaning-of-democracy/analysis/04_country_wave.qmd")
+
+# Directories
+data_dir <- here("papers", "meaning-of-democracy", "analysis", "revised", "data")
+results_dir <- here("papers", "meaning-of-democracy", "analysis", "revised", "results")
+
+# Load data
+w346_data <- readRDS(file.path(data_dir, "w346_main.rds"))
+item_meta <- readRDS(file.path(data_dir, "item_metadata.rds"))
+
+# Bootstrap iterations
+n_boot <- 999
+cat("Bootstrap iterations:", n_boot, "\n")
+```
+
+# Helper Functions
+
+```{r helpers}
+# Extract marginal effects from multinomial logit
+get_loser_ames <- function(model, data) {
+  probs_all <- predict(model, type = "probs")
+
+  data_loser <- data_winner <- data
+  data_loser$loser <- 1
+  data_winner$loser <- 0
+
+  probs_loser <- predict(model, newdata = data_loser, type = "probs")
+  probs_winner <- predict(model, newdata = data_winner, type = "probs")
+
+  ames <- colMeans(probs_loser - probs_winner)
+  return(ames)
+}
+
+# Estimate model and extract AMEs with bootstrap SEs for a single country-wave-set
+estimate_cw_ames_with_se <- function(data, set_num, n_boot = 100) {
+  choice_var <- paste0("set", set_num, "_choice")
+  valid_var <- paste0("set", set_num, "_valid")
+
+  df <- data %>%
+    filter(.data[[valid_var]]) %>%
+    mutate(choice = .data[[choice_var]])
+
+  # Need sufficient sample size and variation
+  if (nrow(df) < 50) return(NULL)
+  if (length(unique(df$loser)) < 2) return(NULL)
+  if (length(unique(df$choice)) < 2) return(NULL)
+
+  # Fit multinomial logit: choice ~ loser only (no demographic controls)
+  # Justification: Small N per country-wave makes controls unreliable
+  model <- tryCatch(
+    multinom(choice ~ loser, data = df, trace = FALSE),
+    error = function(e) NULL
+  )
+
+  if (is.null(model)) return(NULL)
+
+  # Get point estimates of AMEs
+  ames <- tryCatch(
+    get_loser_ames(model, df),
+    error = function(e) NULL
+  )
+
+  if (is.null(ames)) return(NULL)
+
+  # Bootstrap for standard errors
+  boot_ames <- matrix(NA, nrow = n_boot, ncol = length(ames))
+  colnames(boot_ames) <- names(ames)
+
+  for (b in 1:n_boot) {
+    boot_idx <- sample(nrow(df), replace = TRUE)
+    boot_df <- df[boot_idx, ]
+
+    if (length(unique(boot_df$loser)) < 2) next
+    if (length(unique(boot_df$choice)) < 2) next
+
+    boot_model <- tryCatch(
+      multinom(choice ~ loser, data = boot_df, trace = FALSE),
+      error = function(e) NULL
+    )
+
+    if (!is.null(boot_model)) {
+      boot_result <- tryCatch(
+        get_loser_ames(boot_model, boot_df),
+        error = function(e) NULL
+      )
+      if (!is.null(boot_result) && length(boot_result) == length(ames)) {
+        boot_ames[b, ] <- boot_result
+      }
+    }
+  }
+
+  ses <- apply(boot_ames, 2, sd, na.rm = TRUE)
+
+  tibble(
+    item = names(ames),
+    ame = as.numeric(ames),
+    se = ses,
+    z = ame / se,
+    p = 2 * pnorm(-abs(z)),
+    ci_low = ame - 1.96 * se,
+    ci_high = ame + 1.96 * se,
+    n = nrow(df),
+    n_loser = sum(df$loser),
+    pct_loser = mean(df$loser) * 100
+  )
+}
+```
+
+# Estimate Country-Wave Models
+
+```{r estimate-models}
+#| cache: true
+
+# Get unique country-wave combinations
+country_waves <- w346_data %>%
+  distinct(country_name, wave_label, wave) %>%
+  arrange(country_name, wave)
+
+cat("Estimating country-wave models for", nrow(country_waves), "combinations...\n")
+cat("Using", n_boot, "bootstrap iterations per model for SEs\n\n")
+
+# Estimate for each country-wave and set
+cw_results_list <- list()
+
+for (i in 1:nrow(country_waves)) {
+  cw <- country_waves[i, ]
+
+  cw_data <- w346_data %>%
+    filter(country_name == cw$country_name, wave_label == cw$wave_label)
+
+  for (set_num in 1:4) {
+    result <- estimate_cw_ames_with_se(cw_data, set_num, n_boot = n_boot)
+
+    if (!is.null(result)) {
+      result <- result %>%
+        mutate(
+          country_name = cw$country_name,
+          wave_label = cw$wave_label,
+          wave = cw$wave,
+          set = paste0("Set", set_num)
+        )
+      cw_results_list[[length(cw_results_list) + 1]] <- result
+    }
+  }
+
+  if (i %% 5 == 0) cat("  Completed", i, "of", nrow(country_waves), "country-waves\n")
+}
+
+# Combine results
+cw_ames <- bind_rows(cw_results_list)
+
+# Add significance indicators
+cw_ames <- cw_ames %>%
+  mutate(
+    sig = case_when(
+      p < 0.001 ~ "***",
+      p < 0.01 ~ "**",
+      p < 0.05 ~ "*",
+      p < 0.10 ~ "†",
+      TRUE ~ ""
+    ),
+    ame_pct = sprintf("%+.1f", ame * 100)
+  )
+
+cat("\n=== COUNTRY-WAVE RESULTS SUMMARY ===\n")
+cat("Total country-wave-set combinations:", nrow(cw_ames %>% distinct(country_name, wave_label, set)), "\n")
+cat("Total item-level estimates:", nrow(cw_ames), "\n")
+cat("Significant at p<0.05:", sum(cw_ames$p < 0.05, na.rm = TRUE), "items\n")
+```
+
+# Add Item Metadata
+
+```{r add-metadata}
+cw_ames <- cw_ames %>%
+  left_join(
+    item_meta %>%
+      filter(set %in% c("Set1", "Set2", "Set3", "Set4")) %>%
+      select(set, value, item_label, item_type, item_subtype),
+    by = c("set", "item" = "item_label")
+  )
+
+n_missing_type <- sum(is.na(cw_ames$item_type))
+stopifnot(
+  "Country-wave metadata join failed: some items have NA item_type" = n_missing_type == 0
+)
+cat("Metadata join verified:", nrow(cw_ames), "items with valid types\n")
+
+# Preview
+cat("\n=== SAMPLE OF COUNTRY-WAVE RESULTS (with inference) ===\n")
+cw_ames %>%
+  filter(country_name %in% c("Thailand", "South Korea")) %>%
+  select(country_name, wave_label, set, item, item_type, ame_pct, sig, se, n) %>%
+  mutate(se_pct = sprintf("%.1f", se * 100)) %>%
+  head(20) %>%
+  print()
+```
+
+# Summary by Item Type
+
+```{r summary-by-type}
+cw_type_summary <- cw_ames %>%
+  group_by(country_name, wave_label, wave, item_type) %>%
+  summarise(
+    mean_ame = mean(ame, na.rm = TRUE),
+    mean_se = mean(se, na.rm = TRUE),
+    n_items = n(),
+    n_sig = sum(p < 0.05, na.rm = TRUE),
+    mean_n = mean(n, na.rm = TRUE),
+    .groups = "drop"
+  ) %>%
+  pivot_wider(
+    names_from = item_type,
+    values_from = c(mean_ame, mean_se, n_items, n_sig, mean_n),
+    names_sep = "_"
+  )
+
+cat("\n=== COUNTRY-WAVE SUMMARY BY ITEM TYPE ===\n")
+cw_type_summary %>%
+  mutate(
+    procedural = sprintf("%+.1f (%.1f)", mean_ame_procedural * 100, mean_se_procedural * 100),
+    substantive = sprintf("%+.1f (%.1f)", mean_ame_substantive * 100, mean_se_substantive * 100),
+    governance = sprintf("%+.1f (%.1f)", mean_ame_governance * 100, mean_se_governance * 100)
+  ) %>%
+  select(country_name, wave_label, procedural, substantive, governance) %>%
+  arrange(country_name, wave_label) %>%
+  print(n = 50)
+```
+
+# Procedural-Substantive Gap
+
+```{r gap-analysis}
+cw_gap <- cw_ames %>%
+  group_by(country_name, wave_label, wave, item_type) %>%
+  summarise(
+    mean_ame = mean(ame, na.rm = TRUE),
+    se_agg = sqrt(sum(se^2, na.rm = TRUE)) / n(),
+    n_items = n(),
+    n_sig = sum(p < 0.05, na.rm = TRUE),
+    mean_n = mean(n, na.rm = TRUE),
+    .groups = "drop"
+  ) %>%
+  pivot_wider(
+    names_from = item_type,
+    values_from = c(mean_ame, se_agg, n_items, n_sig, mean_n),
+    names_sep = "_"
+  ) %>%
+  mutate(
+    proc_sub_gap = mean_ame_procedural - mean_ame_substantive,
+    proc_sub_gap_se = sqrt(se_agg_procedural^2 + se_agg_substantive^2),
+    proc_sub_gap_ci_low = proc_sub_gap - 1.96 * proc_sub_gap_se,
+    proc_sub_gap_ci_high = proc_sub_gap + 1.96 * proc_sub_gap_se
+  )
+```
+
+# Country Trajectories
+
+```{r trajectories}
+multi_wave_countries <- cw_gap %>%
+  group_by(country_name) %>%
+  filter(n() >= 2) %>%
+  ungroup()
+
+cat("\n=== COUNTRY TRAJECTORIES (Procedural - Substantive Gap) ===\n")
+cat("Positive = losers favor procedural more than substantive\n")
+cat("Format: Gap (SE)\n\n")
+
+multi_wave_countries %>%
+  mutate(gap_pct = sprintf("%+.1f (%.1f)", proc_sub_gap * 100, proc_sub_gap_se * 100)) %>%
+  select(country_name, wave_label, gap_pct) %>%
+  pivot_wider(names_from = wave_label, values_from = gap_pct) %>%
+  print()
+```
+
+# Key Country Deep Dives
+
+## Thailand
+
+```{r thailand}
+cat("\n=== THAILAND TRAJECTORY ===\n")
+cw_ames %>%
+  filter(country_name == "Thailand") %>%
+  group_by(wave_label, item_type) %>%
+  summarise(
+    mean_ame = mean(ame, na.rm = TRUE),
+    .groups = "drop"
+  ) %>%
+  mutate(ame_pct = sprintf("%+.1f", mean_ame * 100)) %>%
+  pivot_wider(names_from = item_type, values_from = ame_pct) %>%
+  print()
+```
+
+## South Korea
+
+```{r korea}
+cat("\n=== SOUTH KOREA TRAJECTORY ===\n")
+cw_ames %>%
+  filter(country_name == "South Korea") %>%
+  group_by(wave_label, item_type) %>%
+  summarise(
+    mean_ame = mean(ame, na.rm = TRUE),
+    .groups = "drop"
+  ) %>%
+  mutate(ame_pct = sprintf("%+.1f", mean_ame * 100)) %>%
+  pivot_wider(names_from = item_type, values_from = ame_pct) %>%
+  print()
+```
+
+## Japan
+
+```{r japan}
+cat("\n=== JAPAN TRAJECTORY ===\n")
+cw_ames %>%
+  filter(country_name == "Japan") %>%
+  group_by(wave_label, item_type) %>%
+  summarise(
+    mean_ame = mean(ame, na.rm = TRUE),
+    .groups = "drop"
+  ) %>%
+  mutate(ame_pct = sprintf("%+.1f", mean_ame * 100)) %>%
+  pivot_wider(names_from = item_type, values_from = ame_pct) %>%
+  print()
+```
+
+## Taiwan
+
+```{r taiwan}
+cat("\n=== TAIWAN TRAJECTORY ===\n")
+cw_ames %>%
+  filter(country_name == "Taiwan") %>%
+  group_by(wave_label, item_type) %>%
+  summarise(
+    mean_ame = mean(ame, na.rm = TRUE),
+    .groups = "drop"
+  ) %>%
+  mutate(ame_pct = sprintf("%+.1f", mean_ame * 100)) %>%
+  pivot_wider(names_from = item_type, values_from = ame_pct) %>%
+  print()
+```
+
+# Trajectory Visualization
+
+```{r trajectory-plot, fig.width=12, fig.height=8}
+trajectory_countries <- multi_wave_countries %>%
+  group_by(country_name) %>%
+  filter(n() >= 3) %>%
+  ungroup()
+
+if (nrow(trajectory_countries) > 0) {
+  p <- ggplot(trajectory_countries, aes(x = wave, y = proc_sub_gap * 100,
+                                    color = country_name, fill = country_name,
+                                    group = country_name)) +
+    geom_ribbon(aes(ymin = proc_sub_gap_ci_low * 100, ymax = proc_sub_gap_ci_high * 100),
+                alpha = 0.2, color = NA) +
+    geom_line(linewidth = 1) +
+    geom_point(size = 3) +
+    geom_hline(yintercept = 0, linetype = "dashed", color = "gray50") +
+    scale_x_continuous(breaks = c(3, 4, 6), labels = c("W3\n(2011)", "W4\n(2015)", "W6\n(2022)")) +
+    labs(
+      x = "Wave",
+      y = "Loser Effect Gap (pp)\n(Procedural − Substantive)",
+      title = "Country Trajectories: How the Loser Effect Changes Over Time",
+      subtitle = "Shaded regions show 95% confidence intervals",
+      color = "Country",
+      fill = "Country"
+    ) +
+    theme_minimal() +
+    theme(
+      legend.position = "right",
+      panel.grid.minor = element_blank()
+    )
+
+  print(p)
+  ggsave(file.path(results_dir, "fig_country_trajectories.png"), width = 12, height = 8, dpi = 300)
+  ggsave(file.path(results_dir, "fig_country_trajectories.pdf"), width = 12, height = 8)
+}
+```
+
+# Highlight Countries Plot
+
+```{r highlight-plot, fig.width=12, fig.height=8}
+highlight_countries <- c("Thailand", "South Korea", "Taiwan", "Japan")
+
+highlight_data <- cw_gap %>%
+  filter(country_name %in% highlight_countries)
+
+if (nrow(highlight_data) > 0) {
+  p_highlight <- ggplot(highlight_data,
+                        aes(x = wave, y = proc_sub_gap * 100,
+                            color = country_name, linetype = country_name)) +
+    geom_ribbon(aes(ymin = proc_sub_gap_ci_low * 100,
+                    ymax = proc_sub_gap_ci_high * 100,
+                    fill = country_name),
+                alpha = 0.15, color = NA) +
+    geom_line(linewidth = 1.5) +
+    geom_point(size = 4) +
+    geom_hline(yintercept = 0, linetype = "dashed", color = "gray50", linewidth = 0.8) +
+    scale_x_continuous(breaks = c(3, 4, 6),
+                       labels = c("Wave 3\n(2011)", "Wave 4\n(2015)", "Wave 6\n(2022)")) +
+    scale_color_manual(values = c(
+      "Thailand" = "#D62728",
+      "South Korea" = "#1F77B4",
+      "Taiwan" = "#2CA02C",
+      "Japan" = "#9467BD"
+    )) +
+    scale_fill_manual(values = c(
+      "Thailand" = "#D62728",
+      "South Korea" = "#1F77B4",
+      "Taiwan" = "#2CA02C",
+      "Japan" = "#9467BD"
+    )) +
+    scale_linetype_manual(values = c(
+      "Thailand" = "solid",
+      "South Korea" = "solid",
+      "Taiwan" = "dashed",
+      "Japan" = "dashed"
+    )) +
+    labs(
+      x = NULL,
+      y = "Loser Effect Gap (pp)\n(Procedural − Substantive)",
+      title = "Diverging Trajectories: How Loser Effects Change Over Time",
+      subtitle = "Positive gap = losers favor procedural items more than substantive\n95% confidence intervals shown",
+      color = "Country",
+      fill = "Country",
+      linetype = "Country"
+    ) +
+    theme_minimal(base_size = 14) +
+    theme(
+      legend.position = "right",
+      legend.title = element_text(face = "bold"),
+      panel.grid.minor = element_blank(),
+      plot.title = element_text(face = "bold", size = 16),
+      axis.text.x = element_text(size = 12)
+    )
+
+  print(p_highlight)
+  ggsave(file.path(results_dir, "fig_highlight_country_trajectories.png"),
+         width = 12, height = 8, dpi = 300)
+  ggsave(file.path(results_dir, "fig_highlight_country_trajectories.pdf"),
+         width = 12, height = 8)
+}
+
+cat("\n=== HIGHLIGHT COUNTRIES: PROC-SUB GAP ===\n")
+highlight_data %>%
+  select(country_name, wave_label, proc_sub_gap, proc_sub_gap_se) %>%
+  mutate(
+    gap_pct = sprintf("%+.1f (%.1f)", proc_sub_gap * 100, proc_sub_gap_se * 100)
+  ) %>%
+  select(country_name, wave_label, gap_pct) %>%
+  pivot_wider(names_from = wave_label, values_from = gap_pct) %>%
+  print()
+```
+
+# Item-Level Trajectory Plots
+
+```{r item-trajectories, fig.width=14, fig.height=10}
+focal_countries <- c("Thailand", "South Korea", "Taiwan", "Japan",
+                     "Philippines", "Indonesia", "Mongolia")
+
+trajectory_data <- cw_ames %>%
+  filter(country_name %in% focal_countries) %>%
+  group_by(country_name) %>%
+  filter(n_distinct(wave) >= 2) %>%
+  ungroup()
+
+if (nrow(trajectory_data) > 0) {
+  p_items <- ggplot(trajectory_data,
+                    aes(x = wave, y = ame * 100, color = item_type, group = item)) +
+    geom_line(alpha = 0.5, linewidth = 0.8) +
+    geom_point(size = 2, alpha = 0.7) +
+    geom_hline(yintercept = 0, linetype = "dashed", color = "gray50") +
+    facet_wrap(~country_name, ncol = 4) +
+    scale_x_continuous(breaks = c(3, 4, 6), labels = c("W3", "W4", "W6")) +
+    scale_color_manual(
+      values = c("procedural" = "#2166AC", "substantive" = "#B2182B", "governance" = "#4DAF4A"),
+      labels = c("Procedural", "Substantive", "Governance")
+    ) +
+    labs(
+      x = "Wave",
+      y = "Loser Effect (pp)",
+      title = "Item-Level Loser Effects Across Waves",
+      subtitle = "Blue = Procedural items (losers favor more); Red = Substantive items (winners favor more)",
+      color = "Item Type"
+    ) +
+    theme_minimal() +
+    theme(
+      legend.position = "bottom",
+      panel.grid.minor = element_blank(),
+      strip.text = element_text(face = "bold", size = 11)
+    )
+
+  print(p_items)
+  ggsave(file.path(results_dir, "fig_item_trajectories_by_country.png"),
+         width = 14, height = 10, dpi = 300)
+  ggsave(file.path(results_dir, "fig_item_trajectories_by_country.pdf"),
+         width = 14, height = 10)
+}
+```
+
+# Save Results
+
+```{r save-results}
+# Save country-wave results
+cw_results <- list(
+  cw_ames = cw_ames,
+  cw_type_summary = cw_type_summary,
+  cw_gap = cw_gap
+)
+
+saveRDS(cw_results, file.path(results_dir, "country_wave_results.rds"))
+cat("\nResults saved to:", file.path(results_dir, "country_wave_results.rds"), "\n")
+
+# CSVs for online appendix
+cw_ames_export <- cw_ames %>%
+  select(
+    country_name, wave_label, wave, set, item, item_type, item_subtype,
+    ame, se, z, p, ci_low, ci_high, sig, ame_pct,
+    n, n_loser, pct_loser
+  ) %>%
+  arrange(country_name, wave, set, item)
+
+write_csv(cw_ames_export, file.path(results_dir, "country_wave_item_ames.csv"))
+cat("CSV saved to:", file.path(results_dir, "country_wave_item_ames.csv"), "\n")
+
+write_csv(cw_type_summary, file.path(results_dir, "country_wave_type_summary.csv"))
+cat("CSV saved to:", file.path(results_dir, "country_wave_type_summary.csv"), "\n")
+
+cw_gap_export <- cw_gap %>%
+  select(
+    country_name, wave_label, wave,
+    mean_ame_procedural, mean_ame_substantive, mean_ame_governance,
+    se_agg_procedural, se_agg_substantive, se_agg_governance,
+    proc_sub_gap, proc_sub_gap_se, proc_sub_gap_ci_low, proc_sub_gap_ci_high,
+    n_items_procedural, n_items_substantive, n_items_governance,
+    n_sig_procedural, n_sig_substantive, n_sig_governance
+  ) %>%
+  arrange(country_name, wave)
+
+write_csv(cw_gap_export, file.path(results_dir, "country_wave_proc_sub_gap.csv"))
+cat("CSV saved to:", file.path(results_dir, "country_wave_proc_sub_gap.csv"), "\n")
+
+cat("\n=== FILES FOR ONLINE APPENDIX ===\n")
+cat("1. country_wave_item_ames.csv - Item-level AMEs by country-wave\n")
+cat("2. country_wave_type_summary.csv - Type-level summary by country-wave\n")
+cat("3. country_wave_proc_sub_gap.csv - Procedural-Substantive gap by country-wave\n")
+```
