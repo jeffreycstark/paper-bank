@@ -62,7 +62,7 @@ knitr::opts_chunk$set(
   fig.align = "center", fig.pos = "H", out.width = "100%"
 )
 
-here::i_am("papers/meaning-of-democracy/manuscript/manuscript2.qmd")
+here::i_am("papers/meaning-of-democracy/manuscript/manuscript.qmd")
 
 # Load results from multinomial analysis pipeline
 results_path <- here("papers", "meaning-of-democracy", "analysis", "revised", "results")
