@@ -42,7 +42,7 @@ here::i_am("papers/meaning-of-democracy/manuscript/online_appendix.qmd")
 
 # Results directory (multinomial logit analysis outputs)
 results_dir <- here("papers", "meaning-of-democracy", "analysis", "revised", "results")
-data_dir <- here("papers", "meaning-of-democracy", "analysis", "data")
+data_dir <- here("papers", "meaning-of-democracy", "analysis", "revised", "data")
 
 # Helper function to safely load files
 safe_read <- function(path, type = "rds") {
