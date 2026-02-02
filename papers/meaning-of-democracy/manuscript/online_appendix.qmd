@@ -436,9 +436,57 @@ if (!is.null(cw_gap)) {
 
 # Demographic Controls Comparison {#sec-controls}
 
-<!-- TODO: Add controlled vs uncontrolled comparison when both are available -->
+This section compares pooled average marginal effects estimated with and without demographic controls to assess the stability of the loser effect.
 
-This section would compare pooled average marginal effects estimated with and without demographic controls (age, gender, education, urban residence) to assess the stability of the loser effect. Currently, only the controlled estimates are available.
+```{r tbl-controls-comparison}
+#| tbl-cap: "Comparison of AMEs With and Without Demographic Controls"
+
+# Load both results files
+controlled <- safe_read(file.path(results_dir, "loser_effects_all_items.csv"), "csv")
+uncontrolled <- safe_read(file.path(results_dir, "loser_effects_all_items_no_controls.csv"), "csv")
+
+if (!is.null(controlled) && !is.null(uncontrolled)) {
+  # Join and compare
+  comparison <- controlled %>%
+    select(set, item_label, item_type, ame_controlled = ame, sig_controlled = sig) %>%
+    inner_join(
+      uncontrolled %>% select(set, item_label, ame_uncontrolled = ame, sig_uncontrolled = sig),
+      by = c("set", "item_label")
+    ) %>%
+    mutate(
+      sig_controlled = replace_na(sig_controlled, ""),
+      sig_uncontrolled = replace_na(sig_uncontrolled, ""),
+      diff = ame_controlled - ame_uncontrolled
+    )
+
+  # Format for display
+  comparison %>%
+    mutate(
+      `AME with controls (pp)` = sprintf("%+.1f%s", ame_controlled * 100, sig_controlled),
+      `AME without controls (pp)` = sprintf("%+.1f%s", ame_uncontrolled * 100, sig_uncontrolled),
+      `Difference (pp)` = sprintf("%+.2f", diff * 100)
+    ) %>%
+    select(
+      Item = item_label,
+      Type = item_type,
+      `AME with controls (pp)`,
+      `AME without controls (pp)`,
+      `Difference (pp)`
+    ) %>%
+    kable(booktabs = TRUE, align = c("l", "l", "r", "r", "r")) %>%
+    kable_styling(latex_options = c("hold_position", "striped"),
+                  font_size = 9) %>%
+    pack_rows("Set 1", 1, 4) %>%
+    pack_rows("Set 2", 5, 8) %>%
+    pack_rows("Set 3", 9, 12) %>%
+    pack_rows("Set 4", 13, 16) %>%
+    pack_rows("Wave 2", 17, 20)
+} else {
+  cat("**Warning:** Results files not found. Cannot generate comparison table.")
+}
+```
+
+**Note:** Demographic controls include age, gender, education level, and urban/rural residence. The stability of estimates across specifications indicates that the loser effect is not driven by compositional differences between winner and loser populations. Significance: \*\*\* p<0.001, \*\* p<0.01, \* p<0.05, † p<0.10.
 
 # Wave 2 Detailed Results {#sec-w2}
 

@@ -900,12 +900,178 @@ highlight_data %>%
   print()
 ```
 
+# Robustness: Pooled Models Without Demographic Controls
+
+This section reruns the same pooled multinomial logits without demographic controls
+to verify that the loser effect is not driven by compositional differences between
+winner and loser populations.
+
+```{r no-controls-models}
+cat("=== ROBUSTNESS: MODELS WITHOUT DEMOGRAPHIC CONTROLS ===\n\n")
+
+# Set 1 without controls
+set1_model_nc <- multinom(
+  choice ~ loser + country_f + wave_f,
+  data = set1_data,
+  trace = FALSE
+)
+set1_ames_nc <- get_loser_ames(set1_model_nc, set1_data)
+cat("Set 1 (no controls) - Cluster bootstrapping SEs (", n_boot, " iterations)...\n")
+set1_ses_nc <- bootstrap_ames(
+  choice ~ loser + country_f + wave_f,
+  data = set1_data,
+  n_boot = n_boot,
+  cluster_var = "country_name"
+)
+set1_results_nc <- format_ame_results(set1_ames_nc, set1_ses_nc, set1_labels, "Set1")
+
+# Set 2 without controls
+set2_model_nc <- multinom(
+  choice ~ loser + country_f + wave_f,
+  data = set2_data,
+  trace = FALSE
+)
+set2_ames_nc <- get_loser_ames(set2_model_nc, set2_data)
+cat("Set 2 (no controls) - Cluster bootstrapping SEs (", n_boot, " iterations)...\n")
+set2_ses_nc <- bootstrap_ames(
+  choice ~ loser + country_f + wave_f,
+  data = set2_data,
+  n_boot = n_boot,
+  cluster_var = "country_name"
+)
+set2_results_nc <- format_ame_results(set2_ames_nc, set2_ses_nc, set2_labels, "Set2")
+
+# Set 3 without controls
+set3_model_nc <- multinom(
+  choice ~ loser + country_f + wave_f,
+  data = set3_data,
+  trace = FALSE
+)
+set3_ames_nc <- get_loser_ames(set3_model_nc, set3_data)
+cat("Set 3 (no controls) - Cluster bootstrapping SEs (", n_boot, " iterations)...\n")
+set3_ses_nc <- bootstrap_ames(
+  choice ~ loser + country_f + wave_f,
+  data = set3_data,
+  n_boot = n_boot,
+  cluster_var = "country_name"
+)
+set3_results_nc <- format_ame_results(set3_ames_nc, set3_ses_nc, set3_labels, "Set3")
+
+# Set 4 without controls
+set4_model_nc <- multinom(
+  choice ~ loser + country_f + wave_f,
+  data = set4_data,
+  trace = FALSE
+)
+set4_ames_nc <- get_loser_ames(set4_model_nc, set4_data)
+cat("Set 4 (no controls) - Cluster bootstrapping SEs (", n_boot, " iterations)...\n")
+set4_ses_nc <- bootstrap_ames(
+  choice ~ loser + country_f + wave_f,
+  data = set4_data,
+  n_boot = n_boot,
+  cluster_var = "country_name"
+)
+set4_results_nc <- format_ame_results(set4_ames_nc, set4_ses_nc, set4_labels, "Set4")
+
+# W2 without controls (no wave FE since single wave)
+w2_model_nc <- multinom(
+  choice ~ loser + country_f,
+  data = w2_analysis,
+  trace = FALSE
+)
+w2_ames_nc <- get_loser_ames(w2_model_nc, w2_analysis)
+cat("W2 (no controls) - Cluster bootstrapping SEs (", n_boot, " iterations)...\n")
+w2_ses_nc <- bootstrap_ames(
+  choice ~ loser + country_f,
+  data = w2_analysis,
+  n_boot = n_boot,
+  cluster_var = "country_name"
+)
+w2_results_nc <- format_ame_results(w2_ames_nc, w2_ses_nc, w2_labels, "W2")
+
+# Combine all no-controls results
+all_results_nc <- bind_rows(
+  set1_results_nc,
+  set2_results_nc,
+  set3_results_nc,
+  set4_results_nc,
+  w2_results_nc
+) %>%
+  left_join(
+    item_meta %>% select(set, item_label, item_type, item_subtype),
+    by = c("set", "item_label")
+  )
+
+# Verify metadata join
+stopifnot(
+  "Metadata join failed for no-controls results" = !any(is.na(all_results_nc$item_type)),
+  "Row count mismatch for no-controls results" = nrow(all_results_nc) == 20
+)
+
+cat("\n=== NO-CONTROLS RESULTS ===\n")
+all_results_nc %>%
+  arrange(item_type, desc(ame)) %>%
+  select(set, item_label, item_type, ame_pct, sig) %>%
+  kable(caption = "Loser effect WITHOUT demographic controls (percentage points)")
+```
+
+```{r compare-controls}
+# Compare controlled vs uncontrolled estimates
+comparison <- all_results %>%
+  select(set, item_label, item_type, ame_controlled = ame, sig_controlled = sig) %>%
+  inner_join(
+    all_results_nc %>% select(set, item_label, ame_uncontrolled = ame, sig_uncontrolled = sig),
+    by = c("set", "item_label")
+  ) %>%
+  mutate(
+    diff = ame_controlled - ame_uncontrolled,
+    diff_pct = sprintf("%+.2f", diff * 100)
+  )
+
+cat("\n=== COMPARISON: CONTROLLED vs UNCONTROLLED ===\n")
+comparison %>%
+  mutate(
+    controlled = sprintf("%+.1f%s", ame_controlled * 100, sig_controlled),
+    uncontrolled = sprintf("%+.1f%s", ame_uncontrolled * 100, sig_uncontrolled)
+  ) %>%
+  select(set, item_label, item_type, controlled, uncontrolled, diff_pct) %>%
+  kable(caption = "Effect of adding demographic controls on AME estimates")
+
+# Summary statistics on differences
+cat("\n=== SUMMARY OF DIFFERENCES ===\n")
+cat("Mean absolute difference:", round(mean(abs(comparison$diff)) * 100, 2), "pp\n")
+cat("Max absolute difference:", round(max(abs(comparison$diff)) * 100, 2), "pp\n")
+cat("Items where sign changed:", sum(sign(comparison$ame_controlled) != sign(comparison$ame_uncontrolled)), "\n")
+cat("Items where significance changed:",
+    sum(comparison$sig_controlled != comparison$sig_uncontrolled), "\n")
+
+# Flag any notable shifts
+notable_shifts <- comparison %>%
+  filter(abs(diff) > 0.02)  # More than 2pp difference
+
+if (nrow(notable_shifts) > 0) {
+  cat("\n⚠️ NOTABLE SHIFTS (>2pp):\n")
+  notable_shifts %>%
+    mutate(
+      shift = sprintf("%s: %+.1f → %+.1f (Δ = %+.1f pp)",
+                      item_label,
+                      ame_uncontrolled * 100,
+                      ame_controlled * 100,
+                      diff * 100)
+    ) %>%
+    pull(shift) %>%
+    cat(sep = "\n")
+} else {
+  cat("\n✓ No notable shifts (all differences < 2pp)\n")
+}
+```
+
 # Save Results
 
 ```{r save-results}
 # Save all results
 results_list <- list(
-  # Pooled results
+  # Pooled results (with demographic controls)
   all_results = all_results,
   type_summary = type_summary,
   w2_results = w2_results,
@@ -914,6 +1080,9 @@ results_list <- list(
   set3_results = set3_results,
   set4_results = set4_results,
   item_metadata = item_meta,
+  # Pooled results (without demographic controls - robustness)
+  all_results_no_controls = all_results_nc,
+  controls_comparison = comparison,
   # Country-wave results
   country_wave_ames = cw_ames,
   country_wave_type_summary = cw_type_summary,
@@ -934,6 +1103,10 @@ cat("\nResults saved to:", file.path(results_dir, "mlogit_results.rds"), "\n")
 # Save CSVs for easy viewing and online appendix
 write_csv(all_results, file.path(results_dir, "loser_effects_all_items.csv"))
 cat("CSV saved to:", file.path(results_dir, "loser_effects_all_items.csv"), "\n")
+
+# Save no-controls results for robustness comparison
+write_csv(all_results_nc, file.path(results_dir, "loser_effects_all_items_no_controls.csv"))
+cat("CSV saved to:", file.path(results_dir, "loser_effects_all_items_no_controls.csv"), "\n")
 
 # Country-wave results for online appendix (with full inference)
 cw_ames_export <- cw_ames %>%
@@ -966,12 +1139,13 @@ write_csv(cw_gap_export, file.path(results_dir, "country_wave_proc_sub_gap.csv")
 cat("CSV saved to:", file.path(results_dir, "country_wave_proc_sub_gap.csv"), "\n")
 
 cat("\n=== FILES FOR ONLINE APPENDIX ===\n")
-cat("1. loser_effects_all_items.csv - Pooled AMEs for all 20 items\n")
-cat("2. country_wave_item_ames.csv - Item-level AMEs by country-wave\n")
-cat("3. country_wave_type_summary.csv - Type-level summary by country-wave\n")
-cat("4. country_wave_proc_sub_gap.csv - Procedural-Substantive gap by country-wave\n")
-cat("5. fig_loser_effects_all_items.pdf - Coefficient plot (pooled)\n")
-cat("6. fig_country_trajectories.pdf - Country trajectory plot\n")
+cat("1. loser_effects_all_items.csv - Pooled AMEs for all 20 items (with controls)\n")
+cat("2. loser_effects_all_items_no_controls.csv - Pooled AMEs without demographic controls\n")
+cat("3. country_wave_item_ames.csv - Item-level AMEs by country-wave\n")
+cat("4. country_wave_type_summary.csv - Type-level summary by country-wave\n")
+cat("5. country_wave_proc_sub_gap.csv - Procedural-Substantive gap by country-wave\n")
+cat("6. fig_loser_effects_all_items.pdf - Coefficient plot (pooled)\n")
+cat("7. fig_country_trajectories.pdf - Country trajectory plot\n")
 ```
 
 # Interpretation Guide
