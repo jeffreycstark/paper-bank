@@ -163,7 +163,8 @@ get_country_name <- function(code) {
 w2_data <- abs %>%
   filter(wave == 2) %>%
   # Exclude one-party states (China=4, Vietnam=11) - winner/loser concept doesn't apply
-  filter(!country %in% c(4, 11)) %>%
+  # Also exclude Hong Kong (2) and Singapore (10) - partial democracies
+  filter(!country %in% c(2, 4, 10, 11)) %>%
   # IMPORTANT: Restrict to actual voters for clean winner/loser operationalization
   filter(voted_last_election == 1) %>%
   filter(!is.na(electoral_status), !is.na(dem_essential_harmonized)) %>%
@@ -215,7 +216,8 @@ print(prop.table(table(w2_data$winner_loser, w2_data$dem_choice), margin = 1) %>
 w346_data <- abs %>%
   filter(wave %in% c(3, 4, 6)) %>%
   # Exclude one-party states (China=4, Vietnam=11) - winner/loser concept doesn't apply
-  filter(!country %in% c(4, 11)) %>%
+  # Also exclude Hong Kong (2) and Singapore (10) - partial democracies
+  filter(!country %in% c(2, 4, 10, 11)) %>%
   # Restrict to actual voters (consistent with W2; already implicit in W3/4/6
   # since electoral_status is only coded for voters in these waves)
   filter(voted_last_election == 1) %>%

@@ -35,6 +35,15 @@ abs_combined <- bind_rows(wave_list)
 cat("  Combined dataset:", format(nrow(abs_combined), big.mark = ","), "rows,",
     ncol(abs_combined), "columns\n")
 
+# Exclude Hong Kong (2) and Singapore (10) from analysis
+cat("\nExcluding Hong Kong and Singapore...\n")
+n_before <- nrow(abs_combined)
+abs_combined <- abs_combined %>%
+  filter(!country %in% c(2, 10))  # 2 = Hong Kong, 10 = Singapore
+cat("  Removed", format(n_before - nrow(abs_combined), big.mark = ","),
+    "rows (HK + SG)\n")
+cat("  Remaining:", format(nrow(abs_combined), big.mark = ","), "rows\n")
+
 # Zap haven labels (convert labelled vectors to regular R vectors)
 cat("\nZapping haven labels...\n")
 abs_econdev_authpref <- abs_combined %>%

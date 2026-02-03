@@ -216,6 +216,94 @@ if (!is.null(w346_data)) {
 
 **Note:** Diff = Loser - Winner. Positive values indicate losers are more likely to choose that item.
 
+## Non-Voter Rates by Country and Wave
+
+The main analysis restricts attention to respondents who reported voting in the most recent national election. Table \@ref(tab:tbl-nonvoter-rates) reports the proportion of non-voters among respondents with valid democracy conception responses.
+
+```{r tbl-nonvoter-rates}
+#| tbl-cap: "Non-Voter Rates by Country and Wave"
+
+# Load master data
+abs <- readRDS(here("data", "processed", "abs_econdev_authpref.rds"))
+
+# Country name mapping (11 analysis countries)
+country_names <- c(
+  `1` = "Japan", `3` = "South Korea", `5` = "Mongolia",
+  `6` = "Philippines", `7` = "Taiwan", `8` = "Thailand",
+  `9` = "Indonesia", `12` = "Cambodia", `13` = "Malaysia",
+  `14` = "Myanmar", `15` = "Australia"
+)
+
+nonvoter_tab <- abs %>%
+  filter(
+    !is.na(voted_last_election),
+    !country %in% c(2, 4, 10, 11)   # Exclude HK, China, Singapore, Vietnam
+  ) %>%
+  mutate(country_name = country_names[as.character(country)]) %>%
+  filter(!is.na(country_name)) %>%
+  group_by(country_name, wave) %>%
+  summarise(
+    N_total   = n(),
+    N_voter   = sum(voted_last_election == 1, na.rm = TRUE),
+    N_nonvote = sum(voted_last_election == 0, na.rm = TRUE),
+    Pct_nonvote = round(100 * N_nonvote / N_total, 1),
+    .groups = "drop"
+  )
+
+# Pivot to wide format: one row per country, columns per wave
+tab_wide <- nonvoter_tab %>%
+  select(country_name, wave, N_total, Pct_nonvote) %>%
+  pivot_wider(
+    names_from = wave,
+    values_from = c(N_total, Pct_nonvote),
+    names_sep = "_W"
+  ) %>%
+  arrange(country_name)
+
+# Determine which waves are present
+waves_present <- sort(unique(nonvoter_tab$wave))
+n_waves <- length(waves_present)
+
+# Build column names dynamically
+col_labels <- c("Country")
+for (w in waves_present) {
+  col_labels <- c(col_labels, "N", "% NV")
+}
+
+# Build header grouping
+header_groups <- c(" " = 1)
+for (w in waves_present) {
+  header_groups <- c(header_groups, setNames(2, paste0("Wave ", w)))
+}
+
+# Reorder columns to interleave N and % for each wave
+col_order <- c("country_name")
+for (w in waves_present) {
+  col_order <- c(col_order, paste0("N_total_W", w), paste0("Pct_nonvote_W", w))
+}
+tab_wide <- tab_wide %>% select(any_of(col_order))
+
+kbl(tab_wide,
+    booktabs = TRUE,
+    col.names = col_labels,
+    align = c("l", rep("r", 2 * n_waves))) %>%
+  kable_styling(latex_options = c("hold_position", "scale_down"),
+                font_size = 9) %>%
+  add_header_above(header_groups)
+```
+
+**Note:** N = total respondents with valid vote status; % NV = percentage who reported not voting. Australia's low non-voter rate reflects compulsory voting.
+
+### Sample Selection Considerations
+
+Because the analysis conditions on reported vote choice to assign electoral status, non-voters are excluded by design. In most country-waves, non-voter rates fall between 8 and 25 percent, consistent with the moderately high turnout typical of Asian democracies. Two patterns merit attention.
+
+First, Myanmar exhibits the highest non-voter rate among the analysis countries, reaching 26 percent in Wave 4. This likely reflects the challenging political environment during the transitional period following decades of military rule, where many citizens may have been uncertain about electoral participation or faced practical barriers to voting.
+
+Second, Australia and Thailand represent near-compulsory or high-turnout contexts where non-voter rates remain below 5 percent across waves. In these cases, selection into voting is effectively eliminated as a confound, and the persistence of the loser effect in Thailand---where the gap grew dramatically despite minimal sample selection---provides strong evidence that the findings are not driven by differential turnout between winners and losers.
+
+The exclusion of non-voters means the analysis characterizes democratic conceptions among the politically engaged electorate rather than the population at large. However, the consistency of the loser effect across countries with vastly different non-voter rates (from 3.7 percent in Australia to 26 percent in Myanmar) suggests the pattern is robust to variation in the scope of sample selection.
+
 # Full Country-Wave Results {#sec-country-wave}
 
 ## Item-Level Average Marginal Effects
@@ -530,6 +618,70 @@ if (!is.null(pooled_results)) {
 ```
 
 **Note:** Wave 2 employed a single forced-choice item asking respondents to identify the "most essential characteristic of democracy" from four options. Unlike Sets 1--4 in later waves, these options directly compared procedural (elections, criticize power) and substantive (income equality, basic necessities) conceptions within a single item. The AMEs represent the percentage-point difference in the probability of selecting each option between electoral losers and winners, controlling for country fixed effects and demographic characteristics.
+
+# Non-Voter Rates and Sample Selection {#sec-appendix-nonvoters}
+
+Because the analysis conditions on reported vote choice to assign electoral status, non-voters are excluded by design. This section assesses the scope and consequences of this exclusion.
+
+Table F1 reports non-voter rates by country and wave for the eleven countries in the analysis sample. In most country-waves, non-voter rates fall between 8 and 25 percent, consistent with the moderately high turnout typical of Asian democracies. Rates are lowest in Thailand, where they never exceeded 10 percent, and highest in select waves of Malaysia, Myanmar, and Mongolia.
+
+```{r tbl-F1-nonvoter-rates}
+#| tbl-cap: "Non-Voter Rates by Country and Wave"
+
+rates <- read_csv(here("papers", "meaning-of-democracy", "analysis",
+                       "revised", "results", "nonvoter_preanalysis",
+                       "nonvoter_rates_by_country_wave.csv"),
+                  show_col_types = FALSE)
+
+kbl(rates, booktabs = TRUE, align = c("l", rep("r", ncol(rates) - 1))) %>%
+  kable_styling(latex_options = c("hold_position", "scale_down"))
+```
+
+A more direct test examines whether non-voters' democratic conceptions systematically resemble those of winners or losers. Table F2 reports the procedural-substantive gap across three groups: winners, losers, and non-voters. Non-voters' gap (14.3 percentage points, 95% CI: 12.7--15.8) is virtually identical to that of winners (13.9 pp, 95% CI: 13.2--14.7) and clearly below that of losers (17.3 pp, 95% CI: 16.3--18.3).
+
+```{r tbl-F2-procsub-gap}
+#| tbl-cap: "Procedural-Substantive Gap by Electoral Status Group"
+
+procsub <- read_csv(here("papers", "meaning-of-democracy", "analysis",
+                         "revised", "results", "nonvoter_preanalysis",
+                         "procsub_gap_by_group.csv"),
+                    show_col_types = FALSE)
+
+kbl(procsub, booktabs = TRUE, digits = 3) %>%
+  kable_styling(latex_options = c("hold_position"))
+```
+
+Table F3 disaggregates these patterns by item set.
+
+```{r tbl-F3-item-proportions}
+#| tbl-cap: "Item Choice Proportions by Electoral Status Group"
+
+three_group <- read_csv(here("papers", "meaning-of-democracy", "analysis",
+                             "revised", "results", "nonvoter_preanalysis",
+                             "three_group_item_proportions.csv"),
+                        show_col_types = FALSE)
+
+kbl(three_group, booktabs = TRUE, digits = 3) %>%
+  kable_styling(latex_options = c("hold_position", "scale_down"))
+```
+
+**Note:** L - W = Loser minus Winner; NV - W = Non-voter minus Winner. Positive values on procedural items indicate greater procedural orientation relative to winners.
+
+Table F4 reports pairwise chi-square tests confirming that non-voters differ more from losers than from winners across all item sets (Cramér's V for the loser--non-voter comparison ranges from 0.020 to 0.052, consistently exceeding the winner--non-voter comparison of 0.021 to 0.038).
+
+```{r tbl-F4-pairwise-tests}
+#| tbl-cap: "Pairwise Chi-Square Tests and Effect Sizes"
+
+chisq <- read_csv(here("papers", "meaning-of-democracy", "analysis",
+                       "revised", "results", "nonvoter_preanalysis",
+                       "pairwise_chisq_tests.csv"),
+                  show_col_types = FALSE)
+
+kbl(chisq, booktabs = TRUE, digits = 3) %>%
+  kable_styling(latex_options = c("hold_position"))
+```
+
+These patterns indicate that non-voters resemble winners who chose not to participate rather than disaffected citizens with distinctive democratic conceptions. Their exclusion does not inflate the estimated loser effect.
 
 # References {-}
 

@@ -1,0 +1,651 @@
+---
+title: "Non-Voter Pre-Analysis"
+subtitle: "Assessing Selection Bias from Excluding Non-Voters"
+author: "Jeffrey Stark"
+date: today
+format:
+  html:
+    toc: true
+    toc-depth: 3
+    code-fold: true
+    df-print: paged
+execute:
+  warning: false
+  message: false
+---
+
+```{r setup}
+library(tidyverse)
+library(here)
+library(knitr)
+library(kableExtra)
+
+here::i_am("papers/meaning-of-democracy/analysis/revised/06_nonvoter_preanalysis.qmd")
+
+# Output directory
+output_dir <- here("papers", "meaning-of-democracy", "analysis", "revised",
+                   "results", "nonvoter_preanalysis")
+
+# Load master data
+abs <- readRDS(here("data", "processed", "abs_econdev_authpref.rds"))
+
+# Country name mapping (11 analysis countries)
+country_names <- c(
+  `1` = "Japan", `3` = "South Korea", `5` = "Mongolia",
+  `6` = "Philippines", `7` = "Taiwan", `8` = "Thailand",
+  `9` = "Indonesia", `12` = "Cambodia", `13` = "Malaysia",
+
+  `14` = "Myanmar", `15` = "Australia"
+)
+
+# Item labels by set
+set1_labels <- c("Reduce gap rich/poor", "Free elections", "No waste", "Free expression")
+set2_labels <- c("Legislature oversight", "Basic necessities", "Organize groups", "Quality services")
+set3_labels <- c("Law and order", "Media freedom", "Jobs for all", "Party competition")
+set4_labels <- c("Protest freedom", "Clean politics", "Court protection", "Unemployment aid")
+
+# Item types by set
+set1_types <- c("substantive", "procedural", "governance", "procedural")
+set2_types <- c("procedural", "substantive", "procedural", "governance")
+set3_types <- c("governance", "procedural", "substantive", "procedural")
+set4_types <- c("procedural", "governance", "procedural", "substantive")
+
+# Create item metadata
+item_meta <- bind_rows(
+  tibble(set = "Set1", value = 1:4, label = set1_labels, type = set1_types),
+  tibble(set = "Set2", value = 1:4, label = set2_labels, type = set2_types),
+  tibble(set = "Set3", value = 1:4, label = set3_labels, type = set3_types),
+  tibble(set = "Set4", value = 1:4, label = set4_labels, type = set4_types)
+)
+```
+
+# Executive Summary
+
+```{r exec-summary, include=FALSE}
+# Compute key numbers for summary (will be filled in after analysis)
+```
+
+**Do non-voters resemble winners, losers, or neither?** This analysis examines whether excluding non-voters from the main winner-loser analysis introduces systematic bias. The key findings are:
+<!-- This will be updated after running the analysis -->
+
+1. **Sample composition**: Non-voters comprise approximately 16% of respondents with valid democracy conception data across the 11 analysis countries.
+
+2. **Procedural-substantive orientation**: [To be filled after analysis]
+
+3. **Bias assessment**: [To be filled after analysis]
+
+---
+
+# 1. Non-Voter Rates by Country and Wave
+
+```{r nonvoter-rates}
+# Prepare W3/W4/W6 data excluding China, Vietnam, HK, Singapore
+d <- abs %>%
+  filter(wave %in% c(3, 4, 6)) %>%
+  filter(!country %in% c(2, 4, 10, 11)) %>%
+  mutate(country_name = country_names[as.character(country)]) %>%
+  filter(!is.na(country_name), !is.na(voted_last_election))
+
+# Compute non-voter rates
+nonvoter_rates <- d %>%
+  group_by(country_name, wave) %>%
+  summarise(
+    N_total = n(),
+    N_voter = sum(voted_last_election == 1),
+    N_nonvoter = sum(voted_last_election == 0),
+    pct_nonvoter = round(100 * N_nonvoter / N_total, 1),
+    .groups = "drop"
+  )
+
+# Add totals by country
+country_totals <- nonvoter_rates %>%
+  group_by(country_name) %>%
+  summarise(
+    N_total = sum(N_total),
+    N_voter = sum(N_voter),
+    N_nonvoter = sum(N_nonvoter),
+    pct_nonvoter = round(100 * N_nonvoter / N_total, 1),
+    .groups = "drop"
+  ) %>%
+  mutate(wave = "Total")
+
+# Add totals by wave
+wave_totals <- nonvoter_rates %>%
+  group_by(wave) %>%
+  summarise(
+    N_total = sum(N_total),
+    N_voter = sum(N_voter),
+    N_nonvoter = sum(N_nonvoter),
+    pct_nonvoter = round(100 * N_nonvoter / N_total, 1),
+    .groups = "drop"
+  ) %>%
+  mutate(country_name = "**Total**")
+
+# Wide format for display
+rates_wide <- nonvoter_rates %>%
+  select(country_name, wave, N_total, pct_nonvoter) %>%
+  pivot_wider(
+    names_from = wave,
+    values_from = c(N_total, pct_nonvoter),
+    names_sep = "_W"
+  ) %>%
+  left_join(
+    country_totals %>% select(country_name, Total_N = N_total, Total_pct = pct_nonvoter),
+    by = "country_name"
+  ) %>%
+  arrange(country_name)
+
+# Flag high non-voter rates (>25%)
+high_nonvoter <- nonvoter_rates %>%
+  filter(pct_nonvoter > 25) %>%
+  mutate(flag = paste(country_name, "W", wave, ": ", pct_nonvoter, "%", sep = ""))
+
+cat("=== NON-VOTER RATES BY COUNTRY AND WAVE ===\n\n")
+print(rates_wide)
+
+if (nrow(high_nonvoter) > 0) {
+  cat("\n** High non-voter rates (>25%):\n")
+  cat(paste(" -", high_nonvoter$flag, collapse = "\n"), "\n")
+}
+
+# Save
+write_csv(nonvoter_rates, file.path(output_dir, "nonvoter_rates_by_country_wave.csv"))
+```
+
+```{r tbl-nonvoter-rates}
+#| tbl-cap: "Non-Voter Rates by Country and Wave (Waves 3, 4, 6)"
+
+rates_wide %>%
+  kable(booktabs = TRUE,
+        col.names = c("Country", "N", "%NV", "N", "%NV", "N", "%NV", "N", "%NV"),
+        align = c("l", rep("r", 8))) %>%
+  kable_styling(latex_options = c("hold_position", "striped")) %>%
+  add_header_above(c(" " = 1, "Wave 3" = 2, "Wave 4" = 2, "Wave 6" = 2, "Total" = 2))
+```
+
+---
+
+# 2. Three-Group Descriptive Comparison
+
+```{r three-groups}
+# Create three groups
+d_groups <- abs %>%
+  filter(wave %in% c(3, 4, 6)) %>%
+  filter(!country %in% c(2, 4, 10, 11)) %>%
+  mutate(
+    country_name = country_names[as.character(country)],
+    group = case_when(
+      voted_last_election == 0 ~ "Non-voter",
+      voted_last_election == 1 & electoral_status == 1 ~ "Winner",
+      voted_last_election == 1 & electoral_status == 2 ~ "Loser",
+      TRUE ~ NA_character_
+    )
+  ) %>%
+  filter(!is.na(group), !is.na(country_name))
+
+cat("=== GROUP SIZES ===\n")
+d_groups %>%
+  count(group) %>%
+  mutate(pct = round(100 * n / sum(n), 1)) %>%
+  print()
+```
+
+```{r item-proportions}
+# Function to compute proportions for a set
+compute_set_props <- function(data, set_num, labels) {
+  var_name <- paste0("dem_meaning_set", set_num)
+
+  data %>%
+    filter(.data[[var_name]] %in% 1:4) %>%
+    mutate(choice = factor(.data[[var_name]], levels = 1:4, labels = labels)) %>%
+    group_by(group, choice) %>%
+    summarise(n = n(), .groups = "drop") %>%
+    group_by(group) %>%
+    mutate(prop = n / sum(n)) %>%
+    ungroup() %>%
+    select(group, choice, prop) %>%
+    pivot_wider(names_from = group, values_from = prop) %>%
+    mutate(
+      set = paste0("Set", set_num),
+      `Loser - Winner` = Loser - Winner,
+      `NonVoter - Winner` = `Non-voter` - Winner
+    ) %>%
+    rename(Item = choice)
+}
+
+# Compute for all sets
+all_props <- bind_rows(
+  compute_set_props(d_groups, 1, set1_labels),
+  compute_set_props(d_groups, 2, set2_labels),
+  compute_set_props(d_groups, 3, set3_labels),
+  compute_set_props(d_groups, 4, set4_labels)
+)
+
+# Add item type
+all_props <- all_props %>%
+  left_join(item_meta %>% select(set, label, type), by = c("set", "Item" = "label"))
+
+# Save
+write_csv(all_props, file.path(output_dir, "three_group_item_proportions.csv"))
+```
+
+```{r tbl-three-group}
+#| tbl-cap: "Item Choice Proportions by Group (Winners, Losers, Non-Voters)"
+
+all_props %>%
+  mutate(
+    Winner = sprintf("%.1f%%", Winner * 100),
+    Loser = sprintf("%.1f%%", Loser * 100),
+    `Non-voter` = sprintf("%.1f%%", `Non-voter` * 100),
+    `L - W` = sprintf("%+.1f", `Loser - Winner` * 100),
+    `NV - W` = sprintf("%+.1f", `NonVoter - Winner` * 100),
+    Type = str_to_title(type)
+  ) %>%
+  select(Set = set, Item, Type, Winner, Loser, `Non-voter`, `L - W`, `NV - W`) %>%
+  kable(booktabs = TRUE, align = c("l", "l", "l", "r", "r", "r", "r", "r")) %>%
+  kable_styling(latex_options = c("hold_position", "striped"), font_size = 9) %>%
+  pack_rows("Set 1", 1, 4) %>%
+  pack_rows("Set 2", 5, 8) %>%
+  pack_rows("Set 3", 9, 12) %>%
+  pack_rows("Set 4", 13, 16)
+```
+
+**Note:** L - W = Loser minus Winner difference (the "loser effect"). NV - W = Non-voter minus Winner difference. Positive values on procedural items indicate greater procedural orientation.
+
+---
+
+# 3. Procedural-Substantive Gap by Group
+
+```{r procsub-gap}
+# Compute procedural and substantive proportions by group
+procsub_by_group <- all_props %>%
+  filter(type %in% c("procedural", "substantive")) %>%
+  group_by(type) %>%
+  summarise(
+    Winner = mean(Winner),
+    Loser = mean(Loser),
+    `Non-voter` = mean(`Non-voter`),
+    .groups = "drop"
+  ) %>%
+  pivot_longer(cols = c(Winner, Loser, `Non-voter`), names_to = "group", values_to = "mean_prop") %>%
+  pivot_wider(names_from = type, values_from = mean_prop) %>%
+  mutate(proc_sub_gap = procedural - substantive)
+
+cat("=== PROCEDURAL-SUBSTANTIVE GAP BY GROUP ===\n\n")
+procsub_by_group %>%
+  mutate(across(where(is.numeric), ~round(., 3))) %>%
+  print()
+
+# Bootstrap CIs
+set.seed(42)
+n_boot <- 1000
+
+boot_gap <- function(data, group_name) {
+  group_data <- data %>% filter(group == group_name)
+
+  replicate(n_boot, {
+    boot_idx <- sample(1:nrow(group_data), replace = TRUE)
+    boot_data <- group_data[boot_idx, ]
+
+    # Compute props for each set
+    gaps <- map_dbl(1:4, function(s) {
+      var_name <- paste0("dem_meaning_set", s)
+      types <- get(paste0("set", s, "_types"))
+
+      props <- boot_data %>%
+        filter(.data[[var_name]] %in% 1:4) %>%
+        count(choice = .data[[var_name]]) %>%
+        mutate(prop = n / sum(n), type = types[choice])
+
+      proc <- props %>% filter(type == "procedural") %>% pull(prop) %>% sum()
+      sub <- props %>% filter(type == "substantive") %>% pull(prop) %>% sum()
+      proc - sub
+    })
+    mean(gaps)
+  })
+}
+
+# Compute bootstrap CIs for each group
+boot_results <- map_dfr(c("Winner", "Loser", "Non-voter"), function(g) {
+  boots <- boot_gap(d_groups, g)
+  tibble(
+    group = g,
+    mean_gap = mean(boots),
+    se = sd(boots),
+    ci_low = quantile(boots, 0.025),
+    ci_high = quantile(boots, 0.975)
+  )
+})
+
+cat("\n=== BOOTSTRAP CONFIDENCE INTERVALS ===\n\n")
+boot_results %>%
+  mutate(
+    gap_pp = sprintf("%.1f", mean_gap * 100),
+    ci = sprintf("[%.1f, %.1f]", ci_low * 100, ci_high * 100)
+  ) %>%
+  select(Group = group, `Gap (pp)` = gap_pp, `95% CI` = ci) %>%
+  print()
+
+# Save
+write_csv(boot_results, file.path(output_dir, "procsub_gap_by_group.csv"))
+```
+
+```{r fig-procsub-gap}
+#| fig-cap: "Procedural-Substantive Gap by Group"
+#| fig-width: 6
+#| fig-height: 4
+
+boot_results %>%
+  mutate(group = factor(group, levels = c("Winner", "Non-voter", "Loser"))) %>%
+  ggplot(aes(x = group, y = mean_gap * 100)) +
+  geom_hline(yintercept = 0, linetype = "dashed", color = "gray50") +
+  geom_errorbar(aes(ymin = ci_low * 100, ymax = ci_high * 100), width = 0.2) +
+  geom_point(size = 3, color = "steelblue") +
+  labs(
+    x = "Group",
+    y = "Procedural - Substantive Gap (pp)",
+    caption = "Error bars show 95% bootstrap confidence intervals"
+  ) +
+  theme_minimal(base_size = 12)
+```
+
+**Key finding:** Does the non-voter gap fall between winners and losers, suggesting they are a mix? Or does it align with one group, suggesting selection bias?
+
+---
+
+# 4. Country-Level Non-Voter Profiles (Set 1)
+
+```{r country-profiles}
+# Compute Set 1 proportions by country and group
+country_set1 <- d_groups %>%
+  filter(dem_meaning_set1 %in% 1:4) %>%
+  mutate(choice = factor(dem_meaning_set1, levels = 1:4, labels = set1_labels)) %>%
+  group_by(country_name, group, choice) %>%
+  summarise(n = n(), .groups = "drop") %>%
+  group_by(country_name, group) %>%
+  mutate(prop = n / sum(n)) %>%
+  ungroup()
+
+# Compute procedural-substantive gap by country and group
+country_procsub <- country_set1 %>%
+  mutate(type = set1_types[as.integer(choice)]) %>%
+  filter(type %in% c("procedural", "substantive")) %>%
+  group_by(country_name, group, type) %>%
+  summarise(prop = sum(prop), .groups = "drop") %>%
+  pivot_wider(names_from = type, values_from = prop) %>%
+  mutate(gap = procedural - substantive)
+
+# Wide format for comparison
+country_gap_wide <- country_procsub %>%
+  select(country_name, group, gap) %>%
+  pivot_wider(names_from = group, values_from = gap) %>%
+  mutate(
+    loser_effect = Loser - Winner,
+    nonvoter_position = `Non-voter` - Winner,
+    # Flag if non-voter looks more like loser than midpoint
+    midpoint = loser_effect / 2,
+    resembles_loser = nonvoter_position > midpoint,
+    resembles_winner = nonvoter_position < 0
+  )
+
+cat("=== COUNTRY-LEVEL SET 1 COMPARISON ===\n\n")
+country_gap_wide %>%
+  mutate(across(where(is.numeric), ~round(., 3))) %>%
+  print()
+
+# Save
+write_csv(country_gap_wide, file.path(output_dir, "country_level_set1_comparison.csv"))
+```
+
+```{r tbl-country-profiles}
+#| tbl-cap: "Set 1 Procedural-Substantive Gap by Country and Group"
+
+country_gap_wide %>%
+  mutate(
+    Winner = sprintf("%.1f", Winner * 100),
+    Loser = sprintf("%.1f", Loser * 100),
+    `Non-voter` = sprintf("%.1f", `Non-voter` * 100),
+    `L - W` = sprintf("%+.1f", loser_effect * 100),
+    `NV - W` = sprintf("%+.1f", nonvoter_position * 100),
+    Pattern = case_when(
+      resembles_loser ~ "Closer to Loser",
+      resembles_winner ~ "Closer to Winner",
+      TRUE ~ "Between"
+    )
+  ) %>%
+  select(Country = country_name, Winner, Loser, `Non-voter`, `L - W`, `NV - W`, Pattern) %>%
+  kable(booktabs = TRUE, align = c("l", "r", "r", "r", "r", "r", "l")) %>%
+  kable_styling(latex_options = c("hold_position", "striped"))
+```
+
+---
+
+# 5. Statistical Tests
+
+```{r chisq-tests}
+# Function to run chi-square tests for a set
+run_chisq_tests <- function(data, set_num) {
+  var_name <- paste0("dem_meaning_set", set_num)
+
+  test_data <- data %>%
+    filter(.data[[var_name]] %in% 1:4) %>%
+    select(group, choice = all_of(var_name))
+
+  # Overall test
+  overall_tbl <- table(test_data$group, test_data$choice)
+  overall_test <- chisq.test(overall_tbl)
+  overall_v <- sqrt(overall_test$statistic / (sum(overall_tbl) * (min(dim(overall_tbl)) - 1)))
+
+  # Pairwise tests
+  pairs <- list(
+    c("Winner", "Loser"),
+    c("Winner", "Non-voter"),
+    c("Loser", "Non-voter")
+  )
+
+  pairwise <- map_dfr(pairs, function(p) {
+    pair_data <- test_data %>% filter(group %in% p)
+    pair_tbl <- table(pair_data$group, pair_data$choice)
+    pair_test <- chisq.test(pair_tbl)
+    pair_v <- sqrt(pair_test$statistic / (sum(pair_tbl) * (min(dim(pair_tbl)) - 1)))
+
+    tibble(
+      comparison = paste(p, collapse = " vs "),
+      chi_sq = pair_test$statistic,
+      df = pair_test$parameter,
+      p_value = pair_test$p.value,
+      cramers_v = as.numeric(pair_v)
+    )
+  })
+
+  pairwise %>%
+    mutate(set = paste0("Set", set_num)) %>%
+    bind_rows(
+      tibble(
+        set = paste0("Set", set_num),
+        comparison = "Overall (3 groups)",
+        chi_sq = overall_test$statistic,
+        df = overall_test$parameter,
+        p_value = overall_test$p.value,
+        cramers_v = as.numeric(overall_v)
+      )
+    )
+}
+
+# Run for all sets
+all_tests <- map_dfr(1:4, ~run_chisq_tests(d_groups, .x))
+
+cat("=== CHI-SQUARE TESTS ===\n\n")
+all_tests %>%
+  mutate(
+    chi_sq = round(chi_sq, 2),
+    p_value = ifelse(p_value < 0.001, "<0.001", sprintf("%.3f", p_value)),
+    cramers_v = round(cramers_v, 3)
+  ) %>%
+  print()
+
+# Save
+write_csv(all_tests, file.path(output_dir, "pairwise_chisq_tests.csv"))
+```
+
+```{r tbl-chisq}
+#| tbl-cap: "Chi-Square Tests of Independence"
+
+all_tests %>%
+  mutate(
+    `χ²` = sprintf("%.1f", chi_sq),
+    p = ifelse(p_value < 0.001, "<.001", sprintf("%.3f", p_value)),
+    `Cramér's V` = sprintf("%.3f", cramers_v)
+  ) %>%
+  select(Set = set, Comparison = comparison, `χ²`, df, p, `Cramér's V`) %>%
+  kable(booktabs = TRUE, align = c("l", "l", "r", "r", "r", "r")) %>%
+  kable_styling(latex_options = c("hold_position", "striped"), font_size = 9)
+```
+
+**Key question:** Is the Winner-vs-Loser effect size (Cramér's V) larger than either group's difference from non-voters?
+
+---
+
+# 6. Non-Voter Profile by Country Non-Voter Rate
+
+```{r by-abstention}
+# Classify countries by non-voter rate
+country_nonvoter_rate <- d_groups %>%
+  group_by(country_name) %>%
+  summarise(
+    pct_nonvoter = 100 * mean(group == "Non-voter"),
+    .groups = "drop"
+  ) %>%
+  mutate(abstention_group = if_else(pct_nonvoter >= 20, "High (≥20%)", "Low (<20%)"))
+
+cat("=== COUNTRY ABSTENTION GROUPS ===\n")
+country_nonvoter_rate %>%
+  arrange(desc(pct_nonvoter)) %>%
+  print()
+
+# Join to main data
+d_with_abstention <- d_groups %>%
+  left_join(country_nonvoter_rate %>% select(country_name, abstention_group), by = "country_name")
+
+# Compute non-voter proc-sub gap by abstention group
+# First compute item proportions for each abstention group
+compute_gap_for_group <- function(data) {
+  gaps <- map_dbl(1:4, function(s) {
+    var_name <- paste0("dem_meaning_set", s)
+    types <- switch(s,
+      `1` = set1_types,
+      `2` = set2_types,
+      `3` = set3_types,
+      `4` = set4_types
+    )
+
+    props <- data %>%
+      filter(.data[[var_name]] %in% 1:4) %>%
+      count(choice = .data[[var_name]]) %>%
+      mutate(prop = n / sum(n), type = types[choice])
+
+    proc <- props %>% filter(type == "procedural") %>% pull(prop) %>% sum()
+    sub <- props %>% filter(type == "substantive") %>% pull(prop) %>% sum()
+    proc - sub
+  })
+  mean(gaps)
+}
+
+nonvoter_by_abstention <- d_with_abstention %>%
+  filter(group == "Non-voter") %>%
+  group_by(abstention_group) %>%
+  group_modify(~ tibble(
+    n = nrow(.x),
+    gap = compute_gap_for_group(.x)
+  )) %>%
+  ungroup()
+
+cat("\n=== NON-VOTER PROC-SUB GAP BY ABSTENTION LEVEL ===\n")
+nonvoter_by_abstention %>%
+  mutate(gap_pp = sprintf("%.1f", gap * 100)) %>%
+  print()
+
+# Save
+write_csv(
+  country_nonvoter_rate %>%
+    left_join(
+      d_with_abstention %>%
+        filter(group == "Non-voter") %>%
+        group_by(country_name) %>%
+        summarise(n_nonvoters = n(), .groups = "drop"),
+      by = "country_name"
+    ),
+  file.path(output_dir, "nonvoter_by_abstention_rate.csv")
+)
+```
+
+---
+
+# Summary and Conclusions
+
+```{r summary}
+# Compute summary statistics for executive summary
+n_voters <- sum(d_groups$group %in% c("Winner", "Loser"))
+n_nonvoters <- sum(d_groups$group == "Non-voter")
+pct_nonvoters <- round(100 * n_nonvoters / (n_voters + n_nonvoters), 1)
+
+winner_gap <- boot_results %>% filter(group == "Winner") %>% pull(mean_gap)
+loser_gap <- boot_results %>% filter(group == "Loser") %>% pull(mean_gap)
+nonvoter_gap <- boot_results %>% filter(group == "Non-voter") %>% pull(mean_gap)
+
+# Where does non-voter fall?
+midpoint <- (winner_gap + loser_gap) / 2
+closer_to <- if_else(abs(nonvoter_gap - winner_gap) < abs(nonvoter_gap - loser_gap),
+                     "winners", "losers")
+
+cat("=== EXECUTIVE SUMMARY STATISTICS ===\n\n")
+cat("Sample composition:\n")
+cat("  Voters (winners + losers):", format(n_voters, big.mark = ","), "\n")
+cat("  Non-voters:", format(n_nonvoters, big.mark = ","), "\n")
+cat("  Non-voter percentage:", pct_nonvoters, "%\n")
+
+cat("\nProcedural-substantive gaps (percentage points):\n")
+cat("  Winners:", sprintf("%.1f", winner_gap * 100), "\n")
+cat("  Losers:", sprintf("%.1f", loser_gap * 100), "\n")
+cat("  Non-voters:", sprintf("%.1f", nonvoter_gap * 100), "\n")
+cat("  Midpoint (W+L)/2:", sprintf("%.1f", midpoint * 100), "\n")
+
+cat("\nConclusion: Non-voters are closer to", closer_to, "\n")
+
+# Effect size comparison
+wl_v <- all_tests %>%
+  filter(comparison == "Winner vs Loser") %>%
+  pull(cramers_v) %>%
+  mean()
+wnv_v <- all_tests %>%
+  filter(comparison == "Winner vs Non-voter") %>%
+  pull(cramers_v) %>%
+  mean()
+lnv_v <- all_tests %>%
+  filter(comparison == "Loser vs Non-voter") %>%
+  pull(cramers_v) %>%
+  mean()
+
+cat("\nAverage Cramér's V across sets:\n")
+cat("  Winner vs Loser:", sprintf("%.3f", wl_v), "\n")
+cat("  Winner vs Non-voter:", sprintf("%.3f", wnv_v), "\n")
+cat("  Loser vs Non-voter:", sprintf("%.3f", lnv_v), "\n")
+```
+
+## Key Findings
+
+1. **Sample composition**: Non-voters comprise `r pct_nonvoters`% of respondents with valid democracy conception data.
+
+2. **Procedural-substantive orientation**:
+   - Winners show a gap of `r sprintf("%.1f", winner_gap * 100)` pp
+   - Losers show a gap of `r sprintf("%.1f", loser_gap * 100)` pp
+   - Non-voters show a gap of `r sprintf("%.1f", nonvoter_gap * 100)` pp
+   - Non-voters are closer to `r closer_to` than to the other group
+
+3. **Effect sizes**: The Winner-Loser difference (V = `r sprintf("%.3f", wl_v)`) compared to Winner-NonVoter (V = `r sprintf("%.3f", wnv_v)`) and Loser-NonVoter (V = `r sprintf("%.3f", lnv_v)`).
+
+4. **Bias assessment**: [Interpretation based on results]
+
+## Implications for Main Analysis
+
+[To be completed based on results]

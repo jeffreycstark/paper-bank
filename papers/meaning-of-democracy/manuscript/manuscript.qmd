@@ -9,7 +9,7 @@ author:
     corresponding: true
 date: today
 abstract: |
-  How do citizens understand democracy, and does their position within the political order shape that understanding? This article argues that electoral losers---those whose preferred party lost the most recent election---systematically prioritize procedural elements of democracy over substantive outcomes. Using multinomial logit models applied to four waves of Asian Barometer Survey data (2005--2022) across thirteen countries, the analysis preserves the full structure of respondents' choices rather than imposing binary classifications, revealing consistent patterns across twenty survey items. Losers are more likely to define democracy in terms of elections, civil liberties, and accountability mechanisms, while winners emphasize economic equality and welfare provision. This "loser effect" is modest in pooled estimates but responds dramatically to political context. In Thailand, the gap between winners' and losers' conceptions widened from near zero to over twenty percentage points as democratic institutions eroded following the 2014 coup. In Hong Kong, the gap peaked during the period surrounding the Umbrella Movement. These trajectories suggest that conceptions of democracy are not stable cultural orientations but shift in response to the political stakes of losing.
+  How do citizens understand democracy, and does their position within the political order shape that understanding? This article argues that electoral losers---those whose preferred party lost the most recent election---systematically prioritize procedural elements of democracy over substantive outcomes. Using multinomial logit models applied to four waves of Asian Barometer Survey data (2005--2022) across eleven countries, the analysis preserves the full structure of respondents' choices rather than imposing binary classifications, revealing consistent patterns across twenty survey items. Losers are more likely to define democracy in terms of elections, civil liberties, and accountability mechanisms, while winners emphasize economic equality and welfare provision. This "loser effect" is modest in pooled estimates but responds dramatically to political context. In Thailand, the gap between winners' and losers' conceptions widened from near zero to over twenty percentage points as democratic institutions eroded following the 2014 coup. These trajectories suggest that conceptions of democracy are not stable cultural orientations but shift in response to the political stakes of losing.
 keywords:
   - democracy
   - electoral losers
@@ -87,10 +87,6 @@ thai_w4_gap <- thai %>% filter(wave == 4) %>% pull(proc_sub_gap)
 thai_w6_gap <- thai %>% filter(wave == 6) %>% pull(proc_sub_gap)
 thai_change <- (thai_w6_gap - thai_w3_gap) * 100
 
-# Hong Kong
-hk <- cw_gap %>% filter(country_name == "Hong Kong") %>% arrange(wave)
-hk_w4_gap <- hk %>% filter(wave == 4) %>% pull(proc_sub_gap)
-
 # Total N (approximate from item-level data)
 total_n <- cw_items %>%
   filter(set == "Set1") %>%
@@ -107,7 +103,7 @@ In a well-functioning democracy, losing an election is supposed to be tolerable.
 
 This article argues that they do not. Drawing on four waves of Asian Barometer Survey data spanning seventeen years and encompassing more than `r fmt_n(total_n)` voters across `r n_countries` countries, I show that electoral losers systematically prioritize procedural elements of democracy---competitive elections, civil liberties, government accountability---over substantive outcomes such as economic equality or welfare provision. This "loser effect" operates across diverse political contexts, from Japan's consolidated democracy to Cambodia's competitive authoritarian regime.
 
-The more striking finding concerns dynamics. In Thailand, as democratic institutions eroded through successive coups, the gap between how winners and losers conceptualize democracy widened from near zero to over `r round(thai_w6_gap * 100)` percentage points---a shift that cannot be explained by slow-moving cultural change. In Hong Kong, the gap reached `r round(hk_w4_gap * 100)` percentage points during the period of intense political contestation surrounding the Umbrella Movement. These trajectories suggest that conceptions of democracy respond to the political stakes of losing: where losing becomes consequential and potentially permanent, losers increasingly define democracy in terms of the procedural protections they lack.
+The more striking finding concerns dynamics. In Thailand, as democratic institutions eroded through successive coups, the gap between how winners and losers conceptualize democracy widened from near zero to over `r round(thai_w6_gap * 100)` percentage points---a shift that cannot be explained by slow-moving cultural change. These trajectories suggest that conceptions of democracy respond to the political stakes of losing: where losing becomes consequential and potentially permanent, losers increasingly define democracy in terms of the procedural protections they lack.
 
 The analysis makes two contributions. First, it bridges the literatures on democratic conceptions and the winner-loser gap by showing that electoral status shapes not merely how citizens evaluate democracy but how they understand it. Second, it employs multinomial logit models that preserve the full structure of respondents' choices across twenty survey items, avoiding the binary procedural-substantive classifications that prior work has relied upon. This approach allows patterns to emerge from the data rather than from the analyst's coding decisions---a methodological advantage that proves substantively consequential, as the disaggregated results reveal heterogeneity within the procedural category that binary coding would obscure.
 
@@ -174,7 +170,7 @@ where $Y_{ij}$ denotes the item selected by respondent $i$ in set $j$, $k$ index
 
 Wave 2, which employed a single forced-choice item with a distinct set of response options, is modeled separately using the same multinomial logit specification (without wave fixed effects, as it draws from a single survey round). Including Wave 2 provides an independent check on the robustness of the loser effect across different measurement instruments.
 
-Standard errors are computed via wild cluster bootstrap at the country level, following @Cameron2008-aw. With only thirteen country clusters in the pooled sample, conventional cluster-robust variance estimators are known to produce downward-biased standard errors and over-reject the null hypothesis. The wild bootstrap imposes the null hypothesis on the bootstrap data-generating process, providing more reliable inference with few clusters. This approach yields conservative tests throughout the analysis.
+Standard errors are computed via wild cluster bootstrap at the country level, following @Cameron2008-aw. With only eleven country clusters in the pooled sample, conventional cluster-robust variance estimators are known to produce downward-biased standard errors and over-reject the null hypothesis. The wild bootstrap imposes the null hypothesis on the bootstrap data-generating process, providing more reliable inference with few clusters. This approach yields conservative tests throughout the analysis.
 
 To examine country-level variation and within-country trajectories (H2 and H3), the multinomial logit models are re-estimated separately for each country-wave combination. For each estimate, I compute the procedural–substantive gap: the difference between the mean AME of loser status across procedural items and the mean AME across substantive items within a given country-wave. A positive gap indicates that losers disproportionately favor procedural conceptions relative to substantive ones. Confidence intervals for these gaps are obtained via the same wild bootstrap procedure. Tracking these gaps across waves within countries allows direct assessment of whether conceptions of democracy respond to changing political conditions—the central prediction distinguishing the positional account from cultural or dispositional alternatives.
 
@@ -260,7 +256,7 @@ plot_data <- cw_gap %>%
   ungroup()
 
 # Highlight key cases
-highlight <- c("Thailand", "Hong Kong", "South Korea", "Japan")
+highlight <- c("Thailand", "South Korea", "Japan", "Cambodia")
 
 plot_data %>%
   mutate(
@@ -298,11 +294,11 @@ plot_data %>%
     labels = c("W3\n(2010-12)", "W4\n(2014-16)", "W6\n(2019-22)")
   ) +
   scale_color_manual(values = c(
-    "Thailand" = "#D62728", "Hong Kong" = "#FF7F0E",
+    "Thailand" = "#D62728", "Cambodia" = "#FF7F0E",
     "South Korea" = "#2CA02C", "Japan" = "#1F77B4"
   )) +
   scale_fill_manual(values = c(
-    "Thailand" = "#D62728", "Hong Kong" = "#FF7F0E",
+    "Thailand" = "#D62728", "Cambodia" = "#FF7F0E",
     "South Korea" = "#2CA02C", "Japan" = "#1F77B4"
   )) +
   labs(
@@ -327,12 +323,6 @@ thai_w4_pp <- round(thai_w4_gap * 100, 1)
 thai_w6_pp <- round(thai_w6_gap * 100, 1)
 thai_w6_ci <- thai %>% filter(wave == 6)
 
-# Hong Kong
-hk_w3_gap <- hk %>% filter(wave == 3) %>% pull(proc_sub_gap)
-hk_w3_pp <- round(hk_w3_gap * 100, 1)
-hk_w4_pp <- round(hk_w4_gap * 100, 1)
-hk_w4_ci <- hk %>% filter(wave == 4)
-
 # Japan
 jpn <- cw_gap %>% filter(country_name == "Japan") %>% arrange(wave)
 
@@ -344,11 +334,9 @@ Figure 1 plots the procedural-substantive gap---the difference between the mean 
 
 **Thailand** provides the most dramatic support for H3. In Wave 3 (2010--2012), during the Democrat Party government of Abhisit Vejjajiva, the procedural-substantive gap was negligible (`r thai_w3_pp` pp, not significant). By Wave 4 (2014--2016), conducted around the time of the May 2014 coup that removed Prime Minister Yingluck Shinawatra, the gap had widened to `r thai_w4_pp` pp ($p < 0.05$). By Wave 6 (2019--2022), after six years of military or military-backed governance, the gap reached `r thai_w6_pp` pp ($p < 0.001$, 95% CI: [`r round(thai_w6_ci$proc_sub_gap_ci_low * 100, 1)`, `r round(thai_w6_ci$proc_sub_gap_ci_high * 100, 1)`]). This trajectory---from zero to over twenty percentage points in a decade---tracks Thailand's democratic erosion with remarkable precision. As coups and judicial interventions repeatedly overturned electoral outcomes, supporters of the excluded Thaksin-aligned faction increasingly defined democracy in procedural terms, while supporters of the military-backed order emphasized substantive outcomes.
 
-**Hong Kong** reinforces this pattern. The gap increased from `r hk_w3_pp` pp in Wave 3 to `r hk_w4_pp` pp in Wave 4, the largest single country-wave effect in the dataset. Wave 4 fieldwork coincided with the period surrounding the 2014 Umbrella Movement, when demands for genuine universal suffrage mobilized hundreds of thousands and sharpened the cleavage between pro-democracy and pro-Beijing camps. Although only two waves are available, the magnitude of the effect during a period of intense political contestation over democratic rights is consistent with the positional theory: when the stakes of losing rose sharply, so did the gap between how winners and losers understood democracy.
-
 **Japan** presents the expected baseline: a consolidated democracy where the loser effect remains modest and stable across waves. Losing an election in Japan carries limited consequences---the opposition retains parliamentary voice, civil liberties are secure, and electoral alternation remains credible. Under such conditions, winners and losers have little reason to define democracy differently.
 
-**Cambodia** shows a persistently large gap (approximately 13 pp across all three waves) that, notably, did not grow following the dissolution of the main opposition party (CNRP) in 2017. This stability may reflect a ceiling effect---the stakes of losing were already high in Cambodia's competitive authoritarian system---or a compositional shift, as the removal of the opposition party from the political arena may have altered which respondents identified as losers. Full country-wave results for all thirteen countries appear in the online appendix.
+**Cambodia** shows a persistently large gap (approximately 13 pp across all three waves) that, notably, did not grow following the dissolution of the main opposition party (CNRP) in 2017. This stability may reflect a ceiling effect---the stakes of losing were already high in Cambodia's competitive authoritarian system---or a compositional shift, as the removal of the opposition party from the political arena may have altered which respondents identified as losers. Full country-wave results for all eleven countries appear in the online appendix.
 
 ## Wave 2 Baseline
 
@@ -363,16 +351,16 @@ The Wave 2 results, based on a different instrument, provide suggestive corrobor
 
 ## Robustness
 
-The main estimates rely on wild cluster bootstrap inference at the country level, but with thirteen clusters the finite-sample properties of any cluster-based procedure remain a concern [@Cameron2008-vz]. As a more conservative check, I aggregate the data to the country-wave level and estimate the loser effect using weighted least squares (WLS), where the dependent variable is the difference in the proportion of winners and losers selecting each item within a country-wave cell, and observations are weighted by sample size. This approach sidesteps the clustering problem entirely: each country-wave contributes a single observation, yielding thirty-one units for the Waves 3–6 items and nine for Wave 2. The cost is the loss of individual-level variation and the inability to include demographic controls, but as a diagnostic for whether the main patterns survive a radically different estimation strategy, it is informative.
+The main estimates rely on wild cluster bootstrap inference at the country level, but with eleven clusters the finite-sample properties of any cluster-based procedure remain a concern [@Cameron2008-aw]. As a more conservative check, I aggregate the data to the country-wave level and estimate the loser effect using weighted least squares (WLS), where the dependent variable is the difference in the proportion of winners and losers selecting each item within a country-wave cell, and observations are weighted by sample size. This approach sidesteps the clustering problem entirely: each country-wave contributes a single observation, yielding twenty-six units for the Waves 3–6 items and eight for Wave 2. The cost is the loss of individual-level variation and the inability to include demographic controls, but as a diagnostic for whether the main patterns survive a radically different estimation strategy, it is informative.
 
 The WLS results closely replicate the main findings. Nine of ten procedural items show positive loser effects (six significant at p<0.05p < 0.05
 p<0.05), all six substantive items show negative effects (five significant), and all four governance items show negative effects (one significant). The mean effect sizes---+2.2 percentage points for procedural items, $-$2.4 for substantive, $-$1.9 for governance---are comparable to the individual-level estimates, suggesting that the main results are not artifacts of the clustering structure or of the specific variance estimator employed.
 
-Two additional concerns warrant attention. First, restricting the sample to self-reported voters could introduce selection bias if the propensity to vote correlates with both democratic conceptions and electoral status. Because citizens most alienated from democratic politics are plausibly both more likely to abstain and more likely to hold distinctive views of democracy, the estimates should be interpreted as characterizing the engaged electorate rather than the population at large. Second, the use of repeated cross-sections rather than panel data means that within-country trajectories could in principle reflect compositional change across waves rather than genuine attitude shifts. The Thai case offers the strongest counterargument: party loyalties in Thailand's color-coded politics are notably stable, and what changed between 2010 and 2020 was not who supported which side but the institutional context in which those loyalties were embedded. The gap's precise tracking of documented political events---the 2014 coup, the prolonged period of military governance---rather than gradual demographic shifts favors the positional interpretation over compositional explanations.
+Two additional concerns warrant attention. First, restricting the sample to self-reported voters could introduce selection bias if the propensity to vote correlates with both democratic conceptions and electoral status. Among the countries in the analysis, non-voter rates are generally moderate, ranging from under 10 percent in Thailand to approximately 25 percent in select country-waves (Appendix Table F1). A direct comparison of non-voters' democratic conceptions to those of winners and losers reveals that non-voters' procedural-substantive gap (14.3 percentage points, 95% CI: 12.7--15.8) is virtually identical to that of winners (13.9 pp, 95% CI: 13.2--14.7) and well below that of losers (17.3 pp, 95% CI: 16.3--18.3; Appendix Table F2). Non-voters thus resemble winners who chose not to participate rather than alienated citizens with suppressed procedural preferences, and their exclusion does not inflate the estimated loser effect (Appendix Tables F3--F4). Second, the use of repeated cross-sections rather than panel data means that within-country trajectories could in principle reflect compositional change across waves rather than genuine attitude shifts. The Thai case offers the strongest counterargument: party loyalties in Thailand's color-coded politics are notably stable, and what changed between 2010 and 2020 was not who supported which side but the institutional context in which those loyalties were embedded. The gap's precise tracking of documented political events---the 2014 coup, the prolonged period of military governance---rather than gradual demographic shifts favors the positional interpretation over compositional explanations.
 
 # Discussion
 
-The analysis has documented a consistent pattern across diverse Asian political contexts: electoral losers systematically prioritize procedural over substantive conceptions of democracy. The effect is individually modest but collectively robust, appearing across twenty items in five survey batteries. More importantly, it responds dynamically to political conditions---growing dramatically in Thailand as democratic institutions eroded and peaking in Hong Kong during a period of intense contestation over political rights.
+The analysis has documented a consistent pattern across diverse Asian political contexts: electoral losers systematically prioritize procedural over substantive conceptions of democracy. The effect is individually modest but collectively robust, appearing across twenty items in five survey batteries. More importantly, it responds dynamically to political conditions---growing dramatically in Thailand as democratic institutions eroded.
 
 These findings support a positional account of democratic conceptions over alternatives emphasizing stable cultural values or fixed psychological dispositions. If conceptions of democracy were primarily cultural inheritances, they would not shift dramatically within countries over relatively short periods. Thailand's trajectory---from essentially no loser effect in 2010 to a gap exceeding twenty percentage points by 2020---cannot be explained by slow-moving cultural change. Rather, citizens appear to update their understanding of what democracy fundamentally means in response to their changing position within the political order.
 
@@ -380,7 +368,7 @@ The results also extend the winner-loser gap literature in an important directio
 
 The governance items reveal an additional tension that deserves further investigation. Winners' strong preference for law and order as a defining feature of democracy, combined with losers' emphasis on civil liberties and accountability, captures a fundamental strain in democratic politics. Where democratic institutions are robust, the demands for order and for contestation coexist. Where they are not, this tension can become a fault line---as Thailand's trajectory vividly illustrates.
 
-Several limitations warrant acknowledgment. First, the analysis relies on repeated cross-sections rather than panel data, precluding direct observation of individual-level attitude change. Within-country trajectories are suggestive but cannot definitively rule out compositional change across waves. The reverse-causal account---that citizens with procedural orientations sort into losing parties---is difficult to reconcile with the within-country trajectories. Thai citizens did not suddenly change their party affiliations between 2010 and 2020; party loyalties in Thailand's color-coded politics are notably stable. What changed was the institutional context in which those loyalties were embedded. The gap's precise tracking of political events, rather than gradual demographic shifts, favors the positional interpretation. Second, the exclusion of non-voters introduces potential selection bias, as citizens most alienated from democratic politics may be most likely to abstain. The findings should therefore be interpreted as characterizing democratic conceptions among the politically engaged electorate rather than the population at large. This is a meaningful population in its own right---voters are the citizens whose conceptions most directly shape democratic outcomes through their choices and demands. Third, the substantial weakening of the loser effect in Wave 6 across most countries outside Thailand remains incompletely explained. The COVID-19 pandemic, during which Wave 6 fieldwork was conducted across all countries, likely shifted the salience of state capacity for all citizens regardless of electoral status, temporarily compressing the procedural-substantive gap. That Thailand's gap *grew* through Wave 6 rather than compressing is itself informative: where democratic erosion was severe enough, the positional logic overwhelmed the pandemic's homogenizing effect. If the pandemic explanation is correct, the effect should reappear in post-pandemic surveys. Finally, with only thirteen countries, the analysis cannot support strong claims about the relationship between regime type and the loser effect at the cross-national level; the country-level trajectories are more informative than cross-sectional comparisons.
+Several limitations warrant acknowledgment. First, the analysis relies on repeated cross-sections rather than panel data, precluding direct observation of individual-level attitude change. Within-country trajectories are suggestive but cannot definitively rule out compositional change across waves. The reverse-causal account---that citizens with procedural orientations sort into losing parties---is difficult to reconcile with the within-country trajectories. Thai citizens did not suddenly change their party affiliations between 2010 and 2020; party loyalties in Thailand's color-coded politics are notably stable. What changed was the institutional context in which those loyalties were embedded. The gap's precise tracking of political events, rather than gradual demographic shifts, favors the positional interpretation. Second, the exclusion of non-voters introduces potential selection bias, as citizens most alienated from democratic politics may be most likely to abstain. The findings should therefore be interpreted as characterizing democratic conceptions among the politically engaged electorate rather than the population at large. This is a meaningful population in its own right---voters are the citizens whose conceptions most directly shape democratic outcomes through their choices and demands. Third, the substantial weakening of the loser effect in Wave 6 across most countries outside Thailand remains incompletely explained. The COVID-19 pandemic, during which Wave 6 fieldwork was conducted across all countries, likely shifted the salience of state capacity for all citizens regardless of electoral status, temporarily compressing the procedural-substantive gap. That Thailand's gap *grew* through Wave 6 rather than compressing is itself informative: where democratic erosion was severe enough, the positional logic overwhelmed the pandemic's homogenizing effect. If the pandemic explanation is correct, the effect should reappear in post-pandemic surveys. Finally, with only eleven countries, the analysis cannot support strong claims about the relationship between regime type and the loser effect at the cross-national level; the country-level trajectories are more informative than cross-sectional comparisons.
 
 # Conclusion
 
@@ -394,3 +382,82 @@ One implication is troubling. Where democratic erosion creates permanent winners
 
 ::: {#refs}
 :::
+
+\newpage
+
+# Appendix: Voters and Non-Voters {.appendix}
+
+```{r appendix-setup}
+#| include: false
+# Load voter/non-voter data
+voter_country <- read_csv(file.path(results_path, "voter_nonvoter_by_country.csv"), show_col_types = FALSE)
+voter_proc_sub <- read_csv(file.path(results_path, "voter_nonvoter_proc_sub.csv"), show_col_types = FALSE)
+```
+
+## Sample Composition by Voter Status
+
+The main analysis restricts attention to respondents who reported voting in the most recent national election, as winner-loser status cannot be meaningfully assigned to non-voters. However, a substantial number of non-voters also completed the democracy conception items. Table A1 reports the sample composition by country.
+
+```{r tbl-voter-sample}
+#| tbl-cap: "Sample Composition by Country and Voter Status (Waves 3, 4, and 6)"
+
+voter_country %>%
+  rename(
+    Country = country_name,
+    `Non-voters` = `Non-voter`,
+    Voters = Voter,
+    `% Non-voter` = pct_nonvoter
+  ) %>%
+  kable(
+    align = c("l", "r", "r", "r", "r"),
+    booktabs = TRUE
+  ) %>%
+  kable_styling(
+    latex_options = c("striped", "hold_position"),
+    font_size = 10
+  ) %>%
+  footnote(
+    general = "Respondents with valid responses to at least one democracy conception item set. Waves 3 (2010--2012), 4 (2014--2016), and 6 (2019--2022) pooled.",
+    general_title = "Note:",
+    footnote_as_chunk = TRUE
+  )
+```
+
+Non-voter rates vary considerably across countries, from `r min(voter_country$pct_nonvoter)`% in Australia (where voting is compulsory) to `r max(voter_country$pct_nonvoter)`% in Myanmar. The total sample of non-voters with valid democracy conception responses (`r fmt_n(sum(voter_country[["Non-voter"]]))`) represents a potentially valuable resource for understanding how conceptions of democracy relate to political engagement.
+
+## Democracy Conceptions Among Non-Voters
+
+Table A2 compares the average preference for procedural versus substantive conceptions between voters and non-voters within each country. The procedural-substantive difference is calculated as the mean proportion selecting procedural items minus the mean proportion selecting substantive items across the four item sets.
+
+```{r tbl-voter-procsub}
+#| tbl-cap: "Procedural vs. Substantive Preferences by Voter Status"
+
+voter_proc_sub %>%
+  mutate(
+    procedural = sprintf("%.1f", procedural * 100),
+    substantive = sprintf("%.1f", substantive * 100),
+    proc_sub_diff = sprintf("%+.1f", proc_sub_diff * 100)
+  ) %>%
+  rename(
+    Country = country_name,
+    Status = voter_status,
+    `Procedural (%)` = procedural,
+    `Substantive (%)` = substantive,
+    `Difference (pp)` = proc_sub_diff
+  ) %>%
+  kable(
+    align = c("l", "l", "r", "r", "r"),
+    booktabs = TRUE
+  ) %>%
+  kable_styling(
+    latex_options = c("striped", "hold_position"),
+    font_size = 9
+  ) %>%
+  footnote(
+    general = "Procedural and substantive columns show mean proportion selecting items of each type across the four item sets. Difference is procedural minus substantive; positive values indicate procedural preference.",
+    general_title = "Note:",
+    footnote_as_chunk = TRUE
+  )
+```
+
+The patterns suggest that non-voters do not systematically differ from voters in their procedural-substantive orientation. In most countries, the direction of the difference (whether procedural or substantive items are preferred) is the same for voters and non-voters. The magnitudes differ modestly, with no consistent pattern of non-voters favoring one conception over another. This similarity provides some reassurance that the main analysis, while restricted to voters, may capture patterns that extend to the broader population---though without winner-loser status, the central hypothesis cannot be directly tested among non-voters.
