@@ -200,10 +200,10 @@ tbl %>%
     booktabs = TRUE
   ) %>%
   kable_styling(
-    latex_options = c("striped", "hold_position", "scale_down"),
-    font_size = 10,
-    full_width = FALSE
+    latex_options = c("striped", "hold_position"),
+    font_size = 9
   ) %>%
+  column_spec(2, width = "3in") %>%
   footnote(
     general = "Average marginal effects from multinomial logit with country and wave fixed effects and demographic controls (age, gender, education, urban residence). Positive values indicate losers are more likely to select the item. Bootstrap standard errors clustered at the country level.",
     symbol = c("† p < 0.10, * p < 0.05, ** p < 0.01, *** p < 0.001"),
@@ -359,9 +359,8 @@ gap_tbl %>%
     booktabs = TRUE
   ) %>%
   kable_styling(
-    latex_options = c("striped", "hold_position", "scale_down"),
-    font_size = 9,
-    full_width = FALSE
+    latex_options = c("striped", "hold_position"),
+    font_size = 8
   ) %>%
   footnote(
     general = "Gap = (Mean Procedural AME) - (Mean Substantive AME), in percentage points, with 95% bootstrap CIs. Positive values indicate losers favor procedural items relative to substantive items. Dashes indicate country not surveyed in that wave.",
