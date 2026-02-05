@@ -279,6 +279,35 @@ w346_data <- w346_data %>%
     urban = if_else(urban_rural == 1, 1L, 0L)
   )
 
+# Add electoral fairness variable
+# Scale: 1="Not free or fair", 2="...major problems", 3="...minor problems", 4="Completely free and fair"
+# Dichotomize: unfair (1-2) vs fair (3-4)
+w346_data <- w346_data %>%
+  mutate(
+    election_unfair = case_when(
+      election_free_fair %in% 1:2 ~ 1L,   # not free/fair OR major problems
+      election_free_fair %in% 3:4 ~ 0L,   # minor problems OR completely fair
+      TRUE ~ NA_integer_
+    )
+  )
+
+cat("\n=== ELECTORAL FAIRNESS (election_free_fair) ===\n")
+cat("Valid responses:", sum(!is.na(w346_data$election_unfair)), "\n")
+cat("Missing:", sum(is.na(w346_data$election_unfair)), "\n")
+cat("Perceive unfair:", sum(w346_data$election_unfair == 1, na.rm = TRUE),
+    sprintf("(%.1f%%)\n", mean(w346_data$election_unfair, na.rm = TRUE) * 100))
+
+cat("\nBy winner/loser:\n")
+w346_data %>%
+  filter(!is.na(election_unfair)) %>%
+  group_by(winner_loser) %>%
+  summarise(
+    n = n(),
+    pct_unfair = round(mean(election_unfair) * 100, 1),
+    .groups = "drop"
+  ) %>%
+  print()
+
 # Select final columns including demographics
 w346_analysis <- w346_data %>%
   select(
@@ -286,6 +315,8 @@ w346_analysis <- w346_data %>%
     loser, winner_loser,
     # Demographics
     age, female, education, urban,
+    # Electoral fairness
+    election_free_fair, election_unfair,
     # DV items
     dem_meaning_set1, dem_meaning_set2, dem_meaning_set3, dem_meaning_set4,
     set1_choice, set2_choice, set3_choice, set4_choice,
