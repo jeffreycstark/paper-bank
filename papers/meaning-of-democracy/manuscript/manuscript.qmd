@@ -35,6 +35,8 @@ format:
           \usepackage{multirow}
           \usepackage{float}
           \usepackage{graphicx}
+          \usepackage{threeparttable}
+          \usepackage{threeparttablex}
           \floatplacement{figure}{H}
           \floatplacement{table}{H}
   html:
@@ -178,6 +180,9 @@ To examine country-level variation and within-country trajectories (H2 and H3), 
 
 ## The Overall Loser Effect
 
+\begingroup
+\singlespacing
+
 ```{r tbl-pooled}
 #| tbl-cap: "Average Marginal Effect of Loser Status on Item Selection"
 
@@ -196,20 +201,31 @@ tbl <- pooled %>%
 
 tbl %>%
   kbl(
+    align = c("l", "l", "l", "r", "r", "c"),
     booktabs = TRUE,
-    longtable = FALSE
+    longtable = FALSE,
+    linesep = ""
   ) %>%
   kable_styling(
     latex_options = c("striped", "hold_position"),
     font_size = 10
   ) %>%
+  column_spec(1, width = "1.2cm") %>%
+  column_spec(2, width = "4.5cm") %>%
+  column_spec(3, width = "2.5cm") %>%
+  column_spec(4, width = "2cm") %>%
+  column_spec(5, width = "1.5cm") %>%
+  column_spec(6, width = "1.2cm") %>%
   footnote(
     general = "Average marginal effects from multinomial logit with country and wave fixed effects and demographic controls (age, gender, education, urban residence). Positive values indicate losers are more likely to select the item. Bootstrap standard errors clustered at the country level.",
-    symbol = c("† p < 0.10, * p < 0.05, ** p < 0.01, *** p < 0.001"),
-    general_title = "Note:",
-    footnote_as_chunk = TRUE
+    symbol = c("\u2020 p < 0.10, * p < 0.05, ** p < 0.01, *** p < 0.001"),
+    general_title = "Note: ",
+    footnote_as_chunk = TRUE,
+    threeparttable = TRUE
   )
 ```
+
+\endgroup
 
 ```{r pooled-summary}
 #| include: false
@@ -248,6 +264,7 @@ The governance items---qualities such as law and order, clean politics, and effi
 
 ```{r fig-trajectories, fig.width=10, fig.height=6}
 #| fig-cap: "Loser Effect Trajectories: Procedural--Substantive Gap by Country"
+#| fig-alt: "Line plot showing procedural-substantive gap trajectories across three survey waves (2010-12, 2014-16, 2019-22) for eleven Asian countries. Thailand (red) shows dramatic increase from near zero to over 20 percentage points, tracking democratic erosion. Cambodia (orange) maintains consistently high gap around 13 points. South Korea (green) and Japan (blue) remain near zero throughout. Other countries shown in gray display varied patterns. Dashed horizontal line at zero separates procedural preference (above) from substantive preference (below). Shaded ribbons show 95% confidence intervals for highlighted countries."
 
 # Plot countries with 2+ waves
 plot_data <- cw_gap %>%
@@ -355,17 +372,24 @@ gap_tbl <- cw_gap %>%
 
 gap_tbl %>%
   kbl(
+    align = c("l", "c", "c", "c"),
     booktabs = TRUE,
-    longtable = FALSE
+    longtable = FALSE,
+    linesep = ""
   ) %>%
   kable_styling(
     latex_options = c("striped", "hold_position"),
     font_size = 10
   ) %>%
+  column_spec(1, width = "3cm") %>%
+  column_spec(2, width = "3.5cm") %>%
+  column_spec(3, width = "3.5cm") %>%
+  column_spec(4, width = "3.5cm") %>%
   footnote(
     general = "Gap = (Mean Procedural AME) - (Mean Substantive AME), in percentage points, with 95% bootstrap CIs. Positive values indicate losers favor procedural items relative to substantive items. Dashes indicate country not surveyed in that wave.",
-    general_title = "Note:",
-    footnote_as_chunk = TRUE
+    general_title = "Note: ",
+    footnote_as_chunk = TRUE,
+    threeparttable = TRUE
   )
 ```
 

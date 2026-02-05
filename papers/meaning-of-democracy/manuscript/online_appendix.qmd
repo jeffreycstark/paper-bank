@@ -21,6 +21,8 @@ format:
     keep-tex: true
     include-in-header:
       text: |
+        \usepackage{threeparttable}
+        \usepackage{threeparttablex}
         \renewcommand{\thesection}{\Alph{section}}
         \renewcommand{\thesubsection}{\Alph{section}.\arabic{subsection}}
         \renewcommand{\thetable}{\Alph{section}\arabic{table}}
@@ -474,6 +476,7 @@ if (!is.null(cw_gap)) {
 
 ```{r fig-trajectories}
 #| fig-cap: "Procedural-Substantive Gap Trajectories by Country"
+#| fig-alt: "Faceted small-multiples plot showing procedural-substantive gap trajectories for each country with two or more survey waves. Each panel displays one country's trajectory as a blue line with shaded 95% confidence interval, spanning waves W3 (2010-12), W4 (2014-16), and W6 (2019-22). Countries are ordered by magnitude of change, with Thailand showing the largest increase (near zero to over 20 percentage points). Dashed horizontal line at zero in each panel separates procedural preference (above) from substantive preference (below). Most countries cluster near zero; Cambodia shows consistently high positive values; Indonesia and Taiwan show some negative values."
 #| fig-width: 6.5
 #| fig-height: 8
 #| out-width: "100%"
