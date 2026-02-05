@@ -33,7 +33,7 @@ format:
     number-sections: true
     theme: cosmo
 bibliography: Winners-losers.bib
-csl: apa.csl
+csl: chicago-author-date.csl
 execute:
   echo: false
   warning: false
