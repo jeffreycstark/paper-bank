@@ -39,13 +39,20 @@ main_results <- readRDS(file.path(results_dir, "mlogit_results.rds"))
 all_results <- main_results$all_results
 item_meta <- main_results$item_metadata
 
-# Load country-wave results
-cw_ames <- main_results$country_wave_ames
-cw_gap <- main_results$country_wave_gap
+# Load country-wave results (from 04_country_wave.qmd output)
+cw_results_file <- file.path(results_dir, "country_wave_results.rds")
+if (file.exists(cw_results_file)) {
+  cw_results <- readRDS(cw_results_file)
+  cw_ames <- cw_results$cw_ames
+  cw_gap <- cw_results$cw_gap
+  cat("Country-wave results loaded:", nrow(cw_ames), "item-country-wave estimates\n")
+} else {
+  cw_ames <- NULL
+  cw_gap <- NULL
+  cat("Country-wave results not found - run 04_country_wave.qmd first for trajectory figures\n")
+}
 
-cat("Results loaded successfully\n")
-cat("Main results: ", nrow(all_results), " items\n")
-cat("Country-wave results: ", nrow(cw_ames), " item-country-wave estimates\n")
+cat("Main results:", nrow(all_results), "items\n")
 ```
 
 # Figure 1: Main Results - All Items
@@ -200,6 +207,11 @@ cat("\nFigure 2 saved\n")
 # Figure 3: Country Trajectories
 
 ```{r fig3-trajectories, fig.width=12, fig.height=8}
+# Skip if country-wave results not available
+if (is.null(cw_gap)) {
+  cat("Skipping trajectory figures - run 04_country_wave.qmd first\n")
+} else {
+
 # Countries with multiple waves
 multi_wave_countries <- cw_gap %>%
   group_by(country_name) %>%
@@ -244,11 +256,16 @@ if (nrow(trajectory_countries) > 0) {
 
   cat("\nFigure 3 saved\n")
 }
+} # end else block for cw_gap null check
 ```
 
 # Figure 4: Highlight Countries
 
 ```{r fig4-highlight, fig.width=12, fig.height=8}
+if (is.null(cw_gap)) {
+  cat("Skipping - run 04_country_wave.qmd first\n")
+} else {
+
 # Highlight key countries with contrasting patterns
 highlight_countries <- c("Thailand", "South Korea", "Taiwan", "Japan")
 
@@ -320,11 +337,16 @@ if (nrow(highlight_data) > 0) {
 
   cat("\nFigure 4 saved\n")
 }
+} # end else block for cw_gap null check
 ```
 
 # Figure 5: Item-Level Trajectories by Country
 
 ```{r fig5-item-trajectories, fig.width=14, fig.height=10}
+if (is.null(cw_ames)) {
+  cat("Skipping - run 04_country_wave.qmd first\n")
+} else {
+
 # Select focal countries
 focal_countries <- c("Thailand", "South Korea", "Taiwan", "Japan",
                      "Philippines", "Indonesia", "Mongolia")
@@ -369,6 +391,7 @@ if (nrow(trajectory_data) > 0) {
 
   cat("\nFigure 5 saved\n")
 }
+} # end else block for cw_ames null check
 ```
 
 # Summary

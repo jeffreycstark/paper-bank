@@ -55,8 +55,6 @@ This section reports sample sizes by country-wave after filtering for voters and
 Small samples (N < 100) may have insufficient power for reliable multinomial probability estimation.
 
 ```{r sample-diagnostics}
-#| label: sample-diagnostics
-
 # Calculate N by country-wave for each question set
 sample_sizes <- w346_data %>%
   group_by(country_name, wave_label, wave) %>%
@@ -108,9 +106,9 @@ if (any(sample_sizes$small_sample)) {
 # Full sample size table for appendix
 cat("\n=== FULL SAMPLE SIZE TABLE ===\n")
 sample_sizes %>%
+  arrange(country_name, wave) %>%
   select(country_name, wave_label, n_total, n_loser, pct_loser,
          set1_n, set2_n, set3_n, set4_n, min_set_n) %>%
-  arrange(country_name, wave) %>%
   kable(digits = 1, caption = "Sample sizes by country-wave-set (voters with valid DV)") %>%
   print()
 
