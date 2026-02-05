@@ -30,6 +30,9 @@ library(nnet)
 library(knitr)
 library(kableExtra)
 library(here)
+library(future)
+library(future.apply)
+library(purrr)
 
 here::i_am("papers/meaning-of-democracy/analysis/05_robustness.qmd")
 
@@ -69,26 +72,20 @@ get_loser_ames <- function(model, data) {
   return(ames)
 }
 
-# Cluster bootstrap SEs with success tracking
-bootstrap_ames <- function(model_formula, data, n_boot = 500, seed = 42, cluster_var = "country_name",
-                           verbose = TRUE) {
+# Parallelized cluster bootstrap for AME standard errors
+bootstrap_ames <- function(model_formula, data, n_boot = 999, seed = 42, cluster_var = "country_name") {
   set.seed(seed)
 
   orig_model <- multinom(model_formula, data = data, trace = FALSE)
   choice_levels <- colnames(predict(orig_model, type = "probs"))
-
   clusters <- unique(data[[cluster_var]])
   n_clusters <- length(clusters)
 
-  boot_ames <- matrix(NA, nrow = n_boot, ncol = length(choice_levels))
-  colnames(boot_ames) <- choice_levels
-  n_success <- 0
+  plan(multisession)
 
-  for (i in 1:n_boot) {
+  boot_results <- future_lapply(1:n_boot, function(i) {
     boot_clusters <- sample(clusters, n_clusters, replace = TRUE)
-    boot_data <- do.call(rbind, lapply(seq_along(boot_clusters), function(j) {
-      data[data[[cluster_var]] == boot_clusters[j], ]
-    }))
+    boot_data <- map_dfr(boot_clusters, ~ data[data[[cluster_var]] == .x, ])
 
     boot_model <- tryCatch(
       multinom(model_formula, data = boot_data, trace = FALSE),
@@ -96,22 +93,22 @@ bootstrap_ames <- function(model_formula, data, n_boot = 500, seed = 42, cluster
     )
 
     if (!is.null(boot_model)) {
-      boot_ames[i, ] <- get_loser_ames(boot_model, boot_data)
-      n_success <- n_success + 1
+      return(get_loser_ames(boot_model, boot_data))
+    } else {
+      return(NULL)
     }
+  }, future.seed = TRUE)
+
+  boot_ames_mat <- do.call(rbind, compact(boot_results))
+  n_success <- nrow(boot_ames_mat)
+  success_rate <- (n_success / n_boot) * 100
+  cat(sprintf("  Bootstrap: %d/%d succeeded (%.1f%%)\n", n_success, n_boot, success_rate))
+
+  if (success_rate < 90) {
+    cat("  ⚠️ Warning: Low success rate may indicate model instability\n")
   }
 
-  # Report success rate
-  success_rate <- n_success / n_boot * 100
-  if (verbose) {
-    cat(sprintf("  Bootstrap: %d/%d iterations succeeded (%.1f%%)\n",
-                n_success, n_boot, success_rate))
-    if (success_rate < 90) {
-      cat("  ⚠️ Warning: Low success rate may indicate model instability\n")
-    }
-  }
-
-  ses <- apply(boot_ames, 2, sd, na.rm = TRUE)
+  ses <- apply(boot_ames_mat, 2, sd, na.rm = TRUE)
   attr(ses, "n_success") <- n_success
   attr(ses, "success_rate") <- success_rate
   return(ses)
