@@ -42,6 +42,19 @@ library(knitr)
 library(kableExtra)
 library(here)
 
+# Parallel processing for bootstrap (optional but recommended)
+# If not installed: install.packages(c("future", "future.apply"))
+if (requireNamespace("future", quietly = TRUE) &&
+    requireNamespace("future.apply", quietly = TRUE)) {
+  library(future)
+  library(future.apply)
+  # Use all available cores minus 1 for parallel bootstrap
+  plan(multisession, workers = max(1, parallel::detectCores() - 1))
+  cat("Parallel processing enabled with", max(1, parallel::detectCores() - 1), "workers\n")
+} else {
+  cat("Parallel processing not available (install future and future.apply for faster bootstrap)\n")
+}
+
 here::i_am("papers/meaning-of-democracy/analysis/02_multinomial_analysis.qmd")
 
 # Load prepared data
@@ -85,7 +98,12 @@ get_loser_ames <- function(model, data) {
 # Bootstrap standard errors for AMEs using cluster/block bootstrap
 # Resamples countries (clusters) rather than individual observations
 # This properly accounts for within-country correlation
-bootstrap_ames <- function(model_formula, data, n_boot = 500, seed = 42, cluster_var = "country_name") {
+#
+# Uses parallel processing via future.apply when available for faster execution.
+# Reports number of successful iterations to detect potential issues with
+# bootstrap sample variation (e.g., categories with zero observations).
+bootstrap_ames <- function(model_formula, data, n_boot = 500, seed = 42, cluster_var = "country_name",
+                           parallel = TRUE, verbose = TRUE) {
   set.seed(seed)
 
   # Fit original model to get choice levels
@@ -96,11 +114,8 @@ bootstrap_ames <- function(model_formula, data, n_boot = 500, seed = 42, cluster
   clusters <- unique(data[[cluster_var]])
   n_clusters <- length(clusters)
 
-  # Bootstrap
-  boot_ames <- matrix(NA, nrow = n_boot, ncol = length(choice_levels))
-  colnames(boot_ames) <- choice_levels
-
-  for (i in 1:n_boot) {
+  # Define single bootstrap iteration function
+  run_single_boot <- function(i, clusters, n_clusters, data, cluster_var, model_formula) {
     # Cluster bootstrap: resample clusters with replacement
     boot_clusters <- sample(clusters, n_clusters, replace = TRUE)
 
@@ -116,12 +131,88 @@ bootstrap_ames <- function(model_formula, data, n_boot = 500, seed = 42, cluster
     )
 
     if (!is.null(boot_model)) {
-      boot_ames[i, ] <- get_loser_ames(boot_model, boot_data)
+      return(get_loser_ames(boot_model, boot_data))
+    } else {
+      return(NULL)
     }
   }
 
-  # Calculate SEs
+  # Check if parallel processing is available
+  use_parallel <- parallel && requireNamespace("future.apply", quietly = TRUE)
+
+  if (use_parallel) {
+    # Parallel bootstrap using future.apply
+    # Note: User should set up future plan before calling (e.g., plan(multisession))
+    if (!future::plan() %in% c("sequential")) {
+      boot_results <- future.apply::future_lapply(
+        1:n_boot,
+        run_single_boot,
+        clusters = clusters,
+        n_clusters = n_clusters,
+        data = data,
+        cluster_var = cluster_var,
+        model_formula = model_formula,
+        future.seed = TRUE
+      )
+    } else {
+      # Fall back to sequential if no parallel plan set
+      boot_results <- lapply(
+        1:n_boot,
+        run_single_boot,
+        clusters = clusters,
+        n_clusters = n_clusters,
+        data = data,
+        cluster_var = cluster_var,
+        model_formula = model_formula
+      )
+    }
+  } else {
+    # Sequential bootstrap
+    boot_results <- lapply(
+      1:n_boot,
+      run_single_boot,
+      clusters = clusters,
+      n_clusters = n_clusters,
+      data = data,
+      cluster_var = cluster_var,
+      model_formula = model_formula
+    )
+  }
+
+  # Convert results to matrix and count successes
+  boot_ames <- matrix(NA, nrow = n_boot, ncol = length(choice_levels))
+  colnames(boot_ames) <- choice_levels
+  n_success <- 0
+
+  for (i in 1:n_boot) {
+    if (!is.null(boot_results[[i]])) {
+      boot_ames[i, ] <- boot_results[[i]]
+      n_success <- n_success + 1
+    }
+  }
+
+  # Report success rate
+  success_rate <- n_success / n_boot * 100
+  if (verbose) {
+    cat(sprintf("  Bootstrap: %d/%d iterations succeeded (%.1f%%)\n",
+                n_success, n_boot, success_rate))
+    if (success_rate < 90) {
+      cat("  ⚠️ Warning: Low success rate may indicate model instability or sparse categories\n")
+    }
+  }
+
+  # Calculate SEs (only if we have enough successful iterations)
+  if (n_success < n_boot * 0.5) {
+    warning(sprintf("Only %d of %d bootstrap iterations succeeded. SEs may be unreliable.",
+                    n_success, n_boot))
+  }
+
   ses <- apply(boot_ames, 2, sd, na.rm = TRUE)
+
+  # Return SEs with success count as attribute
+  attr(ses, "n_success") <- n_success
+  attr(ses, "n_boot") <- n_boot
+  attr(ses, "success_rate") <- success_rate
 
   return(ses)
 }
@@ -447,6 +538,51 @@ ggsave(
 ggsave(
   file.path(results_dir, "fig_loser_effects_all_items.pdf"),
   width = 10, height = 8
+)
+
+# Faceted version by question set for clearer comparison
+all_results %>%
+  mutate(
+    set_label = case_when(
+      set == "W2" ~ "Wave 2 (2006)",
+      set == "Set1" ~ "Set 1 (W3/4/6)",
+      set == "Set2" ~ "Set 2 (W3/4/6)",
+      set == "Set3" ~ "Set 3 (W3/4/6)",
+      set == "Set4" ~ "Set 4 (W3/4/6)"
+    ),
+    item_label = fct_reorder(item_label, ame),
+    item_type = factor(item_type, levels = c("procedural", "substantive", "governance"))
+  ) %>%
+  ggplot(aes(x = ame * 100, y = item_label, color = item_type)) +
+  geom_vline(xintercept = 0, linetype = "dashed", color = "gray50") +
+  geom_errorbarh(aes(xmin = ci_low * 100, xmax = ci_high * 100), height = 0.3) +
+  geom_point(size = 2.5) +
+  facet_wrap(~set_label, scales = "free_y", ncol = 2) +
+  scale_color_manual(
+    values = c("procedural" = "#2166AC", "substantive" = "#B2182B", "governance" = "#666666"),
+    name = "Item Type"
+  ) +
+  labs(
+    x = "Loser Effect (percentage points)",
+    y = NULL,
+    title = "Loser Effect by Question Set",
+    subtitle = "Note: W2 uses different question wording than W3/4/6 sets",
+    caption = "95% CIs from cluster bootstrap"
+  ) +
+  theme_minimal() +
+  theme(
+    legend.position = "bottom",
+    panel.grid.minor = element_blank(),
+    strip.text = element_text(face = "bold")
+  )
+
+ggsave(
+  file.path(results_dir, "fig_loser_effects_by_set.png"),
+  width = 11, height = 9, dpi = 300
+)
+ggsave(
+  file.path(results_dir, "fig_loser_effects_by_set.pdf"),
+  width = 11, height = 9
 )
 ```
 

@@ -48,6 +48,76 @@ n_boot <- 999
 cat("Bootstrap iterations:", n_boot, "\n")
 ```
 
+# Sample Size Diagnostics
+
+This section reports sample sizes by country-wave after filtering for voters and valid DV responses.
+Small samples (N < 100) may have insufficient power for reliable multinomial probability estimation.
+
+```{r sample-diagnostics}
+#| label: sample-diagnostics
+
+# Calculate N by country-wave for each question set
+sample_sizes <- w346_data %>%
+  group_by(country_name, wave_label, wave) %>%
+  summarise(
+    n_total = n(),
+    n_loser = sum(loser),
+    n_winner = sum(loser == 0),
+    pct_loser = mean(loser) * 100,
+    set1_n = sum(set1_valid),
+    set2_n = sum(set2_valid),
+    set3_n = sum(set3_valid),
+    set4_n = sum(set4_valid),
+    .groups = "drop"
+  ) %>%
+  mutate(
+    min_set_n = pmin(set1_n, set2_n, set3_n, set4_n),
+    # Flag small samples
+    small_sample = min_set_n < 100,
+    very_small = min_set_n < 50
+  )
+
+cat("\n=== SAMPLE SIZE DIAGNOSTICS ===\n")
+cat("Minimum N threshold for analysis: 50 (multinomial logit requirement)\n")
+cat("Recommended N for reliable estimation: 100+\n\n")
+
+# Summary statistics
+cat("Country-wave combinations:\n")
+cat("  Total:", nrow(sample_sizes), "\n")
+cat("  With N ≥ 100:", sum(!sample_sizes$small_sample), "\n")
+cat("  With 50 ≤ N < 100:", sum(sample_sizes$small_sample & !sample_sizes$very_small), "\n")
+cat("  With N < 50 (excluded):", sum(sample_sizes$very_small), "\n\n")
+
+# Flag problematic country-waves
+if (any(sample_sizes$small_sample)) {
+  cat("⚠️ SMALL SAMPLE WARNING:\n")
+  cat("The following country-waves have N < 100 for at least one question set:\n\n")
+
+  sample_sizes %>%
+    filter(small_sample) %>%
+    arrange(min_set_n) %>%
+    select(country_name, wave_label, n_total, n_loser, n_winner, min_set_n) %>%
+    mutate(
+      status = if_else(min_set_n < 50, "⚠️ EXCLUDED (N<50)", "⚡ Low power")
+    ) %>%
+    kable(caption = "Country-waves with small samples") %>%
+    print()
+}
+
+# Full sample size table for appendix
+cat("\n=== FULL SAMPLE SIZE TABLE ===\n")
+sample_sizes %>%
+  select(country_name, wave_label, n_total, n_loser, pct_loser,
+         set1_n, set2_n, set3_n, set4_n, min_set_n) %>%
+  arrange(country_name, wave) %>%
+  kable(digits = 1, caption = "Sample sizes by country-wave-set (voters with valid DV)") %>%
+  print()
+
+# Save diagnostics for online appendix
+write_csv(sample_sizes, file.path(results_dir, "sample_size_diagnostics.csv"))
+cat("\nSample size diagnostics saved to: sample_size_diagnostics.csv\n")
+```
+
 # Helper Functions
 
 ```{r helpers}
@@ -97,9 +167,10 @@ estimate_cw_ames_with_se <- function(data, set_num, n_boot = 100) {
 
   if (is.null(ames)) return(NULL)
 
-  # Bootstrap for standard errors
+  # Bootstrap for standard errors with success tracking
   boot_ames <- matrix(NA, nrow = n_boot, ncol = length(ames))
   colnames(boot_ames) <- names(ames)
+  n_success <- 0
 
   for (b in 1:n_boot) {
     boot_idx <- sample(nrow(df), replace = TRUE)
@@ -120,9 +191,13 @@ estimate_cw_ames_with_se <- function(data, set_num, n_boot = 100) {
       )
       if (!is.null(boot_result) && length(boot_result) == length(ames)) {
         boot_ames[b, ] <- boot_result
+        n_success <- n_success + 1
       }
     }
   }
+
+  # Track bootstrap success rate
+  boot_success_rate <- n_success / n_boot * 100
 
   ses <- apply(boot_ames, 2, sd, na.rm = TRUE)
 
@@ -136,7 +211,9 @@ estimate_cw_ames_with_se <- function(data, set_num, n_boot = 100) {
     ci_high = ame + 1.96 * se,
     n = nrow(df),
     n_loser = sum(df$loser),
-    pct_loser = mean(df$loser) * 100
+    pct_loser = mean(df$loser) * 100,
+    boot_success = n_success,
+    boot_success_rate = boot_success_rate
   )
 }
 ```
@@ -201,6 +278,24 @@ cat("\n=== COUNTRY-WAVE RESULTS SUMMARY ===\n")
 cat("Total country-wave-set combinations:", nrow(cw_ames %>% distinct(country_name, wave_label, set)), "\n")
 cat("Total item-level estimates:", nrow(cw_ames), "\n")
 cat("Significant at p<0.05:", sum(cw_ames$p < 0.05, na.rm = TRUE), "items\n")
+
+# Report bootstrap success rates
+cat("\n=== BOOTSTRAP DIAGNOSTICS ===\n")
+boot_summary <- cw_ames %>%
+  group_by(country_name, wave_label, set) %>%
+  summarise(
+    mean_boot_success = mean(boot_success_rate, na.rm = TRUE),
+    .groups = "drop"
+  )
+
+low_success <- boot_summary %>% filter(mean_boot_success < 90)
+if (nrow(low_success) > 0) {
+  cat("⚠️ Country-wave-sets with bootstrap success rate < 90%:\n")
+  print(low_success)
+  cat("\nNote: Low success rates may indicate model instability. SEs for these estimates should be interpreted with caution.\n")
+} else {
+  cat("✓ All bootstrap procedures had success rates ≥ 90%\n")
+}
 ```
 
 # Add Item Metadata

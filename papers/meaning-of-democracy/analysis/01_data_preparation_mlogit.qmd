@@ -391,7 +391,7 @@ cat("\nAll files saved to:", output_dir, "\n")
 | Variable | Description |
 |----------|-------------|
 | `wave_label` | "W3", "W4", or "W6" |
-| `wave_year` | 2010, 2014, or 2020 |
+| `wave_year` | 2011, 2015, or 2022 (representative year for each wave) |
 | `country_name` | Country name |
 | `loser` | 1 = loser, 0 = winner |
 | `winner_loser` | "Loser" or "Winner" |
