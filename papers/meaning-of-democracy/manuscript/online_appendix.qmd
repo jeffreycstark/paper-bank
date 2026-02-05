@@ -686,6 +686,54 @@ kbl(chisq, booktabs = TRUE, digits = 3) %>%
 
 These patterns indicate that non-voters resemble winners who chose not to participate rather than disaffected citizens with distinctive democratic conceptions. Their exclusion does not inflate the estimated loser effect.
 
+# Fairness Interaction: Positional Updating vs. Stable Commitments {#sec-fairness}
+
+As a further test distinguishing positional updating from stable normative commitments, the analysis interacts loser status with perceived electoral fairness (ABS Q43, dichotomized into fair versus unfair). The design follows @Mauk2022-xx, who demonstrates that electoral integrity conditions the relationship between political losing and political trust across 45 democracies using harmonized ABS, ESS, and Latinobarómetro data. The logic also draws on research on motivated reasoning [@Kunda1990-uw; @Taber2006-kx] and loss aversion [@Kahneman1979-af]: if the loser effect reflects positional updating, it should intensify among losers who perceive elections as unfair---those for whom the procedural threat is most salient. If it instead reflects stable dispositional commitments to procedural democracy, the interaction should be weak: committed proceduralists would prioritize procedures regardless of fairness perceptions. Perceived fairness is itself endogenous to electoral status---losers tend to rate elections as less fair---but the interaction nonetheless provides leverage because it tests for heterogeneity *within* the loser group.
+
+```{r tbl-fairness-interaction}
+#| tbl-cap: "Loser Effect by Perceived Electoral Fairness"
+
+fairness <- read_csv(here("papers", "meaning-of-democracy", "analysis",
+                          "revised", "results",
+                          "robustness_fairness_interaction.csv"),
+                     show_col_types = FALSE)
+
+fairness %>%
+  mutate(
+    loser_fair_pp = sprintf("%+.1f", loser_effect_fair * 100),
+    loser_unfair_pp = sprintf("%+.1f", loser_effect_unfair * 100),
+    interaction_pp = sprintf("%+.1f", interaction * 100)
+  ) %>%
+  select(
+    Item = item,
+    Set = set,
+    Type = item_type,
+    `Loser Effect: Fair (pp)` = loser_fair_pp,
+    `Loser Effect: Unfair (pp)` = loser_unfair_pp,
+    `Interaction (pp)` = interaction_pp
+  ) %>%
+  kbl(booktabs = TRUE, align = c("l", "l", "l", "r", "r", "r")) %>%
+  kable_styling(latex_options = c("hold_position", "striped"),
+                font_size = 9) %>%
+  pack_rows("Set 1", 1, 4) %>%
+  pack_rows("Set 2", 5, 8) %>%
+  pack_rows("Set 3", 9, 12) %>%
+  pack_rows("Set 4", 13, 16)
+```
+
+**Note:** The loser effect columns report the difference in predicted probability of selecting each item between losers and winners, separately for respondents who perceive elections as fair versus unfair. The interaction column reports the difference between these two effects (unfair minus fair); positive values on procedural items indicate that the loser effect is amplified among those perceiving unfair elections, consistent with positional updating.
+
+```{r fig-fairness}
+#| fig-cap: "Loser Effect by Perceived Electoral Fairness"
+#| out-width: "100%"
+
+knitr::include_graphics(here("papers", "meaning-of-democracy", "analysis",
+                             "revised", "results",
+                             "fig_robustness_fairness.pdf"))
+```
+
+The results are consistent with the positional account. Among procedural items, the majority show a positive interaction---the loser effect is larger among those who perceive elections as unfair. The pattern is particularly striking for court protection (+6.0 pp), media freedom (+3.5 pp), and free expression (+1.5 pp). Among substantive items, the interaction is more mixed, though unemployment aid shows a large negative interaction ($-$8.4 pp), indicating that losers perceiving unfair elections shift *away* from substantive conceptions even more strongly. These patterns suggest that the loser effect is amplified by perceived procedural threat rather than reflecting a fixed orientation.
+
 # References {-}
 
 ::: {#refs}

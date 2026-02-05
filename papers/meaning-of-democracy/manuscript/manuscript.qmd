@@ -401,7 +401,7 @@ Japan presents the expected baseline for a consolidated democracy: the loser eff
 
 Cambodia shows a persistently large gap (approximately 13 pp across all three waves) that, notably, did not grow following the dissolution of the main opposition party (CNRP) in 2017. This stability may reflect a ceiling effect---the stakes of losing were already high in Cambodia's competitive authoritarian system---or a compositional shift, as the removal of the opposition party from the political arena may have altered which respondents identified as losers.
 
-The remaining countries in @tbl-country-gaps reveal additional heterogeneity. Malaysia shows a large gap that narrows across waves, potentially reflecting the political opening that culminated in the historic 2018 alternation of power. Myanmar's single observation captures a strikingly large gap consistent with the high stakes of its fragile democratic transition. Taiwan's trajectory is distinctive, shifting from a positive gap to a negative one by Wave 6---a reversal that may reflect the unusual dynamics of cross-strait identity politics, where "losing" carries different connotations than in other democracies. The full set of item-level estimates for all country-wave combinations appears in the online appendix (Tables C5--C6).
+The remaining countries in @tbl-country-gaps reveal additional heterogeneity. Malaysia shows a large gap that narrows across waves, potentially reflecting the political opening that culminated in the historic 2018 alternation of power. Myanmar's single observation captures a strikingly large gap consistent with the high stakes of its fragile democratic transition. Taiwan's trajectory is distinctive, shifting from a positive gap to a negative one by Wave 6---a reversal that may reflect the unusual dynamics of cross-strait identity politics, where "losing" carries different connotations than in other democracies. The full set of item-level estimates for all country-wave combinations appears in the online appendix (Tables C1--C2).
 
 ## Wave 2 Baseline
 
@@ -423,7 +423,7 @@ The main estimates rely on wild cluster bootstrap inference at the country level
 The WLS results closely replicate the main findings. Nine of ten procedural items show positive loser effects (six significant at p<0.05p < 0.05
 p<0.05), all six substantive items show negative effects (five significant), and all four governance items show negative effects (one significant). The mean effect sizes---+2.2 percentage points for procedural items, $-$2.4 for substantive, $-$1.9 for governance---are comparable to the individual-level estimates, suggesting that the main results are not artifacts of the clustering structure or of the specific variance estimator employed.
 
-Two additional concerns warrant attention. First, restricting the sample to self-reported voters could introduce selection bias if the propensity to vote correlates with both democratic conceptions and electoral status. Among the countries in the analysis, non-voter rates are generally moderate, ranging from under 10 percent in Thailand to approximately 25 percent in select country-waves (Appendix Table F1). A direct comparison of non-voters' democratic conceptions to those of winners and losers reveals that non-voters' procedural-substantive gap (14.3 percentage points, 95% CI: 12.7--15.8) is virtually identical to that of winners (13.9 pp, 95% CI: 13.2--14.7) and well below that of losers (17.3 pp, 95% CI: 16.3--18.3; Appendix Table F2). Non-voters thus resemble winners who chose not to participate rather than alienated citizens with suppressed procedural preferences, and their exclusion does not inflate the estimated loser effect (Appendix Tables F3--F4). Second, the use of repeated cross-sections rather than panel data means that within-country trajectories could in principle reflect compositional change across waves rather than genuine attitude shifts. The Thai case offers the strongest counterargument: party loyalties in Thailand's color-coded politics are notably stable, and what changed between 2010 and 2020 was not who supported which side but the institutional context in which those loyalties were embedded. The gap's precise tracking of documented political events---the 2014 coup, the prolonged period of military governance---rather than gradual demographic shifts favors the positional interpretation over compositional explanations.
+Two additional concerns warrant attention. First, restricting the sample to self-reported voters could introduce selection bias if the propensity to vote correlates with both democratic conceptions and electoral status. Among the countries in the analysis, non-voter rates are generally moderate, ranging from under 10 percent in Thailand to approximately 25 percent in select country-waves (Appendix Table G1). A direct comparison of non-voters' democratic conceptions to those of winners and losers reveals that non-voters' procedural-substantive gap (14.3 percentage points, 95% CI: 12.7--15.8) is virtually identical to that of winners (13.9 pp, 95% CI: 13.2--14.7) and well below that of losers (17.3 pp, 95% CI: 16.3--18.3; Appendix Table G2). Non-voters thus resemble winners who chose not to participate rather than alienated citizens with suppressed procedural preferences, and their exclusion does not inflate the estimated loser effect (Appendix Tables G3--G4). Second, the use of repeated cross-sections rather than panel data means that within-country trajectories could in principle reflect compositional change across waves rather than genuine attitude shifts. The Thai case offers the strongest counterargument: party loyalties in Thailand's color-coded politics are notably stable, and what changed between 2010 and 2020 was not who supported which side but the institutional context in which those loyalties were embedded. The gap's precise tracking of documented political events---the 2014 coup, the prolonged period of military governance---rather than gradual demographic shifts favors the positional interpretation over compositional explanations. Finally, to distinguish positional updating from stable normative commitments, the online appendix (Section H) interacts loser status with perceived electoral fairness. Following @Mauk2022-xx, who shows that electoral integrity conditions the relationship between losing and political trust, the logic is that if the loser effect reflects positional updating, it should intensify among losers who perceive elections as unfair---those for whom the procedural threat is most salient. The results are consistent with this prediction: the majority of procedural items show a positive interaction, with particularly large amplification for court protection and media freedom, suggesting that the loser effect is driven by perceived procedural threat rather than fixed orientations.
 
 # Discussion
 
@@ -449,84 +449,3 @@ One implication is troubling. Where democratic erosion creates permanent winners
 
 ::: {#refs}
 :::
-
-\newpage
-
-# Appendix: Voters and Non-Voters {.appendix}
-
-```{r appendix-setup}
-#| include: false
-# Load voter/non-voter data
-voter_country <- read_csv(file.path(results_path, "voter_nonvoter_by_country.csv"), show_col_types = FALSE)
-voter_proc_sub <- read_csv(file.path(results_path, "voter_nonvoter_proc_sub.csv"), show_col_types = FALSE)
-```
-
-## Sample Composition by Voter Status
-
-The main analysis restricts attention to respondents who reported voting in the most recent national election, as winner-loser status cannot be meaningfully assigned to non-voters. However, a substantial number of non-voters also completed the democracy conception items. Table A1 reports the sample composition by country.
-
-```{r tbl-voter-sample}
-#| tbl-cap: "Sample Composition by Country and Voter Status (Waves 3, 4, and 6)"
-
-voter_country %>%
-  rename(
-    Country = country_name,
-    `Non-voters` = `Non-voter`,
-    Voters = Voter,
-    `% Non-voter` = pct_nonvoter
-  ) %>%
-  kable(
-    align = c("l", "r", "r", "r", "r"),
-    booktabs = TRUE
-  ) %>%
-  kable_styling(
-    latex_options = c("striped", "hold_position"),
-    font_size = 10
-  ) %>%
-  footnote(
-    general = "Respondents with valid responses to at least one democracy conception item set. Waves 3 (2010--2012), 4 (2014--2016), and 6 (2019--2022) pooled.",
-    general_title = "Note:",
-    footnote_as_chunk = TRUE
-  )
-```
-
-Non-voter rates vary considerably across countries, from `r min(voter_country$pct_nonvoter)`% in Australia (where voting is compulsory) to `r max(voter_country$pct_nonvoter)`% in Myanmar. The total sample of non-voters with valid democracy conception responses (`r fmt_n(sum(voter_country[["Non-voter"]]))`) represents a potentially valuable resource for understanding how conceptions of democracy relate to political engagement.
-
-## Democracy Conceptions Among Non-Voters
-
-Table A2 compares the average preference for procedural versus substantive conceptions between voters and non-voters within each country. The procedural-substantive difference is calculated as the mean proportion selecting procedural items minus the mean proportion selecting substantive items across the four item sets.
-
-```{r tbl-voter-procsub}
-#| tbl-cap: "Procedural vs. Substantive Preferences by Voter Status"
-
-voter_proc_sub %>%
-  mutate(
-    procedural = sprintf("%.1f", procedural * 100),
-    substantive = sprintf("%.1f", substantive * 100),
-    proc_sub_diff = sprintf("%+.1f", proc_sub_diff * 100)
-  ) %>%
-  rename(
-    Country = country_name,
-    Status = voter_status,
-    `Procedural (%)` = procedural,
-    `Substantive (%)` = substantive,
-    `Difference (pp)` = proc_sub_diff
-  ) %>%
-  kable(
-    align = c("l", "l", "r", "r", "r"),
-    booktabs = TRUE
-  ) %>%
-  kable_styling(
-    latex_options = c("striped", "hold_position"),
-    font_size = 9
-  ) %>%
-  footnote(
-    general = "Procedural and substantive columns show mean proportion selecting items of each type across the four item sets. Difference is procedural minus substantive; positive values indicate procedural preference.",
-    general_title = "Note:",
-    footnote_as_chunk = TRUE
-  )
-```
-
-The patterns suggest that non-voters do not systematically differ from voters in their procedural-substantive orientation. In most countries, the direction of the difference (whether procedural or substantive items are preferred) is the same for voters and non-voters. The magnitudes differ modestly, with no consistent pattern of non-voters favoring one conception over another. This similarity provides some reassurance that the main analysis, while restricted to voters, may capture patterns that extend to the broader population---though without winner-loser status, the central hypothesis cannot be directly tested among non-voters.
-
-As a further test distinguishing positional updating from stable normative commitments, the analysis interacts loser status with perceived electoral fairness (ABS Q43, dichotomized into fair versus unfair). The logic follows from research on motivated reasoning [@Kunda1990-uw; @Taber2006-kx] and loss aversion [@Kahneman1979-af]: if the loser effect reflects positional updating, it should intensify among losers who perceive elections as unfair---those for whom the procedural threat is most salient. If it instead reflects stable dispositional commitments to procedural democracy, the interaction should be weak: committed proceduralists would prioritize procedures regardless of fairness perceptions. Perceived fairness is itself endogenous to electoral status---losers tend to rate elections as less fair---but the interaction nonetheless provides leverage because it tests for heterogeneity *within* the loser group. The results are consistent with the positional account: among losers who perceive elections as unfair, the shift toward procedural conceptions is larger on average than among losers who perceive elections as fair. The majority of procedural items show a positive interaction, suggesting that the loser effect is amplified by perceived procedural threat rather than reflecting a fixed orientation.
