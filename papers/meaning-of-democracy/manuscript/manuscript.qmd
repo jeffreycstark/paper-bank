@@ -362,10 +362,9 @@ gap_tbl %>%
     font_size = 9
   ) %>%
   footnote(
-    general = "Gap = (Mean Procedural AME) $-$ (Mean Substantive AME), in percentage points, with 95\\% bootstrap CIs. Positive values indicate losers favor procedural items relative to substantive items. Dashes indicate country not surveyed in that wave.",
+    general = "Gap = (Mean Procedural AME) - (Mean Substantive AME), in percentage points, with 95% bootstrap CIs. Positive values indicate losers favor procedural items relative to substantive items. Dashes indicate country not surveyed in that wave.",
     general_title = "Note:",
-    footnote_as_chunk = TRUE,
-    escape = FALSE
+    footnote_as_chunk = TRUE
   )
 ```
 
