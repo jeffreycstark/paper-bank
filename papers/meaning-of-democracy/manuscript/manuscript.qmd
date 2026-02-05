@@ -9,7 +9,7 @@ author:
     corresponding: true
 date: today
 abstract: |
-  How do citizens understand democracy, and does their position within the political order shape that understanding? This article argues that electoral losers---those whose preferred party lost the most recent election---systematically prioritize procedural elements of democracy over substantive outcomes. Using multinomial logit models applied to four waves of Asian Barometer Survey data (2005--2022) across eleven countries, the analysis preserves the full structure of respondents' choices rather than imposing binary classifications, revealing consistent patterns across twenty survey items. Losers are more likely to define democracy in terms of elections, civil liberties, and accountability mechanisms, while winners emphasize economic equality and welfare provision. This "loser effect" is modest in pooled estimates but responds dramatically to political context. In Thailand, the gap between winners' and losers' conceptions widened from near zero to over twenty percentage points as democratic institutions eroded following the 2014 coup. These trajectories suggest that conceptions of democracy are not stable cultural orientations but shift in response to the political stakes of losing.
+  How do citizens understand democracy, and does their position within the political order shape that understanding? This article argues that electoral losers---those whose preferred party lost the most recent election---systematically prioritize procedural elements of democracy over substantive outcomes. Using multinomial logit models applied to four waves of Asian Barometer Survey data (2005--2022) across eleven countries, the analysis preserves the full structure of respondents' choices rather than imposing binary classifications, revealing consistent patterns across twenty survey items. Losers are more likely to define democracy in terms of elections, civil liberties, and accountability mechanisms, while winners emphasize economic equality and welfare provision. This "loser effect" is modest in pooled estimates but responds dramatically to political context. In Thailand, the gap between winners' and losers' conceptions widened from near zero to over twenty percentage points as democratic institutions eroded following the 2014 coup; in South Korea, where a comparable crisis was resolved through constitutional procedures, the gap remained negligible. These contrasting trajectories suggest that conceptions of democracy are not stable cultural orientations but shift in response to the political stakes of losing---and that where democratic erosion is most severe, support for procedural democracy becomes concentrated among those least able to defend it.
 keywords:
   - democracy
   - electoral losers
@@ -103,7 +103,7 @@ In a well-functioning democracy, losing an election is supposed to be tolerable.
 
 This article argues that they do not. Drawing on four waves of Asian Barometer Survey data spanning seventeen years and encompassing more than `r fmt_n(total_n)` voters across `r n_countries` countries, I show that electoral losers systematically prioritize procedural elements of democracy---competitive elections, civil liberties, government accountability---over substantive outcomes such as economic equality or welfare provision. This "loser effect" operates across diverse political contexts, from Japan's consolidated democracy to Cambodia's competitive authoritarian regime.
 
-The more striking finding concerns dynamics. In Thailand, as democratic institutions eroded through successive coups, the gap between how winners and losers conceptualize democracy widened from near zero to over `r round(thai_w6_gap * 100)` percentage points---a shift that cannot be explained by slow-moving cultural change. These trajectories suggest that conceptions of democracy respond to the political stakes of losing: where losing becomes consequential and potentially permanent, losers increasingly define democracy in terms of the procedural protections they lack.
+The more striking finding concerns dynamics. In Thailand, as democratic institutions eroded through successive coups, the gap between how winners and losers conceptualize democracy widened from near zero to over `r round(thai_w6_gap * 100)` percentage points---a shift that cannot be explained by slow-moving cultural change. In South Korea, where a comparable political crisis was resolved through constitutional procedures and genuine alternation followed, the gap remained negligible. These contrasting trajectories suggest that conceptions of democracy respond to the political stakes of losing: where losing becomes consequential and potentially permanent, losers increasingly define democracy in terms of the procedural protections they lack. The resulting dynamic is troubling. Where democratic erosion is most severe, support for procedural democracy becomes concentrated among those whom the political system has rendered least capable of defending it---the citizens who most need free elections and civil liberties are precisely those who have lost the power to demand them.
 
 The analysis makes two contributions. First, it bridges the literatures on democratic conceptions and the winner-loser gap by showing that electoral status shapes not merely how citizens evaluate democracy but how they understand it. Second, it employs multinomial logit models that preserve the full structure of respondents' choices across twenty survey items, avoiding the binary procedural-substantive classifications that prior work has relied upon. This approach allows patterns to emerge from the data rather than from the analyst's coding decisions---a methodological advantage that proves substantively consequential, as the disaggregated results reveal heterogeneity within the procedural category that binary coding would obscure.
 
@@ -323,6 +323,12 @@ thai_w4_pp <- round(thai_w4_gap * 100, 1)
 thai_w6_pp <- round(thai_w6_gap * 100, 1)
 thai_w6_ci <- thai %>% filter(wave == 6)
 
+# South Korea
+kor <- cw_gap %>% filter(country_name == "South Korea") %>% arrange(wave)
+kor_w3_pp <- round(kor %>% filter(wave == 3) %>% pull(proc_sub_gap) * 100, 1)
+kor_w4_pp <- round(kor %>% filter(wave == 4) %>% pull(proc_sub_gap) * 100, 1)
+kor_w6_pp <- round(kor %>% filter(wave == 6) %>% pull(proc_sub_gap) * 100, 1)
+
 # Japan
 jpn <- cw_gap %>% filter(country_name == "Japan") %>% arrange(wave)
 
@@ -330,13 +336,48 @@ jpn <- cw_gap %>% filter(country_name == "Japan") %>% arrange(wave)
 khm <- cw_gap %>% filter(country_name == "Cambodia") %>% arrange(wave)
 ```
 
-Figure 1 plots the procedural-substantive gap---the difference between the mean loser AME on procedural items and on substantive items---for each country across waves. A positive value indicates that losers disproportionately favor procedural conceptions relative to substantive ones. Four trajectories merit discussion.
+Figure 1 plots the procedural--substantive gap---the difference between the mean loser AME on procedural items and on substantive items---for each country across waves. A positive value indicates that losers disproportionately favor procedural conceptions relative to substantive ones. @tbl-country-gaps reports the full set of country-wave estimates; four trajectories merit particular discussion.
 
-**Thailand** provides the most dramatic support for H3. In Wave 3 (2010--2012), during the Democrat Party government of Abhisit Vejjajiva, the procedural-substantive gap was negligible (`r thai_w3_pp` pp, not significant). By Wave 4 (2014--2016), conducted around the time of the May 2014 coup that removed Prime Minister Yingluck Shinawatra, the gap had widened to `r thai_w4_pp` pp ($p < 0.05$). By Wave 6 (2019--2022), after six years of military or military-backed governance, the gap reached `r thai_w6_pp` pp ($p < 0.001$, 95% CI: [`r round(thai_w6_ci$proc_sub_gap_ci_low * 100, 1)`, `r round(thai_w6_ci$proc_sub_gap_ci_high * 100, 1)`]). This trajectory---from zero to over twenty percentage points in a decade---tracks Thailand's democratic erosion with remarkable precision. As coups and judicial interventions repeatedly overturned electoral outcomes, supporters of the excluded Thaksin-aligned faction increasingly defined democracy in procedural terms, while supporters of the military-backed order emphasized substantive outcomes.
+```{r tbl-country-gaps}
+#| tbl-cap: "Procedural--Substantive Gap by Country and Wave"
 
-**Japan** presents the expected baseline: a consolidated democracy where the loser effect remains modest and stable across waves. Losing an election in Japan carries limited consequences---the opposition retains parliamentary voice, civil liberties are secure, and electoral alternation remains credible. Under such conditions, winners and losers have little reason to define democracy differently.
+gap_tbl <- cw_gap %>%
+  mutate(
+    gap_label = sprintf("%+.1f [%+.1f, %+.1f]",
+                        proc_sub_gap * 100,
+                        proc_sub_gap_ci_low * 100,
+                        proc_sub_gap_ci_high * 100)
+  ) %>%
+  select(country_name, wave_label, gap_label) %>%
+  pivot_wider(names_from = wave_label, values_from = gap_label, values_fill = "---") %>%
+  rename(Country = country_name)
 
-**Cambodia** shows a persistently large gap (approximately 13 pp across all three waves) that, notably, did not grow following the dissolution of the main opposition party (CNRP) in 2017. This stability may reflect a ceiling effect---the stakes of losing were already high in Cambodia's competitive authoritarian system---or a compositional shift, as the removal of the opposition party from the political arena may have altered which respondents identified as losers. Full country-wave results for all eleven countries appear in the online appendix.
+gap_tbl %>%
+  kable(
+    align = c("l", rep("c", ncol(gap_tbl) - 1)),
+    booktabs = TRUE
+  ) %>%
+  kable_styling(
+    latex_options = c("striped", "hold_position"),
+    font_size = 9
+  ) %>%
+  footnote(
+    general = "Gap = (Mean Procedural AME) $-$ (Mean Substantive AME), in percentage points, with 95\\% bootstrap CIs. Positive values indicate losers favor procedural items relative to substantive items. Dashes indicate country not surveyed in that wave.",
+    general_title = "Note:",
+    footnote_as_chunk = TRUE,
+    escape = FALSE
+  )
+```
+
+Thailand provides the most dramatic support for H3. In Wave 3 (2010--2012), during the Democrat Party government of Abhisit Vejjajiva, the procedural--substantive gap was negligible (`r thai_w3_pp` pp, not significant). By Wave 4 (2014--2016), conducted around the time of the May 2014 coup that removed Prime Minister Yingluck Shinawatra, the gap had widened to `r thai_w4_pp` pp ($p < 0.05$). By Wave 6 (2019--2022), after six years of military or military-backed governance, the gap reached `r thai_w6_pp` pp ($p < 0.001$, 95% CI: [`r round(thai_w6_ci$proc_sub_gap_ci_low * 100, 1)`, `r round(thai_w6_ci$proc_sub_gap_ci_high * 100, 1)`]). This trajectory---from zero to over twenty percentage points in a decade---tracks Thailand's democratic erosion with remarkable precision. As coups and judicial interventions repeatedly overturned electoral outcomes, supporters of the excluded Thaksin-aligned faction increasingly defined democracy in procedural terms, while supporters of the military-backed order emphasized substantive outcomes.
+
+South Korea presents the mirror image. Despite experiencing its own political upheaval during this period---including the impeachment and removal of President Park Geun-hye in 2016--2017 and the subsequent election of the progressive Moon Jae-in---the procedural--substantive gap remained modest throughout, fluctuating between `r kor_w3_pp` pp in Wave 3 and `r kor_w4_pp` pp in Wave 4, never exceeding five percentage points. The critical difference from Thailand is institutional: South Korea's crisis was resolved through constitutional procedures rather than military intervention. The impeachment demonstrated that accountability mechanisms functioned, and the 2017 election delivered genuine alternation. Under these conditions, the positional logic predicts convergence, and convergence is what the data show. Where losing remains temporary and institutional protections hold, winners and losers have little reason to define democracy differently.
+
+Japan presents the expected baseline for a consolidated democracy: the loser effect remains modest and stable across waves. Losing an election in Japan carries limited consequences---the opposition retains parliamentary voice, civil liberties are secure, and electoral alternation remains credible.
+
+Cambodia shows a persistently large gap (approximately 13 pp across all three waves) that, notably, did not grow following the dissolution of the main opposition party (CNRP) in 2017. This stability may reflect a ceiling effect---the stakes of losing were already high in Cambodia's competitive authoritarian system---or a compositional shift, as the removal of the opposition party from the political arena may have altered which respondents identified as losers.
+
+The remaining countries in @tbl-country-gaps reveal additional heterogeneity. Malaysia shows a large gap that narrows across waves, potentially reflecting the political opening that culminated in the historic 2018 alternation of power. Myanmar's single observation captures a strikingly large gap consistent with the high stakes of its fragile democratic transition. Taiwan's trajectory is distinctive, shifting from a positive gap to a negative one by Wave 6---a reversal that may reflect the unusual dynamics of cross-strait identity politics, where "losing" carries different connotations than in other democracies. The full set of item-level estimates for all country-wave combinations appears in the online appendix (Tables C5--C6).
 
 ## Wave 2 Baseline
 
