@@ -28,6 +28,7 @@ format:
           \usepackage{graphicx}
           \usepackage{amsmath}
           \usepackage{amssymb}
+          \usepackage{tabularx}
           \floatplacement{figure}{H}
           \floatplacement{table}{H}
   html:
