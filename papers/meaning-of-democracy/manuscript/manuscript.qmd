@@ -44,6 +44,9 @@ format:
     toc-depth: 3
     number-sections: true
     theme: cosmo
+  docx:
+    reference-doc: custom-reference.docx
+    number-sections: true
 bibliography: Winners-losers.bib
 csl: chicago-author-date.csl
 execute:
