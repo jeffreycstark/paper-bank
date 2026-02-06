@@ -4,8 +4,9 @@
 # This script:
 # 1. Loads the master harmonized datasets from outputs/
 # 2. Row-binds all waves into a single dataset
-# 3. Zaps haven labels for clean R usage
-# 4. Saves as abs_econdev_authpref.rds
+# 3. Applies known data corrections
+# 4. Zaps haven labels for clean R usage
+# 5. Saves as abs_econdev_authpref.rds
 
 library(here)
 library(dplyr)
@@ -35,14 +36,37 @@ abs_combined <- bind_rows(wave_list)
 cat("  Combined dataset:", format(nrow(abs_combined), big.mark = ","), "rows,",
     ncol(abs_combined), "columns\n")
 
-# Exclude Hong Kong (2) and Singapore (10) from analysis
-cat("\nExcluding Hong Kong and Singapore...\n")
-n_before <- nrow(abs_combined)
-abs_combined <- abs_combined %>%
-  filter(!country %in% c(2, 10))  # 2 = Hong Kong, 10 = Singapore
-cat("  Removed", format(n_before - nrow(abs_combined), big.mark = ","),
-    "rows (HK + SG)\n")
-cat("  Remaining:", format(nrow(abs_combined), big.mark = ","), "rows\n")
+# =============================================================================
+# KNOWN DATA CORRECTION: Vietnam (country=11) Wave 2 & 3 trust scale reversal
+# =============================================================================
+# ABS Vietnam trust items (q24-q26) are coded in the opposite direction from
+# other countries in both W2 and W3.
+#
+# W2: Other countries coded 1=None -> 4=Great deal (identity applied).
+#     Vietnam W2 coded 1=Great deal -> 4=None. Fix: reverse with 5-x.
+#     Evidence: 767/1195 (64%) at value 1 for trust_relatives vs. other
+#     countries clustering at values 3-4.
+#
+# W3: Other countries coded 1=Great deal -> 4=None (safe_reverse_4pt applied).
+#     Vietnam W3 coded 1=None -> 4=Great deal, so the reversal was wrong.
+#     Fix: undo the reversal with 5-x (same operation).
+#     Evidence: After standard reversal, Vietnam W3 mean=1.49 while other
+#     countries mean=3.24 and Vietnam W2/W4/W5/W6 all show means 3.3-3.6.
+# =============================================================================
+cat("\nApplying known data corrections...\n")
+
+for (w in c(2, 3)) {
+  vietnam_w <- abs_combined$country == 11 & abs_combined$wave == w
+  for (v in c("trust_relatives", "trust_neighbors", "trust_acquaintances")) {
+    n_valid <- sum(!is.na(abs_combined[[v]][vietnam_w]))
+    abs_combined[[v]][vietnam_w] <- ifelse(
+      is.na(abs_combined[[v]][vietnam_w]),
+      NA_real_,
+      5 - abs_combined[[v]][vietnam_w]
+    )
+    cat("  Vietnam W", w, " ", v, ": ", n_valid, " obs reversed (5-x)\n", sep = "")
+  }
+}
 
 # Zap haven labels (convert labelled vectors to regular R vectors)
 cat("\nZapping haven labels...\n")
