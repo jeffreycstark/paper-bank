@@ -32,12 +32,17 @@ format:
     toc-depth: 3
     number-sections: true
     theme: cosmo
+  docx:
+    toc: true
+    number-sections: true
+    prefer-html: true
 bibliography: Winners-losers.bib
 csl: chicago-author-date.csl
 execute:
   echo: false
   warning: false
   message: false
+prefer-html: true
 ---
 
 ```{r setup}

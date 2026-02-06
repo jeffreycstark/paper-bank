@@ -199,33 +199,33 @@ tbl <- pooled %>%
   ) %>%
   select(Set, Item, Type, `AME (pp)`, SE, Sig)
 
-tbl %>%
-  kbl(
-    align = c("l", "l", "l", "r", "r", "c"),
-    booktabs = TRUE,
-    longtable = FALSE,
-    linesep = ""
-  ) %>%
-  kable_styling(
-    latex_options = c("striped", "hold_position"),
-    font_size = 10
-  ) %>%
-  column_spec(1, width = "1.2cm") %>%
-  column_spec(2, width = "4.5cm") %>%
-  column_spec(3, width = "2.5cm") %>%
-  column_spec(4, width = "2cm") %>%
-  column_spec(5, width = "1.5cm") %>%
-  column_spec(6, width = "1.2cm") %>%
-  footnote(
-    general = "Average marginal effects from multinomial logit with country and wave fixed effects and demographic controls (age, gender, education, urban residence). Positive values indicate losers are more likely to select the item. Bootstrap standard errors clustered at the country level.",
-    symbol = c("\u2020 p < 0.10, * p < 0.05, ** p < 0.01, *** p < 0.001"),
-    general_title = "Note: ",
-    footnote_as_chunk = TRUE,
-    threeparttable = TRUE
-  )
+if (knitr::is_latex_output()) {
+  tbl %>%
+    kbl(
+      booktabs = TRUE,
+      longtable = FALSE,
+      linesep = ""
+    ) %>%
+    kable_styling(
+      latex_options = c("striped", "hold_position"),
+      font_size = 10
+    ) %>%
+    column_spec(1, width = "1.2cm") %>%
+    column_spec(2, width = "4.5cm") %>%
+    column_spec(3, width = "2.5cm") %>%
+    column_spec(4, width = "2cm") %>%
+    column_spec(5, width = "1.5cm") %>%
+    column_spec(6, width = "1.2cm") %>%
+    footnote(
+      general = "Average marginal effects from multinomial logit with country and wave fixed effects and demographic controls (age, gender, education, urban residence). Positive values indicate losers are more likely to select the item. Bootstrap standard errors clustered at the country level.",
+      symbol = c("† p < 0.10, * p < 0.05, ** p < 0.01, *** p < 0.001"),
+      general_title = "Note:",
+      footnote_as_chunk = TRUE
+    )
+} else {
+  kable(tbl, caption = "Average Marginal Effect of Loser Status on Item Selection")
+}
 ```
-
-\endgroup
 
 ```{r pooled-summary}
 #| include: false
@@ -370,27 +370,30 @@ gap_tbl <- cw_gap %>%
   rename(Country = country_name) %>%
   select(Country, W3, W4, W6)  # Chronological order
 
-gap_tbl %>%
-  kbl(
-    align = c("l", "c", "c", "c"),
-    booktabs = TRUE,
-    longtable = FALSE,
-    linesep = ""
-  ) %>%
-  kable_styling(
-    latex_options = c("striped", "hold_position"),
-    font_size = 10
-  ) %>%
-  column_spec(1, width = "3cm") %>%
-  column_spec(2, width = "3.5cm") %>%
-  column_spec(3, width = "3.5cm") %>%
-  column_spec(4, width = "3.5cm") %>%
-  footnote(
-    general = "Gap = (Mean Procedural AME) - (Mean Substantive AME), in percentage points, with 95% bootstrap CIs. Positive values indicate losers favor procedural items relative to substantive items. Dashes indicate country not surveyed in that wave.",
-    general_title = "Note: ",
-    footnote_as_chunk = TRUE,
-    threeparttable = TRUE
-  )
+if (knitr::is_latex_output()) {
+  gap_tbl %>%
+    kbl(
+      booktabs = TRUE,
+      longtable = FALSE,
+      linesep = ""
+    ) %>%
+    kable_styling(
+      latex_options = c("striped", "hold_position"),
+      font_size = 10
+    ) %>%
+    column_spec(1, width = "3cm") %>%
+    column_spec(2, width = "3.5cm") %>%
+    column_spec(3, width = "3.5cm") %>%
+    column_spec(4, width = "3.5cm") %>%
+    footnote(
+      general = "Gap = (Mean Procedural AME) - (Mean Substantive AME), in percentage points, with 95% bootstrap CIs. Positive values indicate losers favor procedural items relative to substantive items. Dashes indicate country not surveyed in that wave.",
+      general_title = "Note: ",
+      footnote_as_chunk = TRUE,
+      threeparttable = TRUE
+    )
+} else {
+  kable(gap_tbl)
+}
 ```
 
 Thailand provides the most dramatic support for H3. In Wave 3 (2010--2012), during the Democrat Party government of Abhisit Vejjajiva, the procedural--substantive gap was negligible (`r thai_w3_pp` pp, not significant). By Wave 4 (2014--2016), conducted around the time of the May 2014 coup that removed Prime Minister Yingluck Shinawatra, the gap had widened to `r thai_w4_pp` pp ($p < 0.05$). By Wave 6 (2019--2022), after six years of military or military-backed governance, the gap reached `r thai_w6_pp` pp ($p < 0.001$, 95% CI: \[`r round(thai_w6_ci$proc_sub_gap_ci_low * 100, 1)`, `r round(thai_w6_ci$proc_sub_gap_ci_high * 100, 1)`\]). This trajectory---from zero to over twenty percentage points in a decade---tracks Thailand's democratic erosion with remarkable precision. As coups and judicial interventions repeatedly overturned electoral outcomes, supporters of the excluded Thaksin-aligned faction increasingly defined democracy in procedural terms, while supporters of the military-backed order emphasized substantive outcomes.
