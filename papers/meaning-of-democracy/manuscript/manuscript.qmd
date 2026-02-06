@@ -226,7 +226,9 @@ if (knitr::is_latex_output()) {
       footnote_as_chunk = TRUE
     )
 } else {
-  kable(tbl, caption = "Average Marginal Effect of Loser Status on Item Selection")
+  # For DOCX: use pipe format with full column names
+  tbl %>%
+    kable(format = "pipe", align = c("l", "l", "l", "r", "r", "c"))
 }
 ```
 
@@ -395,7 +397,9 @@ if (knitr::is_latex_output()) {
       threeparttable = TRUE
     )
 } else {
-  kable(gap_tbl)
+  # For DOCX: use pipe format
+  gap_tbl %>%
+    kable(format = "pipe", align = c("l", "c", "c", "c"))
 }
 ```
 
