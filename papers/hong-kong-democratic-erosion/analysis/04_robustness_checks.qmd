@@ -461,7 +461,7 @@ trust_boot |>
   print()
 ```
 
-```{r bootstrap-forest-plot}
+```{r}
 #| label: fig-bootstrap-forest
 #| fig-cap: "Stratified bootstrap 95% BCa confidence intervals for Cohen's d (Protest − Post-NSL). Variables where the CI excludes zero are shown in colour."
 #| fig-width: 10
