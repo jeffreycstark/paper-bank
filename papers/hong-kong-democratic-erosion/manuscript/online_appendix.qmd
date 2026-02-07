@@ -50,10 +50,90 @@ library(knitr)
 library(kableExtra)
 ```
 
+```{r load-data}
+#| include: false
+load("../analysis/results/prepared_data.RData")
+load("../analysis/results/descriptive_results.RData")
+load("../analysis/results/robustness_results.RData")
+```
+
 # Variable Definitions and Coding {#sec-variables}
 
 # Supplementary Tables {#sec-tables}
 
 # Supplementary Figures {#sec-figures}
 
+## Age-Stratified Pre/Post NSL Shifts {#sec-age-stratified}
+
+@fig-age-strat-appendix presents the pre/post NSL mean comparison within each age cohort for trust in police, trust in government, democracy suitability, and freedom to organize. If the trust increase were driven entirely by compositional selection --- specifically, by younger, more critical respondents declining to participate in the post-NSL period --- we would expect the shift to appear primarily or exclusively in younger age groups. The figure shows that while the magnitude of change varies across cohorts, the direction of the trust increase is broadly consistent across age groups, which is more consistent with preference falsification operating across the population than with a purely compositional account.
+
+```{r}
+#| label: fig-age-strat-appendix
+#| fig-cap: "Pre/Post NSL mean shifts within age cohorts for key indicators. Error bars show 95% confidence intervals."
+#| fig-width: 12
+#| fig-height: 7
+
+hk5_analysis <- hk5 |>
+  filter(period %in% c("Protest", "Post-NSL")) |>
+  mutate(period = droplevels(period))
+
+age_strat_vars <- c("trust_police", "democracy_suitability",
+                     "trust_national_government", "gov_free_to_organize")
+
+age_strat_labels <- c(
+  trust_police = "Trust in Police",
+  democracy_suitability = "Democracy Suitability",
+  trust_national_government = "Trust in Government",
+  gov_free_to_organize = "Freedom to Organize"
+)
+
+age_strat_data <- hk5_analysis |>
+  filter(!is.na(age_group)) |>
+  pivot_longer(cols = all_of(age_strat_vars), names_to = "variable", values_to = "value") |>
+  filter(!is.na(value)) |>
+  group_by(variable, period, age_group) |>
+  summarise(
+    mean = mean(value),
+    se = sd(value) / sqrt(n()),
+    n = n(),
+    .groups = "drop"
+  ) |>
+  mutate(var_label = age_strat_labels[variable])
+
+ggplot(age_strat_data, aes(x = age_group, y = mean, fill = period)) +
+  geom_col(position = position_dodge(0.8), width = 0.7, alpha = 0.85) +
+  geom_errorbar(aes(ymin = mean - 1.96 * se, ymax = mean + 1.96 * se),
+                position = position_dodge(0.8), width = 0.25) +
+  facet_wrap(~var_label, scales = "free_y", ncol = 2) +
+  scale_fill_manual(values = c("Protest" = "#FF7043", "Post-NSL" = "#5C6BC0")) +
+  labs(x = "Age Cohort", y = "Mean", fill = NULL) +
+  theme_minimal(base_size = 11) +
+  theme(legend.position = "bottom",
+        axis.text.x = element_text(angle = 45, hjust = 1))
+```
+
 # Robustness Checks {#sec-robustness}
+
+## Informal Bounding Analysis {#sec-manski}
+
+A key concern with the trust increase is that compositional selection --- whereby regime critics disproportionately declined to participate in the post-NSL survey --- could entirely account for the observed shift. To assess the plausibility of this account, I conduct an informal bounding exercise in the spirit of @Manski2003-bounds.
+
+The logic is as follows: if we assume that all non-respondents in the post-NSL period would have reported the minimum possible trust score (1 on the 1--4 scale), what proportion of the target population would need to have been "missing critics" for the trust increase to disappear? @tbl-manski-bounds presents the results for trust in police.
+
+```{r}
+#| label: tbl-manski-bounds
+#| tbl-cap: "Worst-case bounding analysis for trust in police. Each row assumes an additional percentage of the post-NSL target population declined to participate and would have reported minimum trust (1 on 1--4 scale)."
+
+if (exists("manski_scenarios")) {
+  manski_scenarios |>
+    mutate(across(c(adjusted_mean), ~round(.x, 3))) |>
+    kable(
+      col.names = c("% Missing Critics", "N Observed", "N Missing (imputed)",
+                     "Adjusted Post-NSL Mean", "Still > Protest Mean?"),
+      booktabs = TRUE
+    ) |>
+    kable_styling(latex_options = c("hold_position"))
+}
+```
+
+The results suggest that the observed trust increase is moderately robust to worst-case selection assumptions. The trust increase persists even under the assumption that a substantial proportion of missing respondents would have reported minimal trust, though it does eventually disappear under extreme non-response scenarios. This exercise does not resolve the ambiguity between preference falsification and compositional selection --- both remain plausible contributors --- but it provides a concrete benchmark for evaluating the magnitude of selection required to explain the full trust shift.
