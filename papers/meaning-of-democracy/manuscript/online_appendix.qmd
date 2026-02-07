@@ -114,6 +114,158 @@ if (!is.null(item_meta)) {
 
 **Note:** Wave 2 employed a single forced-choice item with four response options, while Waves 3, 4, and 6 used four separate item sets (Sets 1--4), each presenting four response options. The W2 instrument differs from the later waves and is analyzed separately.
 
+# Electoral Status Coding {#sec-electoral-status}
+
+This section documents how respondents are classified as electoral winners or losers, the reference elections used for each country-wave, and independent verification of the coding for three countries featured in the trajectory analysis.
+
+## Variable Construction
+
+Electoral status is derived from the ABS vote-choice variable: q34a in Waves 4 and 6, q33a in Wave 3, and q39a in Wave 2. For each country-wave, the ABS research team matches each respondent's self-reported vote choice to the outcome of the most recent national election held prior to fieldwork. Respondents are classified as:
+
+- **Winner** (coded 1): voted for the winning party, elected president, or a coalition partner in the governing coalition.
+- **Loser** (coded 2): voted for any non-governing party.
+
+This binary classification is applied uniformly across all eleven analysis countries. Respondents with missing, refused, or invalid vote-choice responses are excluded from the analysis. The variable `electoral_status` used throughout the paper reflects this binary coding.
+
+## Reference Elections
+
+Table B1 reports the reference election for each country-wave in the analysis, including the election type, date, winning and runner-up parties or candidates, and source. Dashes indicate the country was not surveyed in that wave. Wave 5 is excluded from the analysis because it did not include the relevant democracy conception items.
+
+```{r tbl-reference-elections}
+#| tbl-cap: "Reference Elections by Country and Wave"
+
+ref_elections <- tibble::tribble(
+  ~Country, ~Wave, ~`Election Type`, ~Date, ~Winner, ~`Runner-up`, ~Source,
+  "Japan", "W2", "House of Reps", "Sep 2005", "LDP (Koizumi)", "DPJ", "ABS codebook",
+  "Japan", "W3", "House of Reps", "Aug 2009", "DPJ (Hatoyama)", "LDP", "ABS codebook",
+  "Japan", "W4", "House of Reps", "Dec 2012", "LDP (Abe)", "DPJ", "ABS codebook",
+  "Japan", "W6", "House of Reps", "Oct 2021", "LDP (Kishida)", "CDP", "ABS codebook",
+  "S. Korea", "W3", "Presidential", "Dec 2007", "Lee Myung-bak (GNP)", "Chung Dong-young", "NEC",
+  "S. Korea", "W4", "Presidential", "Dec 2012", "Park Geun-hye (Saenuri)", "Moon Jae-in", "NEC",
+  "S. Korea", "W6", "Presidential", "Mar 2022", "Yoon Suk Yeol (PPP)", "Lee Jae-myung", "NEC",
+  "Mongolia", "W2", "Parliamentary", "Jun 2004", "MPRP", "MDC", "ABS codebook",
+  "Mongolia", "W3", "Parliamentary", "Jun 2008", "MPRP", "DP", "ABS codebook",
+  "Mongolia", "W4", "Parliamentary", "Jun 2012", "DP", "MPP", "ABS codebook",
+  "Philippines", "W2", "Presidential", "May 2004", "Arroyo (Lakas)", "Poe (KNP)", "ABS codebook",
+  "Philippines", "W3", "Presidential", "May 2010", "Aquino III (LP)", "Estrada", "ABS codebook",
+  "Philippines", "W4", "Midterm", "May 2013", "LP coalition", "UNA", "ABS codebook",
+  "Philippines", "W6", "Presidential", "May 2022", "Marcos Jr. (PFP)", "Robredo (LP)", "ABS codebook",
+  "Taiwan", "W2", "Presidential", "Mar 2004", "Chen Shui-bian (DPP)", "Lien Chan (KMT)", "CEC",
+  "Taiwan", "W3", "Presidential", "Mar 2008", "Ma Ying-jeou (KMT)", "Hsieh (DPP)", "CEC",
+  "Taiwan", "W4", "Presidential", "Jan 2012", "Ma Ying-jeou (KMT)", "Tsai Ing-wen (DPP)", "CEC",
+  "Taiwan", "W6", "Presidential", "Jan 2020", "Tsai Ing-wen (DPP)", "Han Kuo-yu (KMT)", "CEC",
+  "Thailand", "W3", "Parliamentary", "Dec 2007", "PPP (pro-Thaksin)", "Democrat Party", "ECT",
+  "Thailand", "W4", "---", "---", "Excluded (2014 coup)", "---", "---",
+  "Thailand", "W6", "Parliamentary", "Mar 2019", "PPRP coalition", "Pheu Thai", "ECT",
+  "Indonesia", "W2", "Presidential", "Sep 2004", "SBY (Democrat)", "Megawati (PDI-P)", "ABS codebook",
+  "Indonesia", "W3", "Presidential", "Jul 2009", "SBY (Democrat)", "Megawati (PDI-P)", "ABS codebook",
+  "Indonesia", "W4", "Presidential", "Jul 2014", "Jokowi (PDI-P)", "Prabowo (Gerindra)", "ABS codebook",
+  "Indonesia", "W6", "Presidential", "Apr 2019", "Jokowi (PDI-P)", "Prabowo (Gerindra)", "ABS codebook",
+  "Cambodia", "W3", "National Assembly", "Jul 2008", "CPP (Hun Sen)", "SRP", "ABS codebook",
+  "Cambodia", "W4", "National Assembly", "Jul 2013", "CPP (Hun Sen)", "CNRP", "ABS codebook",
+  "Cambodia", "W6", "National Assembly", "Jul 2018", "CPP (Hun Sen)", "CNRP dissolved", "ABS codebook",
+  "Malaysia", "W2", "General election", "Mar 2004", "BN (Abdullah)", "PAS/DAP", "ABS codebook",
+  "Malaysia", "W3", "General election", "Mar 2008", "BN (Abdullah)", "PR coalition", "ABS codebook",
+  "Malaysia", "W4", "General election", "May 2013", "BN (Najib)", "PR (Anwar)", "ABS codebook",
+  "Malaysia", "W6", "General election", "Nov 2022", "PH (Anwar)", "PN (Muhyiddin)", "ABS codebook",
+  "Myanmar", "W4", "General election", "Nov 2015", "NLD (Aung San Suu Kyi)", "USDP", "ABS codebook",
+  "Australia", "W4", "Federal election", "Sep 2013", "Coalition (Abbott)", "ALP (Rudd)", "ABS codebook"
+)
+
+if (knitr::is_latex_output()) {
+  ref_elections %>%
+    kbl(booktabs = TRUE, longtable = TRUE, linesep = "") %>%
+    kable_styling(
+      latex_options = c("hold_position", "repeat_header", "scale_down"),
+      font_size = 8
+    ) %>%
+    column_spec(1, width = "2cm") %>%
+    column_spec(2, width = "0.8cm") %>%
+    column_spec(3, width = "2.2cm") %>%
+    column_spec(4, width = "1.5cm") %>%
+    column_spec(5, width = "3.5cm") %>%
+    column_spec(6, width = "3cm") %>%
+    column_spec(7, width = "1.8cm") %>%
+    footnote(
+      general = "Dashes indicate the country was not surveyed in that wave or, for Thailand W4, that no valid reference election existed. Source abbreviations: NEC = National Election Commission of Korea; CEC = Central Election Commission of Taiwan; ECT = Election Commission of Thailand.",
+      general_title = "Note: ",
+      footnote_as_chunk = TRUE,
+      threeparttable = TRUE
+    )
+} else {
+  ref_elections %>%
+    kable(format = "pipe", align = c("l", "c", "l", "l", "l", "l", "l"))
+}
+```
+
+## Independent Verification --- Taiwan, South Korea, Thailand
+
+For the three countries featured in detailed trajectory analysis, the ABS winner/loser coding was independently verified against official election commission data. The verification procedure involved four steps:
+
+1. Raw vote-choice codes were extracted from the ABS microdata (q34/q33/q39 depending on wave).
+2. Wave-specific party crosswalks were constructed, mapping each numeric vote-choice code to the corresponding party name and coalition alignment.
+3. Coalition assignments were matched to official election outcomes to determine winner/loser status.
+4. Results were cross-checked against published data from national election commissions.
+
+Table B2 reports the verification results.
+
+```{r tbl-verification}
+#| tbl-cap: "Independent Verification of Electoral Status Coding"
+
+verification <- tibble::tribble(
+  ~Country, ~Wave, ~Election, ~`Official Winner (%)`, ~`Official Runner-up (%)`, ~`Our Coding`, ~Status,
+  "Taiwan", "W2", "2004 Pres", "Chen (DPP) 50.1%", "Lien (KMT) 49.9%", "pan-green = winner", "Verified",
+  "Taiwan", "W3", "2008 Pres", "Ma (KMT) 58.5%", "Hsieh (DPP) 41.6%", "pan-blue = winner", "Verified",
+  "Taiwan", "W4", "2012 Pres", "Ma (KMT) 51.6%", "Tsai (DPP) 45.6%", "pan-blue = winner", "Verified",
+  "Taiwan", "W6", "2020 Pres", "Tsai (DPP) 57.1%", "Han (KMT) 38.6%", "pan-green = winner", "Verified",
+  "S. Korea", "W3", "2007 Pres", "Lee (GNP) 48.7%", "Chung (UNDP) 26.1%", "conservative = winner", "Verified",
+  "S. Korea", "W4", "2012 Pres", "Park (Saenuri) 51.6%", "Moon (DUP) 48.0%", "conservative = winner", "Verified",
+  "S. Korea", "W6", "2022 Pres", "Yoon (PPP) 48.6%", "Lee (Dem) 47.8%", "conservative = winner", "Verified",
+  "Thailand", "W3", "2007 Parl", "PPP 233 seats", "Democrat 164 seats", "pro-Thaksin = winner", "Verified",
+  "Thailand", "W4", "---", "No valid election", "---", "NA (excluded)", "Verified",
+  "Thailand", "W6", "2019 Parl", "PPRP coalition", "Pheu Thai 136 seats", "pro-military = winner", "Verified"
+)
+
+if (knitr::is_latex_output()) {
+  verification %>%
+    kbl(booktabs = TRUE, linesep = "") %>%
+    kable_styling(
+      latex_options = c("hold_position", "scale_down"),
+      font_size = 9
+    ) %>%
+    column_spec(1, width = "1.5cm") %>%
+    column_spec(2, width = "0.8cm") %>%
+    column_spec(3, width = "1.8cm") %>%
+    column_spec(4, width = "2.8cm") %>%
+    column_spec(5, width = "2.8cm") %>%
+    column_spec(6, width = "3cm") %>%
+    column_spec(7, width = "1.2cm") %>%
+    footnote(
+      general = "Sources: Central Election Commission of Taiwan [@CEC2004; @CEC2008; @CEC2016]; National Election Commission of Korea [@NEC2008; @NEC2012; @NEC2020]; Election Commission of Thailand [@ECT2007; @ECT2019]; IFES Election Guide [@IFES_ElectionGuide].",
+      general_title = "Note: ",
+      footnote_as_chunk = TRUE,
+      threeparttable = TRUE
+    )
+} else {
+  verification %>%
+    kable(format = "pipe", align = c("l", "c", "l", "l", "l", "l", "c"))
+}
+```
+
+Two features of the party coding merit additional comment:
+
+**Party code instability in South Korea.** South Korea's frequent party reorganizations mean that the same numeric vote-choice code in the ABS microdata can represent different parties across waves. For example, code 301 corresponds to the progressive Uri Party in Waves 2--3, the conservative Saenuri Party in Wave 4, and the progressive Democratic Party in Waves 5--6. Wave-specific crosswalks were constructed to ensure correct coalition assignment despite this instability.
+
+**Party lineage in Thailand.** Pro-Thaksin parties underwent successive dissolutions by court order---Thai Rak Thai (dissolved 2007), People's Power Party (dissolved 2008), and the successor Pheu Thai Party. The crosswalk tracks party lineage rather than party name, assigning all pro-Thaksin successor parties to the same coalition alignment across waves.
+
+## Special Cases
+
+**Thailand Wave 4 (fieldwork August--October 2014).** Thailand's February 2, 2014 general election was annulled by the Constitutional Court on March 21, 2014, and the military seized power in a coup on May 22, 2014---before ABS fieldwork began. With no valid prior election to reference, all Thailand Wave 4 respondents are coded as missing for electoral status and excluded from the winner-loser analysis.
+
+**Thailand Wave 6 --- government formation.** In the March 2019 election, Pheu Thai won the most seats (136) but Palang Pracharath (PPRP, 116 seats) formed the governing coalition with allied parties and the support of the military-appointed Senate. Respondents are coded as winners or losers based on government formation rather than seat plurality, consistent with the standard practice of defining winners by who governs [@ECT2019].
+
+**Cambodia Wave 6.** The Cambodia National Rescue Party (CNRP) was dissolved by court order in November 2017, before the July 2018 election. The CPP ran effectively unopposed. Respondents who reported voting for minor parties are coded as losers, though the meaningful opposition had been eliminated.
+
 # Sample Composition {#sec-sample}
 
 ## Sample Size by Country and Wave
@@ -631,7 +783,7 @@ if (!is.null(pooled_results)) {
 
 Because the analysis conditions on reported vote choice to assign electoral status, non-voters are excluded by design. This section assesses the scope and consequences of this exclusion.
 
-Table F1 reports non-voter rates by country and wave for the eleven countries in the analysis sample. In most country-waves, non-voter rates fall between 8 and 25 percent, consistent with the moderately high turnout typical of Asian democracies. Rates are lowest in Thailand, where they never exceeded 10 percent, and highest in select waves of Malaysia, Myanmar, and Mongolia.
+Table G1 reports non-voter rates by country and wave for the eleven countries in the analysis sample. In most country-waves, non-voter rates fall between 8 and 25 percent, consistent with the moderately high turnout typical of Asian democracies. Rates are lowest in Thailand, where they never exceeded 10 percent, and highest in select waves of Malaysia, Myanmar, and Mongolia.
 
 ```{r tbl-F1-nonvoter-rates}
 #| tbl-cap: "Non-Voter Rates by Country and Wave"
@@ -645,7 +797,7 @@ kbl(rates, booktabs = TRUE, align = c("l", rep("r", ncol(rates) - 1))) %>%
   kable_styling(latex_options = c("hold_position", "scale_down"))
 ```
 
-A more direct test examines whether non-voters' democratic conceptions systematically resemble those of winners or losers. Table F2 reports the procedural-substantive gap across three groups: winners, losers, and non-voters. Non-voters' gap (14.3 percentage points, 95% CI: 12.7--15.8) is virtually identical to that of winners (13.9 pp, 95% CI: 13.2--14.7) and clearly below that of losers (17.3 pp, 95% CI: 16.3--18.3).
+A more direct test examines whether non-voters' democratic conceptions systematically resemble those of winners or losers. Table G2 reports the procedural-substantive gap across three groups: winners, losers, and non-voters. Non-voters' gap (14.3 percentage points, 95% CI: 12.7--15.8) is virtually identical to that of winners (13.9 pp, 95% CI: 13.2--14.7) and clearly below that of losers (17.3 pp, 95% CI: 16.3--18.3).
 
 ```{r tbl-F2-procsub-gap}
 #| tbl-cap: "Procedural-Substantive Gap by Electoral Status Group"
@@ -659,7 +811,7 @@ kbl(procsub, booktabs = TRUE, digits = 3) %>%
   kable_styling(latex_options = c("hold_position"))
 ```
 
-Table F3 disaggregates these patterns by item set.
+Table G3 disaggregates these patterns by item set.
 
 ```{r tbl-F3-item-proportions}
 #| tbl-cap: "Item Choice Proportions by Electoral Status Group"
@@ -675,7 +827,7 @@ kbl(three_group, booktabs = TRUE, digits = 3) %>%
 
 **Note:** L - W = Loser minus Winner; NV - W = Non-voter minus Winner. Positive values on procedural items indicate greater procedural orientation relative to winners.
 
-Table F4 reports pairwise chi-square tests confirming that non-voters differ more from losers than from winners across all item sets (Cramér's V for the loser--non-voter comparison ranges from 0.020 to 0.052, consistently exceeding the winner--non-voter comparison of 0.021 to 0.038).
+Table G4 reports pairwise chi-square tests confirming that non-voters differ more from losers than from winners across all item sets (Cramér's V for the loser--non-voter comparison ranges from 0.020 to 0.052, consistently exceeding the winner--non-voter comparison of 0.021 to 0.038).
 
 ```{r tbl-F4-pairwise-tests}
 #| tbl-cap: "Pairwise Chi-Square Tests and Effect Sizes"
