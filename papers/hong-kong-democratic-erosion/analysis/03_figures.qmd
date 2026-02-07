@@ -39,7 +39,7 @@ focus_shapes <- c(
 # Load Prepared Data
 
 ```{r load-data}
-load("tables/prepared_data.RData")
+load("results/prepared_data.RData")
 ```
 
 # Helper: Build Trajectory Data

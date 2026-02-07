@@ -1,5 +1,6 @@
 ---
 title: "04 - Robustness Checks"
+subtitle: "Mann-Whitney U Tests, Demographic Balance, and Stratified Bootstrap"
 format: html
 execute:
   echo: true
@@ -10,13 +11,486 @@ execute:
 
 ```{r setup}
 library(tidyverse)
+library(knitr)
+library(kableExtra)
+library(boot)
 ```
 
-# Load Data
+# Load Prepared Data
 
 ```{r load-data}
-d <- readRDS("../../data/processed/abs_econdev_authpref.rds")
-hk <- d |> filter(country == 2)
+load("results/prepared_data.RData")
+
+# Analytical sample: Protest vs Post-NSL only
+hk5_analysis <- hk5 |>
+  filter(period %in% c("Protest", "Post-NSL")) |>
+  mutate(period = droplevels(period))
+
+cat("Protest:", sum(hk5_analysis$period == "Protest"),
+    "| Post-NSL:", sum(hk5_analysis$period == "Post-NSL"), "\n")
 ```
 
-# Robustness Checks
+# 1. Mann-Whitney U Tests
+
+Cross-validate the parametric t-tests with non-parametric Wilcoxon rank-sum
+(Mann-Whitney U) tests. This guards against violations of normality assumptions,
+which are plausible given that many trust indicators are measured on short
+ordinal scales (1–4).
+
+```{r mann-whitney}
+# Variables used in the main NSL comparison
+nsl_vars <- c(
+  # Democratic evaluation
+  "democracy_suitability", "dem_extent_current", "dem_country_present_govt",
+  # Democratic commitment
+  "dem_always_preferable", "democracy_satisfaction",
+  # Institutional trust
+  "trust_national_government", "trust_president", "trust_parliament",
+  "trust_police", "trust_military", "trust_courts",
+  # Governance perceptions
+  "gov_free_to_organize", "dem_free_speech", "govt_responds_people",
+  "election_free_fair",
+  # System support
+  "system_deserves_support", "system_proud", "system_needs_change",
+  # Authoritarian alternatives
+  "strongman_rule", "military_rule", "single_party_rule"
+)
+nsl_vars <- nsl_vars[nsl_vars %in% names(hk5_analysis)]
+
+# Run both t-tests and Mann-Whitney U for each variable
+mw_results <- map_dfr(nsl_vars, function(var) {
+  protest <- hk5_analysis |> filter(period == "Protest") |> pull(!!sym(var)) |> na.omit()
+  postnsl <- hk5_analysis |> filter(period == "Post-NSL") |> pull(!!sym(var)) |> na.omit()
+
+  if (length(protest) < 10 | length(postnsl) < 10) return(NULL)
+
+  # Parametric t-test
+  tt <- t.test(protest, postnsl)
+
+  # Non-parametric Mann-Whitney U
+  wt <- wilcox.test(protest, postnsl, exact = FALSE)
+
+  # Cohen's d
+  pooled_sd <- sqrt(((length(protest) - 1) * sd(protest)^2 +
+                       (length(postnsl) - 1) * sd(postnsl)^2) /
+                      (length(protest) + length(postnsl) - 2))
+  d <- (mean(protest) - mean(postnsl)) / pooled_sd
+
+  tibble(
+    variable = var,
+    protest_mean = mean(protest),
+    postnsl_mean = mean(postnsl),
+    cohens_d = d,
+    t_stat = tt$statistic,
+    t_p = tt$p.value,
+    t_sig = case_when(tt$p.value < 0.001 ~ "***",
+                      tt$p.value < 0.01  ~ "**",
+                      tt$p.value < 0.05  ~ "*",
+                      TRUE ~ ""),
+    mw_stat = wt$statistic,
+    mw_p = wt$p.value,
+    mw_sig = case_when(wt$p.value < 0.001 ~ "***",
+                       wt$p.value < 0.01  ~ "**",
+                       wt$p.value < 0.05  ~ "*",
+                       TRUE ~ ""),
+    agree = (t_sig == mw_sig) | (tt$p.value < 0.05 & wt$p.value < 0.05)
+  )
+})
+
+mw_results |>
+  select(variable, cohens_d, t_p, t_sig, mw_p, mw_sig, agree) |>
+  mutate(across(c(cohens_d), ~round(.x, 3)),
+         t_p = format.pval(t_p, digits = 3),
+         mw_p = format.pval(mw_p, digits = 3)) |>
+  kable(
+    col.names = c("Variable", "Cohen's d", "t p-value", "", "MW p-value", "", "Agree?"),
+    caption = "Parametric (t-test) vs Non-parametric (Mann-Whitney U) comparison",
+    booktabs = TRUE
+  ) |>
+  kable_styling(latex_options = c("scale_down", "hold_position"))
+```
+
+```{r mw-summary}
+n_vars <- nrow(mw_results)
+n_agree <- sum(mw_results$agree)
+cat("Agreement between t-test and Mann-Whitney U:", n_agree, "of", n_vars, "variables",
+    paste0("(", round(100 * n_agree / n_vars, 1), "%)\n"))
+
+# Flag any variables where conclusions diverge
+divergent <- mw_results |> filter(!agree)
+if (nrow(divergent) > 0) {
+  cat("\nDivergent results:\n")
+  print(divergent |> select(variable, cohens_d, t_p, mw_p))
+} else {
+  cat("No divergent results: parametric and non-parametric tests yield consistent conclusions.\n")
+}
+```
+
+
+# 2. Demographic Balance Across Periods
+
+Assess whether compositional selection drives the observed attitudinal shifts
+by comparing the demographic profile of the Protest and Post-NSL sub-samples.
+
+```{r demographic-balance}
+# --- Age ---
+age_balance <- hk5_analysis |>
+  filter(!is.na(age)) |>
+  group_by(period) |>
+  summarise(
+    mean_age = mean(age, na.rm = TRUE),
+    sd_age = sd(age, na.rm = TRUE),
+    n = n(),
+    .groups = "drop"
+  )
+
+age_test <- t.test(age ~ period, data = hk5_analysis)
+age_mw <- wilcox.test(age ~ period, data = hk5_analysis, exact = FALSE)
+
+cat("=== Age ===\n")
+print(age_balance)
+cat("t-test p =", format.pval(age_test$p.value, digits = 3),
+    "| MW p =", format.pval(age_mw$p.value, digits = 3), "\n\n")
+
+# --- Age group distribution ---
+age_group_table <- hk5_analysis |>
+  filter(!is.na(age_group)) |>
+  count(period, age_group) |>
+  group_by(period) |>
+  mutate(prop = n / sum(n)) |>
+  ungroup()
+
+age_chi <- chisq.test(table(hk5_analysis$period, hk5_analysis$age_group))
+
+cat("=== Age Group Distribution ===\n")
+age_group_table |>
+  select(-n) |>
+  pivot_wider(names_from = period, values_from = prop) |>
+  mutate(across(where(is.numeric), ~round(.x, 3))) |>
+  kable(caption = "Age group proportions by period") |>
+  print()
+cat("Chi-squared p =", format.pval(age_chi$p.value, digits = 3), "\n\n")
+
+# --- Gender ---
+if ("female" %in% names(hk5_analysis)) {
+  gender_table <- hk5_analysis |>
+    filter(!is.na(female)) |>
+    count(period, female) |>
+    group_by(period) |>
+    mutate(prop = n / sum(n)) |>
+    ungroup()
+
+  gender_chi <- chisq.test(table(hk5_analysis$period, hk5_analysis$female))
+
+  cat("=== Gender ===\n")
+  gender_table |>
+    select(-n) |>
+    pivot_wider(names_from = period, values_from = prop) |>
+    mutate(across(where(is.numeric), ~round(.x, 3))) |>
+    kable(caption = "Gender proportions by period") |>
+    print()
+  cat("Chi-squared p =", format.pval(gender_chi$p.value, digits = 3), "\n\n")
+} else if ("gender" %in% names(hk5_analysis)) {
+  gender_table <- hk5_analysis |>
+    filter(!is.na(gender)) |>
+    count(period, gender) |>
+    group_by(period) |>
+    mutate(prop = n / sum(n)) |>
+    ungroup()
+
+  gender_chi <- chisq.test(table(hk5_analysis$period, hk5_analysis$gender))
+
+  cat("=== Gender ===\n")
+  gender_table |>
+    select(-n) |>
+    pivot_wider(names_from = period, values_from = prop) |>
+    mutate(across(where(is.numeric), ~round(.x, 3))) |>
+    kable(caption = "Gender proportions by period") |>
+    print()
+  cat("Chi-squared p =", format.pval(gender_chi$p.value, digits = 3), "\n\n")
+}
+
+# --- Education ---
+if ("education" %in% names(hk5_analysis)) {
+  edu_balance <- hk5_analysis |>
+    filter(!is.na(education)) |>
+    group_by(period) |>
+    summarise(
+      mean_edu = mean(education, na.rm = TRUE),
+      sd_edu = sd(education, na.rm = TRUE),
+      n = n(),
+      .groups = "drop"
+    )
+
+  edu_test <- t.test(education ~ period, data = hk5_analysis)
+  edu_mw <- wilcox.test(education ~ period, data = hk5_analysis, exact = FALSE)
+
+  cat("=== Education ===\n")
+  print(edu_balance)
+  cat("t-test p =", format.pval(edu_test$p.value, digits = 3),
+      "| MW p =", format.pval(edu_mw$p.value, digits = 3), "\n\n")
+}
+```
+
+```{r balance-summary-table}
+# Compile a clean balance table for manuscript appendix
+balance_rows <- list()
+
+# Age (continuous)
+balance_rows$age <- tibble(
+  covariate = "Age (mean)",
+  protest = age_balance$mean_age[age_balance$period == "Protest"],
+  postnsl = age_balance$mean_age[age_balance$period == "Post-NSL"],
+  test = "t-test",
+  p_value = age_test$p.value
+)
+
+# Gender (if available)
+if ("female" %in% names(hk5_analysis)) {
+  fem_prop <- hk5_analysis |>
+    filter(!is.na(female)) |>
+    group_by(period) |>
+    summarise(prop_female = mean(female, na.rm = TRUE), .groups = "drop")
+  balance_rows$gender <- tibble(
+    covariate = "Female (%)",
+    protest = fem_prop$prop_female[fem_prop$period == "Protest"] * 100,
+    postnsl = fem_prop$prop_female[fem_prop$period == "Post-NSL"] * 100,
+    test = "Chi-squared",
+    p_value = gender_chi$p.value
+  )
+} else if ("gender" %in% names(hk5_analysis)) {
+  # Adapt if gender is coded differently
+  gender_summary <- hk5_analysis |>
+    filter(!is.na(gender)) |>
+    group_by(period) |>
+    summarise(modal_gender = names(sort(table(gender), decreasing = TRUE))[1],
+              .groups = "drop")
+  balance_rows$gender <- tibble(
+    covariate = "Gender distribution",
+    protest = NA_real_,
+    postnsl = NA_real_,
+    test = "Chi-squared",
+    p_value = gender_chi$p.value
+  )
+}
+
+# Education (if continuous)
+if ("education" %in% names(hk5_analysis)) {
+  balance_rows$edu <- tibble(
+    covariate = "Education (mean)",
+    protest = edu_balance$mean_edu[edu_balance$period == "Protest"],
+    postnsl = edu_balance$mean_edu[edu_balance$period == "Post-NSL"],
+    test = "t-test",
+    p_value = edu_test$p.value
+  )
+}
+
+# Age group distribution
+balance_rows$age_group <- tibble(
+  covariate = "Age group distribution",
+  protest = NA_real_,
+  postnsl = NA_real_,
+  test = "Chi-squared",
+  p_value = age_chi$p.value
+)
+
+balance_table <- bind_rows(balance_rows) |>
+  mutate(
+    across(c(protest, postnsl), ~round(.x, 2)),
+    p_value = format.pval(p_value, digits = 3),
+    sig = case_when(
+      as.numeric(gsub("<", "", p_value)) < 0.001 ~ "***",
+      as.numeric(gsub("<", "", p_value)) < 0.01  ~ "**",
+      as.numeric(gsub("<", "", p_value)) < 0.05  ~ "*",
+      TRUE ~ ""
+    )
+  )
+
+balance_table |>
+  kable(
+    col.names = c("Covariate", "Protest", "Post-NSL", "Test", "p-value", ""),
+    caption = "Demographic balance across fieldwork periods",
+    booktabs = TRUE
+  ) |>
+  kable_styling(latex_options = c("hold_position"))
+```
+
+
+# 3. Stratified Percentile Bootstrap
+
+Resample independently within each period to preserve the quasi-experimental
+structure. Report BCa 95% confidence intervals for the mean difference
+(Protest − Post-NSL) and Cohen's d for each variable.
+
+```{r bootstrap}
+set.seed(42)
+n_boot <- 5000
+
+# Function to compute mean difference for a single variable
+boot_mean_diff <- function(data, indices, var, period_var = "period") {
+  boot_data <- data[indices, ]
+  protest_mean <- mean(boot_data[[var]][boot_data[[period_var]] == "Protest"], na.rm = TRUE)
+  postnsl_mean <- mean(boot_data[[var]][boot_data[[period_var]] == "Post-NSL"], na.rm = TRUE)
+  protest_mean - postnsl_mean
+}
+
+# Function to compute Cohen's d
+boot_cohens_d <- function(data, indices, var, period_var = "period") {
+  boot_data <- data[indices, ]
+  protest <- boot_data[[var]][boot_data[[period_var]] == "Protest"]
+  postnsl <- boot_data[[var]][boot_data[[period_var]] == "Post-NSL"]
+  protest <- protest[!is.na(protest)]
+  postnsl <- postnsl[!is.na(postnsl)]
+
+  if (length(protest) < 5 | length(postnsl) < 5) return(NA_real_)
+
+  pooled_sd <- sqrt(((length(protest) - 1) * sd(protest)^2 +
+                       (length(postnsl) - 1) * sd(postnsl)^2) /
+                      (length(protest) + length(postnsl) - 2))
+  if (pooled_sd == 0) return(NA_real_)
+  (mean(protest) - mean(postnsl)) / pooled_sd
+}
+
+# Stratified bootstrap: resample within each period independently
+boot_stratified <- function(var, data = hk5_analysis, R = n_boot) {
+  # Check sufficient data
+  protest_vals <- data |> filter(period == "Protest") |> pull(!!sym(var)) |> na.omit()
+  postnsl_vals <- data |> filter(period == "Post-NSL") |> pull(!!sym(var)) |> na.omit()
+
+  if (length(protest_vals) < 10 | length(postnsl_vals) < 10) return(NULL)
+
+  # Use boot with strata argument for stratified resampling
+  boot_diff <- boot(
+    data = data |> filter(!is.na(!!sym(var))),
+    statistic = boot_mean_diff,
+    R = R,
+    strata = data |> filter(!is.na(!!sym(var))) |> pull(period) |> as.integer(),
+    var = var
+  )
+
+  boot_d <- boot(
+    data = data |> filter(!is.na(!!sym(var))),
+    statistic = boot_cohens_d,
+    R = R,
+    strata = data |> filter(!is.na(!!sym(var))) |> pull(period) |> as.integer(),
+    var = var
+  )
+
+  # BCa confidence intervals
+  ci_diff <- tryCatch(
+    boot.ci(boot_diff, type = "bca", conf = 0.95),
+    error = function(e) {
+      # Fall back to percentile if BCa fails
+      boot.ci(boot_diff, type = "perc", conf = 0.95)
+    }
+  )
+
+  ci_d <- tryCatch(
+    boot.ci(boot_d, type = "bca", conf = 0.95),
+    error = function(e) {
+      boot.ci(boot_d, type = "perc", conf = 0.95)
+    }
+  )
+
+  # Extract CI bounds
+  if (!is.null(ci_diff$bca)) {
+    diff_lo <- ci_diff$bca[4]
+    diff_hi <- ci_diff$bca[5]
+    ci_type <- "BCa"
+  } else if (!is.null(ci_diff$percent)) {
+    diff_lo <- ci_diff$percent[4]
+    diff_hi <- ci_diff$percent[5]
+    ci_type <- "Percentile"
+  } else {
+    diff_lo <- NA; diff_hi <- NA; ci_type <- "Failed"
+  }
+
+  if (!is.null(ci_d$bca)) {
+    d_lo <- ci_d$bca[4]
+    d_hi <- ci_d$bca[5]
+  } else if (!is.null(ci_d$percent)) {
+    d_lo <- ci_d$percent[4]
+    d_hi <- ci_d$percent[5]
+  } else {
+    d_lo <- NA; d_hi <- NA
+  }
+
+  tibble(
+    variable = var,
+    observed_diff = boot_diff$t0,
+    boot_diff_lo = diff_lo,
+    boot_diff_hi = diff_hi,
+    observed_d = boot_d$t0,
+    boot_d_lo = d_lo,
+    boot_d_hi = d_hi,
+    ci_type = ci_type,
+    # Does the CI for the difference exclude zero?
+    sig_boot = !(diff_lo <= 0 & diff_hi >= 0)
+  )
+}
+
+# Run bootstrap for all NSL comparison variables
+boot_results <- map_dfr(nsl_vars, boot_stratified, .progress = TRUE)
+```
+
+```{r bootstrap-table}
+boot_results |>
+  mutate(across(where(is.numeric), ~round(.x, 3))) |>
+  kable(
+    col.names = c("Variable", "Obs. Diff", "Diff CI Lo", "Diff CI Hi",
+                   "Obs. d", "d CI Lo", "d CI Hi", "CI Type", "Sig?"),
+    caption = "Stratified bootstrap results (5,000 iterations): BCa 95% confidence intervals",
+    booktabs = TRUE
+  ) |>
+  kable_styling(latex_options = c("scale_down", "hold_position"))
+```
+
+```{r bootstrap-summary}
+n_sig <- sum(boot_results$sig_boot, na.rm = TRUE)
+n_total <- nrow(boot_results)
+cat("Bootstrap significance:", n_sig, "of", n_total, "variables have CIs excluding zero",
+    paste0("(", round(100 * n_sig / n_total, 1), "%)\n"))
+
+# Highlight trust variables specifically
+trust_boot <- boot_results |>
+  filter(str_detect(variable, "trust"))
+cat("\nTrust variable bootstrap CIs:\n")
+trust_boot |>
+  select(variable, observed_d, boot_d_lo, boot_d_hi, sig_boot) |>
+  mutate(across(where(is.numeric), ~round(.x, 3))) |>
+  print()
+```
+
+```{r bootstrap-forest-plot}
+#| label: fig-bootstrap-forest
+#| fig-cap: "Stratified bootstrap 95% BCa confidence intervals for Cohen's d (Protest − Post-NSL). Variables where the CI excludes zero are shown in colour."
+#| fig-width: 10
+#| fig-height: 8
+
+boot_results |>
+  mutate(
+    variable = str_replace_all(variable, "_", " ") |> str_to_title(),
+    sig_label = ifelse(sig_boot, "Significant", "Not significant")
+  ) |>
+  ggplot(aes(x = observed_d, y = reorder(variable, observed_d), color = sig_label)) +
+  geom_vline(xintercept = 0, linetype = "dashed", color = "grey50") +
+  geom_point(size = 3) +
+  geom_errorbarh(aes(xmin = boot_d_lo, xmax = boot_d_hi), height = 0.25) +
+  scale_color_manual(values = c("Significant" = "#E53935", "Not significant" = "#9E9E9E")) +
+  labs(
+    x = "Cohen's d (Protest − Post-NSL)",
+    y = NULL,
+    color = NULL
+  ) +
+  theme_minimal(base_size = 11) +
+  theme(legend.position = "bottom")
+```
+
+
+# 4. Save Results
+
+```{r save-robustness}
+save(mw_results, balance_table, boot_results,
+     file = "results/robustness_results.RData")
+cat("Robustness results saved to results/robustness_results.RData\n")
+```

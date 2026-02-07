@@ -39,6 +39,6 @@ analysis code is in `analysis/01_descriptive_analysis.qmd` and
 
 ## Literature Gap
 
-Brill (2023) analyzed the Umbrella Movement's impact using ABS W3–W4 and
+Blenkitni (2023) analyzed the Umbrella Movement's impact using ABS W3–W4 and
 explicitly called for W5 analysis. No published cross-national study has used
 ABS W5 to examine HK's post-2019 democratic erosion in comparative context.

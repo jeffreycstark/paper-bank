@@ -157,5 +157,5 @@ d_focus |>
 save(d, hk, hk5, key_vars, dem_vars, trust_vars, efficacy_vars,
      gov_vars, rights_vars, auth_vars, system_vars,
      country_labels, focus_countries,
-     file = "tables/prepared_data.RData")
+     file = "results/prepared_data.RData")
 ```

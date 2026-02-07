@@ -16,7 +16,7 @@ library(knitr)
 # Load Prepared Data
 
 ```{r load-data}
-load("tables/prepared_data.RData")
+load("results/prepared_data.RData")
 ```
 
 # 1. Cross-National Trajectories (Waves 1–5)
@@ -279,5 +279,5 @@ kable(flipped |> mutate(r = round(r, 3)),
 ```{r save-tables}
 save(nsl_tests, age_display, z_display, w4w5_deltas, flipped,
      age_nsl, nsl_comparison, trajectories,
-     file = "tables/descriptive_results.RData")
+     file = "results/descriptive_results.RData")
 ```

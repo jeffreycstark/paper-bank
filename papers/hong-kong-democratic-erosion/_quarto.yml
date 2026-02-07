@@ -2,13 +2,6 @@ project:
   type: default
   output-dir: _output
 
-# Paper metadata
-title: "Hong Kong Democratic Erosion"
-author:
-  - name: Jeffrey Stark
-    affiliation: Yonsei University
-    email: jeffrey.stark@yonsei.ac.kr
-
 # Global execute options
 execute:
   warning: false
