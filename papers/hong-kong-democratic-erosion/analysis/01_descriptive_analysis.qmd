@@ -1,0 +1,283 @@
+---
+title: "01 - Descriptive Analysis"
+format: html
+execute:
+  echo: true
+  warning: false
+  message: false
+  cache: true
+---
+
+```{r setup}
+library(tidyverse)
+library(knitr)
+```
+
+# Load Prepared Data
+
+```{r load-data}
+load("tables/prepared_data.RData")
+```
+
+# 1. Cross-National Trajectories (Waves 1–5)
+
+Mean values by country and wave for key variables. Focus: HK vs Taiwan vs Singapore vs regional mean.
+
+```{r trajectory-table}
+trajectory_vars <- c(
+  "dem_always_preferable", "democracy_satisfaction", "democracy_suitability",
+  "dem_extent_current", "dem_country_present_govt",
+  "trust_national_government", "trust_president", "trust_parliament",
+  "trust_police", "trust_courts",
+  "efficacy_ability_participate", "political_interest", "pol_discuss",
+  "gov_free_to_organize", "dem_free_speech", "govt_responds_people",
+  "election_free_fair", "system_needs_change", "system_proud",
+  "system_deserves_support", "nat_willing_emigrate"
+)
+trajectory_vars <- trajectory_vars[trajectory_vars %in% names(d)]
+
+# Focus country means
+focus_means <- d |>
+  filter(country_name %in% focus_countries) |>
+  group_by(country_name, wave) |>
+  summarise(across(all_of(trajectory_vars), ~mean(.x, na.rm = TRUE)),
+            .groups = "drop")
+
+# Regional mean (excluding focus countries)
+regional_means <- d |>
+  filter(!country_name %in% focus_countries) |>
+  group_by(wave) |>
+  summarise(across(all_of(trajectory_vars), ~mean(.x, na.rm = TRUE)),
+            .groups = "drop") |>
+  mutate(country_name = "Regional mean")
+
+trajectories <- bind_rows(focus_means, regional_means)
+
+# Display for each variable
+for (var in trajectory_vars) {
+  cat("\n###", var, "\n\n")
+  tbl <- trajectories |>
+    select(country_name, wave, !!sym(var)) |>
+    pivot_wider(names_from = wave, values_from = !!sym(var), names_prefix = "W") |>
+    mutate(across(where(is.numeric), ~round(.x, 3)))
+  print(kable(tbl))
+  cat("\n")
+}
+```
+
+# 2. W4→W5 Change Comparison
+
+```{r w4w5-change}
+compare_countries <- c("Hong Kong", "Taiwan", "Singapore", "South Korea", "Japan")
+
+w4w5 <- d |>
+  filter(country_name %in% compare_countries, wave %in% c(4, 5)) |>
+  group_by(country_name, wave) |>
+  summarise(across(all_of(trajectory_vars), ~mean(.x, na.rm = TRUE)),
+            .groups = "drop") |>
+  pivot_wider(names_from = wave, values_from = all_of(trajectory_vars),
+              names_sep = "_W")
+
+# Calculate deltas
+change_vars <- c("democracy_suitability", "trust_police", "trust_president",
+                 "gov_free_to_organize", "dem_free_speech", "system_needs_change",
+                 "dem_always_preferable", "democracy_satisfaction")
+change_vars <- change_vars[change_vars %in% names(d)]
+
+w4w5_deltas <- d |>
+  filter(country_name %in% compare_countries, wave %in% c(4, 5)) |>
+  group_by(country_name, wave) |>
+  summarise(across(all_of(change_vars), ~mean(.x, na.rm = TRUE)),
+            .groups = "drop") |>
+  pivot_longer(cols = all_of(change_vars), names_to = "variable", values_to = "value") |>
+  pivot_wider(names_from = wave, values_from = value, names_prefix = "W") |>
+  mutate(delta = W5 - W4) |>
+  select(country_name, variable, delta) |>
+  pivot_wider(names_from = country_name, values_from = delta)
+
+kable(w4w5_deltas, digits = 3,
+      caption = "W4→W5 change by country (positive = increase)")
+```
+
+# 3. Cross-National Z-Scores (Wave 5)
+
+```{r zscore-matrix}
+w5 <- d |> filter(wave == 5)
+
+zscore_vars <- c(
+  "democracy_suitability", "dem_extent_current", "dem_always_preferable",
+  "trust_president", "trust_police", "trust_courts", "trust_national_government",
+  "gov_free_to_organize", "dem_free_speech", "election_free_fair",
+  "system_needs_change", "system_proud", "democracy_satisfaction"
+)
+zscore_vars <- zscore_vars[zscore_vars %in% names(d)]
+
+z_matrix <- w5 |>
+  group_by(country_name) |>
+  summarise(across(all_of(zscore_vars), ~mean(.x, na.rm = TRUE)),
+            .groups = "drop")
+
+# Compute z-scores
+z_scored <- z_matrix |>
+  mutate(across(all_of(zscore_vars),
+                ~(. - mean(., na.rm = TRUE)) / sd(., na.rm = TRUE)))
+
+# Display with HK highlighted
+z_display <- z_scored |>
+  arrange(country_name == "Hong Kong") |>  # HK first
+  mutate(across(where(is.numeric), ~round(.x, 2)))
+
+kable(z_display, caption = "Wave 5 z-scores (std. devs from cross-national mean)")
+```
+
+# 4. Pre/Post NSL Comparison (HK Wave 5)
+
+```{r pre-post-nsl}
+nsl_comparison <- hk5 |>
+  filter(period %in% c("Protest", "Post-NSL")) |>
+  pivot_longer(cols = all_of(key_vars), names_to = "variable", values_to = "value") |>
+  filter(!is.na(value)) |>
+  group_by(variable, period) |>
+  summarise(
+    mean = mean(value),
+    sd = sd(value),
+    n = n(),
+    .groups = "drop"
+  )
+
+# T-tests and effect sizes
+nsl_tests <- hk5 |>
+  filter(period %in% c("Protest", "Post-NSL")) |>
+  pivot_longer(cols = all_of(key_vars), names_to = "variable", values_to = "value") |>
+  filter(!is.na(value)) |>
+  group_by(variable) |>
+  summarise(
+    protest_mean = mean(value[period == "Protest"]),
+    postnsl_mean = mean(value[period == "Post-NSL"]),
+    delta = postnsl_mean - protest_mean,
+    protest_sd = sd(value[period == "Protest"]),
+    postnsl_sd = sd(value[period == "Post-NSL"]),
+    protest_n = sum(period == "Protest"),
+    postnsl_n = sum(period == "Post-NSL"),
+    t_stat = t.test(value ~ period)$statistic,
+    p_value = t.test(value ~ period)$p.value,
+    .groups = "drop"
+  ) |>
+  mutate(
+    # Cohen's d
+    pooled_sd = sqrt(((protest_n - 1) * protest_sd^2 + (postnsl_n - 1) * postnsl_sd^2) /
+                       (protest_n + postnsl_n - 2)),
+    cohens_d = delta / pooled_sd,
+    sig = case_when(
+      p_value < 0.001 ~ "***",
+      p_value < 0.01 ~ "**",
+      p_value < 0.05 ~ "*",
+      TRUE ~ ""
+    )
+  ) |>
+  filter(protest_n >= 30, postnsl_n >= 30) |>
+  arrange(p_value)
+
+kable(
+  nsl_tests |>
+    select(variable, protest_mean, postnsl_mean, delta, cohens_d, p_value, sig) |>
+    mutate(across(c(protest_mean, postnsl_mean, delta, cohens_d), ~round(.x, 3)),
+           p_value = format.pval(p_value, digits = 3)),
+  caption = "Pre/Post NSL comparison (HK Wave 5)"
+)
+```
+
+# 5. Age Cohort Analysis
+
+```{r age-analysis}
+age_vars <- c(
+  "democracy_suitability", "trust_police", "trust_national_government",
+  "gov_free_to_organize", "dem_free_speech", "dem_always_preferable",
+  "system_needs_change", "dem_extent_current"
+)
+age_vars <- age_vars[age_vars %in% names(d)]
+
+age_means <- hk5 |>
+  filter(!is.na(age_group)) |>
+  pivot_longer(cols = all_of(age_vars), names_to = "variable", values_to = "value") |>
+  filter(!is.na(value)) |>
+  group_by(variable, age_group) |>
+  summarise(mean = mean(value), n = n(), .groups = "drop")
+
+# ANOVA for each variable
+age_anova <- map_dfr(age_vars, function(var) {
+  dat <- hk5 |> filter(!is.na(age_group), !is.na(!!sym(var)))
+  if (nrow(dat) < 10) return(NULL)
+  fit <- aov(as.formula(paste(var, "~ age_group")), data = dat)
+  s <- summary(fit)[[1]]
+  tibble(
+    variable = var,
+    F_stat = s$`F value`[1],
+    p_value = s$`Pr(>F)`[1]
+  )
+})
+
+# Display
+age_display <- age_means |>
+  pivot_wider(names_from = age_group, values_from = mean) |>
+  left_join(age_anova, by = "variable") |>
+  mutate(across(where(is.numeric), ~round(.x, 3)),
+         sig = case_when(
+           p_value < 0.001 ~ "***",
+           p_value < 0.01 ~ "**",
+           p_value < 0.05 ~ "*",
+           TRUE ~ ""
+         ))
+
+kable(age_display, caption = "Age cohort means (HK W5) with ANOVA F-tests")
+```
+
+# 6. Pre/Post NSL × Age Interaction
+
+```{r age-nsl-interaction}
+interaction_vars <- c("democracy_suitability", "trust_police", "gov_free_to_organize")
+interaction_vars <- interaction_vars[interaction_vars %in% names(d)]
+
+age_nsl <- hk5 |>
+  filter(period %in% c("Protest", "Post-NSL"), !is.na(age_group)) |>
+  pivot_longer(cols = all_of(interaction_vars), names_to = "variable", values_to = "value") |>
+  filter(!is.na(value)) |>
+  group_by(variable, age_group, period) |>
+  summarise(mean = mean(value), n = n(), .groups = "drop") |>
+  pivot_wider(names_from = period, values_from = c(mean, n)) |>
+  mutate(delta = `mean_Post-NSL` - mean_Protest)
+
+kable(age_nsl |>
+        select(variable, age_group, mean_Protest, `mean_Post-NSL`, delta) |>
+        mutate(across(where(is.numeric), ~round(.x, 3))),
+      caption = "Pre/Post NSL shift by age group")
+```
+
+# 7. Flipped Correlation: dem_preferable → dem_satisfaction
+
+```{r flipped-correlation}
+corr_countries <- c("Hong Kong", "Taiwan", "Singapore",
+                    "South Korea", "Japan", "Mongolia", "Philippines")
+
+flipped <- d |>
+  filter(wave %in% c(3, 4, 5)) |>
+  filter(!is.na(dem_always_preferable), !is.na(democracy_satisfaction)) |>
+  group_by(country_name) |>
+  summarise(
+    r = cor(dem_always_preferable, democracy_satisfaction, use = "complete.obs"),
+    n = n(),
+    .groups = "drop"
+  ) |>
+  arrange(desc(r))
+
+kable(flipped |> mutate(r = round(r, 3)),
+      caption = "Correlation: dem_always_preferable → democracy_satisfaction (W3-5)")
+```
+
+# 8. Save Tables for Manuscript
+
+```{r save-tables}
+save(nsl_tests, age_display, z_display, w4w5_deltas, flipped,
+     age_nsl, nsl_comparison, trajectories,
+     file = "tables/descriptive_results.RData")
+```

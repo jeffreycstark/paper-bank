@@ -1,0 +1,19 @@
+# Generated outputs
+*.rds
+*.RData
+*.html
+*.pdf
+*.tex
+*.docx
+**/*.png
+**/*.pdf
+_output/
+.quarto/
+**/*.quarto_ipynb
+
+# Cache
+*_cache/
+*_files/
+
+# Logs
+logs/

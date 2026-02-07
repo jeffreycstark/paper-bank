@@ -1,0 +1,22 @@
+---
+title: "04 - Robustness Checks"
+format: html
+execute:
+  echo: true
+  warning: false
+  message: false
+  cache: true
+---
+
+```{r setup}
+library(tidyverse)
+```
+
+# Load Data
+
+```{r load-data}
+d <- readRDS("../../data/processed/abs_econdev_authpref.rds")
+hk <- d |> filter(country == 2)
+```
+
+# Robustness Checks

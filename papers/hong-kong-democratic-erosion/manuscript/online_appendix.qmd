@@ -1,0 +1,59 @@
+---
+title: "Online Appendix: Hong Kong Democratic Erosion"
+author:
+  - name: Jeffrey Stark
+    affiliations:
+      - name: Yonsei University
+        department: Department of Sociology
+    email: jeffrey.stark@yonsei.ac.kr
+date: today
+format:
+  pdf:
+    documentclass: article
+    classoption: [letterpaper, 12pt]
+    geometry: margin=1in
+    linestretch: 2
+    number-sections: true
+    colorlinks: true
+    linkcolor: blue
+    urlcolor: blue
+    citecolor: blue
+    keep-tex: true
+    include-in-header:
+      text: |
+        \usepackage{threeparttable}
+        \usepackage{threeparttablex}
+        \renewcommand{\thesection}{\Alph{section}}
+        \renewcommand{\thesubsection}{\Alph{section}.\arabic{subsection}}
+        \renewcommand{\thetable}{\Alph{section}\arabic{table}}
+        \renewcommand{\thefigure}{\Alph{section}\arabic{figure}}
+  html:
+    toc: true
+    toc-depth: 3
+    number-sections: true
+    theme: cosmo
+  docx:
+    toc: true
+    number-sections: true
+bibliography: references.bib
+csl: apa.csl
+execute:
+  echo: false
+  warning: false
+  message: false
+---
+
+```{r setup}
+#| include: false
+library(tidyverse)
+library(knitr)
+library(kableExtra)
+```
+
+# Variable Definitions and Coding {#sec-variables}
+
+# Supplementary Tables {#sec-tables}
+
+# Supplementary Figures {#sec-figures}
+
+# Robustness Checks {#sec-robustness}
