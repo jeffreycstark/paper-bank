@@ -55,6 +55,11 @@ library(kableExtra)
 load("../analysis/results/prepared_data.RData")
 load("../analysis/results/descriptive_results.RData")
 load("../analysis/results/robustness_results.RData")
+
+# Load main analysis results (falsification, FDR, sensitivity)
+if (file.exists("../analysis/results/main_analysis_results.RData")) {
+  load("../analysis/results/main_analysis_results.RData")
+}
 ```
 
 # Variable Definitions and Coding {#sec-variables}
@@ -72,22 +77,22 @@ load("../analysis/results/robustness_results.RData")
 # Example structure:
 var_defs <- tribble(
   ~Variable, ~`ABS Item`, ~Scale, ~Direction, ~Description,
-  "Democracy suitability", "Q---", "1--10", "Higher = more suitable", "How suitable is democracy for [country]?",
-  "Trust in police", "Q---", "1--4", "Higher = more trust", "How much trust do you have in the police?",
-  "Trust in national government", "Q---", "1--4", "Higher = more trust", "How much trust do you have in the national government?",
-  "Trust in president/CE", "Q---", "1--4", "Higher = more trust", "How much trust do you have in the president/chief executive?",
-  "Trust in courts", "Q---", "1--4", "Higher = more trust", "How much trust do you have in the courts?",
-  "Trust in parliament", "Q---", "1--4", "Higher = more trust", "How much trust do you have in the parliament/legislature?",
-  "Trust in military", "Q---", "1--4", "Higher = more trust", "How much trust do you have in the military?",
-  "Democracy always preferable", "Q---", "1--3", "Higher = stronger preference", "Democracy is always preferable / sometimes authoritarian / doesn't matter",
-  "Democratic satisfaction", "Q---", "1--4", "Higher = more satisfied", "How satisfied are you with the way democracy works?",
-  "Freedom to organize", "Q---", "1--4", "Higher = more free", "People are free to organize groups or join any political organization",
-  "Press censors views", "Q---", "1--4", "Higher = more censorship", "Media censors opposition viewpoints",
-  "Govt responds to people", "Q---", "1--4", "Higher = more responsive", "Government responds to what people want",
-  "Elections free and fair", "Q---", "1--4", "Higher = more fair", "Elections are free and fair",
-  "System deserves support", "Q---", "1--4", "Higher = more support", "Our system of government deserves support",
-  "System needs major change", "Q---", "1--4", "Higher = more change needed", "Our system of government needs major change",
-  "Willing to emigrate", "Q---", "varies", "Higher = more willing", "Willingness to emigrate from country"
+  "Democracy suitability", "q104", "1--10", "Higher = more suitable", "How suitable is democracy for [country]?",
+  "Trust in police", "q14", "1--4", "Higher = more trust", "How much trust do you have in the police?",
+  "Trust in national government", "q9", "1--4", "Higher = more trust", "How much trust do you have in the national government?",
+  "Trust in president/CE", "q7", "1--4", "Higher = more trust", "How much trust do you have in the president/chief executive?",
+  "Trust in courts", "q8", "1--4", "Higher = more trust", "How much trust do you have in the courts?",
+  "Trust in parliament", "q11", "1--4", "Higher = more trust", "How much trust do you have in the parliament/legislature?",
+  "Trust in military", "q13", "1--4", "Higher = more trust", "How much trust do you have in the military?",
+  "Democracy always preferable", "q132", "1--3", "Higher = stronger preference", "Democracy is always preferable / sometimes authoritarian / doesn't matter",
+  "Democratic satisfaction", "q99", "1--4", "Higher = more satisfied", "On the whole, how satisfied or dissatisfied are you with the way democracy works?",
+  "Freedom to organize", "q116", "1--4", "Higher = more free", "People can join any organization they like without fear",
+  "Free to speak without fear", "q115", "1--4", "Higher = more freedom", "People are free to speak what they think without fear",
+  "Govt responds to people", "q121", "1--4", "Higher = more responsive", "How well do you think the government responds to what people want?",
+  "Elections free and fair", "q38", "1--4", "Higher = more fair", "On the whole, how free and fair would you say the last national election was?",
+  "System deserves support", "q88", "1--4", "Higher = more support", "A system like ours, even if it runs into problems, deserves the people's support",
+  "System needs major change", "q90", "varies", "Higher = more change needed", "Would you say our system of government works fine as it is, needs minor change, needs major change, or should be replaced?",
+  "Willing to emigrate", "q167", "varies", "Higher = more willing", "Given the chance, how willing would you be to go and live in another country?"
 )
 
 var_defs |>
@@ -95,7 +100,7 @@ var_defs |>
   kable_styling(latex_options = c("scale_down", "hold_position"))
 ```
 
-**Note:** The `Q---` item codes should be replaced with the exact ABS questionnaire item numbers from the Wave 5 codebook before final submission.
+**Note:** Item codes refer to the ABS Wave 5 merged questionnaire numbering (20230505_W5_merge_15).
 
 
 # Mann-Whitney U Tests {#sec-mannwhitney}
@@ -201,15 +206,17 @@ if (exists("boot_results")) {
 
 A key concern with the trust increase is that compositional selection --- whereby regime critics disproportionately declined to participate in the post-NSL survey --- could entirely account for the observed shift. To assess the plausibility of this account, I conduct an informal bounding exercise in the spirit of @Manski2003-bounds.
 
-The logic is as follows: if we assume that all non-respondents in the post-NSL period would have reported the minimum possible trust score (1 on the 1--4 scale), what proportion of the target population would need to have been "missing critics" for the trust increase to disappear? @tbl-manski-bounds presents the results for trust in police.
+The logic is as follows: if we assume that all non-respondents in the post-NSL period would have reported the minimum possible trust score (1 on the 1--4 scale), what proportion of the target population would need to have been "missing critics" for the trust increase to disappear? @tbl-manski-bounds-police and @tbl-manski-bounds-govt present the results for trust in police and trust in the national government, respectively.
 
 ```{r}
-#| label: tbl-manski-bounds
+#| label: tbl-manski-bounds-police
 #| tbl-cap: "Worst-case bounding analysis for trust in police. Each row assumes an additional percentage of the post-NSL target population declined to participate and would have reported minimum trust (1 on 1--4 scale)."
 
 if (exists("manski_scenarios")) {
   manski_scenarios |>
+    filter(variable == "Trust in Police") |>
     mutate(across(c(adjusted_mean), ~round(.x, 3))) |>
+    select(pct_missing_critics, n_observed, n_missing, adjusted_mean, trust_still_higher) |>
     kable(
       col.names = c("% Missing Critics", "N Observed", "N Missing (imputed)",
                      "Adjusted Post-NSL Mean", "Still > Protest Mean?"),
@@ -218,6 +225,26 @@ if (exists("manski_scenarios")) {
     kable_styling(latex_options = c("hold_position"))
 } else {
   cat("Manski scenarios not yet computed. Run 04_robustness_checks.qmd first.")
+}
+```
+
+```{r}
+#| label: tbl-manski-bounds-govt
+#| tbl-cap: "Worst-case bounding analysis for trust in national government. Each row assumes an additional percentage of the post-NSL target population declined to participate and would have reported minimum trust (1 on 1--4 scale)."
+
+if (exists("manski_scenarios")) {
+  manski_scenarios |>
+    filter(variable == "Trust in Nat'l Government") |>
+    mutate(across(c(adjusted_mean), ~round(.x, 3))) |>
+    select(pct_missing_critics, n_observed, n_missing, adjusted_mean, trust_still_higher) |>
+    kable(
+      col.names = c("% Missing Critics", "N Observed", "N Missing (imputed)",
+                     "Adjusted Post-NSL Mean", "Still > Protest Mean?"),
+      booktabs = TRUE
+    ) |>
+    kable_styling(latex_options = c("hold_position"))
+} else {
+  cat("Manski scenarios for national government not yet computed.")
 }
 ```
 
@@ -276,9 +303,60 @@ ggplot(age_strat_data, aes(x = age_group, y = mean, fill = period)) +
 ```
 
 
+# Falsification Tests and Multiple Comparisons {#sec-falsification}
+
+## Negative Control Outcomes
+
+To assess whether the observed attitudinal shifts are specifically attributable to politically sensitive mechanisms rather than generalized confounding (e.g., pandemic effects, time trends), I pre-specified a set of items that should not be sensitive to political repression. @tbl-falsification reports the pre/post NSL comparison for these "negative control" items.
+
+```{r}
+#| label: tbl-falsification
+#| tbl-cap: "Falsification tests: pre-specified politically insensitive items. Small or non-significant effects are consistent with NSL-specific mechanisms rather than generalized confounding."
+
+if (exists("falsification_results") && !is.null(falsification_results)) {
+  falsification_results |>
+    mutate(across(c(protest_mean, postnsl_mean, delta, cohens_d), ~round(.x, 3)),
+           p_value = format.pval(p_value, digits = 3)) |>
+    kable(
+      col.names = c("Variable", "Protest Mean", "Post-NSL Mean",
+                     "Delta", "Cohen's d", "p-value", "Sig"),
+      booktabs = TRUE
+    ) |>
+    kable_styling(latex_options = c("hold_position"))
+} else {
+  cat("Falsification results not yet computed. Run 02_main_analysis.qmd first.")
+}
+```
+
+## Benjamini-Hochberg FDR Correction
+
+The main analysis tests multiple variables simultaneously. To guard against inflated Type I error rates, @tbl-fdr reports raw and Benjamini-Hochberg adjusted $p$-values for all pre/post NSL comparisons. The four pre-specified primary outcomes are flagged.
+
+```{r}
+#| label: tbl-fdr
+#| tbl-cap: "Raw and FDR-corrected (Benjamini-Hochberg) p-values for all pre/post NSL comparisons."
+
+if (exists("fdr_results")) {
+  fdr_results |>
+    select(variable, primary, cohens_d, p_value, sig, p_bh, sig_bh) |>
+    mutate(across(c(cohens_d), ~round(.x, 3)),
+           p_value = format.pval(p_value, digits = 3),
+           p_bh = format.pval(p_bh, digits = 3)) |>
+    kable(
+      col.names = c("Variable", "Primary?", "Cohen's d", "p (raw)", "",
+                     "p (BH-adj)", ""),
+      booktabs = TRUE
+    ) |>
+    kable_styling(latex_options = c("scale_down", "hold_position"))
+} else {
+  cat("FDR results not yet computed. Run 02_main_analysis.qmd first.")
+}
+```
+
+
 # Critical Citizens Correlation: CI and Period Decomposition {#sec-critical-citizens}
 
-The main text reports that Hong Kong is the only ABS country where the correlation between democratic preference ("democracy is always preferable") and democratic satisfaction is positive ($r \approx +0.13$). This section computes the 95% confidence interval for this correlation and decomposes it by fieldwork period.
+The main text reports that Hong Kong is the only country among the sixteen ABS Wave 5 polities where the correlation between democratic preference ("democracy is always preferable") and democratic satisfaction is positive. This section reports the precise estimate with 95% confidence intervals and decomposes the correlation by fieldwork period.
 
 ```{r}
 #| label: tbl-critical-citizens-ci

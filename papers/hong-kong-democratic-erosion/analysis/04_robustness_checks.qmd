@@ -211,24 +211,53 @@ if ("female" %in% names(hk5_analysis)) {
 }
 
 # --- Education ---
-if ("education" %in% names(hk5_analysis)) {
+# Determine which education variable to use: education_level (SE5, ordinal 1-10),
+# education_years (continuous), or generic "education"
+edu_var <- NULL
+if ("education_level" %in% names(hk5_analysis)) {
+  # Clean education_level: recode 97/98/99/11/-1 to NA
+  hk5_analysis <- hk5_analysis |>
+    mutate(
+      education_level_clean = case_when(
+        education_level %in% c(-1, 11, 97, 98, 99) ~ NA_real_,
+        TRUE ~ as.numeric(education_level)
+      )
+    )
+  if (sum(!is.na(hk5_analysis$education_level_clean)) > 100) {
+    edu_var <- "education_level_clean"
+  }
+}
+if (is.null(edu_var) && "education_years" %in% names(hk5_analysis) &&
+    sum(!is.na(hk5_analysis$education_years)) > 100) {
+  edu_var <- "education_years"
+}
+if (is.null(edu_var) && "education" %in% names(hk5_analysis) &&
+    sum(!is.na(hk5_analysis$education)) > 100) {
+  edu_var <- "education"
+}
+
+edu_test <- NULL
+if (!is.null(edu_var)) {
   edu_balance <- hk5_analysis |>
-    filter(!is.na(education)) |>
+    filter(!is.na(!!sym(edu_var))) |>
     group_by(period) |>
     summarise(
-      mean_edu = mean(education, na.rm = TRUE),
-      sd_edu = sd(education, na.rm = TRUE),
+      mean_edu = mean(!!sym(edu_var), na.rm = TRUE),
+      sd_edu = sd(!!sym(edu_var), na.rm = TRUE),
       n = n(),
       .groups = "drop"
     )
 
-  edu_test <- t.test(education ~ period, data = hk5_analysis)
-  edu_mw <- wilcox.test(education ~ period, data = hk5_analysis, exact = FALSE)
+  edu_test <- t.test(as.formula(paste(edu_var, "~ period")), data = hk5_analysis)
+  edu_mw <- wilcox.test(as.formula(paste(edu_var, "~ period")),
+                        data = hk5_analysis, exact = FALSE)
 
-  cat("=== Education ===\n")
+  cat("=== Education (", edu_var, ") ===\n")
   print(edu_balance)
   cat("t-test p =", format.pval(edu_test$p.value, digits = 3),
       "| MW p =", format.pval(edu_mw$p.value, digits = 3), "\n\n")
+} else {
+  cat("=== Education: no suitable variable found ===\n")
 }
 ```
 
@@ -274,10 +303,15 @@ if ("female" %in% names(hk5_analysis)) {
   )
 }
 
-# Education (if continuous)
-if ("education" %in% names(hk5_analysis)) {
+# Education (using whichever variable was found above)
+if (!is.null(edu_test)) {
+  edu_label <- ifelse(edu_var == "education_level_clean",
+                      "Education level (SE5, ordinal 1-10)",
+                      ifelse(edu_var == "education_years",
+                             "Education (years)",
+                             "Education (mean)"))
   balance_rows$edu <- tibble(
-    covariate = "Education (mean)",
+    covariate = edu_label,
     protest = edu_balance$mean_edu[edu_balance$period == "Protest"],
     postnsl = edu_balance$mean_edu[edu_balance$period == "Post-NSL"],
     test = "t-test",
@@ -326,6 +360,16 @@ structure. Report BCa 95% confidence intervals for the mean difference
 set.seed(42)
 n_boot <- 5000
 
+# --- Parallel setup ---
+if (!requireNamespace("future", quietly = TRUE)) install.packages("future", repos = "https://cran.r-project.org")
+if (!requireNamespace("furrr", quietly = TRUE)) install.packages("furrr", repos = "https://cran.r-project.org")
+library(future)
+library(furrr)
+
+n_cores <- max(1L, parallel::detectCores(logical = FALSE) - 1L)
+plan(multisession, workers = n_cores)
+cat("Bootstrap running on", n_cores, "parallel workers\n")
+
 # Function to compute mean difference for a single variable
 boot_mean_diff <- function(data, indices, var, period_var = "period") {
   boot_data <- data[indices, ]
@@ -351,86 +395,78 @@ boot_cohens_d <- function(data, indices, var, period_var = "period") {
   (mean(protest) - mean(postnsl)) / pooled_sd
 }
 
-# Stratified bootstrap: resample within each period independently
-boot_stratified <- function(var, data = hk5_analysis, R = n_boot) {
-  # Check sufficient data
-  protest_vals <- data |> filter(period == "Protest") |> pull(!!sym(var)) |> na.omit()
-  postnsl_vals <- data |> filter(period == "Post-NSL") |> pull(!!sym(var)) |> na.omit()
+# Stratified bootstrap for a single variable (self-contained for worker export)
+boot_stratified <- function(var, data, R, seed_offset = 0L) {
+  library(boot)
+  set.seed(42L + seed_offset)
+
+  protest_vals <- data[data$period == "Protest" & !is.na(data[[var]]), var, drop = TRUE]
+  postnsl_vals <- data[data$period == "Post-NSL" & !is.na(data[[var]]), var, drop = TRUE]
 
   if (length(protest_vals) < 10 | length(postnsl_vals) < 10) return(NULL)
 
-  # Use boot with strata argument for stratified resampling
-  boot_diff <- boot(
-    data = data |> filter(!is.na(!!sym(var))),
-    statistic = boot_mean_diff,
-    R = R,
-    strata = data |> filter(!is.na(!!sym(var))) |> pull(period) |> as.integer(),
-    var = var
-  )
+  sub <- data[!is.na(data[[var]]), ]
+  strata_int <- as.integer(factor(sub$period))
 
-  boot_d <- boot(
-    data = data |> filter(!is.na(!!sym(var))),
-    statistic = boot_cohens_d,
-    R = R,
-    strata = data |> filter(!is.na(!!sym(var))) |> pull(period) |> as.integer(),
-    var = var
-  )
-
-  # BCa confidence intervals
-  ci_diff <- tryCatch(
-    boot.ci(boot_diff, type = "bca", conf = 0.95),
-    error = function(e) {
-      # Fall back to percentile if BCa fails
-      boot.ci(boot_diff, type = "perc", conf = 0.95)
-    }
-  )
-
-  ci_d <- tryCatch(
-    boot.ci(boot_d, type = "bca", conf = 0.95),
-    error = function(e) {
-      boot.ci(boot_d, type = "perc", conf = 0.95)
-    }
-  )
-
-  # Extract CI bounds
-  if (!is.null(ci_diff$bca)) {
-    diff_lo <- ci_diff$bca[4]
-    diff_hi <- ci_diff$bca[5]
-    ci_type <- "BCa"
-  } else if (!is.null(ci_diff$percent)) {
-    diff_lo <- ci_diff$percent[4]
-    diff_hi <- ci_diff$percent[5]
-    ci_type <- "Percentile"
-  } else {
-    diff_lo <- NA; diff_hi <- NA; ci_type <- "Failed"
+  boot_mean_diff_local <- function(d, i, v) {
+    bd <- d[i, ]
+    mean(bd[[v]][bd$period == "Protest"], na.rm = TRUE) -
+      mean(bd[[v]][bd$period == "Post-NSL"], na.rm = TRUE)
   }
 
-  if (!is.null(ci_d$bca)) {
-    d_lo <- ci_d$bca[4]
-    d_hi <- ci_d$bca[5]
-  } else if (!is.null(ci_d$percent)) {
-    d_lo <- ci_d$percent[4]
-    d_hi <- ci_d$percent[5]
-  } else {
-    d_lo <- NA; d_hi <- NA
+  boot_cohens_d_local <- function(d, i, v) {
+    bd <- d[i, ]
+    p <- bd[[v]][bd$period == "Protest"]; p <- p[!is.na(p)]
+    q <- bd[[v]][bd$period == "Post-NSL"]; q <- q[!is.na(q)]
+    if (length(p) < 5 | length(q) < 5) return(NA_real_)
+    ps <- sqrt(((length(p)-1)*sd(p)^2 + (length(q)-1)*sd(q)^2) / (length(p)+length(q)-2))
+    if (ps == 0) return(NA_real_)
+    (mean(p) - mean(q)) / ps
   }
 
-  tibble(
-    variable = var,
+  boot_diff <- boot(data = sub, statistic = boot_mean_diff_local, R = R,
+                    strata = strata_int, v = var)
+  boot_d   <- boot(data = sub, statistic = boot_cohens_d_local, R = R,
+                    strata = strata_int, v = var)
+
+  extract_ci <- function(b) {
+    ci <- tryCatch(boot.ci(b, type = "bca", conf = 0.95),
+                   error = function(e) tryCatch(boot.ci(b, type = "perc", conf = 0.95),
+                                                error = function(e2) NULL))
+    if (!is.null(ci$bca))     return(list(lo = ci$bca[4], hi = ci$bca[5], type = "BCa"))
+    if (!is.null(ci$percent)) return(list(lo = ci$percent[4], hi = ci$percent[5], type = "Percentile"))
+    list(lo = NA_real_, hi = NA_real_, type = "Failed")
+  }
+
+  ci_diff <- extract_ci(boot_diff)
+  ci_d    <- extract_ci(boot_d)
+
+  tibble::tibble(
+    variable     = var,
     observed_diff = boot_diff$t0,
-    boot_diff_lo = diff_lo,
-    boot_diff_hi = diff_hi,
-    observed_d = boot_d$t0,
-    boot_d_lo = d_lo,
-    boot_d_hi = d_hi,
-    ci_type = ci_type,
-    # Does the CI for the difference exclude zero?
-    sig_boot = !(diff_lo <= 0 & diff_hi >= 0)
+    boot_diff_lo  = ci_diff$lo,
+    boot_diff_hi  = ci_diff$hi,
+    observed_d    = boot_d$t0,
+    boot_d_lo     = ci_d$lo,
+    boot_d_hi     = ci_d$hi,
+    ci_type       = ci_diff$type,
+    sig_boot      = !(ci_diff$lo <= 0 & ci_diff$hi >= 0)
   )
 }
 
-# Run bootstrap for all NSL comparison variables
-boot_results <- map_dfr(nsl_vars, boot_stratified, .progress = TRUE)
+# Run bootstrap in parallel across variables
+tstart <- Sys.time()
+boot_results <- future_map_dfr(
+  seq_along(nsl_vars),
+  function(i) boot_stratified(nsl_vars[i], data = hk5_analysis, R = n_boot, seed_offset = i),
+  .options = furrr_options(seed = TRUE),
+  .progress = TRUE
+)
+tend <- Sys.time()
+cat("Bootstrap completed in", round(difftime(tend, tstart, units = "secs"), 1), "seconds\n")
+
+# Reset to sequential
+plan(sequential)
 ```
 
 ```{r bootstrap-table}
@@ -546,48 +582,80 @@ would have reported the minimum possible trust score, what would the adjusted
 mean be? This provides a lower bound on the trust increase.
 
 ```{r manski-bounds}
-# We don't know true non-response rate, but we can simulate scenarios
-# Assume various proportions of "missing critics" in post-NSL period
+# Generalized Manski bounds function for any trust variable
+# R2 requested: extend bounds to at least trust_national_government in addition to police
 
-trust_police_protest <- hk5_analysis |>
-  filter(period == "Protest", !is.na(trust_police)) |>
-  pull(trust_police)
+compute_manski_bounds <- function(data, var, var_label, min_score = 1) {
+  protest_vals <- data |>
+    filter(period == "Protest", !is.na(!!sym(var))) |>
+    pull(!!sym(var))
+  postnsl_vals <- data |>
+    filter(period == "Post-NSL", !is.na(!!sym(var))) |>
+    pull(!!sym(var))
 
-trust_police_postnsl <- hk5_analysis |>
-  filter(period == "Post-NSL", !is.na(trust_police)) |>
-  pull(trust_police)
+  observed_postnsl_mean <- mean(postnsl_vals)
+  observed_protest_mean <- mean(protest_vals)
 
-observed_postnsl_mean <- mean(trust_police_postnsl)
-observed_protest_mean <- mean(trust_police_protest)
+  scenarios <- tibble(pct_missing_critics = seq(0, 40, by = 5)) |>
+    mutate(
+      variable = var_label,
+      n_observed = length(postnsl_vals),
+      n_missing = round(n_observed * pct_missing_critics / 100),
+      adjusted_mean = (sum(postnsl_vals) + n_missing * min_score) / (n_observed + n_missing),
+      protest_mean = observed_protest_mean,
+      trust_still_higher = adjusted_mean > observed_protest_mean
+    )
 
-# Scenario: what if X% additional respondents would have participated
-# but reported minimum trust (1 on 1-4 scale)?
-manski_scenarios <- tibble(
-  pct_missing_critics = seq(0, 30, by = 5)
-) |>
-  mutate(
-    n_observed = length(trust_police_postnsl),
-    n_missing = round(n_observed * pct_missing_critics / 100),
-    adjusted_mean = (sum(trust_police_postnsl) + n_missing * 1) / (n_observed + n_missing),
-    trust_still_higher = adjusted_mean > observed_protest_mean
-  )
+  scenarios
+}
 
-manski_scenarios |>
-  mutate(across(c(adjusted_mean), ~round(.x, 3))) |>
+# Trust in police
+manski_police <- compute_manski_bounds(hk5_analysis, "trust_police", "Trust in Police")
+
+# Trust in national government (R2 requested expansion)
+manski_govt <- compute_manski_bounds(hk5_analysis, "trust_national_government",
+                                      "Trust in Nat'l Government")
+
+# Combine
+manski_scenarios <- bind_rows(manski_police, manski_govt)
+
+# Display trust in police
+manski_police |>
+  mutate(across(c(adjusted_mean, protest_mean), ~round(.x, 3))) |>
+  select(pct_missing_critics, n_observed, n_missing, adjusted_mean, trust_still_higher) |>
   kable(
     col.names = c("% Missing Critics", "N Observed", "N Missing (imputed)",
                    "Adjusted Post-NSL Mean", "Still > Protest Mean?"),
-    caption = paste0("Manski-style worst-case bounds for trust in police. ",
-                     "Protest mean = ", round(observed_protest_mean, 3),
-                     "; Observed post-NSL mean = ", round(observed_postnsl_mean, 3)),
+    caption = paste0("Manski-style worst-case bounds for TRUST IN POLICE. ",
+                     "Protest mean = ", round(manski_police$protest_mean[1], 3),
+                     "; Observed post-NSL mean = ",
+                     round(mean(hk5_analysis$trust_police[hk5_analysis$period == "Post-NSL"], na.rm = TRUE), 3)),
     booktabs = TRUE
   ) |>
   kable_styling(latex_options = c("hold_position"))
 
-cat("\nInterpretation: The trust increase disappears only if approximately",
-    manski_scenarios |> filter(!trust_still_higher) |> slice_min(pct_missing_critics) |> pull(pct_missing_critics),
-    "% or more of the post-NSL target population declined to participate\n",
-    "and would have reported minimum trust (1 on 1-4 scale).\n")
+cat("\nTrust in police: increase disappears at approximately",
+    manski_police |> filter(!trust_still_higher) |> slice_min(pct_missing_critics) |> pull(pct_missing_critics),
+    "% missing critics.\n")
+
+# Display trust in national government
+manski_govt |>
+  mutate(across(c(adjusted_mean, protest_mean), ~round(.x, 3))) |>
+  select(pct_missing_critics, n_observed, n_missing, adjusted_mean, trust_still_higher) |>
+  kable(
+    col.names = c("% Missing Critics", "N Observed", "N Missing (imputed)",
+                   "Adjusted Post-NSL Mean", "Still > Protest Mean?"),
+    caption = paste0("Manski-style worst-case bounds for TRUST IN NATIONAL GOVERNMENT. ",
+                     "Protest mean = ", round(manski_govt$protest_mean[1], 3),
+                     "; Observed post-NSL mean = ",
+                     round(mean(hk5_analysis$trust_national_government[hk5_analysis$period == "Post-NSL"], na.rm = TRUE), 3)),
+    booktabs = TRUE
+  ) |>
+  kable_styling(latex_options = c("hold_position"))
+
+cat("\nTrust in national government: increase disappears at approximately",
+    manski_govt |> filter(!trust_still_higher) |> slice_min(pct_missing_critics) |> pull(pct_missing_critics),
+    "% missing critics.\n")
 ```
 
 
