@@ -1,5 +1,5 @@
 ---
-title: "Online Appendix: Hong Kong Democratic Erosion"
+title: "Online Appendix: When the Levee Breaks"
 author:
   - name: Jeffrey Stark
     affiliations:
@@ -59,7 +59,170 @@ load("../analysis/results/robustness_results.RData")
 
 # Variable Definitions and Coding {#sec-variables}
 
-# Supplementary Tables {#sec-tables}
+@tbl-var-definitions presents the full set of variables used in the analysis, including original ABS item names, scale ranges, coding direction, and any recoding decisions.
+
+```{r}
+#| label: tbl-var-definitions
+#| tbl-cap: "Variable definitions and coding. All scales oriented so that higher values indicate more of the named concept."
+
+# TODO: Build this table from the actual variable metadata.
+# Each row should include: Variable name (as used in text), ABS item code,
+# Scale range (e.g., 1-4, 1-10), Original direction, Recoded?, Description.
+# This can be constructed manually or extracted from the data preparation script.
+# Example structure:
+var_defs <- tribble(
+  ~Variable, ~`ABS Item`, ~Scale, ~Direction, ~Description,
+  "Democracy suitability", "Q---", "1--10", "Higher = more suitable", "How suitable is democracy for [country]?",
+  "Trust in police", "Q---", "1--4", "Higher = more trust", "How much trust do you have in the police?",
+  "Trust in national government", "Q---", "1--4", "Higher = more trust", "How much trust do you have in the national government?",
+  "Trust in president/CE", "Q---", "1--4", "Higher = more trust", "How much trust do you have in the president/chief executive?",
+  "Trust in courts", "Q---", "1--4", "Higher = more trust", "How much trust do you have in the courts?",
+  "Trust in parliament", "Q---", "1--4", "Higher = more trust", "How much trust do you have in the parliament/legislature?",
+  "Trust in military", "Q---", "1--4", "Higher = more trust", "How much trust do you have in the military?",
+  "Democracy always preferable", "Q---", "1--3", "Higher = stronger preference", "Democracy is always preferable / sometimes authoritarian / doesn't matter",
+  "Democratic satisfaction", "Q---", "1--4", "Higher = more satisfied", "How satisfied are you with the way democracy works?",
+  "Freedom to organize", "Q---", "1--4", "Higher = more free", "People are free to organize groups or join any political organization",
+  "Press censors views", "Q---", "1--4", "Higher = more censorship", "Media censors opposition viewpoints",
+  "Govt responds to people", "Q---", "1--4", "Higher = more responsive", "Government responds to what people want",
+  "Elections free and fair", "Q---", "1--4", "Higher = more fair", "Elections are free and fair",
+  "System deserves support", "Q---", "1--4", "Higher = more support", "Our system of government deserves support",
+  "System needs major change", "Q---", "1--4", "Higher = more change needed", "Our system of government needs major change",
+  "Willing to emigrate", "Q---", "varies", "Higher = more willing", "Willingness to emigrate from country"
+)
+
+var_defs |>
+  kable(booktabs = TRUE) |>
+  kable_styling(latex_options = c("scale_down", "hold_position"))
+```
+
+**Note:** The `Q---` item codes should be replaced with the exact ABS questionnaire item numbers from the Wave 5 codebook before final submission.
+
+
+# Mann-Whitney U Tests {#sec-mannwhitney}
+
+All two-sample $t$-tests reported in the main text were cross-validated with non-parametric Mann-Whitney $U$ (Wilcoxon rank-sum) tests. This guards against violations of normality assumptions, which are plausible given that many indicators are measured on short ordinal scales (1--4). @tbl-mw-comparison reports both test results side by side.
+
+```{r}
+#| label: tbl-mw-comparison
+#| tbl-cap: "Parametric (t-test) vs. non-parametric (Mann-Whitney U) comparison for all pre/post NSL variables."
+
+if (exists("mw_results")) {
+  mw_results |>
+    select(variable, cohens_d, t_p, t_sig, mw_p, mw_sig, agree) |>
+    mutate(across(c(cohens_d), ~round(.x, 3)),
+           t_p = format.pval(t_p, digits = 3),
+           mw_p = format.pval(mw_p, digits = 3)) |>
+    kable(
+      col.names = c("Variable", "Cohen's d", "t p-value", "", "MW p-value", "", "Agree?"),
+      booktabs = TRUE
+    ) |>
+    kable_styling(latex_options = c("scale_down", "hold_position"))
+} else {
+  cat("Mann-Whitney results not yet computed. Run 04_robustness_checks.qmd first.")
+}
+```
+
+
+# Demographic Balance Across Periods {#sec-balance}
+
+A key concern with the within-wave quasi-experiment is that the Protest and Post-NSL sub-samples may differ systematically on demographic covariates, which could account for some of the observed attitudinal shifts. @tbl-balance reports means or proportions for age, gender, and education across the two periods, along with $t$-tests (continuous) or $\chi^2$ tests (categorical) for between-period differences.
+
+```{r}
+#| label: tbl-balance
+#| tbl-cap: "Demographic balance across fieldwork periods (Protest vs. Post-NSL)."
+
+if (exists("balance_table")) {
+  balance_table |>
+    kable(
+      col.names = c("Covariate", "Protest", "Post-NSL", "Test", "p-value", ""),
+      booktabs = TRUE
+    ) |>
+    kable_styling(latex_options = c("hold_position"))
+} else {
+  cat("Balance table not yet computed. Run 04_robustness_checks.qmd first.")
+}
+```
+
+
+# Stratified Bootstrap and Manski Bounds {#sec-robustness}
+
+## Stratified Percentile Bootstrap {#sec-bootstrap}
+
+To assess the robustness of the pre/post NSL shifts to sampling variability, I employed a stratified percentile bootstrap with 5,000 iterations, resampling independently within the Protest and Post-NSL periods to preserve the temporal structure of the quasi-experiment. @tbl-bootstrap reports the observed Cohen's $d$ alongside 95% bias-corrected and accelerated (BCa) confidence intervals.
+
+```{r}
+#| label: tbl-bootstrap
+#| tbl-cap: "Stratified bootstrap results (5,000 iterations): BCa 95% confidence intervals for Cohen's d."
+
+if (exists("boot_results")) {
+  boot_results |>
+    select(variable, observed_d, boot_d_lo, boot_d_hi, ci_type, sig_boot) |>
+    mutate(across(where(is.numeric), ~round(.x, 3))) |>
+    kable(
+      col.names = c("Variable", "Observed d", "d CI Lo", "d CI Hi",
+                     "CI Type", "Sig?"),
+      booktabs = TRUE
+    ) |>
+    kable_styling(latex_options = c("scale_down", "hold_position"))
+} else {
+  cat("Bootstrap results not yet computed. Run 04_robustness_checks.qmd first.")
+}
+```
+
+```{r}
+#| label: fig-bootstrap-forest
+#| fig-cap: "Stratified bootstrap 95% BCa confidence intervals for Cohen's d (Protest − Post-NSL). Variables where the CI excludes zero are shown in colour."
+#| fig-width: 10
+#| fig-height: 8
+
+if (exists("boot_results")) {
+  boot_results |>
+    mutate(
+      variable = str_replace_all(variable, "_", " ") |> str_to_title(),
+      sig_label = ifelse(sig_boot, "Significant", "Not significant")
+    ) |>
+    ggplot(aes(x = observed_d, y = reorder(variable, observed_d), color = sig_label)) +
+    geom_vline(xintercept = 0, linetype = "dashed", color = "grey50") +
+    geom_point(size = 3) +
+    geom_errorbarh(aes(xmin = boot_d_lo, xmax = boot_d_hi), height = 0.25) +
+    scale_color_manual(values = c("Significant" = "#E53935", "Not significant" = "#9E9E9E")) +
+    labs(
+      x = "Cohen's d (Protest − Post-NSL)",
+      y = NULL,
+      color = NULL
+    ) +
+    theme_minimal(base_size = 11) +
+    theme(legend.position = "bottom")
+}
+```
+
+
+## Informal Bounding Analysis {#sec-manski}
+
+A key concern with the trust increase is that compositional selection --- whereby regime critics disproportionately declined to participate in the post-NSL survey --- could entirely account for the observed shift. To assess the plausibility of this account, I conduct an informal bounding exercise in the spirit of @Manski2003-bounds.
+
+The logic is as follows: if we assume that all non-respondents in the post-NSL period would have reported the minimum possible trust score (1 on the 1--4 scale), what proportion of the target population would need to have been "missing critics" for the trust increase to disappear? @tbl-manski-bounds presents the results for trust in police.
+
+```{r}
+#| label: tbl-manski-bounds
+#| tbl-cap: "Worst-case bounding analysis for trust in police. Each row assumes an additional percentage of the post-NSL target population declined to participate and would have reported minimum trust (1 on 1--4 scale)."
+
+if (exists("manski_scenarios")) {
+  manski_scenarios |>
+    mutate(across(c(adjusted_mean), ~round(.x, 3))) |>
+    kable(
+      col.names = c("% Missing Critics", "N Observed", "N Missing (imputed)",
+                     "Adjusted Post-NSL Mean", "Still > Protest Mean?"),
+      booktabs = TRUE
+    ) |>
+    kable_styling(latex_options = c("hold_position"))
+} else {
+  cat("Manski scenarios not yet computed. Run 04_robustness_checks.qmd first.")
+}
+```
+
+The results suggest that the observed trust increase is moderately robust to worst-case selection assumptions. The trust increase persists even under the assumption that a substantial proportion of missing respondents would have reported minimal trust, though it does eventually disappear under extreme non-response scenarios. This exercise does not resolve the ambiguity between preference falsification and compositional selection --- both remain plausible contributors --- but it provides a concrete benchmark for evaluating the magnitude of selection required to explain the full trust shift.
+
 
 # Supplementary Figures {#sec-figures}
 
@@ -112,28 +275,66 @@ ggplot(age_strat_data, aes(x = age_group, y = mean, fill = period)) +
         axis.text.x = element_text(angle = 45, hjust = 1))
 ```
 
-# Robustness Checks {#sec-robustness}
 
-## Informal Bounding Analysis {#sec-manski}
+# Critical Citizens Correlation: CI and Period Decomposition {#sec-critical-citizens}
 
-A key concern with the trust increase is that compositional selection --- whereby regime critics disproportionately declined to participate in the post-NSL survey --- could entirely account for the observed shift. To assess the plausibility of this account, I conduct an informal bounding exercise in the spirit of @Manski2003-bounds.
-
-The logic is as follows: if we assume that all non-respondents in the post-NSL period would have reported the minimum possible trust score (1 on the 1--4 scale), what proportion of the target population would need to have been "missing critics" for the trust increase to disappear? @tbl-manski-bounds presents the results for trust in police.
+The main text reports that Hong Kong is the only ABS country where the correlation between democratic preference ("democracy is always preferable") and democratic satisfaction is positive ($r \approx +0.13$). This section computes the 95% confidence interval for this correlation and decomposes it by fieldwork period.
 
 ```{r}
-#| label: tbl-manski-bounds
-#| tbl-cap: "Worst-case bounding analysis for trust in police. Each row assumes an additional percentage of the post-NSL target population declined to participate and would have reported minimum trust (1 on 1--4 scale)."
+#| label: tbl-critical-citizens-ci
+#| tbl-cap: "Critical citizens correlation (democratic preference × democratic satisfaction): overall and by fieldwork period, with 95% confidence intervals."
 
-if (exists("manski_scenarios")) {
-  manski_scenarios |>
-    mutate(across(c(adjusted_mean), ~round(.x, 3))) |>
+# TODO: This code should be run once the data objects are confirmed.
+# The structure below is correct for the ABS data.
+
+if (exists("hk5")) {
+  hk5_cc <- hk5 |>
+    filter(!is.na(dem_always_preferable), !is.na(democracy_satisfaction))
+
+  # Overall correlation with CI
+  overall_test <- cor.test(hk5_cc$dem_always_preferable, hk5_cc$democracy_satisfaction,
+                           method = "pearson")
+
+  # By period
+  protest_cc <- hk5_cc |> filter(period == "Protest")
+  postnsl_cc <- hk5_cc |> filter(period == "Post-NSL")
+
+  protest_test <- if (nrow(protest_cc) > 10) {
+    cor.test(protest_cc$dem_always_preferable, protest_cc$democracy_satisfaction)
+  } else { NULL }
+
+  postnsl_test <- if (nrow(postnsl_cc) > 10) {
+    cor.test(postnsl_cc$dem_always_preferable, postnsl_cc$democracy_satisfaction)
+  } else { NULL }
+
+  cc_results <- tibble(
+    Period = c("Overall (Wave 5)", "Protest period", "Post-NSL period"),
+    N = c(nrow(hk5_cc), nrow(protest_cc), nrow(postnsl_cc)),
+    r = c(overall_test$estimate,
+          if (!is.null(protest_test)) protest_test$estimate else NA,
+          if (!is.null(postnsl_test)) postnsl_test$estimate else NA),
+    CI_lo = c(overall_test$conf.int[1],
+              if (!is.null(protest_test)) protest_test$conf.int[1] else NA,
+              if (!is.null(postnsl_test)) postnsl_test$conf.int[1] else NA),
+    CI_hi = c(overall_test$conf.int[2],
+              if (!is.null(protest_test)) protest_test$conf.int[2] else NA,
+              if (!is.null(postnsl_test)) postnsl_test$conf.int[2] else NA),
+    p = c(overall_test$p.value,
+          if (!is.null(protest_test)) protest_test$p.value else NA,
+          if (!is.null(postnsl_test)) postnsl_test$p.value else NA)
+  )
+
+  cc_results |>
+    mutate(across(c(r, CI_lo, CI_hi), ~round(.x, 3)),
+           p = format.pval(p, digits = 3)) |>
     kable(
-      col.names = c("% Missing Critics", "N Observed", "N Missing (imputed)",
-                     "Adjusted Post-NSL Mean", "Still > Protest Mean?"),
+      col.names = c("Period", "N", "r", "95% CI Lo", "95% CI Hi", "p-value"),
       booktabs = TRUE
     ) |>
     kable_styling(latex_options = c("hold_position"))
+} else {
+  cat("Data not loaded. Ensure prepared_data.RData is available.")
 }
 ```
 
-The results suggest that the observed trust increase is moderately robust to worst-case selection assumptions. The trust increase persists even under the assumption that a substantial proportion of missing respondents would have reported minimal trust, though it does eventually disappear under extreme non-response scenarios. This exercise does not resolve the ambiguity between preference falsification and compositional selection --- both remain plausible contributors --- but it provides a concrete benchmark for evaluating the magnitude of selection required to explain the full trust shift.
+If the positive correlation is concentrated in the post-NSL period, this supports the interpretation that concept co-optation --- the regime's redefinition of "democracy" --- is driving the reversal of the standard critical citizens pattern. If the positive correlation is already present during the protest period, the interpretation is more ambiguous and may reflect features of Hong Kong's political culture that predate the NSL.
