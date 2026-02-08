@@ -5,6 +5,10 @@ missing_conventions:
   treat_as_na:
     codes: [-1, 0, 7, 8, 9, 97, 98, 99]
     description: "Standard missing codes for survey items"
+  # Education: 7-9 are valid levels (secondary, some university, university); 11=Other is missing
+  treat_as_na_education:
+    codes: [-1, 11, 97, 98, 99]
+    description: "Missing codes for education level (preserves valid levels 1-10)"
   # Country/ID variables should NOT treat 7, 8, 9 as missing (those are valid country codes)
   treat_as_na_identifiers:
     codes: [-1, 97, 98, 99]
@@ -129,7 +133,9 @@ variables:
       w6: se5
     scale:
       min: 1
-      max: 10 # TODO: verify max value across waves
+      max: 10
+    missing:
+      use_convention: treat_as_na_education
     harmonize:
       default:
         method: identity
