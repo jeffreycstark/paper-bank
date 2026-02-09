@@ -302,8 +302,10 @@ if (!is.null(w2_data) && !is.null(w346_data)) {
   # Wide format for display
   sample_wide <- sample_summary %>%
     select(country_name, wave_label, N) %>%
+    mutate(wave_label = factor(wave_label, levels = c("W2", "W3", "W4", "W6"))) %>%
     pivot_wider(names_from = wave_label, values_from = N, values_fill = 0) %>%
-    mutate(Total = rowSums(across(where(is.numeric)), na.rm = TRUE)) %>%
+    select(country_name, W2, W3, W4, W6) %>%
+    mutate(Total = W2 + W3 + W4 + W6) %>%
     arrange(country_name)
 
   # Add column totals
