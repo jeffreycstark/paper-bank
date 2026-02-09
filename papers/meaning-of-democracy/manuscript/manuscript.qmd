@@ -230,16 +230,15 @@ Table 1 reports the average marginal effect of loser status on the probability o
 
 # Build the main results table
 tbl <- pooled %>%
-  arrange(item_type, desc(ame)) %>%
+  arrange(desc(ame)) %>%
   mutate(
     Type = str_to_title(item_type),
     Item = item_label,
-    Set = set,
     `AME (pp)` = sprintf("%+.1f", ame * 100),
     SE = sprintf("%.1f", se * 100),
     Sig = sig
   ) %>%
-  select(Set, Item, Type, `AME (pp)`, SE, Sig)
+  select(Item, Type, `AME (pp)`, SE, Sig)
 
 if (knitr::is_latex_output()) {
   tbl_out <- tbl %>%
@@ -263,7 +262,7 @@ if (knitr::is_latex_output()) {
     )
   # Make footnote rows wrap and single-space
   tbl_str <- as.character(tbl_out)
-  tbl_str <- gsub("\\multicolumn{6}{l}{", "\\multicolumn{6}{p{\\linewidth}}{\\singlespacing ", tbl_str, fixed = TRUE)
+  tbl_str <- gsub("\\multicolumn{5}{l}{", "\\multicolumn{5}{p{\\linewidth}}{\\singlespacing ", tbl_str, fixed = TRUE)
   cat(tbl_str)
 } else {
   # For DOCX: use pipe format with full column names
