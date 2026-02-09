@@ -47,7 +47,7 @@ format:
     theme: cosmo
   docx:
     reference-doc: custom-reference.docx
-    number-sections: true
+    number-sections: false
 csl: chicago-author-date.csl
 execute:
   echo: false
