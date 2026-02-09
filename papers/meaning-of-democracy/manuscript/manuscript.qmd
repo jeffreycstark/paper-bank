@@ -470,7 +470,9 @@ The within-country trajectories provide the strongest evidence for this claim. T
 
 One implication is troubling. Where democratic erosion creates permanent winners and permanent losers, support for procedural democracy becomes concentrated among those least able to defend it. The citizens who most value free elections and civil liberties are precisely those whom the political system has rendered powerless to demand them. Understanding this dynamic---and whether the democratic commitments of losers can be mobilized to resist erosion---remains among the most pressing challenges for scholars of comparative democratization. Future research might extend these findings in two directions: first, by examining whether losers' procedural orientations translate into distinct patterns of political behavior — particularly unconventional participation such as protest, petition, and civil disobedience — testing whether democratic conceptions serve as blueprints for resistance rather than mere survey artifacts; and second, by assessing whether the positional logic holds beyond Asia, in Latin American and African democracies experiencing their own trajectories of erosion and recovery.
 
-# References
+# References {.unnumbered}
+
+\singlespacing
 
 ::: {#refs}
 :::
