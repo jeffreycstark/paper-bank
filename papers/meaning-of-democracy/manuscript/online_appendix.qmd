@@ -891,7 +891,7 @@ knitr::include_graphics(here("papers", "meaning-of-democracy", "analysis",
                              "fig_robustness_fairness.pdf"))
 ```
 
-The results are consistent with the positional account. Among procedural items, the majority show a positive interaction---the loser effect is larger among those who perceive elections as unfair. The pattern is particularly striking for court protection (+6.0 pp), media freedom (+3.5 pp), and free expression (+1.5 pp). Among substantive items, the interaction is more mixed, though unemployment aid shows a large negative interaction ($-$8.4 pp), indicating that losers perceiving unfair elections shift *away* from substantive conceptions even more strongly. These patterns suggest that the loser effect is amplified by perceived procedural threat rather than reflecting a fixed orientation.
+The results are consistent with the positional account. Among procedural items, the majority show a positive interaction---the loser effect is larger among those who perceive elections as unfair. The pattern is particularly striking for court protection (+6.0 pp), media freedom (+3.5 pp), and free expression (+1.5 pp). Among substantive items, the interaction is more mixed, though unemployment aid shows a large negative interaction (--8.4 pp), indicating that losers perceiving unfair elections shift *away* from substantive conceptions even more strongly. These patterns suggest that the loser effect is amplified by perceived procedural threat rather than reflecting a fixed orientation.
 
 # Three-Way Loser Decomposition {#sec-threeway}
 
@@ -911,7 +911,7 @@ if (!is.null(threeway) && nrow(threeway) > 0) {
   threeway %>%
     select(Item = item_label, Type = item_type,
            Winner, `Key Opp.` = `Key Opposition`, Other,
-           `KO $-$ W` = `KO - W`, `Other $-$ W` = `Other - W`) %>%
+           `KO -- W` = `KO - W`, `Other -- W` = `Other - W`) %>%
     kbl(booktabs = TRUE, digits = 3, escape = FALSE,
         align = c("l", "l", "r", "r", "r", "r", "r")) %>%
     kable_styling(latex_options = c("hold_position", "striped"),
