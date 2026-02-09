@@ -37,6 +37,8 @@ format:
     number-sections: true
     prefer-html: true
 bibliography: Winners-losers.bib
+nocite: |
+  @CEC2004, @CEC2008, @CEC2016, @NEC2008, @NEC2012, @NEC2020, @ECT2007, @ECT2019, @IFES_ElectionGuide
 csl: chicago-author-date.csl
 execute:
   echo: false
@@ -136,20 +138,20 @@ Table B1 reports the reference election for each country-wave in the analysis, i
 
 ref_elections <- tibble::tribble(
   ~Country, ~Wave, ~`Election Type`, ~Date, ~Winner, ~`Runner-up`, ~Source,
-  "Japan", "W2", "House of Reps", "Sep 2005", "LDP (Koizumi)", "DPJ", "ABS codebook",
-  "Japan", "W3", "House of Reps", "Aug 2009", "DPJ (Hatoyama)", "LDP", "ABS codebook",
-  "Japan", "W4", "House of Reps", "Dec 2012", "LDP (Abe)", "DPJ", "ABS codebook",
-  "Japan", "W6", "House of Reps", "Oct 2021", "LDP (Kishida)", "CDP", "ABS codebook",
+  "Japan", "W2", "House of Reps", "Sep 2005", "LDP (Koizumi)", "DPJ", "IFES",
+  "Japan", "W3", "House of Reps", "Aug 2009", "DPJ (Hatoyama)", "LDP", "IFES",
+  "Japan", "W4", "House of Reps", "Dec 2012", "LDP (Abe)", "DPJ", "IFES",
+  "Japan", "W6", "House of Reps", "Oct 2021", "LDP (Kishida)", "CDP", "IFES",
   "S. Korea", "W3", "Presidential", "Dec 2007", "Lee Myung-bak (GNP)", "Chung Dong-young", "NEC",
   "S. Korea", "W4", "Presidential", "Dec 2012", "Park Geun-hye (Saenuri)", "Moon Jae-in", "NEC",
   "S. Korea", "W6", "Presidential", "Mar 2022", "Yoon Suk Yeol (PPP)", "Lee Jae-myung", "NEC",
-  "Mongolia", "W2", "Parliamentary", "Jun 2004", "MPRP", "MDC", "ABS codebook",
-  "Mongolia", "W3", "Parliamentary", "Jun 2008", "MPRP", "DP", "ABS codebook",
-  "Mongolia", "W4", "Parliamentary", "Jun 2012", "DP", "MPP", "ABS codebook",
-  "Philippines", "W2", "Presidential", "May 2004", "Arroyo (Lakas)", "Poe (KNP)", "ABS codebook",
-  "Philippines", "W3", "Presidential", "May 2010", "Aquino III (LP)", "Estrada", "ABS codebook",
-  "Philippines", "W4", "Midterm", "May 2013", "LP coalition", "UNA", "ABS codebook",
-  "Philippines", "W6", "Presidential", "May 2022", "Marcos Jr. (PFP)", "Robredo (LP)", "ABS codebook",
+  "Mongolia", "W2", "Parliamentary", "Jun 2004", "MPRP", "MDC", "IFES",
+  "Mongolia", "W3", "Parliamentary", "Jun 2008", "MPRP", "DP", "IFES",
+  "Mongolia", "W4", "Parliamentary", "Jun 2012", "DP", "MPP", "IFES",
+  "Philippines", "W2", "Presidential", "May 2004", "Arroyo (Lakas)", "Poe (KNP)", "IFES",
+  "Philippines", "W3", "Presidential", "May 2010", "Aquino III (LP)", "Estrada", "IFES",
+  "Philippines", "W4", "Midterm", "May 2013", "LP coalition", "UNA", "IFES",
+  "Philippines", "W6", "Presidential", "May 2022", "Marcos Jr. (PFP)", "Robredo (LP)", "IFES",
   "Taiwan", "W2", "Presidential", "Mar 2004", "Chen Shui-bian (DPP)", "Lien Chan (KMT)", "CEC",
   "Taiwan", "W3", "Presidential", "Mar 2008", "Ma Ying-jeou (KMT)", "Hsieh (DPP)", "CEC",
   "Taiwan", "W4", "Presidential", "Jan 2012", "Ma Ying-jeou (KMT)", "Tsai Ing-wen (DPP)", "CEC",
@@ -157,19 +159,19 @@ ref_elections <- tibble::tribble(
   "Thailand", "W3", "Parliamentary", "Dec 2007", "PPP (pro-Thaksin)", "Democrat Party", "ECT",
   "Thailand", "W4", "---", "---", "Excluded (2014 coup)", "---", "---",
   "Thailand", "W6", "Parliamentary", "Mar 2019", "PPRP coalition", "Pheu Thai", "ECT",
-  "Indonesia", "W2", "Presidential", "Sep 2004", "SBY (Democrat)", "Megawati (PDI-P)", "ABS codebook",
-  "Indonesia", "W3", "Presidential", "Jul 2009", "SBY (Democrat)", "Megawati (PDI-P)", "ABS codebook",
-  "Indonesia", "W4", "Presidential", "Jul 2014", "Jokowi (PDI-P)", "Prabowo (Gerindra)", "ABS codebook",
-  "Indonesia", "W6", "Presidential", "Apr 2019", "Jokowi (PDI-P)", "Prabowo (Gerindra)", "ABS codebook",
-  "Cambodia", "W3", "National Assembly", "Jul 2008", "CPP (Hun Sen)", "SRP", "ABS codebook",
-  "Cambodia", "W4", "National Assembly", "Jul 2013", "CPP (Hun Sen)", "CNRP", "ABS codebook",
-  "Cambodia", "W6", "National Assembly", "Jul 2018", "CPP (Hun Sen)", "CNRP dissolved", "ABS codebook",
-  "Malaysia", "W2", "General election", "Mar 2004", "BN (Abdullah)", "PAS/DAP", "ABS codebook",
-  "Malaysia", "W3", "General election", "Mar 2008", "BN (Abdullah)", "PR coalition", "ABS codebook",
-  "Malaysia", "W4", "General election", "May 2013", "BN (Najib)", "PR (Anwar)", "ABS codebook",
-  "Malaysia", "W6", "General election", "Nov 2022", "PH (Anwar)", "PN (Muhyiddin)", "ABS codebook",
-  "Myanmar", "W4", "General election", "Nov 2015", "NLD (Aung San Suu Kyi)", "USDP", "ABS codebook",
-  "Australia", "W4", "Federal election", "Sep 2013", "Coalition (Abbott)", "ALP (Rudd)", "ABS codebook"
+  "Indonesia", "W2", "Presidential", "Sep 2004", "SBY (Democrat)", "Megawati (PDI-P)", "IFES",
+  "Indonesia", "W3", "Presidential", "Jul 2009", "SBY (Democrat)", "Megawati (PDI-P)", "IFES",
+  "Indonesia", "W4", "Presidential", "Jul 2014", "Jokowi (PDI-P)", "Prabowo (Gerindra)", "IFES",
+  "Indonesia", "W6", "Presidential", "Apr 2019", "Jokowi (PDI-P)", "Prabowo (Gerindra)", "IFES",
+  "Cambodia", "W3", "National Assembly", "Jul 2008", "CPP (Hun Sen)", "SRP", "IFES",
+  "Cambodia", "W4", "National Assembly", "Jul 2013", "CPP (Hun Sen)", "CNRP", "IFES",
+  "Cambodia", "W6", "National Assembly", "Jul 2018", "CPP (Hun Sen)", "CNRP dissolved", "IFES",
+  "Malaysia", "W2", "General election", "Mar 2004", "BN (Abdullah)", "PAS/DAP", "IFES",
+  "Malaysia", "W3", "General election", "Mar 2008", "BN (Abdullah)", "PR coalition", "IFES",
+  "Malaysia", "W4", "General election", "May 2013", "BN (Najib)", "PR (Anwar)", "IFES",
+  "Malaysia", "W6", "General election", "Nov 2022", "PH (Anwar)", "PN (Muhyiddin)", "IFES",
+  "Myanmar", "W4", "General election", "Nov 2015", "NLD (Aung San Suu Kyi)", "USDP", "IFES",
+  "Australia", "W4", "Federal election", "Sep 2013", "Coalition (Abbott)", "ALP (Rudd)", "IFES"
 )
 
 if (knitr::is_latex_output()) {
@@ -187,7 +189,7 @@ if (knitr::is_latex_output()) {
     column_spec(6, width = "3cm") %>%
     column_spec(7, width = "1.8cm") %>%
     footnote(
-      general = "Dashes indicate the country was not surveyed in that wave or, for Thailand W4, that no valid reference election existed. Source abbreviations: NEC = National Election Commission of Korea; CEC = Central Election Commission of Taiwan; ECT = Election Commission of Thailand.",
+      general = "Dashes indicate the country was not surveyed in that wave or, for Thailand W4, that no valid reference election existed. Source abbreviations: NEC = National Election Commission of Korea; CEC = Central Election Commission of Taiwan; ECT = Election Commission of Thailand; IFES = IFES ElectionGuide [@International-Foundation-for-Electoral-Systems2024-vn].",
       general_title = "Note: ",
       footnote_as_chunk = TRUE,
       threeparttable = TRUE
@@ -241,7 +243,7 @@ if (knitr::is_latex_output()) {
     column_spec(6, width = "3cm") %>%
     column_spec(7, width = "1.2cm") %>%
     footnote(
-      general = "Sources: Central Election Commission of Taiwan [@CEC2004; @CEC2008; @CEC2016]; National Election Commission of Korea [@NEC2008; @NEC2012; @NEC2020]; Election Commission of Thailand [@ECT2007; @ECT2019]; IFES Election Guide [@IFES_ElectionGuide].",
+      general = "Sources: Central Election Commission of Taiwan (2004, 2008, 2016); National Election Commission of Korea (2008, 2012, 2020); Election Commission of Thailand (2007, 2019); IFES Election Guide (2024).",
       general_title = "Note: ",
       footnote_as_chunk = TRUE,
       threeparttable = TRUE
