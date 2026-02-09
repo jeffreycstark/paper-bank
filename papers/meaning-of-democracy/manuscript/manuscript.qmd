@@ -37,8 +37,8 @@ format:
           \usepackage{graphicx}
           \usepackage{threeparttable}
           \usepackage{threeparttablex}
+          \raggedbottom
           \floatplacement{figure}{H}
-          \floatplacement{table}{H}
   html:
     toc: true
     toc-depth: 3
@@ -99,6 +99,13 @@ total_n <- cw_items %>%
   ungroup() %>%
   pull(n) %>%
   sum()
+
+# COVID robustness summary
+covid_sum <- readRDS(file.path(results_path, "robustness_covid_summary.rds"))
+covid_proc_base <- covid_sum %>% filter(item_type == "procedural", controls == "base") %>% pull(mean_ame)
+covid_proc_covid <- covid_sum %>% filter(item_type == "procedural", controls == "covid") %>% pull(mean_ame)
+covid_sub_base <- covid_sum %>% filter(item_type == "substantive", controls == "base") %>% pull(mean_ame)
+covid_sub_covid <- covid_sum %>% filter(item_type == "substantive", controls == "covid") %>% pull(mean_ame)
 ```
 
 # Introduction
@@ -186,52 +193,6 @@ To examine country-level variation and within-country trajectories (H2 and H3), 
 
 ## The Overall Loser Effect
 
-```{r tbl-pooled}
-#| tbl-cap: "Average Marginal Effect of Loser Status on Item Selection"
-
-# Build the main results table
-tbl <- pooled %>%
-  arrange(item_type, desc(ame)) %>%
-  mutate(
-    Type = str_to_title(item_type),
-    Item = item_label,
-    Set = set,
-    `AME (pp)` = sprintf("%+.1f", ame * 100),
-    SE = sprintf("%.1f", se * 100),
-    Sig = sig
-  ) %>%
-  select(Set, Item, Type, `AME (pp)`, SE, Sig)
-
-if (knitr::is_latex_output()) {
-  tbl %>%
-    kbl(
-      booktabs = TRUE,
-      longtable = FALSE,
-      linesep = ""
-    ) %>%
-    kable_styling(
-      latex_options = c("striped", "hold_position"),
-      font_size = 10
-    ) %>%
-    column_spec(1, width = "1.2cm") %>%
-    column_spec(2, width = "4.5cm") %>%
-    column_spec(3, width = "2.5cm") %>%
-    column_spec(4, width = "2cm") %>%
-    column_spec(5, width = "1.5cm") %>%
-    column_spec(6, width = "1.2cm") %>%
-    footnote(
-      general = "Average marginal effects from multinomial logit with country and wave fixed effects and demographic controls (age, gender, education, urban residence). Positive values indicate losers are more likely to select the item. Bootstrap standard errors clustered at the country level.",
-      symbol = c("† p < 0.10, * p < 0.05, ** p < 0.01, *** p < 0.001"),
-      general_title = "Note:",
-      footnote_as_chunk = TRUE
-    )
-} else {
-  # For DOCX: use pipe format with full column names
-  tbl %>%
-    kable(format = "pipe", align = c("l", "l", "l", "r", "r", "c"))
-}
-```
-
 ```{r pooled-summary}
 #| include: false
 # Summary stats for inline text
@@ -260,6 +221,47 @@ largest_gov <- gov_items %>% filter(ame == min(ame))
 ```
 
 Table 1 reports the average marginal effect of loser status on the probability of selecting each of the twenty items across the pooled sample. The pattern is consistent with H1: `r n_proc_pos` of `r n_proc_total` procedural items show positive effects (losers more likely to select), while all `r n_sub_total` substantive items show negative effects (winners more likely to select). Procedural effects range from `r proc_range_lo` to `r proc_range_hi` percentage points, with `r largest_proc$item_label` showing the largest effect (`r fmt_pp(largest_proc$ame)` pp, $p$ `r ifelse(largest_proc$p < 0.001, "< 0.001", sprintf("= %.3f", largest_proc$p))`). Substantive effects range from `r sub_range_lo` to `r sub_range_hi` pp, with `r largest_sub$item_label` as the largest (`r fmt_pp(largest_sub$ame)` pp, $p$ `r ifelse(largest_sub$p < 0.001, "< 0.001", sprintf("= %.3f", largest_sub$p))`).
+
+```{r tbl-pooled}
+#| tbl-cap: "Average Marginal Effect of Loser Status on Item Selection"
+
+# Build the main results table
+tbl <- pooled %>%
+  arrange(item_type, desc(ame)) %>%
+  mutate(
+    Type = str_to_title(item_type),
+    Item = item_label,
+    Set = set,
+    `AME (pp)` = sprintf("%+.1f", ame * 100),
+    SE = sprintf("%.1f", se * 100),
+    Sig = sig
+  ) %>%
+  select(Set, Item, Type, `AME (pp)`, SE, Sig)
+
+if (knitr::is_latex_output()) {
+  tbl %>%
+    kbl(
+      booktabs = TRUE,
+      longtable = FALSE,
+      linesep = ""
+    ) %>%
+    kable_styling(
+      latex_options = c("striped", "hold_position"),
+      font_size = 10,
+      full_width = FALSE
+    ) %>%
+    footnote(
+      general = "Average marginal effects from multinomial logit with country and wave fixed effects and demographic controls (age, gender, education, urban residence). Positive values indicate losers are more likely to select the item. Bootstrap standard errors clustered at the country level.",
+      symbol = c("† p < 0.10, * p < 0.05, ** p < 0.01, *** p < 0.001"),
+      general_title = "Note:",
+      footnote_as_chunk = TRUE
+    )
+} else {
+  # For DOCX: use pipe format with full column names
+  tbl %>%
+    kable(format = "pipe", align = c("l", "l", "l", "r", "r", "c"))
+}
+```
 
 The individual effects are modest---typically two to four percentage points---but the consistency of the pattern across twenty items from five separate batteries is notable. This is not a result driven by one or two items. Winners and losers differ systematically in how they conceptualize democracy, with losers oriented toward the rules governing political competition and winners oriented toward the material benefits government provides.
 
@@ -432,7 +434,7 @@ The main estimates rely on wild cluster bootstrap inference at the country level
 
 The WLS results closely replicate the main findings. Nine of ten procedural items show positive loser effects (six significant at *p* < 0.05), all six substantive items show negative effects (five significant), and all four governance items show negative effects (one significant). The mean effect sizes---+2.2 percentage points for procedural items, -2.4 for substantive, -1.9 for governance---are comparable to the individual-level estimates, suggesting that the main results are not artifacts of the clustering structure or of the specific variance estimator employed.
 
-A final robustness check addresses the weakened loser effect observed in Wave 6 across most countries. Because Wave 6 fieldwork coincided with the COVID-19 pandemic, state capacity became salient for all citizens regardless of electoral status, potentially compressing the procedural-substantive gap. Two Wave 6 items permit a direct test: respondents' evaluations of their government's handling of the pandemic and their trust in government-provided COVID-19 information. If the pandemic's homogenizing effect operates through heightened attention to state performance, controlling for these COVID attitudes should partially restore the loser effect. Re-estimating the Wave 6 multinomial models with COVID controls included yields results consistent with this expectation: the mean procedural AME increases modestly (from X.X to X.X pp) and the mean substantive AME becomes more negative (from X.X to X.X pp), though confidence intervals overlap with the baseline estimates. The COVID controls themselves are significant predictors of democratic conceptions — respondents who distrust government pandemic information are more likely to select procedural items — but their inclusion does not eliminate the Wave 6 compression, suggesting that the pandemic effect operates through channels beyond the two measured attitudes. Thailand remains the clear exception: controlling for COVID perceptions leaves the Thai loser effect essentially unchanged, consistent with the interpretation that democratic erosion overwhelmed the pandemic's homogenizing pull.
+A final robustness check addresses the weakened loser effect observed in Wave 6 across most countries. Because Wave 6 fieldwork coincided with the COVID-19 pandemic, state capacity became salient for all citizens regardless of electoral status, potentially compressing the procedural-substantive gap. Two Wave 6 items permit a direct test: respondents' evaluations of their government's handling of the pandemic and their trust in government-provided COVID-19 information. If the pandemic's homogenizing effect operates through heightened attention to state performance, controlling for these COVID attitudes should partially restore the loser effect. Re-estimating the Wave 6 multinomial models with COVID controls included yields results that are essentially unchanged: the mean procedural AME moves from `r fmt_pp(covid_proc_base)` to `r fmt_pp(covid_proc_covid)` pp, and the mean substantive AME moves from `r fmt_pp(covid_sub_base)` to `r fmt_pp(covid_sub_covid)` pp, with confidence intervals that overlap substantially with the baseline estimates. The COVID controls themselves are significant predictors of democratic conceptions---respondents who distrust government pandemic information are more likely to select procedural items---but their inclusion does not eliminate the Wave 6 compression, suggesting that the pandemic effect operates through channels beyond the two measured attitudes. Thailand remains the clear exception: controlling for COVID perceptions leaves the Thai loser effect essentially unchanged, consistent with the interpretation that democratic erosion overwhelmed the pandemic's homogenizing pull.
 
 Two additional concerns warrant attention. First, restricting the sample to self-reported voters could introduce selection bias if the propensity to vote correlates with both democratic conceptions and electoral status. Among the countries in the analysis, non-voter rates are generally moderate, ranging from under 10 percent in Thailand to approximately 25 percent in select country-waves (Appendix Table H1). A direct comparison of non-voters' democratic conceptions to those of winners and losers reveals that non-voters' procedural-substantive gap (14.3 percentage points, 95% CI: 12.7--15.8) is virtually identical to that of winners (13.9 pp, 95% CI: 13.2--14.7) and well below that of losers (17.3 pp, 95% CI: 16.3--18.3; Appendix Table H2). Non-voters thus resemble winners who chose not to participate rather than alienated citizens with suppressed procedural preferences, and their exclusion does not inflate the estimated loser effect — if anything, it biases against finding one, since the excluded group resembles winners (Appendix Tables H3–H4).
 

@@ -290,7 +290,21 @@ if (nrow(thai_w6) > 50) {
 
 ```{r save}
 if (nrow(all_results) > 0) {
+  # Save item-level results
   write_csv(all_results, file.path(results_dir, "robustness_covid_controls.csv"))
-  cat("Results saved to:", file.path(results_dir, "robustness_covid_controls.csv"), "\n")
+
+  # Save typed summary for manuscript inline references
+  item_types <- item_meta %>%
+    filter(grepl("^Set", set)) %>%
+    select(set, value, item_type)
+
+  covid_summary <- all_results %>%
+    mutate(choice = as.integer(choice)) %>%
+    left_join(item_types, by = c("set", "choice" = "value")) %>%
+    group_by(item_type, controls) %>%
+    summarise(mean_ame = mean(ame), .groups = "drop")
+
+  saveRDS(covid_summary, file.path(results_dir, "robustness_covid_summary.rds"))
+  cat("Results saved to:", results_dir, "\n")
 }
 ```
