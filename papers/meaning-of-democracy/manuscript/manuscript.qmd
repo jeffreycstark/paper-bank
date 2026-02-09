@@ -23,7 +23,7 @@ format:
     geometry:
       - margin=1in
     linestretch: 2
-    number-sections: true
+    number-sections: false
     colorlinks: true
     keep-tex: true
     include-in-header:
