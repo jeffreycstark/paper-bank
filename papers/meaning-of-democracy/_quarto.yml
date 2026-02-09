@@ -10,7 +10,7 @@ format:
     geometry:
       - margin=1in
     linestretch: 2
-    number-sections: true
+    number-sections: false
     colorlinks: true
     linkcolor: blue
     urlcolor: blue
