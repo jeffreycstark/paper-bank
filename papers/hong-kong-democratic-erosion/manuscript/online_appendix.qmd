@@ -68,39 +68,70 @@ if (file.exists("../analysis/results/main_analysis_results.RData")) {
 
 ```{r}
 #| label: tbl-var-definitions
-#| tbl-cap: "Variable definitions and coding. All scales oriented so that higher values indicate more of the named concept."
+#| tbl-cap: "Variable definitions, scales, and coding for all variables used in the analysis."
 
-# TODO: Build this table from the actual variable metadata.
-# Each row should include: Variable name (as used in text), ABS item code,
-# Scale range (e.g., 1-4, 1-10), Original direction, Recoded?, Description.
-# This can be constructed manually or extracted from the data preparation script.
-# Example structure:
 var_defs <- tribble(
-  ~Variable, ~`ABS Item`, ~Scale, ~Direction, ~Description,
-  "Democracy suitability", "q104", "1--10", "Higher = more suitable", "How suitable is democracy for [country]?",
-  "Trust in police", "q14", "1--4", "Higher = more trust", "How much trust do you have in the police?",
-  "Trust in national government", "q9", "1--4", "Higher = more trust", "How much trust do you have in the national government?",
-  "Trust in president/CE", "q7", "1--4", "Higher = more trust", "How much trust do you have in the president/chief executive?",
-  "Trust in courts", "q8", "1--4", "Higher = more trust", "How much trust do you have in the courts?",
-  "Trust in parliament", "q11", "1--4", "Higher = more trust", "How much trust do you have in the parliament/legislature?",
-  "Trust in military", "q13", "1--4", "Higher = more trust", "How much trust do you have in the military?",
-  "Democracy always preferable", "q132", "1--3", "Higher = stronger preference", "Democracy is always preferable / sometimes authoritarian / doesn't matter",
-  "Democratic satisfaction", "q99", "1--4", "Higher = more satisfied", "On the whole, how satisfied or dissatisfied are you with the way democracy works?",
-  "Freedom to organize", "q116", "1--4", "Higher = more free", "People can join any organization they like without fear",
-  "Free to speak without fear", "q115", "1--4", "Higher = more freedom", "People are free to speak what they think without fear",
-  "Govt responds to people", "q121", "1--4", "Higher = more responsive", "How well do you think the government responds to what people want?",
-  "Elections free and fair", "q38", "1--4", "Higher = more fair", "On the whole, how free and fair would you say the last national election was?",
-  "System deserves support", "q88", "1--4", "Higher = more support", "A system like ours, even if it runs into problems, deserves the people's support",
-  "System needs major change", "q90", "varies", "Higher = more change needed", "Would you say our system of government works fine as it is, needs minor change, needs major change, or should be replaced?",
-  "Willing to emigrate", "q167", "varies", "Higher = more willing", "Given the chance, how willing would you be to go and live in another country?"
+  ~Variable, ~Scale, ~Category, ~Description,
+  "Trust in police", "1--4", "Institutional trust",
+    "Degree of trust in the police (1 = none at all, 4 = a great deal).",
+  "Trust in national government", "1--4", "Institutional trust",
+    "Degree of trust in the national government.",
+  "Trust in president/CE", "1--4", "Institutional trust",
+    "Degree of trust in the president or chief executive.",
+  "Trust in parliament", "1--4", "Institutional trust",
+    "Degree of trust in the parliament or legislature.",
+  "Trust in courts", "1--4", "Institutional trust",
+    "Degree of trust in the courts of justice.",
+  "Trust in civil service", "1--4", "Institutional trust",
+    "Degree of trust in the civil service.",
+
+  "Democracy suitability", "1--10", "Democratic attitudes",
+    "How suitable is democracy for the respondent's country (1 = completely unsuitable, 10 = completely suitable).",
+  "Extent of current democracy", "1--10", "Democratic attitudes",
+    "How democratic the respondent rates the current political system (1 = completely undemocratic, 10 = completely democratic).",
+  "Current government rating", "1--10", "Democratic attitudes",
+    "How dictatorial or democratic the current government is perceived to be (1 = very dictatorial, 10 = very democratic).",
+  "Democracy always preferable", "1--3", "Democratic attitudes",
+    "Whether democracy is always preferable (1), authoritarian government is sometimes preferable (2), or it doesn't matter (3).",
+  "Democratic satisfaction", "1--4", "Democratic attitudes",
+    "Satisfaction with the way democracy works (1 = not at all satisfied, 4 = very satisfied).",
+
+  "Freedom to organize", "1--4", "Governance quality",
+    "Agreement that people are free to join any organization without fear (1 = strongly disagree, 4 = strongly agree).",
+  "Freedom of speech", "1--4", "Governance quality",
+    "Agreement that people can speak freely without fear (1 = strongly disagree, 4 = strongly agree).",
+  "Elections free and fair", "1--4", "Governance quality",
+    "Rating of how free and fair the last election was (1 = not free or fair, 4 = completely free and fair).",
+  "Rich and poor treated equally", "1--4", "Governance quality",
+    "Assessment of whether rich and poor are treated equally under the law.",
+
+  "System deserves support", "1--4", "System support",
+    "Agreement that the political system deserves support even when it runs into problems (1 = strongly disagree, 4 = strongly agree).",
+  "System pride", "1--4", "System support",
+    "Degree of pride in the country's system of government.",
+
+  "Political interest", "1--4", "Control",
+    "Self-reported level of interest in politics (1 = not at all interested, 4 = very interested).",
+  "Willing to emigrate", "1--4", "Control",
+    "Willingness to live in another country if given the opportunity.",
+
+  "Essential element of democracy", "Categorical", "Derived",
+    "Forced-choice item: most essential element of democracy (1 = free expression, 2 = free elections, 4 = basic necessities, 5 = clean governance).",
+  "Procedural vs.\\ substantive", "0/1", "Derived",
+    "Binary indicator derived from the essential element item (0 = substantive conception, 1 = procedural conception)."
 )
 
 var_defs |>
+  select(Variable, Scale, Description) |>
   kable(booktabs = TRUE) |>
-  kable_styling(latex_options = c("scale_down", "hold_position"))
+  kable_styling(latex_options = c("scale_down", "hold_position")) |>
+  pack_rows("Institutional trust", 1, 6) |>
+  pack_rows("Democratic attitudes", 7, 11) |>
+  pack_rows("Governance quality", 12, 15) |>
+  pack_rows("System support", 16, 17) |>
+  pack_rows("Control variables", 18, 19) |>
+  pack_rows("Derived variables", 20, 21)
 ```
-
-**Note:** Item codes refer to the ABS Wave 5 merged questionnaire numbering (20230505_W5_merge_15).
 
 
 # Mann-Whitney U Tests {#sec-mannwhitney}
@@ -595,7 +626,212 @@ if (exists("hk5")) {
 }
 ```
 
-If the positive correlation is concentrated in the post-NSL period, this supports the interpretation that concept co-optation --- the regime's redefinition of "democracy" --- is driving the reversal of the standard critical citizens pattern. If the positive correlation is already present during the protest period, the interpretation is more ambiguous and may reflect features of Hong Kong's political culture that predate the NSL.
+The positive correlation is concentrated in the post-NSL period, consistent with a mechanism that operates more strongly under authoritarian constraint.
+
+## Cross-National Comparison {#sec-cc-crossnational}
+
+@tbl-cc-crossnational reports the Pearson correlation between democratic preference ("democracy is always preferable") and democratic satisfaction for all fifteen ABS Wave 5 polities with sufficient data ($N \geq 50$).
+
+```{r}
+#| label: tbl-cc-crossnational
+#| tbl-cap: "Critical citizens correlation (democratic preference × democratic satisfaction) across ABS Wave 5 polities, sorted by correlation magnitude."
+
+if (file.exists("../analysis/results/cc_country.RData")) {
+  load("../analysis/results/cc_country.RData")
+  cc_country |>
+    mutate(across(c(r, ci_lo, ci_hi), ~round(.x, 3)),
+           p = format.pval(p, digits = 3)) |>
+    kable(
+      col.names = c("Polity", "N", "r", "95% CI Lo", "95% CI Hi", "p-value"),
+      booktabs = TRUE
+    ) |>
+    kable_styling(latex_options = c("hold_position")) |>
+    row_spec(1, bold = TRUE)
+} else {
+  cat("cc_country.RData not found.")
+}
+```
+
+Hong Kong is the only polity with a positive correlation ($r = 0.279$). Singapore shows a near-zero positive value ($r = 0.013$, $p = .70$); all other polities are negative, with established democracies (Australia, Taiwan, Japan, South Korea) showing the strongest negative correlations as expected by the critical citizens framework.
+
+## Decomposition by Democratic Conception Type {#sec-cc-conception}
+
+@tbl-cc-conception decomposes the critical citizens correlation by respondents' conception of democracy, using the ABS forced-choice item asking which element is most essential to democracy. Respondents are classified as holding procedural conceptions (free expression or free elections) or substantive conceptions (basic necessities or clean governance).
+
+```{r}
+#| label: tbl-cc-conception
+#| tbl-cap: "Critical citizens correlation decomposed by democratic conception type and fieldwork period."
+
+if (exists("hk5")) {
+  conception_labels <- c("0" = "Substantive", "1" = "Procedural")
+  
+  hk5_cc2 <- hk5 |> 
+    filter(period %in% c("Protest", "Post-NSL"),
+           !is.na(dem_procedural_vs_substantive))
+  
+  cc_conception <- expand_grid(
+    period = c("Protest", "Post-NSL"),
+    conception = c(0, 1)
+  ) |> pmap_dfr(function(period, conception) {
+    sub <- hk5_cc2 |> 
+      filter(period == !!period, dem_procedural_vs_substantive == conception,
+             !is.na(dem_always_preferable), !is.na(democracy_satisfaction))
+    if (nrow(sub) < 20) return(NULL)
+    ct <- cor.test(sub$dem_always_preferable, sub$democracy_satisfaction)
+    tibble(
+      Period = period,
+      Conception = conception_labels[as.character(conception)],
+      N = nrow(sub),
+      r = ct$estimate,
+      CI_lo = ct$conf.int[1],
+      CI_hi = ct$conf.int[2],
+      p = ct$p.value
+    )
+  })
+  
+  cc_conception |>
+    mutate(across(c(r, CI_lo, CI_hi), ~round(.x, 3)),
+           p = format.pval(p, digits = 3)) |>
+    kable(
+      col.names = c("Period", "Conception", "N", "r", "95% CI Lo", "95% CI Hi", "p-value"),
+      booktabs = TRUE
+    ) |>
+    kable_styling(latex_options = c("hold_position"))
+} else {
+  cat("Data not loaded.")
+}
+```
+
+The positive correlation is concentrated entirely among respondents with procedural conceptions of democracy ($r = 0.355$, $p < .001$). Respondents with substantive conceptions show near-zero correlations in both periods. A Fisher $z$-test confirms the difference between conception groups in the post-NSL period is statistically significant ($z = 3.55$, $p < .001$). See Sections 4.6 and 5.3 of the main text for discussion.
+
+## Fine-Grained Decomposition by Essential Element {#sec-cc-fine}
+
+@tbl-cc-fine provides a finer decomposition using the four specific response options.
+
+```{r}
+#| label: tbl-cc-fine
+#| tbl-cap: "Critical citizens correlation by specific essential element of democracy and fieldwork period."
+
+if (exists("hk5")) {
+  essential_labels <- c(
+    "1" = "Free expression", "2" = "Free elections",
+    "4" = "Basic necessities", "5" = "Clean governance"
+  )
+  
+  cc_fine <- expand_grid(
+    period = c("Protest", "Post-NSL"),
+    essential = c(1, 2, 4, 5)
+  ) |> pmap_dfr(function(period, essential) {
+    sub <- hk5 |> 
+      filter(period == !!period, dem_essential_harmonized == essential,
+             !is.na(dem_always_preferable), !is.na(democracy_satisfaction))
+    if (nrow(sub) < 20) return(NULL)
+    ct <- cor.test(sub$dem_always_preferable, sub$democracy_satisfaction)
+    tibble(
+      Period = period,
+      Element = essential_labels[as.character(essential)],
+      N = nrow(sub),
+      r = round(ct$estimate, 3),
+      CI_lo = round(ct$conf.int[1], 3),
+      CI_hi = round(ct$conf.int[2], 3),
+      p = format.pval(ct$p.value, digits = 3)
+    )
+  })
+  
+  cc_fine |>
+    kable(
+      col.names = c("Period", "Essential Element", "N", "r", "95% CI Lo", "95% CI Hi", "p-value"),
+      booktabs = TRUE
+    ) |>
+    kable_styling(latex_options = c("hold_position"))
+} else {
+  cat("Data not loaded.")
+}
+```
+
+# Differential Item Non-Response {#sec-nonresponse}
+
+@tbl-nonresponse reports item-level response rates for key survey variables, comparing the protest period and post-NSL period sub-samples.
+
+```{r}
+#| label: tbl-nonresponse
+#| tbl-cap: "Item-level response rates by fieldwork period."
+
+if (exists("hk5")) {
+  hk5_nr <- hk5 |> filter(period %in% c("Protest", "Post-NSL"))
+  
+  key_vars <- c(
+    "trust_police", "trust_national_government", "trust_president",
+    "trust_parliament", "trust_courts", "trust_civil_service",
+    "dem_always_preferable", "democracy_satisfaction",
+    "dem_extent_current", "democracy_suitability",
+    "system_deserves_support",
+    "gov_free_to_organize", "dem_free_speech", "election_free_fair",
+    "political_interest", "rich_poor_treated_equally",
+    "nat_willing_emigrate"
+  )
+  
+  item_categories <- c(
+    trust_police = "Trust", trust_national_government = "Trust",
+    trust_president = "Trust", trust_parliament = "Trust",
+    trust_courts = "Trust", trust_civil_service = "Trust",
+    dem_always_preferable = "Dem. (normative)",
+    democracy_satisfaction = "Dem. (normative)",
+    dem_extent_current = "Dem. (evaluative)",
+    democracy_suitability = "Dem. (evaluative)",
+    system_deserves_support = "System support",
+    gov_free_to_organize = "Governance", dem_free_speech = "Governance",
+    election_free_fair = "Governance",
+    political_interest = "Control", rich_poor_treated_equally = "Control",
+    nat_willing_emigrate = "Control"
+  )
+  
+  item_labels <- c(
+    trust_police = "Trust: police",
+    trust_national_government = "Trust: national govt",
+    trust_president = "Trust: president/CE",
+    trust_parliament = "Trust: parliament",
+    trust_courts = "Trust: courts",
+    trust_civil_service = "Trust: civil service",
+    dem_always_preferable = "Democracy always preferable",
+    democracy_satisfaction = "Democratic satisfaction",
+    dem_extent_current = "Extent of current democracy",
+    democracy_suitability = "Democracy suitability",
+    system_deserves_support = "System deserves support",
+    gov_free_to_organize = "Freedom to organize",
+    dem_free_speech = "Free to speak without fear",
+    election_free_fair = "Elections free and fair",
+    political_interest = "Political interest",
+    rich_poor_treated_equally = "Rich/poor treated equally",
+    nat_willing_emigrate = "Willing to emigrate"
+  )
+  
+  nr_table <- map_dfr(key_vars, function(v) {
+    if (!v %in% names(hk5_nr)) return(NULL)
+    protest <- hk5_nr |> filter(period == "Protest")
+    postnsl <- hk5_nr |> filter(period == "Post-NSL")
+    tibble(
+      Category = item_categories[v],
+      Item = item_labels[v],
+      `% Protest` = round(100 * sum(!is.na(protest[[v]])) / nrow(protest), 1),
+      `% Post-NSL` = round(100 * sum(!is.na(postnsl[[v]])) / nrow(postnsl), 1),
+      Delta = round(`% Post-NSL` - `% Protest`, 1)
+    )
+  })
+  
+  nr_table |>
+    arrange(Category, Delta) |>
+    select(-Category) |>
+    kable(booktabs = TRUE,
+          col.names = c("Item", "Response % (Protest)", "Response % (Post-NSL)", 
+                        "\u0394 (pp)")) |>
+    kable_styling(latex_options = c("hold_position", "scale_down"))
+} else {
+  cat("Data not loaded.")
+}
+```
+
+Trust items maintain near-identical response rates across periods (mean change: $+0.3$ pp). Normative democracy items decline by a mean of $4.6$ pp, governance items by $2.7$ pp, while control items remain stable. This differential pattern is consistent with politically motivated non-response on items requiring explicit democratic commitments.
 
 
 # Robust Standard Errors {#sec-robust-se}
