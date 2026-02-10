@@ -193,8 +193,10 @@ for (outcome in primary_outcomes) {
 ```{r reweighting}
 # Try WeightIt first; fall back to manual IPW if not installed
 if (!requireNamespace("WeightIt", quietly = TRUE)) {
-  cat("Installing WeightIt...\n")
-  install.packages("WeightIt", repos = "https://cran.r-project.org")
+  stop(
+    "Package 'WeightIt' is required for entropy balancing. ",
+    "Install it with install.packages('WeightIt') and re-run."
+  )
 }
 library(WeightIt)
 

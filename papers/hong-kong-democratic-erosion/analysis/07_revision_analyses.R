@@ -6,7 +6,21 @@
 
 library(tidyverse)
 
-load("/Users/jeffreystark/Development/Research/econdev-authpref/papers/hong-kong-democratic-erosion/analysis/results/prepared_data.RData")
+get_script_dir <- function() {
+  args <- commandArgs(trailingOnly = FALSE)
+  file_arg <- grep("^--file=", args, value = TRUE)
+  if (length(file_arg) > 0) {
+    return(dirname(normalizePath(sub("^--file=", "", file_arg[1]))))
+  }
+  if (!is.null(sys.frames()[[1]]$ofile)) {
+    return(dirname(normalizePath(sys.frames()[[1]]$ofile)))
+  }
+  getwd()
+}
+
+analysis_dir <- get_script_dir()
+
+load(file.path(analysis_dir, "results", "prepared_data.RData"))
 
 hk5_analysis <- hk5 |> filter(period %in% c("Protest", "Post-NSL"))
 
@@ -252,7 +266,7 @@ save(
   fisher_z_result,
   nonresponse_results,
   age_nonresp,
-  file = "/Users/jeffreystark/Development/Research/econdev-authpref/papers/hong-kong-democratic-erosion/analysis/results/revision_results.RData"
+  file = file.path(analysis_dir, "results", "revision_results.RData")
 )
 
 cat("\n\nResults saved to revision_results.RData\n")

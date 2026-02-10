@@ -207,8 +207,8 @@ if (nrow(demo_row) > 0) {
 
 ```{r dem-essential-crosstab}
 dem_ess_labels <- c(
-  `1` = "Electoral (elections)",
-  `2` = "Expressive (free expression)",
+  `1` = "Free expression",
+  `2` = "Free elections",
   `4` = "Basic Needs (necessities)",
   `5` = "Good Governance (clean politics)"
 )
@@ -253,7 +253,7 @@ proc_by_period <- dem_ess_data |>
   mutate(procedural = dem_essential_harmonized %in% c(1, 2)) |>
   group_by(period) |>
   summarise(pct_procedural = mean(procedural) * 100, .groups = "drop")
-cat("\nProcedural (electoral + expressive) share:\n")
+cat("\nProcedural (free expression + free elections) share:\n")
 cat("  Protest:", round(proc_by_period$pct_procedural[1], 1), "%\n")
 cat("  Post-NSL:", round(proc_by_period$pct_procedural[2], 1), "%\n")
 ```
@@ -305,18 +305,10 @@ if ("dem_statement_pair_1" %in% names(hk5_analysis)) {
 #| fig-height: 5
 
 dem_ess_labels_short <- c(
-  `1` = "Electoral\n(elections)",
-  `2` = "Expressive\n(free expression)",
+  `1` = "Free\nexpression",
+  `2` = "Free\nelections",
   `4` = "Basic Needs\n(necessities)",
   `5` = "Good Gov.\n(clean politics)"
-)
-
-# Table labels (no newlines for kable)
-dem_ess_labels_table <- c(
-  `1` = "Electoral (elections)",
-  `2` = "Expressive (free expression)",
-  `4` = "Basic Needs (necessities)",
-  `5` = "Good Governance (clean politics)"
 )
 
 dem_ess_plot <- hk5_analysis |>
@@ -339,7 +331,7 @@ ggplot(dem_ess_plot, aes(x = dem_label, y = prop, fill = period)) +
     fill = NULL,
     title = "Most Essential Element of Democracy (q98)",
     subtitle = paste0("Chi-squared p = ", format.pval(dem_ess_chi$p.value, digits = 3)),
-    caption = "Source: ABS W5 Hong Kong. Labels: 1=Electoral, 2=Expressive, 4=Basic Needs, 5=Good Governance.\nNote: Redistributive (3) not available in W5."
+    caption = "Source: ABS W5 Hong Kong. Labels: 1=Free expression, 2=Free elections, 4=Basic Needs, 5=Good Governance.\nNote: Redistributive (3) not available in W5."
   ) +
   theme_minimal(base_size = 12) +
   theme(
@@ -411,16 +403,7 @@ demo_bar <- demo_data |>
   count(period, action_demonstration) |>
   group_by(period) |>
   mutate(prop = n / sum(n)) |>
-  ungroup() |>
-  mutate(
-    action_label = recode(action_demonstration,
-      `1` = "Would\nnever do",
-      `2` = "Not done,\nbut might",
-      `3` = "Done\nonce",
-      `4` = "Done\n2-3x",
-      `5` = "Done\n>3x"
-    )
-  )
+  ungroup()
 
 ggplot(demo_bar, aes(x = factor(action_demonstration), y = prop, fill = period)) +
   geom_col(position = position_dodge(0.8), width = 0.7, alpha = 0.85) +

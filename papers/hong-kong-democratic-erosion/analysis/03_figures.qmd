@@ -34,6 +34,13 @@ focus_shapes <- c(
   "Singapore" = 17,
   "Regional mean" = 18
 )
+
+save_plot <- function(plot_obj, file_stem, width, height, dpi = 300) {
+  ggsave(paste0("figures/", file_stem, ".pdf"), plot_obj,
+         width = width, height = height)
+  ggsave(paste0("figures/", file_stem, ".png"), plot_obj,
+         width = width, height = height, dpi = dpi)
+}
 ```
 
 # Load Prepared Data
@@ -71,7 +78,7 @@ traj_vars <- list(
   list(var = "trust_president", title = "Trust in President/CE (1–4)"),
   list(var = "trust_police", title = "Trust in Police (1–4)"),
   list(var = "gov_free_to_organize", title = "Freedom to Organize (1–4)"),
-  list(var = "dem_free_speech", title = "Press Censors Views (1–4)\n(higher = more censorship)"),
+  list(var = "dem_free_speech", title = "Free to Speak Without Fear (1–4)"),
   list(var = "system_needs_change", title = "System Needs Major Change (1–4)")
 )
 
@@ -108,8 +115,7 @@ fig1 <- wrap_plots(panels, ncol = 3) +
   )
 
 fig1
-ggsave("figures/fig1_trajectories.pdf", fig1, width = 14, height = 9)
-ggsave("figures/fig1_trajectories.png", fig1, width = 14, height = 9, dpi = 300)
+save_plot(fig1, "fig1_trajectories", width = 14, height = 9)
 ```
 
 # Figure 2: Pre/Post NSL Comparison (Bar Chart)
@@ -122,7 +128,7 @@ nsl_vars <- tribble(
   "trust_president", "Trust in\nPresident/CE",
   "dem_always_preferable", "Democracy\nAlways Preferable",
   "gov_free_to_organize", "Freedom to\nOrganize",
-  "dem_free_speech", "Press Censors\nOpposing Views",
+  "dem_free_speech", "Free to Speak\nWithout Fear",
   "democracy_suitability", "Democracy\nSuitability",
   "govt_responds_people", "Govt Responds\nto People",
   "system_needs_change", "System Needs\nMajor Change"
@@ -150,8 +156,7 @@ fig2 <- ggplot(nsl_data, aes(x = label, y = mean, fill = period)) +
   theme(axis.text.x = element_text(size = 8))
 
 fig2
-ggsave("figures/fig2_pre_post_nsl.pdf", fig2, width = 13, height = 6)
-ggsave("figures/fig2_pre_post_nsl.png", fig2, width = 13, height = 6, dpi = 300)
+save_plot(fig2, "fig2_pre_post_nsl", width = 13, height = 6)
 ```
 
 # Figure 3: Cross-National Bar Charts (HK as Outlier)
@@ -167,7 +172,7 @@ outlier_vars <- list(
   list(var = "gov_free_to_organize",
        title = "Freedom to Organize\n(1=none, 4=great deal)"),
   list(var = "dem_free_speech",
-       title = "Press Censors Views\n(1=strongly disagree, 4=agree)")
+       title = "Free to Speak Without Fear\n(1=strongly disagree, 4=agree)")
 )
 
 make_outlier_panel <- function(var, title) {
@@ -207,8 +212,7 @@ fig3 <- wrap_plots(panels3, ncol = 2) +
   )
 
 fig3
-ggsave("figures/fig3_cross_national.pdf", fig3, width = 14, height = 10)
-ggsave("figures/fig3_cross_national.png", fig3, width = 14, height = 10, dpi = 300)
+save_plot(fig3, "fig3_cross_national", width = 14, height = 10)
 ```
 
 # Figure 4: Flipped Correlation (dem_preferable → dem_satisfaction)
@@ -232,8 +236,7 @@ fig4 <- ggplot(corr_data,
   )
 
 fig4
-ggsave("figures/fig4_flipped_correlation.pdf", fig4, width = 14, height = 5)
-ggsave("figures/fig4_flipped_correlation.png", fig4, width = 14, height = 5, dpi = 300)
+save_plot(fig4, "fig4_flipped_correlation", width = 14, height = 5)
 ```
 
 # Figure 5: Institutional Trust Trajectories
@@ -265,8 +268,7 @@ fig5 <- ggplot(trust_long, aes(x = wave, y = mean, color = institution)) +
   )
 
 fig5
-ggsave("figures/fig5_trust_trajectories.pdf", fig5, width = 13, height = 5.5)
-ggsave("figures/fig5_trust_trajectories.png", fig5, width = 13, height = 5.5, dpi = 300)
+save_plot(fig5, "fig5_trust_trajectories", width = 13, height = 5.5)
 ```
 
 # Figure 6: Monthly Timeline Within HK Wave 5
@@ -285,7 +287,7 @@ monthly_vars <- list(
   list(var = "trust_police", title = "Trust in Police (1–4)"),
   list(var = "trust_national_government", title = "Trust in Government (1–4)"),
   list(var = "gov_free_to_organize", title = "Freedom to Organize (1–4)"),
-  list(var = "dem_free_speech", title = "Press Censors Views (1–4)"),
+  list(var = "dem_free_speech", title = "Free to Speak Without Fear (1–4)"),
   list(var = "dem_always_preferable", title = "Dem. Always Preferable\n(1=always, 3=doesn't matter)")
 )
 
@@ -329,8 +331,7 @@ fig6 <- wrap_plots(panels6, ncol = 3) +
   )
 
 fig6
-ggsave("figures/fig6_monthly_timeline.pdf", fig6, width = 14, height = 9)
-ggsave("figures/fig6_monthly_timeline.png", fig6, width = 14, height = 9, dpi = 300)
+save_plot(fig6, "fig6_monthly_timeline", width = 14, height = 9)
 ```
 
 # Figure 7: Diverging Twins — Hong Kong vs Taiwan
@@ -376,8 +377,7 @@ fig7 <- wrap_plots(panels7, ncol = 3) +
   )
 
 fig7
-ggsave("figures/fig7_hk_tw_divergence.pdf", fig7, width = 14, height = 9)
-ggsave("figures/fig7_hk_tw_divergence.png", fig7, width = 14, height = 9, dpi = 300)
+save_plot(fig7, "fig7_hk_tw_divergence", width = 14, height = 9)
 ```
 
 # Figure 8: Z-Score Heatmap (All Countries × All Indicators, Wave 5)
@@ -426,6 +426,5 @@ fig8 <- ggplot(z_long, aes(x = variable, y = country_name, fill = z)) +
   )
 
 fig8
-ggsave("figures/fig8_zscore_heatmap.pdf", fig8, width = 15, height = 9)
-ggsave("figures/fig8_zscore_heatmap.png", fig8, width = 15, height = 9, dpi = 300)
+save_plot(fig8, "fig8_zscore_heatmap", width = 15, height = 9)
 ```

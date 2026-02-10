@@ -361,8 +361,16 @@ set.seed(42)
 n_boot <- 5000
 
 # --- Parallel setup ---
-if (!requireNamespace("future", quietly = TRUE)) install.packages("future", repos = "https://cran.r-project.org")
-if (!requireNamespace("furrr", quietly = TRUE)) install.packages("furrr", repos = "https://cran.r-project.org")
+require_pkg <- function(pkg) {
+  if (!requireNamespace(pkg, quietly = TRUE)) {
+    stop(
+      "Package '", pkg, "' is required for the bootstrap section. ",
+      "Install it with install.packages('", pkg, "') and re-run."
+    )
+  }
+}
+require_pkg("future")
+require_pkg("furrr")
 library(future)
 library(furrr)
 
@@ -371,30 +379,6 @@ plan(multisession, workers = n_cores)
 cat("Bootstrap running on", n_cores, "parallel workers\n")
 
 # Function to compute mean difference for a single variable
-boot_mean_diff <- function(data, indices, var, period_var = "period") {
-  boot_data <- data[indices, ]
-  protest_mean <- mean(boot_data[[var]][boot_data[[period_var]] == "Protest"], na.rm = TRUE)
-  postnsl_mean <- mean(boot_data[[var]][boot_data[[period_var]] == "Post-NSL"], na.rm = TRUE)
-  postnsl_mean - protest_mean
-}
-
-# Function to compute Cohen's d
-boot_cohens_d <- function(data, indices, var, period_var = "period") {
-  boot_data <- data[indices, ]
-  protest <- boot_data[[var]][boot_data[[period_var]] == "Protest"]
-  postnsl <- boot_data[[var]][boot_data[[period_var]] == "Post-NSL"]
-  protest <- protest[!is.na(protest)]
-  postnsl <- postnsl[!is.na(postnsl)]
-
-  if (length(protest) < 5 | length(postnsl) < 5) return(NA_real_)
-
-  pooled_sd <- sqrt(((length(protest) - 1) * sd(protest)^2 +
-                       (length(postnsl) - 1) * sd(postnsl)^2) /
-                      (length(protest) + length(postnsl) - 2))
-  if (pooled_sd == 0) return(NA_real_)
-  (mean(postnsl) - mean(protest)) / pooled_sd
-}
-
 # Stratified bootstrap for a single variable (self-contained for worker export)
 boot_stratified <- function(var, data, R, seed_offset = 0L) {
   library(boot)

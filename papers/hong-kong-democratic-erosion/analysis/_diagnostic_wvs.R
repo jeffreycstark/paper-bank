@@ -1,9 +1,24 @@
 library(haven)
 library(tidyverse)
 
+get_script_dir <- function() {
+  args <- commandArgs(trailingOnly = FALSE)
+  file_arg <- grep("^--file=", args, value = TRUE)
+  if (length(file_arg) > 0) {
+    return(dirname(normalizePath(sub("^--file=", "", file_arg[1]))))
+  }
+  if (!is.null(sys.frames()[[1]]$ofile)) {
+    return(dirname(normalizePath(sys.frames()[[1]]$ofile)))
+  }
+  getwd()
+}
+
+analysis_dir <- get_script_dir()
+project_root <- normalizePath(file.path(analysis_dir, "..", "..", ".."))
+
 # Load WVS
 alt_paths <- list.files(
-  "/Users/jeffreystark/Development/Research/econdev-authpref/data/raw/wvs_wave7/",
+  file.path(project_root, "data", "raw", "wvs_wave7"),
   pattern = "\\.dta$",
   full.names = TRUE
 )

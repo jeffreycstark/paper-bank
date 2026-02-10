@@ -70,14 +70,6 @@ for (var in trajectory_vars) {
 ```{r w4w5-change}
 compare_countries <- c("Hong Kong", "Taiwan", "Singapore", "South Korea", "Japan")
 
-w4w5 <- d |>
-  filter(country_name %in% compare_countries, wave %in% c(4, 5)) |>
-  group_by(country_name, wave) |>
-  summarise(across(all_of(trajectory_vars), ~mean(.x, na.rm = TRUE)),
-            .groups = "drop") |>
-  pivot_wider(names_from = wave, values_from = all_of(trajectory_vars),
-              names_sep = "_W")
-
 # Calculate deltas
 change_vars <- c("democracy_suitability", "trust_police", "trust_president",
                  "gov_free_to_organize", "dem_free_speech", "system_needs_change",
@@ -133,10 +125,12 @@ kable(z_display, caption = "Wave 5 z-scores (std. devs from cross-national mean)
 # 4. Pre/Post NSL Comparison (HK Wave 5)
 
 ```{r pre-post-nsl}
-nsl_comparison <- hk5 |>
+nsl_long <- hk5 |>
   filter(period %in% c("Protest", "Post-NSL")) |>
   pivot_longer(cols = all_of(key_vars), names_to = "variable", values_to = "value") |>
-  filter(!is.na(value)) |>
+  filter(!is.na(value))
+
+nsl_comparison <- nsl_long |>
   group_by(variable, period) |>
   summarise(
     mean = mean(value),
@@ -146,10 +140,7 @@ nsl_comparison <- hk5 |>
   )
 
 # T-tests and effect sizes
-nsl_tests <- hk5 |>
-  filter(period %in% c("Protest", "Post-NSL")) |>
-  pivot_longer(cols = all_of(key_vars), names_to = "variable", values_to = "value") |>
-  filter(!is.na(value)) |>
+nsl_tests <- nsl_long |>
   group_by(variable) |>
   summarise(
     protest_mean = mean(value[period == "Protest"]),
@@ -159,10 +150,14 @@ nsl_tests <- hk5 |>
     postnsl_sd = sd(value[period == "Post-NSL"]),
     protest_n = sum(period == "Protest"),
     postnsl_n = sum(period == "Post-NSL"),
-    t_stat = t.test(value ~ period)$statistic,
-    p_value = t.test(value ~ period)$p.value,
+    tt = list(t.test(value ~ period)),
     .groups = "drop"
   ) |>
+  mutate(
+    t_stat = map_dbl(tt, "statistic"),
+    p_value = map_dbl(tt, "p.value")
+  ) |>
+  select(-tt) |>
   mutate(
     # Cohen's d
     pooled_sd = sqrt(((protest_n - 1) * protest_sd^2 + (postnsl_n - 1) * postnsl_sd^2) /
@@ -256,9 +251,6 @@ kable(age_nsl |>
 # 7. Flipped Correlation: dem_preferable → dem_satisfaction
 
 ```{r flipped-correlation}
-corr_countries <- c("Hong Kong", "Taiwan", "Singapore",
-                    "South Korea", "Japan", "Mongolia", "Philippines")
-
 flipped <- d |>
   filter(wave %in% c(3, 4, 5)) |>
   filter(!is.na(dem_always_preferable), !is.na(democracy_satisfaction)) |>
