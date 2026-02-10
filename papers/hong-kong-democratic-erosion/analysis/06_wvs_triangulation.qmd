@@ -1,5 +1,5 @@
 ---
-title: "05 - WVS Wave 7 Triangulation"
+title: "06 - WVS Wave 7 Triangulation"
 subtitle: "Pre-protest baseline comparison for Hong Kong democratic attitudes"
 format: html
 execute:
