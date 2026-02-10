@@ -328,7 +328,7 @@ if (exists("boot_results")) {
 
 ## Informal Bounding Analysis {#sec-manski}
 
-A key concern with the trust increase is that compositional selection --- whereby regime critics disproportionately declined to participate in the post-NSL survey --- could entirely account for the observed shift. To assess the plausibility of this account, I conduct an informal bounding exercise in the spirit of @Manski2003-bounds.
+A key concern with the trust increase is that compositional selection --- whereby regime critics disproportionately declined to participate in the post-NSL survey --- could entirely account for the observed shift. To assess the plausibility of this account, I conduct an informal bounding exercise in the spirit of @Manski2003-wo.
 
 The logic is as follows: if we assume that all non-respondents in the post-NSL period would have reported the minimum possible trust score (1 on the 1--4 scale), what proportion of the target population would need to have been "missing critics" for the trust increase to disappear? I present two scenarios: a worst-case bound (imputing the scale minimum) and a more empirically grounded scenario (imputing the 25th percentile of the protest-period distribution, representing respondents drawn from the bottom quartile of critics). @tbl-manski-bounds-police and @tbl-manski-bounds-govt present the results for trust in police and trust in the national government, respectively.
 
