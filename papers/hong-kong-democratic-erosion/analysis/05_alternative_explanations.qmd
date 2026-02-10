@@ -116,7 +116,7 @@ cont_results <- map_dfr(continuous_vars, function(var) {
   pooled_sd <- sqrt(((length(protest) - 1) * sd(protest)^2 +
                        (length(postnsl) - 1) * sd(postnsl)^2) /
                       (length(protest) + length(postnsl) - 2))
-  d <- (mean(protest) - mean(postnsl)) / pooled_sd
+  d <- (mean(postnsl) - mean(protest)) / pooled_sd
 
   tibble(
     variable = var,

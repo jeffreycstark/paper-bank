@@ -74,7 +74,7 @@ mw_results <- map_dfr(nsl_vars, function(var) {
   pooled_sd <- sqrt(((length(protest) - 1) * sd(protest)^2 +
                        (length(postnsl) - 1) * sd(postnsl)^2) /
                       (length(protest) + length(postnsl) - 2))
-  d <- (mean(protest) - mean(postnsl)) / pooled_sd
+  d <- (mean(postnsl) - mean(protest)) / pooled_sd
 
   tibble(
     variable = var,
@@ -354,7 +354,7 @@ balance_table |>
 
 Resample independently within each period to preserve the quasi-experimental
 structure. Report BCa 95% confidence intervals for the mean difference
-(Protest − Post-NSL) and Cohen's d for each variable.
+(Post-NSL − Protest) and Cohen's d for each variable.
 
 ```{r bootstrap}
 set.seed(42)
@@ -375,7 +375,7 @@ boot_mean_diff <- function(data, indices, var, period_var = "period") {
   boot_data <- data[indices, ]
   protest_mean <- mean(boot_data[[var]][boot_data[[period_var]] == "Protest"], na.rm = TRUE)
   postnsl_mean <- mean(boot_data[[var]][boot_data[[period_var]] == "Post-NSL"], na.rm = TRUE)
-  protest_mean - postnsl_mean
+  postnsl_mean - protest_mean
 }
 
 # Function to compute Cohen's d
@@ -392,7 +392,7 @@ boot_cohens_d <- function(data, indices, var, period_var = "period") {
                        (length(postnsl) - 1) * sd(postnsl)^2) /
                       (length(protest) + length(postnsl) - 2))
   if (pooled_sd == 0) return(NA_real_)
-  (mean(protest) - mean(postnsl)) / pooled_sd
+  (mean(postnsl) - mean(protest)) / pooled_sd
 }
 
 # Stratified bootstrap for a single variable (self-contained for worker export)
@@ -410,8 +410,8 @@ boot_stratified <- function(var, data, R, seed_offset = 0L) {
 
   boot_mean_diff_local <- function(d, i, v) {
     bd <- d[i, ]
-    mean(bd[[v]][bd$period == "Protest"], na.rm = TRUE) -
-      mean(bd[[v]][bd$period == "Post-NSL"], na.rm = TRUE)
+    mean(bd[[v]][bd$period == "Post-NSL"], na.rm = TRUE) -
+      mean(bd[[v]][bd$period == "Protest"], na.rm = TRUE)
   }
 
   boot_cohens_d_local <- function(d, i, v) {
@@ -421,7 +421,7 @@ boot_stratified <- function(var, data, R, seed_offset = 0L) {
     if (length(p) < 5 | length(q) < 5) return(NA_real_)
     ps <- sqrt(((length(p)-1)*sd(p)^2 + (length(q)-1)*sd(q)^2) / (length(p)+length(q)-2))
     if (ps == 0) return(NA_real_)
-    (mean(p) - mean(q)) / ps
+    (mean(q) - mean(p)) / ps
   }
 
   boot_diff <- boot(data = sub, statistic = boot_mean_diff_local, R = R,
@@ -499,7 +499,7 @@ trust_boot |>
 
 ```{r}
 #| label: fig-bootstrap-forest
-#| fig-cap: "Stratified bootstrap 95% BCa confidence intervals for Cohen's d (Protest − Post-NSL). Variables where the CI excludes zero are shown in colour."
+#| fig-cap: "Stratified bootstrap 95% BCa confidence intervals for Cohen's d (Post-NSL − Protest). Positive values indicate higher post-NSL responses. Variables where the CI excludes zero are shown in colour."
 #| fig-width: 10
 #| fig-height: 8
 
@@ -514,7 +514,7 @@ boot_results |>
   geom_errorbarh(aes(xmin = boot_d_lo, xmax = boot_d_hi), height = 0.25) +
   scale_color_manual(values = c("Significant" = "#E53935", "Not significant" = "#9E9E9E")) +
   labs(
-    x = "Cohen's d (Protest − Post-NSL)",
+    x = "Cohen's d (Post-NSL − Protest)",
     y = NULL,
     color = NULL
   ) +
