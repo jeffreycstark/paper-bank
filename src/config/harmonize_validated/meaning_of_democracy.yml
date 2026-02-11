@@ -39,6 +39,9 @@ variables:
     concept: meaning_of_democracy
     description: "Most essential characteristic of democracy - harmonized across waves with all categories"
     type: nominal
+    missing:
+      use_convention: treat_as_na
+      codes: [0]
     source:
       w1: null
       w2: q92
@@ -106,6 +109,9 @@ variables:
     concept: meaning_of_democracy
     description: "Essential democracy: Electoral vs Expressive (binary, all waves W2-W5)"
     type: binary
+    missing:
+      use_convention: treat_as_na
+      codes: [0]
     source:
       w1: null
       w2: q92
@@ -167,6 +173,9 @@ variables:
     concept: meaning_of_democracy
     description: "Democracy conception: Procedural (electoral/expressive) vs Substantive (redistributive/needs/governance)"
     type: binary
+    missing:
+      use_convention: treat_as_na
+      codes: [0]
     source:
       w1: null
       w2: q92
@@ -392,6 +401,9 @@ variables:
     concept: meaning_of_democracy
     description: "Procedural democracy preference index (0-4 scale) - count of procedural choices across 4 sets"
     type: ordinal
+    missing:
+      use_convention: treat_as_na
+      codes: [0]
     source:
       w1: null
       w2: q92  # Single item, recoded to 0 or 4

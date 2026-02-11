@@ -1,12 +1,12 @@
 # Harmonization Validation Report
 
-Generated: 2026-02-11 08:34:03.353761
+Generated: 2026-02-11 12:35:15.268633
 
 ## Summary
 
-- ✅ OK: 978
-- ⚠️ Warnings: 28
-- ❌ Errors: 76
+- ✅ OK: 999
+- ⚠️ Warnings: 18
+- ❌ Errors: 65
 - ⏭️ Skipped: 4
 
 ## Results by Variable
@@ -215,7 +215,7 @@ Generated: 2026-02-11 08:34:03.353761
 |------|--------|-----------|----------|-----------|-------|----------|
 | w1 | q108 | identity | ✅ | ✅ | ✅ | ✅ |
 
-### ❌ corrupt_local_govt
+### ✅ corrupt_local_govt
 
 | Wave | Source | Transform | Coverage | Transform | Range | Crosstab |
 |------|--------|-----------|----------|-----------|-------|----------|
@@ -224,9 +224,9 @@ Generated: 2026-02-11 08:34:03.353761
 | w3 | q116 | identity | ✅ | ✅ | ✅ | ✅ |
 | w4 | q117 | identity | ✅ | ✅ | ✅ | ✅ |
 | w5 | q124 | identity | ✅ | ✅ | ✅ | ✅ |
-| w6 | q115 | scale_convert | ✅ | ❌ | ✅ | ✅ |
+| w6 | q115 | scale_convert | ✅ | ⏭️ | ✅ | ✅ |
 
-### ❌ corrupt_national_govt
+### ✅ corrupt_national_govt
 
 | Wave | Source | Transform | Coverage | Transform | Range | Crosstab |
 |------|--------|-----------|----------|-----------|-------|----------|
@@ -235,7 +235,7 @@ Generated: 2026-02-11 08:34:03.353761
 | w3 | q117 | identity | ✅ | ✅ | ✅ | ✅ |
 | w4 | q118 | identity | ✅ | ✅ | ✅ | ✅ |
 | w5 | q125 | identity | ✅ | ✅ | ✅ | ✅ |
-| w6 | q116 | scale_convert | ✅ | ❌ | ✅ | ✅ |
+| w6 | q116 | scale_convert | ✅ | ⏭️ | ✅ | ✅ |
 
 ### ✅ corrupt_witnessed
 
@@ -657,16 +657,16 @@ Generated: 2026-02-11 08:34:03.353761
 | w5 | SE5 | identity | ✅ | ✅ | ✅ | ✅ |
 | w6 | se5 | identity | ✅ | ✅ | ✅ | ✅ |
 
-### ❌ education_years
+### ✅ education_years
 
 | Wave | Source | Transform | Coverage | Transform | Range | Crosstab |
 |------|--------|-----------|----------|-----------|-------|----------|
-| w1 | se005a | identity | ✅ | ✅ | ✅ | ✅ |
-| w2 | se5a | identity | ❌ | ✅ | ✅ | ✅ |
-| w3 | se5a | identity | ⚠️ | ✅ | ✅ | ✅ |
-| w4 | se5a | identity | ⚠️ | ✅ | ✅ | ✅ |
-| w5 | SE5A | identity | ❌ | ✅ | ✅ | ✅ |
-| w6 | se5a | identity | ⚠️ | ✅ | ✅ | ✅ |
+| w1 | se005a | identity | ✅ | ✅ | ⏭️ | ✅ |
+| w2 | se5a | identity | ✅ | ✅ | ⏭️ | ✅ |
+| w3 | se5a | identity | ✅ | ✅ | ⏭️ | ✅ |
+| w4 | se5a | identity | ✅ | ✅ | ⏭️ | ✅ |
+| w5 | SE5A | identity | ✅ | ✅ | ⏭️ | ✅ |
+| w6 | se5a | identity | ✅ | ✅ | ⏭️ | ✅ |
 
 ### ✅ employed
 
@@ -728,16 +728,16 @@ Generated: 2026-02-11 08:34:03.353761
 | w5 | SE8A | identity | ✅ | ✅ | ✅ | ✅ |
 | w6 | se8a | identity | ✅ | ✅ | ✅ | ✅ |
 
-### ⚠️ idnumber
+### ✅ idnumber
 
 | Wave | Source | Transform | Coverage | Transform | Range | Crosstab |
 |------|--------|-----------|----------|-----------|-------|----------|
-| w1 | idnumber | scale_convert | ✅ | ⏭️ | ⚠️ | ⏭️ |
-| w2 | idnumber | scale_convert | ✅ | ⏭️ | ⚠️ | ⏭️ |
-| w3 | idnumber | scale_convert | ✅ | ⏭️ | ⚠️ | ⏭️ |
-| w4 | idnumber | scale_convert | ✅ | ⏭️ | ⚠️ | ⏭️ |
-| w5 | IDnumber | scale_convert | ✅ | ⏭️ | ⚠️ | ⏭️ |
-| w6 | idnumber | scale_convert | ✅ | ⏭️ | ⚠️ | ⏭️ |
+| w1 | idnumber | scale_convert | ✅ | ⏭️ | ⏭️ | ⏭️ |
+| w2 | idnumber | scale_convert | ✅ | ⏭️ | ⏭️ | ⏭️ |
+| w3 | idnumber | scale_convert | ✅ | ⏭️ | ⏭️ | ⏭️ |
+| w4 | idnumber | scale_convert | ✅ | ⏭️ | ⏭️ | ⏭️ |
+| w5 | IDnumber | scale_convert | ✅ | ⏭️ | ⏭️ | ⏭️ |
+| w6 | idnumber | scale_convert | ✅ | ⏭️ | ⏭️ | ⏭️ |
 
 ### ❌ int_month
 
@@ -1144,14 +1144,14 @@ Generated: 2026-02-11 08:34:03.353761
 |------|--------|-----------|----------|-----------|-------|----------|
 | w1 | q048 | identity | ✅ | ⏭️ | ✅ | ✅ |
 
-### ❌ glob_cultural_defense
+### ✅ glob_cultural_defense
 
 | Wave | Source | Transform | Coverage | Transform | Range | Crosstab |
 |------|--------|-----------|----------|-----------|-------|----------|
-| w1 | q142 | identity | ❌ | ⏭️ | ✅ | ✅ |
-| w2 | q144 | identity | ❌ | ⏭️ | ✅ | ✅ |
-| w3 | q151 | identity | ❌ | ⏭️ | ✅ | ✅ |
-| w4 | q151 | identity | ❌ | ⏭️ | ✅ | ✅ |
+| w1 | q142 | skip | ✅ | ⏭️ | ✅ | ✅ |
+| w2 | q144 | skip | ✅ | ⏭️ | ✅ | ✅ |
+| w3 | q151 | skip | ✅ | ⏭️ | ✅ | ✅ |
+| w4 | q151 | skip | ✅ | ⏭️ | ✅ | ✅ |
 | w5 | q156 | identity | ✅ | ⏭️ | ✅ | ✅ |
 | w6 | q156 | identity | ✅ | ⏭️ | ✅ | ✅ |
 
@@ -1169,13 +1169,13 @@ Generated: 2026-02-11 08:34:03.353761
 | w5 | q158 | reverse | ✅ | ✅ | ✅ | ✅ |
 | w6 | q158 | reverse | ✅ | ✅ | ✅ | ✅ |
 
-### ❌ glob_trade_protection
+### ✅ glob_trade_protection
 
 | Wave | Source | Transform | Coverage | Transform | Range | Crosstab |
 |------|--------|-----------|----------|-----------|-------|----------|
-| w2 | q146 | identity | ❌ | ⏭️ | ✅ | ✅ |
-| w3 | q152 | identity | ❌ | ⏭️ | ✅ | ✅ |
-| w4 | q152 | identity | ❌ | ⏭️ | ✅ | ✅ |
+| w2 | q146 | skip | ✅ | ⏭️ | ✅ | ✅ |
+| w3 | q152 | skip | ✅ | ⏭️ | ✅ | ✅ |
+| w4 | q152 | skip | ✅ | ⏭️ | ✅ | ✅ |
 | w5 | q157 | identity | ✅ | ⏭️ | ✅ | ✅ |
 | w6 | q157 | identity | ✅ | ⏭️ | ✅ | ✅ |
 
@@ -1687,11 +1687,11 @@ Generated: 2026-02-11 08:34:03.353761
 | w5 | q98 | skip | ✅ | ⏭️ | ✅ | ✅ |
 | w6 | q85 | skip | ✅ | ⏭️ | ✅ | ✅ |
 
-### ⚠️ dem_essential_core
+### ✅ dem_essential_core
 
 | Wave | Source | Transform | Coverage | Transform | Range | Crosstab |
 |------|--------|-----------|----------|-----------|-------|----------|
-| w2 | q92 | skip | ⚠️ | ⏭️ | ✅ | ✅ |
+| w2 | q92 | skip | ✅ | ⏭️ | ✅ | ✅ |
 | w3 | q85 | skip | ✅ | ⏭️ | ✅ | ✅ |
 | w4 | q88 | skip | ✅ | ⏭️ | ✅ | ✅ |
 | w5 | q98 | skip | ✅ | ⏭️ | ✅ | ✅ |
@@ -2789,14 +2789,6 @@ Generated: 2026-02-11 08:34:03.353761
 
 ## Issues Detail
 
-### corrupt_local_govt (w6)
-
-- ❌ **transformation**: scale conversion (|ρ| ≈ 1) FAILED: r=0.960, ρ=0.980 (expected >0.99)
-
-### corrupt_national_govt (w6)
-
-- ❌ **transformation**: scale conversion (|ρ| ≈ 1) FAILED: r=0.971, ρ=0.985 (expected >0.99)
-
 ### hh_income_sat (w5)
 
 - ❌ **transformation**: reversal (r ≈ -1) FAILED: r=-0.918, ρ=-0.908 (expected <-0.99)
@@ -2832,50 +2824,6 @@ Generated: 2026-02-11 08:34:03.353761
 ### current_status_unemployed (w3)
 
 - ❌ **coverage**: 25.4% coverage loss (2283 of 8995 values)
-
-### education_years (w2)
-
-- ❌ **coverage**: 1.6% coverage loss (183 of 11374 values)
-
-### education_years (w3)
-
-- ⚠️ **coverage**: 0.64% coverage loss (95 values)
-
-### education_years (w4)
-
-- ⚠️ **coverage**: 0.35% coverage loss (56 values)
-
-### education_years (w5)
-
-- ❌ **coverage**: 2.4% coverage loss (496 of 20367 values)
-
-### education_years (w6)
-
-- ⚠️ **coverage**: 0.11% coverage loss (11 values)
-
-### idnumber (w1)
-
-- ⚠️ **range**: No valid_range specified in YAML
-
-### idnumber (w2)
-
-- ⚠️ **range**: No valid_range specified in YAML
-
-### idnumber (w3)
-
-- ⚠️ **range**: No valid_range specified in YAML
-
-### idnumber (w4)
-
-- ⚠️ **range**: No valid_range specified in YAML
-
-### idnumber (w5)
-
-- ⚠️ **range**: No valid_range specified in YAML
-
-### idnumber (w6)
-
-- ⚠️ **range**: No valid_range specified in YAML
 
 ### int_month (w3)
 
@@ -2916,34 +2864,6 @@ Generated: 2026-02-11 08:34:03.353761
 ### seeking_employment (w6)
 
 - ❌ **coverage**: 12.0% coverage loss (465 of 3880 values)
-
-### glob_cultural_defense (w1)
-
-- ❌ **coverage**: 81.6% coverage loss (8993 of 11025 values)
-
-### glob_cultural_defense (w2)
-
-- ❌ **coverage**: 14.0% coverage loss (2189 of 15601 values)
-
-### glob_cultural_defense (w3)
-
-- ❌ **coverage**: 17.9% coverage loss (3260 of 18197 values)
-
-### glob_cultural_defense (w4)
-
-- ❌ **coverage**: 18.9% coverage loss (3594 of 18986 values)
-
-### glob_trade_protection (w2)
-
-- ❌ **coverage**: 21.7% coverage loss (3217 of 14838 values)
-
-### glob_trade_protection (w3)
-
-- ❌ **coverage**: 28.8% coverage loss (5220 of 18121 values)
-
-### glob_trade_protection (w4)
-
-- ❌ **coverage**: 26.5% coverage loss (5030 of 18971 values)
 
 ### gov_economic_equality (w1)
 
@@ -3029,10 +2949,6 @@ Generated: 2026-02-11 08:34:03.353761
 
 - ❌ **coverage**: 8.0% coverage loss (1051 of 13157 values)
 
-### dem_essential_core (w2)
-
-- ⚠️ **coverage**: 0.12% coverage loss (10 values)
-
 ### dem_meaning_set4 (w6)
 
 - ⚠️ **coverage**: 0.33% coverage loss (37 values)
@@ -3049,7 +2965,7 @@ Generated: 2026-02-11 08:34:03.353761
 
 ### procedural_preference_index (w6)
 
-- ❌ **coverage**: 4.0% coverage loss (449 of 11098 values)
+- ❌ **coverage**: 4.0% coverage loss (448 of 11097 values)
 - ❌ **crosstab**: 4 raw values map to multiple outputs
 
 ### action_internet_political (w4)

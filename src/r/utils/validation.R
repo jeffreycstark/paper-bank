@@ -505,7 +505,8 @@ validate_variable_wave <- function(raw_data, harmonized_data, var_spec,
     "extract_year_from_date",
     "collapse_5pt_leader_to_3pt",
     "collapse_6pt_to_4pt_reverse",
-    "safe_6pt_to_4pt"
+    "safe_6pt_to_4pt",
+    "recode_w6_corruption"
   )
   if (is_nominal) {
     transformation_result <- list(
@@ -538,10 +539,31 @@ validate_variable_wave <- function(raw_data, harmonized_data, var_spec,
     }
   }
 
+  raw_for_coverage <- raw_vec
+  if (fn_name %in% c("extract_month_from_date", "extract_year_from_date")) {
+    if (exists(fn_name, mode = "function")) {
+      raw_for_coverage <- get(fn_name, mode = "function")(
+        raw_vec,
+        data = raw_data,
+        var_name = source_var
+      )
+    }
+  }
+
+  range_result <- if (isTRUE(var_spec$qc$skip_range_check)) {
+    list(
+      status = "skip",
+      check = "range",
+      message = "Skipped: skip_range_check set in YAML"
+    )
+  } else {
+    validate_range(harmonized_vec, valid_range)
+  }
+
   checks <- list(
-    coverage = validate_coverage(raw_vec, harmonized_vec, coverage_missing_codes),
+    coverage = validate_coverage(raw_for_coverage, harmonized_vec, coverage_missing_codes),
     transformation = transformation_result,
-    range = validate_range(harmonized_vec, valid_range),
+    range = range_result,
     crosstab = validate_crosstab(raw_vec, harmonized_vec, missing_codes)
   )
 

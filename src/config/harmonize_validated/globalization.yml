@@ -30,6 +30,36 @@ variables:
     harmonize:
       default:
         method: identity
+        note: "W5/W6 already coded as defend vs learn"
+      exceptions:
+        w1:
+          method: recode
+          mapping:
+            1: 2  # Strongly disagree -> learn
+            2: 2  # Somewhat disagree -> learn
+            3: 1  # Somewhat agree -> defend
+            4: 1  # Strongly agree -> defend
+        w2:
+          method: recode
+          mapping:
+            1: 1  # Strongly agree -> defend
+            2: 1  # Somewhat agree -> defend
+            3: 2  # Somewhat disagree -> learn
+            4: 2  # Strongly disagree -> learn
+        w3:
+          method: recode
+          mapping:
+            1: 1  # Strongly agree -> defend
+            2: 1  # Somewhat agree -> defend
+            3: 2  # Somewhat disagree -> learn
+            4: 2  # Strongly disagree -> learn
+        w4:
+          method: recode
+          mapping:
+            1: 1  # Strongly agree -> defend
+            2: 1  # Agree -> defend
+            3: 2  # Disagree -> learn
+            4: 2  # Strongly disagree -> learn
     qc:
       valid_range: [1, 2]
       validate:
@@ -118,6 +148,29 @@ variables:
     harmonize:
       default:
         method: identity
+        note: "W5/W6 are binary choices already"
+      exceptions:
+        w2:
+          method: recode
+          mapping:
+            1: 1  # Strongly agree -> limit imports
+            2: 1  # Somewhat agree -> limit imports
+            3: 2  # Somewhat disagree -> more trade
+            4: 2  # Strongly disagree -> more trade
+        w3:
+          method: recode
+          mapping:
+            1: 1  # Strongly agree -> limit imports
+            2: 1  # Agree -> limit imports
+            3: 2  # Disagree -> more trade
+            4: 2  # Strongly disagree -> more trade
+        w4:
+          method: recode
+          mapping:
+            1: 1  # Strongly agree -> limit imports
+            2: 1  # Agree -> limit imports
+            3: 2  # Disagree -> more trade
+            4: 2  # Strongly disagree -> more trade
     qc:
       valid_range: [1, 2]
       validate:

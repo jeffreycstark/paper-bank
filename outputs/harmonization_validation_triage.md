@@ -1,12 +1,11 @@
 # Harmonization Validation Triage
 
-Generated: 2026-02-11 08:35:13.823072
+Generated: 2026-02-11 12:36:04.829947
 
 ## Summary by Likely Cause
 
-- raw_out_of_range_or_missing_codes: 81
-- transform_mismatch_or_data_anomaly: 8
-- range_spec_mismatch: 6
+- raw_out_of_range_or_missing_codes: 68
+- transform_mismatch_or_data_anomaly: 6
 - transform_mismatch_or_data_anomaly; one_to_many_mapping: 6
 - coverage_loss; one_to_many_mapping: 3
 
@@ -14,8 +13,6 @@ Generated: 2026-02-11 08:35:13.823072
 
 | spec | var_id | wave | source_var | status | error_checks | likely_cause | suggestion |
 |---|---|---|---|---|---|---|---|
-| corruption | corrupt_local_govt | w6 | q115 | error | transformation | transform_mismatch_or_data_anomaly | Inspect raw labels/value distributions for anomalies. |
-| corruption | corrupt_national_govt | w6 | q116 | error | transformation | transform_mismatch_or_data_anomaly | Inspect raw labels/value distributions for anomalies. |
 | democracy_satisfaction | hh_income_sat | w5 | SE14A | error | transformation | transform_mismatch_or_data_anomaly | Inspect raw labels/value distributions for anomalies. |
 | democracy | dem_vs_equality | w3 | q127 | error | transformation | transform_mismatch_or_data_anomaly | Inspect raw labels/value distributions for anomalies. |
 | democracy | dem_vs_equality | w4 | q128 | error | transformation | transform_mismatch_or_data_anomaly | Inspect raw labels/value distributions for anomalies. |
@@ -25,17 +22,6 @@ Generated: 2026-02-11 08:35:13.823072
 | demographics | age | w5 | SE3_1 | warn | coverage | raw_out_of_range_or_missing_codes | Inspect raw codes; add to missing_conventions or update valid_range. |
 | demographics | age | w6 | se3_1 | warn | coverage | raw_out_of_range_or_missing_codes | Inspect raw codes; add to missing_conventions or update valid_range. |
 | demographics | current_status_unemployed | w3 | se9e | error | coverage | raw_out_of_range_or_missing_codes | Inspect raw codes; add to missing_conventions or update valid_range. |
-| demographics | education_years | w2 | se5a | error | coverage | raw_out_of_range_or_missing_codes | Inspect raw codes; add to missing_conventions or update valid_range. |
-| demographics | education_years | w3 | se5a | warn | coverage | raw_out_of_range_or_missing_codes | Inspect raw codes; add to missing_conventions or update valid_range. |
-| demographics | education_years | w4 | se5a | warn | coverage | raw_out_of_range_or_missing_codes | Inspect raw codes; add to missing_conventions or update valid_range. |
-| demographics | education_years | w5 | SE5A | error | coverage | raw_out_of_range_or_missing_codes | Inspect raw codes; add to missing_conventions or update valid_range. |
-| demographics | education_years | w6 | se5a | warn | coverage | raw_out_of_range_or_missing_codes | Inspect raw codes; add to missing_conventions or update valid_range. |
-| demographics | idnumber | w1 | idnumber | warn | range | range_spec_mismatch | Check YAML valid_range or wave-specific exceptions. |
-| demographics | idnumber | w2 | idnumber | warn | range | range_spec_mismatch | Check YAML valid_range or wave-specific exceptions. |
-| demographics | idnumber | w3 | idnumber | warn | range | range_spec_mismatch | Check YAML valid_range or wave-specific exceptions. |
-| demographics | idnumber | w4 | idnumber | warn | range | range_spec_mismatch | Check YAML valid_range or wave-specific exceptions. |
-| demographics | idnumber | w5 | IDnumber | warn | range | range_spec_mismatch | Check YAML valid_range or wave-specific exceptions. |
-| demographics | idnumber | w6 | idnumber | warn | range | range_spec_mismatch | Check YAML valid_range or wave-specific exceptions. |
 | demographics | int_month | w3 | ir9 | error | coverage | raw_out_of_range_or_missing_codes | Inspect raw codes; add to missing_conventions or update valid_range. |
 | demographics | int_year | w3 | ir9 | error | coverage | raw_out_of_range_or_missing_codes | Inspect raw codes; add to missing_conventions or update valid_range. |
 | demographics | religion | w5 | SE6 | error | coverage | raw_out_of_range_or_missing_codes | Inspect raw codes; add to missing_conventions or update valid_range. |
@@ -46,13 +32,6 @@ Generated: 2026-02-11 08:35:13.823072
 | demographics | seeking_employment | w4 | se9d | error | coverage | raw_out_of_range_or_missing_codes | Inspect raw codes; add to missing_conventions or update valid_range. |
 | demographics | seeking_employment | w5 | SE9D | error | coverage | raw_out_of_range_or_missing_codes | Inspect raw codes; add to missing_conventions or update valid_range. |
 | demographics | seeking_employment | w6 | se9d | error | coverage | raw_out_of_range_or_missing_codes | Inspect raw codes; add to missing_conventions or update valid_range. |
-| globalization | glob_cultural_defense | w1 | q142 | error | coverage | raw_out_of_range_or_missing_codes | Inspect raw codes; add to missing_conventions or update valid_range. |
-| globalization | glob_cultural_defense | w2 | q144 | error | coverage | raw_out_of_range_or_missing_codes | Inspect raw codes; add to missing_conventions or update valid_range. |
-| globalization | glob_cultural_defense | w3 | q151 | error | coverage | raw_out_of_range_or_missing_codes | Inspect raw codes; add to missing_conventions or update valid_range. |
-| globalization | glob_cultural_defense | w4 | q151 | error | coverage | raw_out_of_range_or_missing_codes | Inspect raw codes; add to missing_conventions or update valid_range. |
-| globalization | glob_trade_protection | w2 | q146 | error | coverage | raw_out_of_range_or_missing_codes | Inspect raw codes; add to missing_conventions or update valid_range. |
-| globalization | glob_trade_protection | w3 | q152 | error | coverage | raw_out_of_range_or_missing_codes | Inspect raw codes; add to missing_conventions or update valid_range. |
-| globalization | glob_trade_protection | w4 | q152 | error | coverage | raw_out_of_range_or_missing_codes | Inspect raw codes; add to missing_conventions or update valid_range. |
 | governance | gov_economic_equality | w1 | q106 | error | coverage | raw_out_of_range_or_missing_codes | Inspect raw codes; add to missing_conventions or update valid_range. |
 | governance | gov_elections_real_choice | w5 | q119 | warn | coverage | raw_out_of_range_or_missing_codes | Inspect raw codes; add to missing_conventions or update valid_range. |
 | governance | gov_free_to_organize | w1 | q113 | error | coverage | raw_out_of_range_or_missing_codes | Inspect raw codes; add to missing_conventions or update valid_range. |
@@ -74,7 +53,6 @@ Generated: 2026-02-11 08:35:13.823072
 | international_relations | intl_most_influence_asia | w5 | q174 | warn | coverage | raw_out_of_range_or_missing_codes | Inspect raw codes; add to missing_conventions or update valid_range. |
 | international_relations | intl_usa_country_influence_valence_w4 | w4 | q171 | error | coverage | raw_out_of_range_or_missing_codes | Inspect raw codes; add to missing_conventions or update valid_range. |
 | international_relations | intl_usa_world_influence | w5 | q176 | error | coverage | raw_out_of_range_or_missing_codes | Inspect raw codes; add to missing_conventions or update valid_range. |
-| meaning_of_democracy | dem_essential_core | w2 | q92 | warn | coverage | raw_out_of_range_or_missing_codes | Inspect raw codes; add to missing_conventions or update valid_range. |
 | meaning_of_democracy | dem_meaning_set4 | w6 | q88 | warn | coverage | raw_out_of_range_or_missing_codes | Inspect raw codes; add to missing_conventions or update valid_range. |
 | meaning_of_democracy | procedural_preference_index | w3 | q85 | error | coverage, crosstab | coverage_loss; one_to_many_mapping | Check recode logic for dropped values. Check recode function for non-deterministic mapping. |
 | meaning_of_democracy | procedural_preference_index | w4 | q88 | error | coverage, crosstab | coverage_loss; one_to_many_mapping | Check recode logic for dropped values. Check recode function for non-deterministic mapping. |
