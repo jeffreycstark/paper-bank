@@ -414,6 +414,27 @@ safe_6pt_to_4pt <- function(x,
   )
 }
 
+#' Recode 6-point frequency scale to 4-point (W4 social media frequency)
+#'
+#' W4 scale:
+#'   1=Everyday, 2=Several times a week, 3=Once or twice a week,
+#'   4=A few times a month, 5=A few times a year, 6=Practically never
+#'
+#' Target 4-point scale (higher = more frequent):
+#'   4=Often (1-2), 3=Sometimes (3-4), 2=Seldom (5), 1=Never (6)
+recode_6pt_freq_to_4pt <- function(x,
+                                  missing_codes = c(-1, 0, 7, 8, 9, 97, 98, 99),
+                                  ...) {
+  dplyr::case_when(
+    x %in% missing_codes ~ NA_real_,
+    x %in% c(1, 2) ~ 4,
+    x %in% c(3, 4) ~ 3,
+    x == 5 ~ 2,
+    x == 6 ~ 1,
+    TRUE ~ NA_real_
+  )
+}
+
 # ==============================================================================
 # PARTY IDENTIFICATION FUNCTIONS
 # ==============================================================================
@@ -1279,4 +1300,3 @@ extract_year_from_date <- function(x,
   # If nothing works, return NA
   rep(NA_real_, length(x))
 }
-

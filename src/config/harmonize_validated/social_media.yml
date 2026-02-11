@@ -194,14 +194,14 @@ variables:
           phrase: "connect.*people|talk.*people"
   - id: sm_express_political
     concept: social_media
-    description: "How often do you use social media to express your opinion on political issues?"
+    description: "How often do you use social media to express your opinion on political issues? (frequency)"
     type: ordinal
     source:
       w1: null
       w2: null
       w3: null
       w4: q52
-      w5: q51b
+      w5: null
       w6: q52b
     scale:
       min: 1
@@ -213,13 +213,43 @@ variables:
         4: "Often"
     harmonize:
       default:
-        method: r_function
-        fn: safe_reverse_4pt
+        method: identity
+      exceptions:
+        w4:
+          method: r_function
+          fn: recode_6pt_freq_to_4pt
+          note: "W4 uses 6-point frequency; collapse to 4-point"
     qc:
       valid_range: [1, 4]
       validate:
-        - waves: [w4, w5, w6]
+        - waves: [w4, w6]
           phrase: "opinion.*politic|express.*politic"
+
+  - id: sm_express_political_binary
+    concept: social_media
+    description: "Use social media primarily to express opinion on political issues (binary)"
+    type: nominal
+    source:
+      w1: null
+      w2: null
+      w3: null
+      w4: null
+      w5: q51b
+      w6: null
+    scale:
+      min: 1
+      max: 2
+      labels:
+        1: "Yes"
+        2: "No"
+    harmonize:
+      default:
+        method: identity
+    qc:
+      valid_range: [1, 2]
+      validate:
+        - waves: [w5]
+          phrase: "express.*politic|opinion.*politic"
   - id: sm_organize_politics
     concept: social_media
     description: "How often do you use social media to organize to influence politics?"

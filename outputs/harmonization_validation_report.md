@@ -1,12 +1,12 @@
 # Harmonization Validation Report
 
-Generated: 2026-02-11 12:35:15.268633
+Generated: 2026-02-11 12:57:32.072599
 
 ## Summary
 
-- ✅ OK: 999
-- ⚠️ Warnings: 18
-- ❌ Errors: 65
+- ✅ OK: 1003
+- ⚠️ Warnings: 17
+- ❌ Errors: 61
 - ⏭️ Skipped: 4
 
 ## Results by Variable
@@ -1930,11 +1930,10 @@ Generated: 2026-02-11 12:35:15.268633
 |------|--------|-----------|----------|-----------|-------|----------|
 | w4 | q76a | identity | ✅ | ✅ | ✅ | ✅ |
 
-### ❌ action_internet_political
+### ✅ action_internet_political
 
 | Wave | Source | Transform | Coverage | Transform | Range | Crosstab |
 |------|--------|-----------|----------|-----------|-------|----------|
-| w4 | q52 | identity | ❌ | ✅ | ✅ | ✅ |
 | w5 | q76 | reverse | ✅ | ✅ | ✅ | ✅ |
 | w6 | q73 | reverse | ✅ | ✅ | ✅ | ✅ |
 
@@ -2103,16 +2102,16 @@ Generated: 2026-02-11 12:35:15.268633
 | w5 | q127 | identity | ✅ | ⏭️ | ✅ | ✅ |
 | w6 | q79 | identity | ❌ | ⏭️ | ✅ | ✅ |
 
-### ❌ voted_last_election
+### ✅ voted_last_election
 
 | Wave | Source | Transform | Coverage | Transform | Range | Crosstab |
 |------|--------|-----------|----------|-----------|-------|----------|
 | w1 | q027 | scale_convert | ✅ | ⏭️ | ✅ | ✅ |
 | w2 | q38 | scale_convert | ✅ | ⏭️ | ✅ | ✅ |
-| w3 | q32 | scale_convert | ❌ | ⏭️ | ✅ | ✅ |
+| w3 | q32 | scale_convert | ✅ | ⏭️ | ✅ | ✅ |
 | w4 | q33 | scale_convert | ✅ | ⏭️ | ✅ | ✅ |
-| w5 | q33 | scale_convert | ⚠️ | ⏭️ | ✅ | ✅ |
-| w6 | q33 | scale_convert | ❌ | ⏭️ | ✅ | ✅ |
+| w5 | q33 | scale_convert | ✅ | ⏭️ | ✅ | ✅ |
+| w6 | q33 | scale_convert | ✅ | ⏭️ | ✅ | ✅ |
 
 ### ❌ voted_winning_losing
 
@@ -2467,13 +2466,18 @@ Generated: 2026-02-11 12:35:15.268633
 | w5 | q51a | reverse | ✅ | ✅ | ✅ | ✅ |
 | w6 | q52a | reverse | ✅ | ✅ | ✅ | ✅ |
 
-### ❌ sm_express_political
+### ✅ sm_express_political
 
 | Wave | Source | Transform | Coverage | Transform | Range | Crosstab |
 |------|--------|-----------|----------|-----------|-------|----------|
-| w4 | q52 | reverse | ❌ | ✅ | ✅ | ✅ |
-| w5 | q51b | reverse | ✅ | ✅ | ✅ | ✅ |
-| w6 | q52b | reverse | ✅ | ✅ | ✅ | ✅ |
+| w4 | q52 | scale_convert | ✅ | ✅ | ✅ | ✅ |
+| w6 | q52b | identity | ✅ | ✅ | ✅ | ✅ |
+
+### ✅ sm_express_political_binary
+
+| Wave | Source | Transform | Coverage | Transform | Range | Crosstab |
+|------|--------|-----------|----------|-----------|-------|----------|
+| w5 | q51b | identity | ✅ | ⏭️ | ✅ | ✅ |
 
 ### ✅ sm_organize_politics
 
@@ -2968,10 +2972,6 @@ Generated: 2026-02-11 12:35:15.268633
 - ❌ **coverage**: 4.0% coverage loss (448 of 11097 values)
 - ❌ **crosstab**: 4 raw values map to multiple outputs
 
-### action_internet_political (w4)
-
-- ❌ **coverage**: 75.0% coverage loss (8034 of 10705 values)
-
 ### vote_buying_offered (w3)
 
 - ❌ **coverage**: 14.0% coverage loss (2383 of 17062 values)
@@ -2983,18 +2983,6 @@ Generated: 2026-02-11 12:35:15.268633
 ### vote_buying_offered (w6)
 
 - ❌ **coverage**: 77.6% coverage loss (8708 of 11215 values)
-
-### voted_last_election (w3)
-
-- ❌ **coverage**: 1.4% coverage loss (245 of 17325 values)
-
-### voted_last_election (w5)
-
-- ⚠️ **coverage**: 0.21% coverage loss (50 values)
-
-### voted_last_election (w6)
-
-- ❌ **coverage**: 4.0% coverage loss (456 of 11414 values)
 
 ### voted_winning_losing (w5)
 
@@ -3083,10 +3071,6 @@ Generated: 2026-02-11 12:35:15.268633
 ### internet_political_info (w4)
 
 - ❌ **coverage**: 49.6% coverage loss (5341 of 10772 values)
-
-### sm_express_political (w4)
-
-- ❌ **coverage**: 80.6% coverage loss (8623 of 10705 values)
 
 ### trust_acquaintances (w2)
 

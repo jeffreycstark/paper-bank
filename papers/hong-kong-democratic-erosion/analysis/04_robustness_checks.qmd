@@ -643,10 +643,377 @@ cat("\nTrust in national government: increase disappears at approximately",
 ```
 
 
-# 6. Save Results
+# 6. MNAR Tipping-Point Bounds for High-Missing Items
+
+For items with substantial item-level missingness (e.g., democracy_suitability at
+~60% missing), the Manski-style bounds above are insufficient because they address
+non-response to the survey as a whole rather than item-specific MNAR. This section
+assumes some fraction of the *missing* responses within each period would have
+answered at the minimum score (worst-case "critics") and finds the tipping point
+where the observed Post-NSL − Protest difference flips sign.
+
+```{r mnar-function}
+# MNAR tipping-point bounds for high-missing items (e.g., democracy_suitability 1-10)
+# Idea: assume some fraction of the *missing* responses in a period would have answered
+# at the minimum score (worst-case "critics"). Compute adjusted means and the
+# adjusted Post-NSL − Protest difference. Find where the sign flips.
+
+compute_mnar_tipping_bounds <- function(
+  data,
+  var,
+  var_label,
+  min_score,
+  max_score = NULL,
+  pct_seq = seq(0, 100, by = 5),
+  worst_case = c("post_only", "both")
+) {
+  worst_case <- match.arg(worst_case)
+
+  # Helper: restrict to the two periods
+  d <- data |>
+    dplyr::filter(period %in% c("Protest", "Post-NSL")) |>
+    dplyr::mutate(period = droplevels(period))
+
+  # Observed values by period
+  protest_obs <- d |>
+    dplyr::filter(period == "Protest") |>
+    dplyr::pull(!!rlang::sym(var))
+  post_obs <- d |>
+    dplyr::filter(period == "Post-NSL") |>
+    dplyr::pull(!!rlang::sym(var))
+
+  # Counts: observed and missing (within-period)
+  n_protest_total <- sum(d$period == "Protest")
+  n_post_total    <- sum(d$period == "Post-NSL")
+
+  n_protest_obs <- sum(!is.na(protest_obs))
+  n_post_obs    <- sum(!is.na(post_obs))
+
+  n_protest_miss <- n_protest_total - n_protest_obs
+  n_post_miss    <- n_post_total - n_post_obs
+
+  # Observed means
+  protest_mean_obs <- mean(protest_obs, na.rm = TRUE)
+  post_mean_obs    <- mean(post_obs, na.rm = TRUE)
+  diff_obs         <- post_mean_obs - protest_mean_obs
+
+  # Infer max if not provided (useful when var has odd coding)
+  if (is.null(max_score)) {
+    max_score <- max(d[[var]], na.rm = TRUE)
+  }
+
+  # Build scenarios
+  scenarios <- tibble::tibble(pct_missing_critics = pct_seq) |>
+    dplyr::mutate(
+      variable = var_label,
+
+      # Store period counts as columns
+      n_post_total = .env$n_post_total,
+      n_post_obs = .env$n_post_obs,
+      n_post_miss = .env$n_post_miss,
+      n_protest_total = .env$n_protest_total,
+      n_protest_obs = .env$n_protest_obs,
+      n_protest_miss = .env$n_protest_miss,
+
+      # number of missing we push to minimum in each period
+      n_post_critics = round(n_post_miss * pct_missing_critics / 100),
+
+      n_protest_critics = dplyr::case_when(
+        worst_case == "post_only" ~ 0L,
+        worst_case == "both"      ~ round(n_protest_miss * pct_missing_critics / 100)
+      ),
+
+      # Store observed means as columns
+      protest_mean_obs = .env$protest_mean_obs,
+      post_mean_obs = .env$post_mean_obs,
+      diff_obs = .env$diff_obs,
+
+      # adjusted means: observed sum + (critics * min_score) + (remaining missing * assumed mean)
+      # For a simple/worst-case bound, treat remaining missing as "like observed mean".
+      post_adj_mean = {
+        post_sum <- sum(post_obs, na.rm = TRUE)
+        n_like_obs <- n_post_miss - n_post_critics
+        (post_sum + n_post_critics * min_score + n_like_obs * .env$post_mean_obs) / n_post_total
+      },
+
+      protest_adj_mean = {
+        protest_sum <- sum(protest_obs, na.rm = TRUE)
+        n_like_obs <- n_protest_miss - n_protest_critics
+        (protest_sum + n_protest_critics * min_score + n_like_obs * .env$protest_mean_obs) / n_protest_total
+      },
+
+      adj_diff = post_adj_mean - protest_adj_mean,
+
+      flips_sign = (sign(adj_diff) != sign(diff_obs)) | (adj_diff == 0),
+
+      notes = dplyr::case_when(
+        worst_case == "post_only" ~ "Only Post-NSL missing shifted to minimum (one-sided worst-case)",
+        worst_case == "both"      ~ "Both periods' missing shifted to minimum (symmetric stress test)"
+      )
+    ) |>
+    dplyr::select(all_of(c("variable", "pct_missing_critics",
+                  "n_post_total", "n_post_obs", "n_post_miss", "n_post_critics",
+                  "n_protest_total", "n_protest_obs", "n_protest_miss", "n_protest_critics",
+                  "protest_mean_obs", "post_mean_obs", "diff_obs",
+                  "protest_adj_mean", "post_adj_mean", "adj_diff", "flips_sign", "notes")))
+
+  # Compute tipping point (smallest pct where sign flips or crosses zero)
+  tipping <- scenarios |>
+    dplyr::filter(flips_sign) |>
+    dplyr::slice_min(pct_missing_critics, with_ties = FALSE) |>
+    dplyr::pull(pct_missing_critics)
+
+  attr(scenarios, "tipping_point_pct") <- ifelse(length(tipping) == 0, NA_real_, tipping)
+  attr(scenarios, "diff_obs") <- diff_obs
+  attr(scenarios, "protest_mean_obs") <- protest_mean_obs
+  attr(scenarios, "post_mean_obs") <- post_mean_obs
+  attr(scenarios, "min_score") <- min_score
+  attr(scenarios, "max_score") <- max_score
+  scenarios
+}
+```
+
+```{r mnar-suitability}
+# Democracy suitability (1–10; 10 = completely suitable)
+mnar_suitability_postonly <- compute_mnar_tipping_bounds(
+  hk5_analysis,
+  var = "democracy_suitability",
+  var_label = "Democracy Suitability (1–10)",
+  min_score = 1,
+  max_score = 10,
+  pct_seq = seq(0, 100, by = 5),
+  worst_case = "post_only"
+)
+
+mnar_suitability_both <- compute_mnar_tipping_bounds(
+  hk5_analysis,
+  var = "democracy_suitability",
+  var_label = "Democracy Suitability (1–10)",
+  min_score = 1,
+  max_score = 10,
+  pct_seq = seq(0, 100, by = 5),
+  worst_case = "both"
+)
+
+cat("Tipping point (post-only):",
+    attr(mnar_suitability_postonly, "tipping_point_pct"), "%\n")
+cat("Tipping point (both-periods):",
+    attr(mnar_suitability_both, "tipping_point_pct"), "%\n")
+```
+
+```{r mnar-satisfaction}
+# Democratic satisfaction (1–4; 4 = highest)
+mnar_satisfaction_postonly <- compute_mnar_tipping_bounds(
+  hk5_analysis,
+  var = "democracy_satisfaction",
+  var_label = "Democracy Satisfaction (1–4)",
+  min_score = 1,
+  max_score = 4,
+  pct_seq = seq(0, 100, by = 5),
+  worst_case = "post_only"
+)
+
+cat("Tipping point (post-only):",
+    attr(mnar_satisfaction_postonly, "tipping_point_pct"), "%\n")
+```
+
+```{r mnar-table}
+mnar_suitability_postonly |>
+  dplyr::mutate(across(c(protest_adj_mean, post_adj_mean, adj_diff), ~round(.x, 3))) |>
+  dplyr::select(pct_missing_critics,
+                n_post_miss, n_post_critics,
+                post_adj_mean,
+                n_protest_miss, n_protest_critics,
+                protest_adj_mean,
+                adj_diff, flips_sign) |>
+  knitr::kable(
+    col.names = c("% Missing set to min",
+                  "Post miss", "Post set-min",
+                  "Adj Post mean",
+                  "Protest miss", "Protest set-min",
+                  "Adj Protest mean",
+                  "Adj Diff", "Flip?"),
+    caption = paste0(
+      "MNAR tipping-point sensitivity: Democracy Suitability (1–10). ",
+      "Observed diff = ",
+      round(attr(mnar_suitability_postonly, "diff_obs"), 3),
+      ". Tipping point = ",
+      attr(mnar_suitability_postonly, "tipping_point_pct"),
+      "% (post-only)."
+    ),
+    booktabs = TRUE
+  ) |>
+  kableExtra::kable_styling(latex_options = c("hold_position"))
+```
+
+## 6.1 Extreme-Value MNAR Bounds (Min or Max)
+
+The preceding analysis assumes missing respondents would have answered at the
+minimum (worst-case critics). But an alternative "fearful democrats" scenario
+is equally plausible: missing Post-NSL respondents may have been strong
+supporters of democracy suitability (score = 10) who refused to participate
+precisely because they feared revealing pro-democracy views. This function
+generalizes the tipping-point analysis to push missing values to either
+extreme.
+
+```{r mnar-extreme-function}
+# MNAR tipping-point bounds that can push missing values to MIN or MAX
+# Useful for high-missing items like democracy_suitability (1-10) or satisfaction (1-4)
+
+compute_mnar_tipping_bounds_extreme <- function(
+  data,
+  var,
+  var_label,
+  min_score,
+  max_score,
+  pct_seq = seq(0, 100, by = 5),
+  mode = c("post_missing_to_min", "post_missing_to_max", "both_missing_to_min", "both_missing_to_max")
+) {
+  mode <- match.arg(mode)
+
+  d <- data |>
+    dplyr::filter(period %in% c("Protest", "Post-NSL")) |>
+    dplyr::mutate(period = droplevels(period))
+
+  # Pull vectors (may include NA)
+  protest_vec <- d |> dplyr::filter(period == "Protest")  |> dplyr::pull(!!rlang::sym(var))
+  post_vec    <- d |> dplyr::filter(period == "Post-NSL") |> dplyr::pull(!!rlang::sym(var))
+
+  # Totals by period (including missing)
+  n_protest_total <- sum(d$period == "Protest")
+  n_post_total    <- sum(d$period == "Post-NSL")
+
+  # Missing counts
+  n_protest_miss <- sum(is.na(protest_vec))
+  n_post_miss    <- sum(is.na(post_vec))
+
+  # Observed means
+  protest_mean_obs <- mean(protest_vec, na.rm = TRUE)
+  post_mean_obs    <- mean(post_vec, na.rm = TRUE)
+  diff_obs         <- post_mean_obs - protest_mean_obs
+
+  # Observed sums
+  protest_sum <- sum(protest_vec, na.rm = TRUE)
+  post_sum    <- sum(post_vec, na.rm = TRUE)
+
+  # For "remaining missing", assume they are like observed mean (neutral fill)
+  # This keeps the manipulation focused on the "extreme" subset.
+
+  scenarios <- tibble::tibble(pct_missing_extreme = pct_seq) |>
+    dplyr::mutate(
+      variable = var_label,
+
+      # Store period counts as columns
+      n_post_total = .env$n_post_total,
+      n_post_miss = .env$n_post_miss,
+      n_protest_total = .env$n_protest_total,
+      n_protest_miss = .env$n_protest_miss,
+      protest_mean_obs = .env$protest_mean_obs,
+      post_mean_obs = .env$post_mean_obs,
+      diff_obs = .env$diff_obs,
+
+      # How many missing are assigned to extreme value
+      n_post_extreme = round(n_post_miss * pct_missing_extreme / 100),
+      n_protest_extreme = dplyr::case_when(
+        mode %in% c("both_missing_to_min", "both_missing_to_max") ~ round(n_protest_miss * pct_missing_extreme / 100),
+        TRUE ~ 0L
+      ),
+
+      # Choose extreme value by mode
+      post_extreme_value = dplyr::case_when(
+        mode %in% c("post_missing_to_min", "both_missing_to_min") ~ min_score,
+        TRUE ~ max_score
+      ),
+      protest_extreme_value = dplyr::case_when(
+        mode %in% c("both_missing_to_min") ~ min_score,
+        mode %in% c("both_missing_to_max") ~ max_score,
+        TRUE ~ NA_real_
+      ),
+
+      # Adjusted means
+      post_adj_mean = {
+        n_like_obs <- n_post_miss - n_post_extreme
+        (.env$post_sum + n_post_extreme * post_extreme_value + n_like_obs * .env$post_mean_obs) / n_post_total
+      },
+
+      protest_adj_mean = {
+        n_like_obs <- n_protest_miss - n_protest_extreme
+        (.env$protest_sum +
+           n_protest_extreme * dplyr::if_else(is.na(protest_extreme_value), .env$protest_mean_obs, protest_extreme_value) +
+           n_like_obs * .env$protest_mean_obs) / n_protest_total
+      },
+
+      adj_diff = post_adj_mean - protest_adj_mean,
+
+      # For tipping point, we typically care about the sign relative to the observed sign
+      flips_or_crosses_zero = (adj_diff == 0) | (sign(adj_diff) != sign(diff_obs)),
+
+      mode = mode
+    ) |>
+    dplyr::select(all_of(c("variable", "mode", "pct_missing_extreme",
+                  "n_post_total", "n_post_miss", "n_post_extreme", "post_adj_mean",
+                  "n_protest_total", "n_protest_miss", "n_protest_extreme", "protest_adj_mean",
+                  "protest_mean_obs", "post_mean_obs", "diff_obs",
+                  "adj_diff", "flips_or_crosses_zero")))
+
+  tipping <- scenarios |>
+    dplyr::filter(flips_or_crosses_zero) |>
+    dplyr::slice_min(pct_missing_extreme, with_ties = FALSE) |>
+    dplyr::pull(pct_missing_extreme)
+
+  attr(scenarios, "tipping_point_pct") <- ifelse(length(tipping) == 0, NA_real_, tipping)
+  attr(scenarios, "diff_obs") <- diff_obs
+  scenarios
+}
+```
+
+```{r mnar-extreme-suitability}
+# Fearful democrats scenario: missing Post-NSL respondents are actually MAX (10)
+mnar_suitability_post_to_max <- compute_mnar_tipping_bounds_extreme(
+  hk5_analysis,
+  var = "democracy_suitability",
+  var_label = "Democracy Suitability (1–10)",
+  min_score = 1,
+  max_score = 10,
+  pct_seq = seq(0, 100, by = 5),
+  mode = "post_missing_to_max"
+)
+
+cat("Observed diff = ", round(attr(mnar_suitability_post_to_max, "diff_obs"), 3), "\n")
+cat("Tipping point (Post missing -> MAX) = ",
+    attr(mnar_suitability_post_to_max, "tipping_point_pct"), "%\n")
+```
+
+```{r mnar-extreme-table}
+mnar_suitability_post_to_max |>
+  dplyr::mutate(across(c(post_adj_mean, protest_adj_mean, adj_diff), ~round(.x, 3))) |>
+  dplyr::select(all_of(c("pct_missing_extreme",
+                "n_post_miss", "n_post_extreme", "post_adj_mean",
+                "n_protest_miss", "protest_adj_mean",
+                "adj_diff", "flips_or_crosses_zero"))) |>
+  knitr::kable(
+    col.names = c("% Post missing set to MAX",
+                  "Post miss", "Post set-MAX", "Adj Post mean",
+                  "Protest miss", "Adj Protest mean",
+                  "Adj Diff", "Flip/cross 0?"),
+    caption = paste0(
+      "MNAR tipping-point sensitivity: Democracy Suitability (1–10). ",
+      "Stress test assumes a share of missing Post-NSL respondents would answer 10. ",
+      "Observed diff = ", round(attr(mnar_suitability_post_to_max, "diff_obs"), 3),
+      "; tipping point = ", attr(mnar_suitability_post_to_max, "tipping_point_pct"), "%."
+    ),
+    booktabs = TRUE
+  ) |>
+  kableExtra::kable_styling(latex_options = c("hold_position"))
+```
+
+
+# 7. Save Results
 
 ```{r save-robustness}
 save(mw_results, balance_table, boot_results, manski_scenarios,
+     mnar_suitability_postonly, mnar_suitability_both, mnar_satisfaction_postonly,
+     mnar_suitability_post_to_max,
      file = "results/robustness_results.RData")
 cat("Robustness results saved to results/robustness_results.RData\n")
 ```

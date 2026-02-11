@@ -1,10 +1,10 @@
 # Harmonization Validation Triage
 
-Generated: 2026-02-11 12:36:04.829947
+Generated: 2026-02-11 12:58:22.994155
 
 ## Summary by Likely Cause
 
-- raw_out_of_range_or_missing_codes: 68
+- raw_out_of_range_or_missing_codes: 63
 - transform_mismatch_or_data_anomaly: 6
 - transform_mismatch_or_data_anomaly; one_to_many_mapping: 6
 - coverage_loss; one_to_many_mapping: 3
@@ -57,13 +57,9 @@ Generated: 2026-02-11 12:36:04.829947
 | meaning_of_democracy | procedural_preference_index | w3 | q85 | error | coverage, crosstab | coverage_loss; one_to_many_mapping | Check recode logic for dropped values. Check recode function for non-deterministic mapping. |
 | meaning_of_democracy | procedural_preference_index | w4 | q88 | error | coverage, crosstab | coverage_loss; one_to_many_mapping | Check recode logic for dropped values. Check recode function for non-deterministic mapping. |
 | meaning_of_democracy | procedural_preference_index | w6 | q85 | error | coverage, crosstab | coverage_loss; one_to_many_mapping | Check recode logic for dropped values. Check recode function for non-deterministic mapping. |
-| political_action | action_internet_political | w4 | q52 | error | coverage | raw_out_of_range_or_missing_codes | Inspect raw codes; add to missing_conventions or update valid_range. |
 | political_action | vote_buying_offered | w3 | q119 | error | coverage | raw_out_of_range_or_missing_codes | Inspect raw codes; add to missing_conventions or update valid_range. |
 | political_action | vote_buying_offered | w4 | q120 | error | coverage | raw_out_of_range_or_missing_codes | Inspect raw codes; add to missing_conventions or update valid_range. |
 | political_action | vote_buying_offered | w6 | q79 | error | coverage | raw_out_of_range_or_missing_codes | Inspect raw codes; add to missing_conventions or update valid_range. |
-| political_action | voted_last_election | w3 | q32 | error | coverage | raw_out_of_range_or_missing_codes | Inspect raw codes; add to missing_conventions or update valid_range. |
-| political_action | voted_last_election | w5 | q33 | warn | coverage | raw_out_of_range_or_missing_codes | Inspect raw codes; add to missing_conventions or update valid_range. |
-| political_action | voted_last_election | w6 | q33 | error | coverage | raw_out_of_range_or_missing_codes | Inspect raw codes; add to missing_conventions or update valid_range. |
 | political_action | voted_winning_losing | w5 | q34a | warn | coverage | raw_out_of_range_or_missing_codes | Inspect raw codes; add to missing_conventions or update valid_range. |
 | political_action | voted_winning_losing | w6 | q34a | error | coverage | raw_out_of_range_or_missing_codes | Inspect raw codes; add to missing_conventions or update valid_range. |
 | political_action | voting_frequency | w3 | q73 | error | coverage | raw_out_of_range_or_missing_codes | Inspect raw codes; add to missing_conventions or update valid_range. |
@@ -86,7 +82,6 @@ Generated: 2026-02-11 12:36:04.829947
 | public_services | access_public_school | w4 | q40 | error | coverage | raw_out_of_range_or_missing_codes | Inspect raw codes; add to missing_conventions or update valid_range. |
 | public_services | access_transport | w5 | q41 | warn | coverage | raw_out_of_range_or_missing_codes | Inspect raw codes; add to missing_conventions or update valid_range. |
 | social_media | internet_political_info | w4 | q51 | error | coverage | raw_out_of_range_or_missing_codes | Inspect raw codes; add to missing_conventions or update valid_range. |
-| social_media | sm_express_political | w4 | q52 | error | coverage | raw_out_of_range_or_missing_codes | Inspect raw codes; add to missing_conventions or update valid_range. |
 | social_trust | trust_acquaintances | w2 | q26 | error | transformation, crosstab | transform_mismatch_or_data_anomaly; one_to_many_mapping | Inspect raw labels/value distributions for anomalies. Check recode function for non-deterministic mapping. |
 | social_trust | trust_acquaintances | w3 | q27 | error | transformation, crosstab | transform_mismatch_or_data_anomaly; one_to_many_mapping | Inspect raw labels/value distributions for anomalies. Check recode function for non-deterministic mapping. |
 | social_trust | trust_generalized_binary | w1 | q024 | error | coverage | raw_out_of_range_or_missing_codes | Inspect raw codes; add to missing_conventions or update valid_range. |

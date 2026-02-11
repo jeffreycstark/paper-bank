@@ -534,9 +534,10 @@ variables:
       w1: null
       w2: null
       w3: null
-      w4: q52
+      w4: null
       w5: q76
       w6: q73
+    note: "Wave 4 uses a different frequency scale and is handled in social_media (sm_express_political)."
     scale:
       min: 1
       max: 5
@@ -550,14 +551,10 @@ variables:
       default:
         method: r_function
         fn: safe_reverse_5pt
-      exceptions:
-        w4:
-          method: identity
-          note: "w4 uses different scale (frequency) - may need separate handling"
     qc:
       valid_range: [1, 5]
       validate:
-        - waves: [w4, w5, w6]
+        - waves: [w5, w6]
           phrase: "internet.*social media.*politic|social media.*opinion"
   - id: action_join_cause
     concept: political_action
@@ -1200,6 +1197,9 @@ variables:
     concept: political_action
     description: "Did you vote in the last national election?"
     type: nominal
+    missing:
+      use_convention: treat_as_na
+      codes: [3, 1103, 1104]
     source:
       w1: q027 # W1 uses different question ("participated in last election")
       w2: q38  # W2 also has reversed scale (1=No, 2=Yes)
