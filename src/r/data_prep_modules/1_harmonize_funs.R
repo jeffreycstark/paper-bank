@@ -29,7 +29,7 @@ safe_reverse_5pt <- function(x) {
 
 #' Recode 5-point to 4-point scale
 #'
-#' Linear rescaling: (x-1) * (4/4) + 1 with rounding
+#' Linear rescaling: (x-1) * (4/5) + 1 with rounding
 #' @param x Numeric vector (1-5)
 #' @return Rescaled numeric vector (1-4)
 #'

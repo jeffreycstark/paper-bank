@@ -69,7 +69,12 @@ strip_haven_labels <- function(df) {
 extract_var <- function(waves, wave, var) {
   df <- waves[[wave]]
 
-  if (is.null(df) || !var %in% names(df)) {
+  if (is.null(df)) {
+    warning(sprintf("Wave %s not found in waves list", wave))
+    return(numeric(0))
+  }
+
+  if (!var %in% names(df)) {
     warning(sprintf("Variable %s not found in %s", var, wave))
     return(rep(NA_real_, nrow(df)))
   }

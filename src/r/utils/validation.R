@@ -279,6 +279,22 @@ if (is.na(pearson) || is.na(spearman)) {
 #' @return List with status, crosstab, and message
 validate_crosstab <- function(raw_vec, harmonized_vec, missing_codes = c()) {
 
+  # Skip if too many unique values (continuous/weight-like variables)
+  raw_unique <- length(unique(raw_vec[!is.na(raw_vec)]))
+  harm_unique <- length(unique(harmonized_vec[!is.na(harmonized_vec)]))
+  if (raw_unique > 100 || harm_unique > 100) {
+    return(list(
+      status = "skip",
+      check = "crosstab",
+      n_raw_values = raw_unique,
+      multi_output = tibble::tibble(),
+      missing_leaked = FALSE,
+      crosstab = NULL,
+      message = sprintf("Skipped crosstab (too many unique values: raw=%d, harmonized=%d)",
+                        raw_unique, harm_unique)
+    ))
+  }
+
   # Build crosstab
   df <- tibble::tibble(
     raw = raw_vec,
@@ -312,7 +328,12 @@ validate_crosstab <- function(raw_vec, harmonized_vec, missing_codes = c()) {
   # Create frequency crosstab for report
   crosstab <- df %>%
     dplyr::count(raw, harmonized) %>%
-    tidyr::pivot_wider(names_from = harmonized, values_from = n, values_fill = 0)
+    tidyr::pivot_wider(
+      names_from = harmonized,
+      values_from = n,
+      values_fill = 0,
+      names_repair = "unique"
+    )
 
   # Determine status
   issues <- c()
@@ -423,23 +444,45 @@ validate_variable_wave <- function(raw_data, harmonized_data, var_spec,
   raw_vec <- raw_data[[source_var]]
   harmonized_vec <- harmonized_data[[var_id]]
 
+  if (length(harmonized_vec) != length(raw_vec)) {
+    return(list(
+      var_id = var_id,
+      wave = wave_name,
+      source_var = source_var,
+      transform_type = NA_character_,
+      status = "error",
+      checks = list(
+        length_check = list(
+          status = "error",
+          check = "length",
+          message = sprintf(
+            "Length mismatch: raw=%d, harmonized=%d",
+            length(raw_vec), length(harmonized_vec)
+          )
+        )
+      )
+    ))
+  }
+
   # Convert haven_labelled if needed
   if (inherits(raw_vec, "haven_labelled")) {
     raw_vec <- as.numeric(haven::zap_labels(raw_vec))
   }
 
-  # Determine transformation method
-  default_method <- var_spec$harmonize$default$method %||% "identity"
-  wave_method <- var_spec$harmonize$exceptions[[wave_name]]$method %||%
-                 var_spec$harmonize$by_wave[[wave_name]]$method %||%
-                 default_method
+  # Determine transformation method (align with harmonize_variable)
+  default_rule <- var_spec$harmonize$default %||% list(method = "identity")
+  wave_rule <- var_spec$harmonize$by_wave[[wave_name]] %||%
+               var_spec$harmonize$exceptions[[wave_name]] %||%
+               var_spec$harmonize[[wave_name]] %||%
+               default_rule
 
-  # Map method to validation type
-  fn_name <- var_spec$harmonize$exceptions[[wave_name]]$fn %||%
-             var_spec$harmonize$by_wave[[wave_name]]$fn %||% ""
+  wave_method <- wave_rule$method %||% default_rule$method %||% "identity"
+  fn_name <- wave_rule$fn %||% ""
 
   if (wave_method == "identity") {
     transform_type <- "identity"
+  } else if (wave_method %in% c("recode", "derive")) {
+    transform_type <- "skip"
   } else if (grepl("reverse", fn_name, ignore.case = TRUE)) {
     transform_type <- "reverse"
   } else {
@@ -457,18 +500,40 @@ validate_variable_wave <- function(raw_data, harmonized_data, var_spec,
 
   # Run all checks
   # Skip transformation (correlation) check for nominal/categorical variables
+  skip_transform_fns <- c("extract_month_from_date", "extract_year_from_date")
   if (is_nominal) {
     transformation_result <- list(
       status = "skip",
       check = "transformation",
       message = "Skipped: nominal/categorical variable (correlation not meaningful)"
     )
+  } else if (transform_type == "skip" || fn_name %in% skip_transform_fns) {
+    transformation_result <- list(
+      status = "skip",
+      check = "transformation",
+      message = "Skipped: transformation not monotonic or not comparable"
+    )
   } else {
     transformation_result <- validate_transformation(raw_vec, harmonized_vec, transform_type)
   }
 
+  coverage_missing_codes <- missing_codes
+  if (wave_method == "recode" && !is.null(wave_rule$mapping)) {
+    mapping <- wave_rule$mapping
+    drop_mask <- vapply(
+      mapping,
+      function(v) is.null(v) || (length(v) == 1 && is.na(v)),
+      logical(1)
+    )
+    if (any(drop_mask)) {
+      drop_codes <- suppressWarnings(as.numeric(names(mapping)[drop_mask]))
+      drop_codes <- drop_codes[!is.na(drop_codes)]
+      coverage_missing_codes <- unique(c(coverage_missing_codes, drop_codes))
+    }
+  }
+
   checks <- list(
-    coverage = validate_coverage(raw_vec, harmonized_vec, missing_codes),
+    coverage = validate_coverage(raw_vec, harmonized_vec, coverage_missing_codes),
     transformation = transformation_result,
     range = validate_range(harmonized_vec, valid_range),
     crosstab = validate_crosstab(raw_vec, harmonized_vec, missing_codes)

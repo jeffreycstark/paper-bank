@@ -16,7 +16,7 @@ cat("\n=== CREATING FINAL DATASET: abs_econdev_authpref.rds ===\n\n")
 
 # Load all master wave files
 output_dir <- here("outputs")
-wave_files <- list.files(output_dir, pattern = "^master_w[1-6]\\.rds$", full.names = TRUE)
+wave_files <- sort(list.files(output_dir, pattern = "^master_w[1-6]\\.rds$", full.names = TRUE))
 
 cat("Loading master wave files...\n")
 wave_list <- lapply(wave_files, function(f) {

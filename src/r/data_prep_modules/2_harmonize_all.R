@@ -12,26 +12,11 @@ library(dplyr)
 # Load harmonization engine
 source(here::here("src/r/harmonize/_load_harmonize.R"))
 source(here::here("src/r/utils/_load_functions.R"))
+source(here::here("src/r/data_prep_modules/_yaml_utils.R"))
 
 # ==============================================================================
 # MAIN FUNCTIONS
 # ==============================================================================
-
-#' List all YAML spec files
-#'
-#' @return Character vector of YAML file paths
-list_yaml_specs <- function() {
-  config_dir <- here::here("src/config/harmonize_validated")
-
-  files <- list.files(config_dir, pattern = "\\.yml$", full.names = TRUE)
-
-  # Exclude template and documentation files
-  exclude_patterns <- c("MODEL_VARIABLE", "TEMPLATE", "README")
-  files <- files[!grepl(paste(exclude_patterns, collapse = "|"), files, ignore.case = TRUE)]
-
-  files
-}
-
 
 #' Harmonize all variables from a single YAML spec
 #'
@@ -139,10 +124,6 @@ harmonize_all_specs <- function(waves, specs = NULL, silent = FALSE) {
 #' @param waves List of wave dataframes (for row counts)
 #' @return Long dataframe with wave, variable columns
 stack_harmonized <- function(harmonized_results, waves) {
-
-  # Get row counts per wave
-  wave_n <- sapply(waves, nrow)
-
   all_rows <- list()
 
   for (spec_name in names(harmonized_results)) {
@@ -202,6 +183,11 @@ stack_harmonized_wide <- function(harmonized_results, waves) {
 
           if (length(values) == n_rows) {
             wave_df[[var_id]] <- values
+          } else if (length(values) > 0) {
+            warning(sprintf(
+              "Length mismatch for %s in %s: expected %d, got %d",
+              var_id, wave_name, n_rows, length(values)
+            ))
           }
         }
       }

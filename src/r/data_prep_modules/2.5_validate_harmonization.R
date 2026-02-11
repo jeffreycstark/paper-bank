@@ -25,39 +25,41 @@ here::i_am("src/r/data_prep_modules/2.5_validate_harmonization.R")
 
 # Load validation functions
 source(here::here("src/r/utils/validation.R"))
+source(here::here("src/r/data_prep_modules/_yaml_utils.R"))
 
 # ==============================================================================
 # HELPER FUNCTIONS
 # ==============================================================================
 
-#' List all YAML spec files
-list_yaml_specs <- function() {
-  config_dir <- here::here("src/config/harmonize_validated")
-
-  files <- list.files(config_dir, pattern = "\\.yml$", full.names = TRUE)
-
-  # Exclude template and documentation files
-  exclude_patterns <- c("MODEL_VARIABLE", "TEMPLATE", "README")
-  files <- files[!grepl(paste(exclude_patterns, collapse = "|"), files, ignore.case = TRUE)]
-
-  files
-}
-
-
-#' Extract missing codes from spec
-get_missing_codes <- function(spec) {
+#' Extract missing codes from spec (per-variable aware)
+get_missing_codes <- function(spec, var_spec = NULL) {
   codes <- c()
 
-  if (!is.null(spec$missing_conventions$treat_as_na)) {
-    convention <- spec$missing_conventions$treat_as_na
+  extract_codes <- function(convention) {
+    if (is.null(convention)) return(numeric(0))
     if (is.list(convention) && !is.null(convention$codes)) {
-      codes <- as.numeric(convention$codes)
-    } else {
-      codes <- as.numeric(convention)
+      return(as.numeric(convention$codes))
+    }
+    as.numeric(convention)
+  }
+
+  # Variable-specific missing codes take precedence
+  if (!is.null(var_spec) && !is.null(var_spec$missing)) {
+    if (!is.null(var_spec$missing$codes)) {
+      codes <- c(codes, as.numeric(var_spec$missing$codes))
+    }
+    if (!is.null(var_spec$missing$use_convention)) {
+      key <- var_spec$missing$use_convention
+      codes <- c(codes, extract_codes(spec$missing_conventions[[key]]))
     }
   }
 
-  codes
+  # Fallback to default convention
+  if (length(codes) == 0 && !is.null(spec$missing_conventions$treat_as_na)) {
+    codes <- c(codes, extract_codes(spec$missing_conventions$treat_as_na))
+  }
+
+  unique(codes)
 }
 
 
@@ -130,6 +132,7 @@ run_validation <- function(specs = NULL, waves = NULL,
 
   # Determine waves to validate
   wave_names <- if (is.null(waves)) names(raw_waves) else waves
+  harmonized_wave_is_numeric <- "wave" %in% names(harmonized) && is.numeric(harmonized$wave)
 
   # Collect all results
   all_results <- list()
@@ -154,12 +157,10 @@ run_validation <- function(specs = NULL, waves = NULL,
 
     if (is.null(spec)) next
 
-    # Get missing codes for this spec
-    missing_codes <- get_missing_codes(spec)
-
     # Process each variable in spec
     for (var_spec in spec$variables) {
       var_id <- var_spec$id
+      missing_codes <- get_missing_codes(spec, var_spec)
 
       if (verbose) {
         cat(sprintf("  %s: ", var_id))
@@ -177,8 +178,14 @@ run_validation <- function(specs = NULL, waves = NULL,
         if (is.null(var_spec$source[[wave_name]])) next
 
         # Get harmonized data for this wave
+        wave_id <- if (harmonized_wave_is_numeric) {
+          as.integer(sub("^w", "", wave_name))
+        } else {
+          wave_name
+        }
+
         harmonized_wave <- harmonized %>%
-          dplyr::filter(wave == wave_name)
+          dplyr::filter(wave == wave_id)
 
         # Run validation
         result <- validate_variable_wave(
@@ -258,6 +265,7 @@ validate_variables <- function(var_ids, waves = NULL) {
   result_idx <- 1
 
   wave_names <- if (is.null(waves)) names(raw_waves) else waves
+  harmonized_wave_is_numeric <- "wave" %in% names(harmonized) && is.numeric(harmonized$wave)
 
   for (spec_file in spec_files) {
     spec <- yaml::read_yaml(spec_file)
@@ -272,7 +280,13 @@ validate_variables <- function(var_ids, waves = NULL) {
         if (is.null(var_spec$source[[wave_name]])) next
         if (!wave_name %in% names(raw_waves)) next
 
-        harmonized_wave <- harmonized %>% dplyr::filter(wave == wave_name)
+        wave_id <- if (harmonized_wave_is_numeric) {
+          as.integer(sub("^w", "", wave_name))
+        } else {
+          wave_name
+        }
+
+        harmonized_wave <- harmonized %>% dplyr::filter(wave == wave_id)
 
         result <- validate_variable_wave(
           raw_data = raw_waves[[wave_name]],

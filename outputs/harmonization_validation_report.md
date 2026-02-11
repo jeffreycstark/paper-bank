@@ -1,12 +1,12 @@
 # Harmonization Validation Report
 
-Generated: 2026-01-14 18:48:05.693623
+Generated: 2026-02-11 07:40:17.001141
 
 ## Summary
 
-- ✅ OK: 879
-- ⚠️ Warnings: 16
-- ❌ Errors: 138
+- ✅ OK: 946
+- ⚠️ Warnings: 28
+- ❌ Errors: 107
 - ⏭️ Skipped: 4
 
 ## Results by Variable
@@ -15,175 +15,176 @@ Generated: 2026-01-14 18:48:05.693623
 
 | Wave | Source | Transform | Coverage | Transform | Range | Crosstab |
 |------|--------|-----------|----------|-----------|-------|----------|
-| w1 | q139 | scale_convert | ✅ | ✅ | ✅ | ✅ |
-| w2 | q140 | scale_convert | ✅ | ✅ | ✅ | ✅ |
-| w3 | q147 | scale_convert | ✅ | ✅ | ✅ | ✅ |
-| w4 | q148 | scale_convert | ✅ | ✅ | ✅ | ✅ |
-| w5 | q155 | scale_convert | ✅ | ✅ | ✅ | ✅ |
-| w6 | q155 | scale_convert | ✅ | ✅ | ✅ | ✅ |
+| w1 | q139 | reverse | ✅ | ✅ | ✅ | ✅ |
+| w2 | q140 | reverse | ✅ | ✅ | ✅ | ✅ |
+| w3 | q147 | reverse | ✅ | ✅ | ✅ | ✅ |
+| w4 | q148 | reverse | ✅ | ✅ | ✅ | ✅ |
+| w5 | q155 | reverse | ✅ | ✅ | ✅ | ✅ |
+| w6 | q155 | reverse | ✅ | ✅ | ✅ | ✅ |
 
 ### ✅ antiplu_groups_disrupt_harmony
 
 | Wave | Source | Transform | Coverage | Transform | Range | Crosstab |
 |------|--------|-----------|----------|-----------|-------|----------|
-| w1 | q135 | scale_convert | ✅ | ✅ | ✅ | ✅ |
-| w2 | q136 | scale_convert | ✅ | ✅ | ✅ | ✅ |
-| w3 | q143 | scale_convert | ✅ | ✅ | ✅ | ✅ |
-| w4 | q144 | scale_convert | ✅ | ✅ | ✅ | ✅ |
-| w5 | q151 | scale_convert | ✅ | ✅ | ✅ | ✅ |
-| w6 | q151 | scale_convert | ✅ | ✅ | ✅ | ✅ |
+| w1 | q135 | reverse | ✅ | ✅ | ✅ | ✅ |
+| w2 | q136 | reverse | ✅ | ✅ | ✅ | ✅ |
+| w3 | q143 | reverse | ✅ | ✅ | ✅ | ✅ |
+| w4 | q144 | reverse | ✅ | ✅ | ✅ | ✅ |
+| w5 | q151 | reverse | ✅ | ✅ | ✅ | ✅ |
+| w6 | q151 | reverse | ✅ | ✅ | ✅ | ✅ |
 
 ### ✅ auth_govt_censor_ideas
 
 | Wave | Source | Transform | Coverage | Transform | Range | Crosstab |
 |------|--------|-----------|----------|-----------|-------|----------|
-| w1 | q134 | scale_convert | ✅ | ✅ | ✅ | ✅ |
-| w2 | q135 | scale_convert | ✅ | ✅ | ✅ | ✅ |
-| w3 | q142 | scale_convert | ✅ | ✅ | ✅ | ✅ |
-| w4 | q143 | scale_convert | ✅ | ✅ | ✅ | ✅ |
-| w5 | q150 | scale_convert | ✅ | ✅ | ✅ | ✅ |
-| w6 | q150 | scale_convert | ✅ | ✅ | ✅ | ✅ |
+| w1 | q134 | reverse | ✅ | ✅ | ✅ | ✅ |
+| w2 | q135 | reverse | ✅ | ✅ | ✅ | ✅ |
+| w3 | q142 | reverse | ✅ | ✅ | ✅ | ✅ |
+| w4 | q143 | reverse | ✅ | ✅ | ✅ | ✅ |
+| w5 | q150 | reverse | ✅ | ✅ | ✅ | ✅ |
+| w6 | q150 | reverse | ✅ | ✅ | ✅ | ✅ |
 
 ### ✅ auth_judges_defer_executive
 
 | Wave | Source | Transform | Coverage | Transform | Range | Crosstab |
 |------|--------|-----------|----------|-----------|-------|----------|
-| w1 | q136 | scale_convert | ✅ | ✅ | ✅ | ✅ |
-| w2 | q137 | scale_convert | ✅ | ✅ | ✅ | ✅ |
-| w3 | q144 | scale_convert | ✅ | ✅ | ✅ | ✅ |
-| w4 | q145 | scale_convert | ✅ | ✅ | ✅ | ✅ |
-| w5 | q152 | scale_convert | ✅ | ✅ | ✅ | ✅ |
-| w6 | q152 | scale_convert | ✅ | ✅ | ✅ | ✅ |
+| w1 | q136 | reverse | ✅ | ✅ | ✅ | ✅ |
+| w2 | q137 | reverse | ✅ | ✅ | ✅ | ✅ |
+| w3 | q144 | reverse | ✅ | ✅ | ✅ | ✅ |
+| w4 | q145 | reverse | ✅ | ✅ | ✅ | ✅ |
+| w5 | q152 | reverse | ✅ | ✅ | ✅ | ✅ |
+| w6 | q152 | reverse | ✅ | ✅ | ✅ | ✅ |
 
 ### ✅ demo_political_equality
 
 | Wave | Source | Transform | Coverage | Transform | Range | Crosstab |
 |------|--------|-----------|----------|-----------|-------|----------|
-| w1 | q132 | scale_convert | ✅ | ✅ | ✅ | ✅ |
-| w2 | q133 | scale_convert | ✅ | ✅ | ✅ | ✅ |
-| w3 | q140 | scale_convert | ✅ | ✅ | ✅ | ✅ |
-| w4 | q141 | scale_convert | ✅ | ✅ | ✅ | ✅ |
-| w5 | q148 | scale_convert | ✅ | ✅ | ✅ | ✅ |
-| w6 | q148 | scale_convert | ✅ | ✅ | ✅ | ✅ |
+| w1 | q132 | reverse | ✅ | ✅ | ✅ | ✅ |
+| w2 | q133 | reverse | ✅ | ✅ | ✅ | ✅ |
+| w3 | q140 | reverse | ✅ | ✅ | ✅ | ✅ |
+| w4 | q141 | reverse | ✅ | ✅ | ✅ | ✅ |
+| w5 | q148 | reverse | ✅ | ✅ | ✅ | ✅ |
+| w6 | q148 | reverse | ✅ | ✅ | ✅ | ✅ |
 
 ### ✅ democrit_citizens_not_ready
 
 | Wave | Source | Transform | Coverage | Transform | Range | Crosstab |
 |------|--------|-----------|----------|-----------|-------|----------|
-| w5 | q171 | scale_convert | ✅ | ✅ | ✅ | ✅ |
-| w6 | q171 | scale_convert | ✅ | ✅ | ✅ | ✅ |
+| w5 | q171 | reverse | ✅ | ✅ | ✅ | ✅ |
+| w6 | q171 | reverse | ✅ | ✅ | ✅ | ✅ |
 
 ### ✅ democrit_econ_over_democracy
 
 | Wave | Source | Transform | Coverage | Transform | Range | Crosstab |
 |------|--------|-----------|----------|-----------|-------|----------|
-| w5 | q173 | scale_convert | ✅ | ✅ | ✅ | ✅ |
+| w5 | q173 | reverse | ✅ | ✅ | ✅ | ✅ |
 
 ### ✅ democrit_harms_values
 
 | Wave | Source | Transform | Coverage | Transform | Range | Crosstab |
 |------|--------|-----------|----------|-----------|-------|----------|
-| w5 | q172 | scale_convert | ✅ | ✅ | ✅ | ✅ |
+| w5 | q172 | reverse | ✅ | ✅ | ✅ | ✅ |
 
 ### ✅ democrit_indecisive
 
 | Wave | Source | Transform | Coverage | Transform | Range | Crosstab |
 |------|--------|-----------|----------|-----------|-------|----------|
-| w5 | q169 | scale_convert | ✅ | ✅ | ✅ | ✅ |
-| w6 | q169 | scale_convert | ✅ | ✅ | ✅ | ✅ |
+| w5 | q169 | reverse | ✅ | ✅ | ✅ | ✅ |
+| w6 | q169 | reverse | ✅ | ✅ | ✅ | ✅ |
 
 ### ✅ democrit_ineffective_stability
 
 | Wave | Source | Transform | Coverage | Transform | Range | Crosstab |
 |------|--------|-----------|----------|-----------|-------|----------|
-| w5 | q170 | scale_convert | ✅ | ✅ | ✅ | ✅ |
-| w6 | q170 | scale_convert | ✅ | ✅ | ✅ | ✅ |
+| w5 | q170 | reverse | ✅ | ✅ | ✅ | ✅ |
+| w6 | q170 | reverse | ✅ | ✅ | ✅ | ✅ |
 
-### ❌ demo_crit_poor_economy
+### ✅ demo_crit_poor_economy
 
 | Wave | Source | Transform | Coverage | Transform | Range | Crosstab |
 |------|--------|-----------|----------|-----------|-------|----------|
-| w5 | NA | NA | ? | ? | ? | ? |
-| w6 | NA | NA | ? | ? | ? | ? |
+| w5 | q168 | reverse | ✅ | ✅ | ✅ | ✅ |
+| w6 | q168 | reverse | ✅ | ✅ | ✅ | ✅ |
 
 ### ✅ expert_rule
 
 | Wave | Source | Transform | Coverage | Transform | Range | Crosstab |
 |------|--------|-----------|----------|-----------|-------|----------|
-| w1 | q124 | scale_convert | ✅ | ✅ | ✅ | ✅ |
-| w3 | q132 | scale_convert | ✅ | ✅ | ✅ | ✅ |
-| w4 | q133 | scale_convert | ✅ | ✅ | ✅ | ✅ |
-| w5 | q140 | scale_convert | ✅ | ✅ | ✅ | ✅ |
-| w6 | q132 | scale_convert | ✅ | ✅ | ✅ | ✅ |
+| w1 | q124 | reverse | ✅ | ✅ | ✅ | ✅ |
+| w3 | q132 | reverse | ✅ | ✅ | ✅ | ✅ |
+| w4 | q133 | reverse | ✅ | ✅ | ✅ | ✅ |
+| w5 | q140 | reverse | ✅ | ✅ | ✅ | ✅ |
+| w6 | q132 | reverse | ✅ | ✅ | ✅ | ✅ |
 
 ### ✅ military_rule
 
 | Wave | Source | Transform | Coverage | Transform | Range | Crosstab |
 |------|--------|-----------|----------|-----------|-------|----------|
-| w1 | q123 | scale_convert | ✅ | ✅ | ✅ | ✅ |
-| w2 | q126 | scale_convert | ✅ | ✅ | ✅ | ✅ |
-| w3 | q131 | scale_convert | ✅ | ✅ | ✅ | ✅ |
-| w4 | q132 | scale_convert | ✅ | ✅ | ✅ | ✅ |
-| w5 | q139 | scale_convert | ✅ | ✅ | ✅ | ✅ |
-| w6 | q131 | scale_convert | ✅ | ✅ | ✅ | ✅ |
+| w1 | q123 | reverse | ✅ | ✅ | ✅ | ✅ |
+| w2 | q126 | reverse | ✅ | ✅ | ✅ | ✅ |
+| w3 | q131 | reverse | ✅ | ✅ | ✅ | ✅ |
+| w4 | q132 | reverse | ✅ | ✅ | ✅ | ✅ |
+| w5 | q139 | reverse | ✅ | ✅ | ✅ | ✅ |
+| w6 | q131 | reverse | ✅ | ✅ | ✅ | ✅ |
 
 ### ✅ single_party_rule
 
 | Wave | Source | Transform | Coverage | Transform | Range | Crosstab |
 |------|--------|-----------|----------|-----------|-------|----------|
-| w1 | q122 | scale_convert | ✅ | ✅ | ✅ | ✅ |
-| w2 | q125 | scale_convert | ✅ | ✅ | ✅ | ✅ |
-| w3 | q130 | scale_convert | ✅ | ✅ | ✅ | ✅ |
-| w4 | q131 | scale_convert | ✅ | ✅ | ✅ | ✅ |
-| w5 | q138 | scale_convert | ✅ | ✅ | ✅ | ✅ |
-| w6 | q130 | scale_convert | ✅ | ✅ | ✅ | ✅ |
+| w1 | q122 | reverse | ✅ | ✅ | ✅ | ✅ |
+| w2 | q125 | reverse | ✅ | ✅ | ✅ | ✅ |
+| w3 | q130 | reverse | ✅ | ✅ | ✅ | ✅ |
+| w4 | q131 | reverse | ✅ | ✅ | ✅ | ✅ |
+| w5 | q138 | reverse | ✅ | ✅ | ✅ | ✅ |
+| w6 | q130 | reverse | ✅ | ✅ | ✅ | ✅ |
 
 ### ✅ strongman_rule
 
 | Wave | Source | Transform | Coverage | Transform | Range | Crosstab |
 |------|--------|-----------|----------|-----------|-------|----------|
-| w1 | q121 | scale_convert | ✅ | ✅ | ✅ | ✅ |
-| w2 | q124 | scale_convert | ✅ | ✅ | ✅ | ✅ |
-| w4 | q130 | scale_convert | ✅ | ✅ | ✅ | ✅ |
-| w5 | q137 | scale_convert | ✅ | ✅ | ✅ | ✅ |
-| w6 | q129 | scale_convert | ✅ | ✅ | ✅ | ✅ |
+| w1 | q121 | reverse | ✅ | ✅ | ✅ | ✅ |
+| w2 | q124 | reverse | ✅ | ✅ | ✅ | ✅ |
+| w3 | q129 | reverse | ✅ | ✅ | ✅ | ✅ |
+| w4 | q130 | reverse | ✅ | ✅ | ✅ | ✅ |
+| w5 | q137 | reverse | ✅ | ✅ | ✅ | ✅ |
+| w6 | q129 | reverse | ✅ | ✅ | ✅ | ✅ |
 
 ### ✅ trad_religious_authorities
 
 | Wave | Source | Transform | Coverage | Transform | Range | Crosstab |
 |------|--------|-----------|----------|-----------|-------|----------|
-| w3 | q138 | scale_convert | ✅ | ✅ | ✅ | ✅ |
-| w4 | q140 | scale_convert | ✅ | ✅ | ✅ | ✅ |
-| w5 | q147 | scale_convert | ✅ | ✅ | ✅ | ✅ |
-| w6 | q147 | scale_convert | ✅ | ✅ | ✅ | ✅ |
+| w3 | q138 | reverse | ✅ | ✅ | ✅ | ✅ |
+| w4 | q140 | reverse | ✅ | ✅ | ✅ | ✅ |
+| w5 | q147 | reverse | ✅ | ✅ | ✅ | ✅ |
+| w6 | q147 | reverse | ✅ | ✅ | ✅ | ✅ |
 
 ### ✅ trad_women_politics
 
 | Wave | Source | Transform | Coverage | Transform | Range | Crosstab |
 |------|--------|-----------|----------|-----------|-------|----------|
-| w3 | q139 | scale_convert | ✅ | ✅ | ✅ | ✅ |
-| w4 | q139 | scale_convert | ✅ | ✅ | ✅ | ✅ |
-| w5 | q146 | scale_convert | ✅ | ✅ | ✅ | ✅ |
-| w6 | q146 | scale_convert | ✅ | ✅ | ✅ | ✅ |
+| w3 | q139 | reverse | ✅ | ✅ | ✅ | ✅ |
+| w4 | q139 | reverse | ✅ | ✅ | ✅ | ✅ |
+| w5 | q146 | reverse | ✅ | ✅ | ✅ | ✅ |
+| w6 | q146 | reverse | ✅ | ✅ | ✅ | ✅ |
 
 ### ✅ upright_leader_discretion
 
 | Wave | Source | Transform | Coverage | Transform | Range | Crosstab |
 |------|--------|-----------|----------|-----------|-------|----------|
-| w1 | q138 | scale_convert | ✅ | ✅ | ✅ | ✅ |
-| w2 | q139 | scale_convert | ✅ | ✅ | ✅ | ✅ |
-| w3 | q146 | scale_convert | ✅ | ✅ | ✅ | ✅ |
-| w4 | q147 | scale_convert | ✅ | ✅ | ✅ | ✅ |
-| w5 | q154 | scale_convert | ✅ | ✅ | ✅ | ✅ |
-| w6 | q154 | scale_convert | ✅ | ✅ | ✅ | ✅ |
+| w1 | q138 | reverse | ✅ | ✅ | ✅ | ✅ |
+| w2 | q139 | reverse | ✅ | ✅ | ✅ | ✅ |
+| w3 | q146 | reverse | ✅ | ✅ | ✅ | ✅ |
+| w4 | q147 | reverse | ✅ | ✅ | ✅ | ✅ |
+| w5 | q154 | reverse | ✅ | ✅ | ✅ | ✅ |
+| w6 | q154 | reverse | ✅ | ✅ | ✅ | ✅ |
 
 ### ❌ community_leader_contact
 
 | Wave | Source | Transform | Coverage | Transform | Range | Crosstab |
 |------|--------|-----------|----------|-----------|-------|----------|
 | w2 | q84 | reverse | ✅ | ✅ | ✅ | ✅ |
-| w3 | q66 | scale_convert | ❌ | ✅ | ✅ | ❌ |
-| w4 | q71 | scale_convert | ✅ | ✅ | ✅ | ✅ |
+| w3 | q66 | scale_convert | ✅ | ✅ | ✅ | ✅ |
+| w4 | q71 | reverse | ✅ | ✅ | ✅ | ✅ |
 | w5 | q72 | scale_convert | ✅ | ❌ | ✅ | ✅ |
 | w6 | q70 | scale_convert | ✅ | ❌ | ✅ | ✅ |
 
@@ -203,9 +204,9 @@ Generated: 2026-01-14 18:48:05.693623
 
 | Wave | Source | Transform | Coverage | Transform | Range | Crosstab |
 |------|--------|-----------|----------|-----------|-------|----------|
-| w3 | q29 | scale_convert | ❌ | ⏭️ | ✅ | ✅ |
-| w4 | q30 | scale_convert | ❌ | ⏭️ | ✅ | ✅ |
-| w5 | q31 | scale_convert | ❌ | ⏭️ | ✅ | ✅ |
+| w3 | q29 | reverse | ❌ | ⏭️ | ✅ | ✅ |
+| w4 | q30 | reverse | ❌ | ⏭️ | ✅ | ✅ |
+| w5 | q31 | reverse | ❌ | ⏭️ | ✅ | ✅ |
 
 ### ✅ corrupt_better_than_before
 
@@ -327,18 +328,18 @@ Generated: 2026-01-14 18:48:05.693623
 | Wave | Source | Transform | Coverage | Transform | Range | Crosstab |
 |------|--------|-----------|----------|-----------|-------|----------|
 | w1 | q104 | scale_convert | ✅ | ✅ | ✅ | ✅ |
-| w2 | q99 | scale_convert | ✅ | ✅ | ✅ | ✅ |
-| w3 | q95 | scale_convert | ✅ | ✅ | ✅ | ✅ |
-| w4 | q98 | scale_convert | ✅ | ✅ | ✅ | ✅ |
-| w5 | q105 | scale_convert | ✅ | ✅ | ✅ | ✅ |
-| w6 | q96 | scale_convert | ✅ | ✅ | ✅ | ✅ |
+| w2 | q99 | reverse | ✅ | ✅ | ✅ | ✅ |
+| w3 | q95 | reverse | ✅ | ✅ | ✅ | ✅ |
+| w4 | q98 | reverse | ✅ | ✅ | ✅ | ✅ |
+| w5 | q105 | reverse | ✅ | ✅ | ✅ | ✅ |
+| w6 | q96 | reverse | ✅ | ✅ | ✅ | ✅ |
 
 ### ❌ hh_income_sat
 
 | Wave | Source | Transform | Coverage | Transform | Range | Crosstab |
 |------|--------|-----------|----------|-----------|-------|----------|
-| w2 | se9a | scale_convert | ✅ | ✅ | ✅ | ✅ |
-| w3 | se13a | scale_convert | ✅ | ✅ | ✅ | ✅ |
+| w2 | se9a | reverse | ✅ | ✅ | ✅ | ✅ |
+| w3 | se13a | reverse | ✅ | ✅ | ✅ | ✅ |
 | w4 | se14a | reverse | ✅ | ✅ | ✅ | ✅ |
 | w5 | SE14A | reverse | ✅ | ❌ | ✅ | ✅ |
 | w6 | NA | NA | ? | ? | ? | ? |
@@ -422,10 +423,10 @@ Generated: 2026-01-14 18:48:05.693623
 
 | Wave | Source | Transform | Coverage | Transform | Range | Crosstab |
 |------|--------|-----------|----------|-----------|-------|----------|
-| w3 | q128 | scale_convert | ✅ | ✅ | ✅ | ✅ |
-| w4 | q129 | scale_convert | ✅ | ✅ | ✅ | ✅ |
-| w5 | q136 | scale_convert | ✅ | ✅ | ✅ | ✅ |
-| w6 | q128 | scale_convert | ✅ | ✅ | ✅ | ✅ |
+| w3 | q128 | reverse | ✅ | ✅ | ✅ | ✅ |
+| w4 | q129 | reverse | ✅ | ✅ | ✅ | ✅ |
+| w5 | q136 | reverse | ✅ | ✅ | ✅ | ✅ |
+| w6 | q128 | reverse | ✅ | ✅ | ✅ | ✅ |
 
 ### ✅ dem_country_authoritarian
 
@@ -567,10 +568,10 @@ Generated: 2026-01-14 18:48:05.693623
 |------|--------|-----------|----------|-----------|-------|----------|
 | w1 | q098 | identity | ✅ | ✅ | ✅ | ✅ |
 | w2 | q93 | identity | ✅ | ✅ | ✅ | ✅ |
-| w3 | q89 | scale_convert | ✅ | ✅ | ✅ | ✅ |
-| w4 | q92 | scale_convert | ✅ | ✅ | ✅ | ✅ |
-| w5 | q99 | scale_convert | ✅ | ✅ | ✅ | ✅ |
-| w6 | q90 | scale_convert | ✅ | ✅ | ✅ | ✅ |
+| w3 | q89 | reverse | ✅ | ✅ | ✅ | ✅ |
+| w4 | q92 | reverse | ✅ | ✅ | ✅ | ✅ |
+| w5 | q99 | reverse | ✅ | ✅ | ✅ | ✅ |
+| w6 | q90 | reverse | ✅ | ✅ | ✅ | ✅ |
 
 ### ✅ democracy_suitability
 
@@ -624,15 +625,15 @@ Generated: 2026-01-14 18:48:05.693623
 | w5 | SE3_1 | identity | ⚠️ | ✅ | ✅ | ✅ |
 | w6 | se3_1 | identity | ⚠️ | ✅ | ✅ | ✅ |
 
-### ❌ country
+### ✅ country
 
 | Wave | Source | Transform | Coverage | Transform | Range | Crosstab |
 |------|--------|-----------|----------|-----------|-------|----------|
-| w1 | country | identity | ❌ | ⏭️ | ✅ | ❌ |
-| w2 | country | identity | ❌ | ⏭️ | ✅ | ❌ |
-| w3 | country | identity | ❌ | ⏭️ | ✅ | ❌ |
-| w4 | country | identity | ❌ | ⏭️ | ✅ | ❌ |
-| w5 | COUNTRY | identity | ❌ | ⏭️ | ✅ | ❌ |
+| w1 | country | identity | ✅ | ⏭️ | ✅ | ✅ |
+| w2 | country | identity | ✅ | ⏭️ | ✅ | ✅ |
+| w3 | country | identity | ✅ | ⏭️ | ✅ | ✅ |
+| w4 | country | identity | ✅ | ⏭️ | ✅ | ✅ |
+| w5 | COUNTRY | identity | ✅ | ⏭️ | ✅ | ✅ |
 | w6 | country | scale_convert | ✅ | ⏭️ | ✅ | ✅ |
 
 ### ❌ current_status_unemployed
@@ -644,27 +645,27 @@ Generated: 2026-01-14 18:48:05.693623
 | w5 | SE9E | identity | ✅ | ⏭️ | ✅ | ✅ |
 | w6 | se9e | identity | ✅ | ⏭️ | ✅ | ✅ |
 
-### ❌ education_level
+### ✅ education_level
 
 | Wave | Source | Transform | Coverage | Transform | Range | Crosstab |
 |------|--------|-----------|----------|-----------|-------|----------|
-| w1 | se005 | identity | ❌ | ✅ | ✅ | ❌ |
-| w2 | se5 | identity | ❌ | ✅ | ✅ | ❌ |
-| w3 | se5 | identity | ❌ | ✅ | ✅ | ❌ |
-| w4 | se5 | identity | ❌ | ✅ | ✅ | ❌ |
-| w5 | SE5 | identity | ❌ | ✅ | ✅ | ❌ |
-| w6 | se5 | identity | ❌ | ✅ | ✅ | ❌ |
+| w1 | se005 | identity | ✅ | ✅ | ✅ | ✅ |
+| w2 | se5 | identity | ✅ | ✅ | ✅ | ✅ |
+| w3 | se5 | identity | ✅ | ✅ | ✅ | ✅ |
+| w4 | se5 | identity | ✅ | ✅ | ✅ | ✅ |
+| w5 | SE5 | identity | ✅ | ✅ | ✅ | ✅ |
+| w6 | se5 | identity | ✅ | ✅ | ✅ | ✅ |
 
 ### ❌ education_years
 
 | Wave | Source | Transform | Coverage | Transform | Range | Crosstab |
 |------|--------|-----------|----------|-----------|-------|----------|
-| w1 | se005a | identity | ❌ | ✅ | ✅ | ❌ |
-| w2 | se5a | identity | ❌ | ✅ | ✅ | ❌ |
-| w3 | se5a | identity | ❌ | ✅ | ✅ | ❌ |
-| w4 | se5a | identity | ❌ | ✅ | ✅ | ❌ |
-| w5 | SE5A | identity | ❌ | ✅ | ✅ | ❌ |
-| w6 | se5a | identity | ❌ | ✅ | ✅ | ❌ |
+| w1 | se005a | identity | ✅ | ✅ | ✅ | ✅ |
+| w2 | se5a | identity | ❌ | ✅ | ✅ | ✅ |
+| w3 | se5a | identity | ⚠️ | ✅ | ✅ | ✅ |
+| w4 | se5a | identity | ⚠️ | ✅ | ✅ | ✅ |
+| w5 | SE5A | identity | ❌ | ✅ | ✅ | ✅ |
+| w6 | se5a | identity | ⚠️ | ✅ | ✅ | ✅ |
 
 ### ✅ employed
 
@@ -706,36 +707,58 @@ Generated: 2026-01-14 18:48:05.693623
 | w5 | SE8B | identity | ✅ | ✅ | ✅ | ✅ |
 | w6 | se8b | identity | ✅ | ✅ | ✅ | ✅ |
 
-### ❌ hh_income
+### ✅ hh_income
 
 | Wave | Source | Transform | Coverage | Transform | Range | Crosstab |
 |------|--------|-----------|----------|-----------|-------|----------|
 | w2 | se9 | identity | ✅ | ✅ | ✅ | ✅ |
-| w4 | se14 | identity | ❌ | ✅ | ✅ | ❌ |
-| w5 | SE14 | identity | ❌ | ✅ | ✅ | ❌ |
+| w4 | se14 | identity | ✅ | ✅ | ✅ | ✅ |
+| w5 | SE14 | identity | ✅ | ✅ | ✅ | ✅ |
 | w6 | NA | NA | ? | ? | ? | ? |
 
-### ❌ hh_size
+### ✅ hh_size
 
 | Wave | Source | Transform | Coverage | Transform | Range | Crosstab |
 |------|--------|-----------|----------|-----------|-------|----------|
-| w1 | se008a | identity | ❌ | ✅ | ✅ | ❌ |
-| w2 | se8a | identity | ❌ | ✅ | ✅ | ❌ |
-| w3 | se8a | identity | ❌ | ✅ | ✅ | ❌ |
-| w4 | se8a | identity | ❌ | ✅ | ✅ | ❌ |
-| w5 | SE8A | identity | ❌ | ✅ | ✅ | ❌ |
-| w6 | se8a | identity | ❌ | ✅ | ✅ | ❌ |
+| w1 | se008a | identity | ✅ | ✅ | ✅ | ✅ |
+| w2 | se8a | identity | ✅ | ✅ | ✅ | ✅ |
+| w3 | se8a | identity | ✅ | ✅ | ✅ | ✅ |
+| w4 | se8a | identity | ✅ | ✅ | ✅ | ✅ |
+| w5 | SE8A | identity | ✅ | ✅ | ✅ | ✅ |
+| w6 | se8a | identity | ✅ | ✅ | ✅ | ✅ |
 
-### ❌ idnumber
+### ⚠️ idnumber
 
 | Wave | Source | Transform | Coverage | Transform | Range | Crosstab |
 |------|--------|-----------|----------|-----------|-------|----------|
-| w1 | idnumber | scale_convert | ❌ | ⏭️ | ⚠️ | ❌ |
-| w2 | idnumber | scale_convert | ❌ | ⏭️ | ⚠️ | ❌ |
-| w3 | idnumber | scale_convert | ❌ | ⏭️ | ⚠️ | ❌ |
-| w4 | idnumber | scale_convert | ❌ | ⏭️ | ⚠️ | ❌ |
-| w5 | IDnumber | scale_convert | ✅ | ⏭️ | ⚠️ | ❌ |
-| w6 | idnumber | scale_convert | ❌ | ⏭️ | ⚠️ | ❌ |
+| w1 | idnumber | scale_convert | ✅ | ⏭️ | ⚠️ | ⏭️ |
+| w2 | idnumber | scale_convert | ✅ | ⏭️ | ⚠️ | ⏭️ |
+| w3 | idnumber | scale_convert | ✅ | ⏭️ | ⚠️ | ⏭️ |
+| w4 | idnumber | scale_convert | ✅ | ⏭️ | ⚠️ | ⏭️ |
+| w5 | IDnumber | scale_convert | ✅ | ⏭️ | ⚠️ | ⏭️ |
+| w6 | idnumber | scale_convert | ✅ | ⏭️ | ⚠️ | ⏭️ |
+
+### ❌ int_month
+
+| Wave | Source | Transform | Coverage | Transform | Range | Crosstab |
+|------|--------|-----------|----------|-----------|-------|----------|
+| w1 | ir007_1 | identity | ✅ | ✅ | ✅ | ✅ |
+| w2 | ir9_1 | identity | ✅ | ✅ | ✅ | ✅ |
+| w3 | ir9 | scale_convert | ❌ | ⏭️ | ✅ | ⏭️ |
+| w4 | month | identity | ✅ | ✅ | ✅ | ✅ |
+| w5 | Month | identity | ✅ | ✅ | ✅ | ✅ |
+| w6 | month | identity | ✅ | ✅ | ✅ | ✅ |
+
+### ❌ int_year
+
+| Wave | Source | Transform | Coverage | Transform | Range | Crosstab |
+|------|--------|-----------|----------|-----------|-------|----------|
+| w1 | ir007_3 | identity | ✅ | ✅ | ✅ | ✅ |
+| w2 | ir9_3 | identity | ✅ | ✅ | ✅ | ✅ |
+| w3 | ir9 | scale_convert | ❌ | ⏭️ | ✅ | ⏭️ |
+| w4 | year | identity | ✅ | ✅ | ✅ | ✅ |
+| w5 | Year | identity | ✅ | ✅ | ✅ | ✅ |
+| w6 | year | identity | ✅ | ✅ | ✅ | ✅ |
 
 ### ✅ main_earner
 
@@ -761,7 +784,7 @@ Generated: 2026-01-14 18:48:05.693623
 
 | Wave | Source | Transform | Coverage | Transform | Range | Crosstab |
 |------|--------|-----------|----------|-----------|-------|----------|
-| w1 | se006 | identity | ❌ | ⏭️ | ✅ | ❌ |
+| w1 | se006 | identity | ✅ | ⏭️ | ✅ | ✅ |
 | w2 | se6 | identity | ✅ | ⏭️ | ✅ | ✅ |
 | w3 | se6 | identity | ✅ | ⏭️ | ✅ | ✅ |
 | w4 | se6 | identity | ✅ | ⏭️ | ✅ | ✅ |
@@ -772,12 +795,12 @@ Generated: 2026-01-14 18:48:05.693623
 
 | Wave | Source | Transform | Coverage | Transform | Range | Crosstab |
 |------|--------|-----------|----------|-----------|-------|----------|
-| w1 | se007 | identity | ❌ | ✅ | ✅ | ❌ |
-| w2 | se7 | identity | ❌ | ✅ | ✅ | ❌ |
-| w3 | se7 | identity | ❌ | ✅ | ✅ | ❌ |
-| w4 | se7 | identity | ❌ | ✅ | ✅ | ❌ |
-| w5 | SE7 | identity | ❌ | ✅ | ✅ | ❌ |
-| w6 | se7 | identity | ❌ | ✅ | ✅ | ❌ |
+| w1 | se007 | identity | ✅ | ✅ | ✅ | ✅ |
+| w2 | se7 | identity | ✅ | ✅ | ✅ | ✅ |
+| w3 | se7 | identity | ❌ | ✅ | ✅ | ✅ |
+| w4 | se7 | identity | ✅ | ✅ | ✅ | ✅ |
+| w5 | SE7 | identity | ✅ | ✅ | ✅ | ✅ |
+| w6 | se7 | identity | ✅ | ✅ | ✅ | ✅ |
 
 ### ❌ religiosity_self
 
@@ -798,16 +821,16 @@ Generated: 2026-01-14 18:48:05.693623
 | w5 | SE9D | identity | ❌ | ⏭️ | ✅ | ✅ |
 | w6 | se9d | identity | ❌ | ⏭️ | ✅ | ✅ |
 
-### ❌ subjective_social_status
+### ✅ subjective_social_status
 
 | Wave | Source | Transform | Coverage | Transform | Range | Crosstab |
 |------|--------|-----------|----------|-----------|-------|----------|
 | w1 | se017 | identity | ✅ | ✅ | ✅ | ✅ |
-| w2 | se13 | identity | ❌ | ✅ | ✅ | ❌ |
-| w3 | se12 | identity | ❌ | ✅ | ✅ | ❌ |
-| w4 | se12 | identity | ❌ | ✅ | ✅ | ❌ |
-| w5 | SE12 | identity | ❌ | ✅ | ✅ | ❌ |
-| w6 | se12 | identity | ❌ | ✅ | ✅ | ❌ |
+| w2 | se13 | identity | ✅ | ✅ | ✅ | ✅ |
+| w3 | se12 | identity | ✅ | ✅ | ✅ | ✅ |
+| w4 | se12 | identity | ✅ | ✅ | ✅ | ✅ |
+| w5 | SE12 | identity | ✅ | ✅ | ✅ | ✅ |
+| w6 | se12 | identity | ✅ | ✅ | ✅ | ✅ |
 
 ### ✅ urban_rural
 
@@ -824,15 +847,15 @@ Generated: 2026-01-14 18:48:05.693623
 
 | Wave | Source | Transform | Coverage | Transform | Range | Crosstab |
 |------|--------|-----------|----------|-----------|-------|----------|
-| w1 | q141 | scale_convert | ✅ | ✅ | ✅ | ✅ |
+| w1 | q141 | reverse | ✅ | ✅ | ✅ | ✅ |
 
 ### ✅ econ_distribution_fair
 
 | Wave | Source | Transform | Coverage | Transform | Range | Crosstab |
 |------|--------|-----------|----------|-----------|-------|----------|
-| w4 | q155 | scale_convert | ✅ | ✅ | ✅ | ✅ |
-| w5 | q159 | scale_convert | ✅ | ✅ | ✅ | ✅ |
-| w6 | q159 | scale_convert | ✅ | ✅ | ✅ | ✅ |
+| w4 | q155 | reverse | ✅ | ✅ | ✅ | ✅ |
+| w5 | q159 | reverse | ✅ | ✅ | ✅ | ✅ |
+| w6 | q159 | reverse | ✅ | ✅ | ✅ | ✅ |
 
 ### ✅ econ_env_vs_growth
 
@@ -844,9 +867,9 @@ Generated: 2026-01-14 18:48:05.693623
 
 | Wave | Source | Transform | Coverage | Transform | Range | Crosstab |
 |------|--------|-----------|----------|-----------|-------|----------|
-| w4 | q159 | scale_convert | ✅ | ✅ | ✅ | ✅ |
+| w4 | q159 | reverse | ✅ | ✅ | ✅ | ✅ |
 | w5 | q163 | reverse | ✅ | ❌ | ✅ | ✅ |
-| w6 | q163 | scale_convert | ✅ | ✅ | ✅ | ✅ |
+| w6 | q163 | reverse | ✅ | ✅ | ✅ | ✅ |
 
 ### ✅ econ_family_income_fair_6pt
 
@@ -858,15 +881,15 @@ Generated: 2026-01-14 18:48:05.693623
 
 | Wave | Source | Transform | Coverage | Transform | Range | Crosstab |
 |------|--------|-----------|----------|-----------|-------|----------|
-| w4 | q160 | scale_convert | ✅ | ✅ | ✅ | ✅ |
-| w5 | q164 | scale_convert | ✅ | ✅ | ✅ | ✅ |
-| w6 | q164 | scale_convert | ✅ | ✅ | ✅ | ✅ |
+| w4 | q160 | reverse | ✅ | ✅ | ✅ | ✅ |
+| w5 | q164 | reverse | ✅ | ✅ | ✅ | ✅ |
+| w6 | q164 | reverse | ✅ | ✅ | ✅ | ✅ |
 
 ### ✅ econ_govt_reduce_inequality
 
 | Wave | Source | Transform | Coverage | Transform | Range | Crosstab |
 |------|--------|-----------|----------|-----------|-------|----------|
-| w4 | q156 | scale_convert | ✅ | ✅ | ✅ | ✅ |
+| w4 | q156 | reverse | ✅ | ✅ | ✅ | ✅ |
 
 ### ✅ econ_income_loss_concern
 
@@ -878,29 +901,29 @@ Generated: 2026-01-14 18:48:05.693623
 
 | Wave | Source | Transform | Coverage | Transform | Range | Crosstab |
 |------|--------|-----------|----------|-----------|-------|----------|
-| w4 | q158 | scale_convert | ✅ | ✅ | ✅ | ✅ |
-| w5 | q162 | scale_convert | ✅ | ✅ | ✅ | ✅ |
-| w6 | q162 | scale_convert | ✅ | ✅ | ✅ | ✅ |
+| w4 | q158 | reverse | ✅ | ✅ | ✅ | ✅ |
+| w5 | q162 | reverse | ✅ | ✅ | ✅ | ✅ |
+| w6 | q162 | reverse | ✅ | ✅ | ✅ | ✅ |
 
 ### ✅ econ_next_generation_life
 
 | Wave | Source | Transform | Coverage | Transform | Range | Crosstab |
 |------|--------|-----------|----------|-----------|-------|----------|
-| w5 | q165 | scale_convert | ✅ | ✅ | ✅ | ✅ |
-| w6 | q165 | scale_convert | ✅ | ✅ | ✅ | ✅ |
+| w5 | q165 | reverse | ✅ | ✅ | ✅ | ✅ |
+| w6 | q165 | reverse | ✅ | ✅ | ✅ | ✅ |
 
 ### ✅ econ_state_ownership
 
 | Wave | Source | Transform | Coverage | Transform | Range | Crosstab |
 |------|--------|-----------|----------|-----------|-------|----------|
-| w1 | q140 | scale_convert | ✅ | ✅ | ✅ | ✅ |
+| w1 | q140 | reverse | ✅ | ✅ | ✅ | ✅ |
 
 ### ✅ econ_worried_lose_income
 
 | Wave | Source | Transform | Coverage | Transform | Range | Crosstab |
 |------|--------|-----------|----------|-----------|-------|----------|
-| w5 | q161 | scale_convert | ✅ | ✅ | ✅ | ✅ |
-| w6 | q161 | scale_convert | ✅ | ✅ | ✅ | ✅ |
+| w5 | q161 | reverse | ✅ | ✅ | ✅ | ✅ |
+| w6 | q161 | reverse | ✅ | ✅ | ✅ | ✅ |
 
 ### ✅ econ_change_1yr
 
@@ -1141,9 +1164,9 @@ Generated: 2026-01-14 18:48:05.693623
 
 | Wave | Source | Transform | Coverage | Transform | Range | Crosstab |
 |------|--------|-----------|----------|-----------|-------|----------|
-| w4 | q153 | scale_convert | ✅ | ✅ | ✅ | ✅ |
-| w5 | q158 | scale_convert | ✅ | ✅ | ✅ | ✅ |
-| w6 | q158 | scale_convert | ✅ | ✅ | ✅ | ✅ |
+| w4 | q153 | reverse | ✅ | ✅ | ✅ | ✅ |
+| w5 | q158 | reverse | ✅ | ✅ | ✅ | ✅ |
+| w6 | q158 | reverse | ✅ | ✅ | ✅ | ✅ |
 
 ### ❌ glob_trade_protection
 
@@ -1165,65 +1188,65 @@ Generated: 2026-01-14 18:48:05.693623
 
 | Wave | Source | Transform | Coverage | Transform | Range | Crosstab |
 |------|--------|-----------|----------|-----------|-------|----------|
-| w5 | q122 | scale_convert | ✅ | ✅ | ✅ | ✅ |
-| w6 | q113 | scale_convert | ✅ | ✅ | ✅ | ✅ |
+| w5 | q122 | reverse | ✅ | ✅ | ✅ | ✅ |
+| w6 | q113 | reverse | ✅ | ✅ | ✅ | ✅ |
 
 ### ✅ govt_should_censor_ideas
 
 | Wave | Source | Transform | Coverage | Transform | Range | Crosstab |
 |------|--------|-----------|----------|-----------|-------|----------|
-| w1 | q134 | scale_convert | ✅ | ✅ | ✅ | ✅ |
-| w2 | q135 | scale_convert | ✅ | ✅ | ✅ | ✅ |
-| w3 | q142 | scale_convert | ✅ | ✅ | ✅ | ✅ |
-| w4 | q143 | scale_convert | ✅ | ✅ | ✅ | ✅ |
-| w5 | q150 | scale_convert | ✅ | ✅ | ✅ | ✅ |
-| w6 | q150 | scale_convert | ✅ | ✅ | ✅ | ✅ |
+| w1 | q134 | reverse | ✅ | ✅ | ✅ | ✅ |
+| w2 | q135 | reverse | ✅ | ✅ | ✅ | ✅ |
+| w3 | q142 | reverse | ✅ | ✅ | ✅ | ✅ |
+| w4 | q143 | reverse | ✅ | ✅ | ✅ | ✅ |
+| w5 | q150 | reverse | ✅ | ✅ | ✅ | ✅ |
+| w6 | q150 | reverse | ✅ | ✅ | ✅ | ✅ |
 
 ### ✅ no_accountability_between_elections
 
 | Wave | Source | Transform | Coverage | Transform | Range | Crosstab |
 |------|--------|-----------|----------|-----------|-------|----------|
-| w2 | q106 | scale_convert | ✅ | ✅ | ✅ | ✅ |
-| w3 | q100 | scale_convert | ✅ | ✅ | ✅ | ✅ |
-| w4 | q103 | scale_convert | ✅ | ✅ | ✅ | ✅ |
-| w5 | q110 | scale_convert | ✅ | ✅ | ✅ | ✅ |
-| w6 | q101 | scale_convert | ✅ | ✅ | ✅ | ✅ |
+| w2 | q106 | reverse | ✅ | ✅ | ✅ | ✅ |
+| w3 | q100 | reverse | ✅ | ✅ | ✅ | ✅ |
+| w4 | q103 | reverse | ✅ | ✅ | ✅ | ✅ |
+| w5 | q110 | reverse | ✅ | ✅ | ✅ | ✅ |
+| w6 | q101 | reverse | ✅ | ✅ | ✅ | ✅ |
 
 ### ✅ people_have_necessities
 
 | Wave | Source | Transform | Coverage | Transform | Range | Crosstab |
 |------|--------|-----------|----------|-----------|-------|----------|
-| w2 | q109 | scale_convert | ✅ | ✅ | ✅ | ✅ |
-| w3 | q105 | scale_convert | ✅ | ✅ | ✅ | ✅ |
-| w4 | q107 | scale_convert | ✅ | ✅ | ✅ | ✅ |
-| w5 | q114 | scale_convert | ✅ | ✅ | ✅ | ✅ |
-| w6 | q105 | scale_convert | ✅ | ✅ | ✅ | ✅ |
+| w2 | q109 | reverse | ✅ | ✅ | ✅ | ✅ |
+| w3 | q105 | reverse | ✅ | ✅ | ✅ | ✅ |
+| w4 | q107 | reverse | ✅ | ✅ | ✅ | ✅ |
+| w5 | q114 | reverse | ✅ | ✅ | ✅ | ✅ |
+| w6 | q105 | reverse | ✅ | ✅ | ✅ | ✅ |
 
 ### ✅ people_power_change_govt
 
 | Wave | Source | Transform | Coverage | Transform | Range | Crosstab |
 |------|--------|-----------|----------|-----------|-------|----------|
-| w2 | q103 | scale_convert | ✅ | ✅ | ✅ | ✅ |
-| w4 | q101 | scale_convert | ✅ | ✅ | ✅ | ✅ |
+| w2 | q103 | reverse | ✅ | ✅ | ✅ | ✅ |
+| w4 | q101 | reverse | ✅ | ✅ | ✅ | ✅ |
 
 ### ✅ rich_poor_treated_equally
 
 | Wave | Source | Transform | Coverage | Transform | Range | Crosstab |
 |------|--------|-----------|----------|-----------|-------|----------|
-| w3 | q104 | scale_convert | ✅ | ✅ | ✅ | ✅ |
-| w4 | q106 | scale_convert | ✅ | ✅ | ✅ | ✅ |
-| w5 | q113 | scale_convert | ✅ | ✅ | ✅ | ✅ |
-| w6 | q104 | scale_convert | ✅ | ✅ | ✅ | ✅ |
+| w3 | q104 | reverse | ✅ | ✅ | ✅ | ✅ |
+| w4 | q106 | reverse | ✅ | ✅ | ✅ | ✅ |
+| w5 | q113 | reverse | ✅ | ✅ | ✅ | ✅ |
+| w6 | q104 | reverse | ✅ | ✅ | ✅ | ✅ |
 
 ### ✅ gov_basic_necessities
 
 | Wave | Source | Transform | Coverage | Transform | Range | Crosstab |
 |------|--------|-----------|----------|-----------|-------|----------|
-| w2 | q109 | scale_convert | ✅ | ✅ | ✅ | ✅ |
-| w3 | q105 | scale_convert | ✅ | ✅ | ✅ | ✅ |
-| w4 | q107 | scale_convert | ✅ | ✅ | ✅ | ✅ |
-| w5 | q114 | scale_convert | ✅ | ✅ | ✅ | ✅ |
-| w6 | q105 | scale_convert | ✅ | ✅ | ✅ | ✅ |
+| w2 | q109 | reverse | ✅ | ✅ | ✅ | ✅ |
+| w3 | q105 | reverse | ✅ | ✅ | ✅ | ✅ |
+| w4 | q107 | reverse | ✅ | ✅ | ✅ | ✅ |
+| w5 | q114 | reverse | ✅ | ✅ | ✅ | ✅ |
+| w6 | q105 | reverse | ✅ | ✅ | ✅ | ✅ |
 
 ### ✅ gov_courts_powerless
 
@@ -1239,18 +1262,18 @@ Generated: 2026-01-14 18:48:05.693623
 | Wave | Source | Transform | Coverage | Transform | Range | Crosstab |
 |------|--------|-----------|----------|-----------|-------|----------|
 | w1 | q106 | identity | ❌ | ✅ | ✅ | ✅ |
-| w2 | q108 | scale_convert | ✅ | ✅ | ✅ | ✅ |
-| w3 | q104 | scale_convert | ✅ | ✅ | ✅ | ✅ |
-| w4 | q106 | scale_convert | ✅ | ✅ | ✅ | ✅ |
-| w5 | q113 | scale_convert | ✅ | ✅ | ✅ | ✅ |
-| w6 | q104 | scale_convert | ✅ | ✅ | ✅ | ✅ |
+| w2 | q108 | reverse | ✅ | ✅ | ✅ | ✅ |
+| w3 | q104 | reverse | ✅ | ✅ | ✅ | ✅ |
+| w4 | q106 | reverse | ✅ | ✅ | ✅ | ✅ |
+| w5 | q113 | reverse | ✅ | ✅ | ✅ | ✅ |
+| w6 | q104 | reverse | ✅ | ✅ | ✅ | ✅ |
 
 ### ✅ gov_elections_make_responsive
 
 | Wave | Source | Transform | Coverage | Transform | Range | Crosstab |
 |------|--------|-----------|----------|-----------|-------|----------|
-| w5 | q122 | scale_convert | ✅ | ✅ | ✅ | ✅ |
-| w6 | q113 | scale_convert | ✅ | ✅ | ✅ | ✅ |
+| w5 | q122 | reverse | ✅ | ✅ | ✅ | ✅ |
+| w6 | q113 | reverse | ✅ | ✅ | ✅ | ✅ |
 
 ### ⚠️ gov_elections_real_choice
 
@@ -1266,47 +1289,47 @@ Generated: 2026-01-14 18:48:05.693623
 
 | Wave | Source | Transform | Coverage | Transform | Range | Crosstab |
 |------|--------|-----------|----------|-----------|-------|----------|
-| w5 | q123 | scale_convert | ✅ | ✅ | ✅ | ✅ |
-| w6 | q114 | scale_convert | ✅ | ✅ | ✅ | ✅ |
+| w5 | q123 | reverse | ✅ | ✅ | ✅ | ✅ |
+| w6 | q114 | reverse | ✅ | ✅ | ✅ | ✅ |
 
 ### ✅ gov_ethnic_equality
 
 | Wave | Source | Transform | Coverage | Transform | Range | Crosstab |
 |------|--------|-----------|----------|-----------|-------|----------|
-| w3 | q103 | scale_convert | ✅ | ✅ | ✅ | ✅ |
-| w4 | q105 | scale_convert | ✅ | ✅ | ✅ | ✅ |
-| w5 | q112 | scale_convert | ✅ | ✅ | ✅ | ✅ |
-| w6 | q103 | scale_convert | ✅ | ✅ | ✅ | ✅ |
+| w3 | q103 | reverse | ✅ | ✅ | ✅ | ✅ |
+| w4 | q105 | reverse | ✅ | ✅ | ✅ | ✅ |
+| w5 | q112 | reverse | ✅ | ✅ | ✅ | ✅ |
+| w6 | q103 | reverse | ✅ | ✅ | ✅ | ✅ |
 
 ### ❌ gov_free_to_organize
 
 | Wave | Source | Transform | Coverage | Transform | Range | Crosstab |
 |------|--------|-----------|----------|-----------|-------|----------|
 | w1 | q113 | identity | ❌ | ✅ | ✅ | ✅ |
-| w2 | q111 | scale_convert | ✅ | ✅ | ✅ | ✅ |
-| w3 | q107 | scale_convert | ✅ | ✅ | ✅ | ✅ |
-| w4 | q109 | scale_convert | ✅ | ✅ | ✅ | ✅ |
-| w5 | q116 | scale_convert | ✅ | ✅ | ✅ | ✅ |
-| w6 | q107 | scale_convert | ✅ | ✅ | ✅ | ✅ |
+| w2 | q111 | reverse | ✅ | ✅ | ✅ | ✅ |
+| w3 | q107 | reverse | ✅ | ✅ | ✅ | ✅ |
+| w4 | q109 | reverse | ✅ | ✅ | ✅ | ✅ |
+| w5 | q116 | reverse | ✅ | ✅ | ✅ | ✅ |
+| w6 | q107 | reverse | ✅ | ✅ | ✅ | ✅ |
 
 ### ✅ gov_leaders_abuse_power
 
 | Wave | Source | Transform | Coverage | Transform | Range | Crosstab |
 |------|--------|-----------|----------|-----------|-------|----------|
-| w3 | q110 | scale_convert | ✅ | ✅ | ✅ | ✅ |
-| w4 | q112 | scale_convert | ✅ | ✅ | ✅ | ✅ |
-| w5 | q118 | scale_convert | ✅ | ✅ | ✅ | ✅ |
-| w6 | q109 | scale_convert | ✅ | ✅ | ✅ | ✅ |
+| w3 | q110 | reverse | ✅ | ✅ | ✅ | ✅ |
+| w4 | q112 | reverse | ✅ | ✅ | ✅ | ✅ |
+| w5 | q118 | reverse | ✅ | ✅ | ✅ | ✅ |
+| w6 | q109 | reverse | ✅ | ✅ | ✅ | ✅ |
 
 ### ✅ gov_legislature_oversight
 
 | Wave | Source | Transform | Coverage | Transform | Range | Crosstab |
 |------|--------|-----------|----------|-----------|-------|----------|
-| w2 | q115 | scale_convert | ✅ | ✅ | ✅ | ✅ |
-| w3 | q112 | scale_convert | ✅ | ✅ | ✅ | ✅ |
-| w4 | q114 | scale_convert | ✅ | ✅ | ✅ | ✅ |
-| w5 | q120 | scale_convert | ✅ | ✅ | ✅ | ✅ |
-| w6 | q111 | scale_convert | ✅ | ✅ | ✅ | ✅ |
+| w2 | q115 | reverse | ✅ | ✅ | ✅ | ✅ |
+| w3 | q112 | reverse | ✅ | ✅ | ✅ | ✅ |
+| w4 | q114 | reverse | ✅ | ✅ | ✅ | ✅ |
+| w5 | q120 | reverse | ✅ | ✅ | ✅ | ✅ |
+| w6 | q111 | reverse | ✅ | ✅ | ✅ | ✅ |
 
 ### ✅ gov_no_accountability_between_elections
 
@@ -1322,25 +1345,25 @@ Generated: 2026-01-14 18:48:05.693623
 
 | Wave | Source | Transform | Coverage | Transform | Range | Crosstab |
 |------|--------|-----------|----------|-----------|-------|----------|
-| w5 | q109 | scale_convert | ✅ | ✅ | ✅ | ✅ |
-| w6 | q100 | scale_convert | ✅ | ✅ | ✅ | ✅ |
+| w5 | q109 | reverse | ✅ | ✅ | ✅ | ✅ |
+| w6 | q100 | reverse | ✅ | ✅ | ✅ | ✅ |
 
 ### ✅ gov_remove_through_elections
 
 | Wave | Source | Transform | Coverage | Transform | Range | Crosstab |
 |------|--------|-----------|----------|-----------|-------|----------|
-| w5 | q108 | scale_convert | ✅ | ✅ | ✅ | ✅ |
-| w6 | q99 | scale_convert | ✅ | ✅ | ✅ | ✅ |
+| w5 | q108 | reverse | ✅ | ✅ | ✅ | ✅ |
+| w6 | q99 | reverse | ✅ | ✅ | ✅ | ✅ |
 
 ### ✅ problem_govt_will_solve
 
 | Wave | Source | Transform | Coverage | Transform | Range | Crosstab |
 |------|--------|-----------|----------|-----------|-------|----------|
-| w2 | q102a | scale_convert | ✅ | ✅ | ✅ | ✅ |
-| w3 | q97 | scale_convert | ✅ | ✅ | ✅ | ✅ |
-| w4 | q100 | scale_convert | ✅ | ✅ | ✅ | ✅ |
-| w5 | q107 | scale_convert | ✅ | ✅ | ✅ | ✅ |
-| w6 | q98 | scale_convert | ✅ | ✅ | ✅ | ✅ |
+| w2 | q102a | reverse | ✅ | ✅ | ✅ | ✅ |
+| w3 | q97 | reverse | ✅ | ✅ | ✅ | ✅ |
+| w4 | q100 | reverse | ✅ | ✅ | ✅ | ✅ |
+| w5 | q107 | reverse | ✅ | ✅ | ✅ | ✅ |
+| w6 | q98 | reverse | ✅ | ✅ | ✅ | ✅ |
 
 ### ❌ problem_most_important
 
@@ -1348,7 +1371,7 @@ Generated: 2026-01-14 18:48:05.693623
 |------|--------|-----------|----------|-----------|-------|----------|
 | w3 | q96 | identity | ❌ | ⏭️ | ✅ | ✅ |
 | w4 | q99 | identity | ❌ | ⏭️ | ✅ | ✅ |
-| w5 | q106 | identity | ❌ | ⏭️ | ✅ | ✅ |
+| w5 | q106 | identity | ❌ | ⏭️ | ✅ | ⏭️ |
 | w6 | q97 | identity | ❌ | ⏭️ | ✅ | ✅ |
 
 ### ❌ trust_civil_service
@@ -1527,30 +1550,30 @@ Generated: 2026-01-14 18:48:05.693623
 
 | Wave | Source | Transform | Coverage | Transform | Range | Crosstab |
 |------|--------|-----------|----------|-----------|-------|----------|
-| w3 | q157a | scale_convert | ✅ | ✅ | ✅ | ✅ |
-| w4 | q165 | scale_convert | ✅ | ✅ | ✅ | ✅ |
-| w5 | q177 | scale_convert | ✅ | ✅ | ✅ | ✅ |
-| w6 | q176 | scale_convert | ✅ | ✅ | ✅ | ✅ |
+| w3 | q157a | reverse | ✅ | ✅ | ✅ | ✅ |
+| w4 | q165 | reverse | ✅ | ✅ | ✅ | ✅ |
+| w5 | q177 | reverse | ✅ | ✅ | ✅ | ✅ |
+| w6 | q176 | reverse | ✅ | ✅ | ✅ | ✅ |
 
 ### ✅ intl_china_country_influence_amount
 
 | Wave | Source | Transform | Coverage | Transform | Range | Crosstab |
 |------|--------|-----------|----------|-----------|-------|----------|
-| w5 | q181 | scale_convert | ✅ | ✅ | ✅ | ✅ |
-| w6 | q181 | scale_convert | ✅ | ✅ | ✅ | ✅ |
+| w5 | q181 | reverse | ✅ | ✅ | ✅ | ✅ |
+| w6 | q181 | reverse | ✅ | ✅ | ✅ | ✅ |
 
 ### ✅ intl_china_country_influence_amount_w4
 
 | Wave | Source | Transform | Coverage | Transform | Range | Crosstab |
 |------|--------|-----------|----------|-----------|-------|----------|
-| w4 | q168 | scale_convert | ✅ | ✅ | ✅ | ✅ |
+| w4 | q168 | reverse | ✅ | ✅ | ✅ | ✅ |
 
 ### ✅ intl_china_country_influence_valence
 
 | Wave | Source | Transform | Coverage | Transform | Range | Crosstab |
 |------|--------|-----------|----------|-----------|-------|----------|
-| w5 | q182 | scale_convert | ✅ | ✅ | ✅ | ✅ |
-| w6 | q182 | scale_convert | ✅ | ✅ | ✅ | ✅ |
+| w5 | q182 | reverse | ✅ | ✅ | ✅ | ✅ |
+| w6 | q182 | reverse | ✅ | ✅ | ✅ | ✅ |
 
 ### ❌ intl_china_country_influence_valence_w4
 
@@ -1562,16 +1585,16 @@ Generated: 2026-01-14 18:48:05.693623
 
 | Wave | Source | Transform | Coverage | Transform | Range | Crosstab |
 |------|--------|-----------|----------|-----------|-------|----------|
-| w5 | q178 | scale_convert | ❌ | ✅ | ✅ | ✅ |
-| w6 | q177 | scale_convert | ✅ | ✅ | ✅ | ✅ |
+| w5 | q178 | reverse | ❌ | ✅ | ✅ | ✅ |
+| w6 | q177 | reverse | ✅ | ✅ | ✅ | ✅ |
 
 ### ⚠️ intl_close_to_asean
 
 | Wave | Source | Transform | Coverage | Transform | Range | Crosstab |
 |------|--------|-----------|----------|-----------|-------|----------|
-| w4 | q172 | scale_convert | ✅ | ✅ | ✅ | ✅ |
-| w5 | q186 | scale_convert | ✅ | ✅ | ✅ | ✅ |
-| w6 | q186 | scale_convert | ⚠️ | ✅ | ✅ | ✅ |
+| w4 | q172 | reverse | ✅ | ✅ | ✅ | ✅ |
+| w5 | q186 | reverse | ✅ | ✅ | ✅ | ✅ |
+| w6 | q186 | reverse | ⚠️ | ✅ | ✅ | ✅ |
 
 ### ❌ intl_development_model
 
@@ -1586,13 +1609,13 @@ Generated: 2026-01-14 18:48:05.693623
 
 | Wave | Source | Transform | Coverage | Transform | Range | Crosstab |
 |------|--------|-----------|----------|-----------|-------|----------|
-| w6 | q178 | scale_convert | ✅ | ✅ | ✅ | ✅ |
+| w6 | q178 | reverse | ✅ | ✅ | ✅ | ✅ |
 
 ### ❌ intl_follow_foreign_events
 
 | Wave | Source | Transform | Coverage | Transform | Range | Crosstab |
 |------|--------|-----------|----------|-----------|-------|----------|
-| w4 | q150 | scale_convert | ❌ | ✅ | ✅ | ✅ |
+| w4 | q150 | reverse | ❌ | ✅ | ✅ | ✅ |
 
 ### ❌ intl_future_influence_asia
 
@@ -1616,29 +1639,29 @@ Generated: 2026-01-14 18:48:05.693623
 
 | Wave | Source | Transform | Coverage | Transform | Range | Crosstab |
 |------|--------|-----------|----------|-----------|-------|----------|
-| w4 | q164 | scale_convert | ✅ | ✅ | ✅ | ✅ |
-| w5 | q175 | scale_convert | ✅ | ✅ | ✅ | ✅ |
-| w6 | q174 | scale_convert | ✅ | ✅ | ✅ | ✅ |
+| w4 | q164 | reverse | ✅ | ✅ | ✅ | ✅ |
+| w5 | q175 | reverse | ✅ | ✅ | ✅ | ✅ |
+| w6 | q174 | reverse | ✅ | ✅ | ✅ | ✅ |
 
 ### ✅ intl_usa_country_influence_amount
 
 | Wave | Source | Transform | Coverage | Transform | Range | Crosstab |
 |------|--------|-----------|----------|-----------|-------|----------|
-| w5 | q183 | scale_convert | ✅ | ✅ | ✅ | ✅ |
-| w6 | q183 | scale_convert | ✅ | ✅ | ✅ | ✅ |
+| w5 | q183 | reverse | ✅ | ✅ | ✅ | ✅ |
+| w6 | q183 | reverse | ✅ | ✅ | ✅ | ✅ |
 
 ### ✅ intl_usa_country_influence_amount_w4
 
 | Wave | Source | Transform | Coverage | Transform | Range | Crosstab |
 |------|--------|-----------|----------|-----------|-------|----------|
-| w4 | q170 | scale_convert | ✅ | ✅ | ✅ | ✅ |
+| w4 | q170 | reverse | ✅ | ✅ | ✅ | ✅ |
 
 ### ✅ intl_usa_country_influence_valence
 
 | Wave | Source | Transform | Coverage | Transform | Range | Crosstab |
 |------|--------|-----------|----------|-----------|-------|----------|
-| w5 | q184 | scale_convert | ✅ | ✅ | ✅ | ✅ |
-| w6 | q184 | scale_convert | ✅ | ✅ | ✅ | ✅ |
+| w5 | q184 | reverse | ✅ | ✅ | ✅ | ✅ |
+| w6 | q184 | reverse | ✅ | ✅ | ✅ | ✅ |
 
 ### ❌ intl_usa_country_influence_valence_w4
 
@@ -1650,8 +1673,38 @@ Generated: 2026-01-14 18:48:05.693623
 
 | Wave | Source | Transform | Coverage | Transform | Range | Crosstab |
 |------|--------|-----------|----------|-----------|-------|----------|
-| w5 | q176 | scale_convert | ❌ | ✅ | ✅ | ✅ |
-| w6 | q175 | scale_convert | ✅ | ✅ | ✅ | ✅ |
+| w5 | q176 | reverse | ❌ | ✅ | ✅ | ✅ |
+| w6 | q175 | reverse | ✅ | ✅ | ✅ | ✅ |
+
+### ✅ dem_essential_harmonized
+
+| Wave | Source | Transform | Coverage | Transform | Range | Crosstab |
+|------|--------|-----------|----------|-----------|-------|----------|
+| w2 | q92 | skip | ✅ | ⏭️ | ✅ | ✅ |
+| w3 | q85 | skip | ✅ | ⏭️ | ✅ | ✅ |
+| w4 | q88 | skip | ✅ | ⏭️ | ✅ | ✅ |
+| w5 | q98 | skip | ✅ | ⏭️ | ✅ | ✅ |
+| w6 | q85 | skip | ✅ | ⏭️ | ✅ | ✅ |
+
+### ⚠️ dem_essential_core
+
+| Wave | Source | Transform | Coverage | Transform | Range | Crosstab |
+|------|--------|-----------|----------|-----------|-------|----------|
+| w2 | q92 | skip | ⚠️ | ⏭️ | ✅ | ✅ |
+| w3 | q85 | skip | ✅ | ⏭️ | ✅ | ✅ |
+| w4 | q88 | skip | ✅ | ⏭️ | ✅ | ✅ |
+| w5 | q98 | skip | ✅ | ⏭️ | ✅ | ✅ |
+| w6 | q85 | skip | ✅ | ⏭️ | ✅ | ✅ |
+
+### ✅ dem_procedural_vs_substantive
+
+| Wave | Source | Transform | Coverage | Transform | Range | Crosstab |
+|------|--------|-----------|----------|-----------|-------|----------|
+| w2 | q92 | skip | ✅ | ⏭️ | ✅ | ✅ |
+| w3 | q85 | skip | ✅ | ⏭️ | ✅ | ✅ |
+| w4 | q88 | skip | ✅ | ⏭️ | ✅ | ✅ |
+| w5 | q98 | skip | ✅ | ⏭️ | ✅ | ✅ |
+| w6 | q85 | skip | ✅ | ⏭️ | ✅ | ✅ |
 
 ### ✅ dem_meaning_set1
 
@@ -1677,77 +1730,97 @@ Generated: 2026-01-14 18:48:05.693623
 | w4 | q90 | identity | ✅ | ⏭️ | ✅ | ✅ |
 | w6 | q87 | identity | ✅ | ⏭️ | ✅ | ✅ |
 
-### ✅ dem_meaning_set4
+### ⚠️ dem_meaning_set4
 
 | Wave | Source | Transform | Coverage | Transform | Range | Crosstab |
 |------|--------|-----------|----------|-----------|-------|----------|
 | w3 | q88 | identity | ✅ | ⏭️ | ✅ | ✅ |
 | w4 | q91 | identity | ✅ | ⏭️ | ✅ | ✅ |
-| w6 | q88 | identity | ✅ | ⏭️ | ✅ | ✅ |
+| w6 | q88 | identity | ⚠️ | ⏭️ | ✅ | ✅ |
+
+### ❌ electoral_status
+
+| Wave | Source | Transform | Coverage | Transform | Range | Crosstab |
+|------|--------|-----------|----------|-----------|-------|----------|
+| w2 | q39a | identity | ❌ | ⏭️ | ✅ | ✅ |
+| w3 | q33a | identity | ❌ | ⏭️ | ✅ | ✅ |
+| w4 | q34a | identity | ❌ | ⏭️ | ✅ | ✅ |
+| w5 | q34a | identity | ❌ | ⏭️ | ✅ | ✅ |
+| w6 | q34a | identity | ❌ | ⏭️ | ✅ | ✅ |
+
+### ❌ procedural_preference_index
+
+| Wave | Source | Transform | Coverage | Transform | Range | Crosstab |
+|------|--------|-----------|----------|-----------|-------|----------|
+| w2 | q92 | skip | ✅ | ⏭️ | ✅ | ✅ |
+| w3 | q85 | skip | ❌ | ⏭️ | ✅ | ❌ |
+| w4 | q88 | skip | ❌ | ⏭️ | ✅ | ❌ |
+| w5 | q98 | skip | ✅ | ⏭️ | ✅ | ✅ |
+| w6 | q85 | skip | ❌ | ⏭️ | ✅ | ❌ |
 
 ### ✅ nat_proud_citizen
 
 | Wave | Source | Transform | Coverage | Transform | Range | Crosstab |
 |------|--------|-----------|----------|-----------|-------|----------|
-| w2 | q154 | scale_convert | ✅ | ✅ | ✅ | ✅ |
-| w3 | q154 | scale_convert | ✅ | ✅ | ✅ | ✅ |
-| w4 | q161 | scale_convert | ✅ | ✅ | ✅ | ✅ |
-| w5 | q166 | scale_convert | ✅ | ✅ | ✅ | ✅ |
-| w6 | q166 | scale_convert | ✅ | ✅ | ✅ | ✅ |
+| w2 | q154 | reverse | ✅ | ✅ | ✅ | ✅ |
+| w3 | q154 | reverse | ✅ | ✅ | ✅ | ✅ |
+| w4 | q161 | reverse | ✅ | ✅ | ✅ | ✅ |
+| w5 | q166 | reverse | ✅ | ✅ | ✅ | ✅ |
+| w6 | q166 | reverse | ✅ | ✅ | ✅ | ✅ |
 
 ### ✅ nat_willing_emigrate
 
 | Wave | Source | Transform | Coverage | Transform | Range | Crosstab |
 |------|--------|-----------|----------|-----------|-------|----------|
-| w2 | q155 | scale_convert | ✅ | ✅ | ✅ | ✅ |
-| w3 | q155 | scale_convert | ✅ | ✅ | ✅ | ✅ |
-| w4 | q162 | scale_convert | ✅ | ✅ | ✅ | ✅ |
-| w5 | q167 | scale_convert | ✅ | ✅ | ✅ | ✅ |
-| w6 | q167 | scale_convert | ✅ | ✅ | ✅ | ✅ |
+| w2 | q155 | reverse | ✅ | ✅ | ✅ | ✅ |
+| w3 | q155 | reverse | ✅ | ✅ | ✅ | ✅ |
+| w4 | q162 | reverse | ✅ | ✅ | ✅ | ✅ |
+| w5 | q167 | reverse | ✅ | ✅ | ✅ | ✅ |
+| w6 | q167 | reverse | ✅ | ✅ | ✅ | ✅ |
 
 ### ✅ has_party_id
 
 | Wave | Source | Transform | Coverage | Transform | Range | Crosstab |
 |------|--------|-----------|----------|-----------|-------|----------|
 | w1 | q062 | scale_convert | ✅ | ⏭️ | ✅ | ✅ |
-| w2 | q54 | scale_convert | ✅ | ⏭️ | ✅ | ✅ |
-| w3 | q47 | scale_convert | ✅ | ⏭️ | ✅ | ✅ |
-| w4 | q53 | scale_convert | ✅ | ⏭️ | ✅ | ✅ |
-| w5 | q56 | scale_convert | ✅ | ⏭️ | ✅ | ✅ |
+| w2 | q54 | scale_convert | ✅ | ⏭️ | ✅ | ⏭️ |
+| w3 | q47 | scale_convert | ✅ | ⏭️ | ✅ | ⏭️ |
+| w4 | q53 | scale_convert | ✅ | ⏭️ | ✅ | ⏭️ |
+| w5 | q56 | scale_convert | ✅ | ⏭️ | ✅ | ⏭️ |
 | w6 | q54 | scale_convert | ✅ | ⏭️ | ✅ | ✅ |
 
 ### ✅ party_closeness
 
 | Wave | Source | Transform | Coverage | Transform | Range | Crosstab |
 |------|--------|-----------|----------|-----------|-------|----------|
-| w1 | q063 | scale_convert | ✅ | ✅ | ✅ | ✅ |
-| w2 | q55 | scale_convert | ✅ | ✅ | ✅ | ✅ |
-| w3 | q48 | scale_convert | ✅ | ✅ | ✅ | ✅ |
-| w4 | q54 | scale_convert | ✅ | ✅ | ✅ | ✅ |
-| w5 | q57 | scale_convert | ✅ | ✅ | ✅ | ✅ |
-| w6 | q55 | scale_convert | ✅ | ✅ | ✅ | ✅ |
+| w1 | q063 | reverse | ✅ | ✅ | ✅ | ✅ |
+| w2 | q55 | reverse | ✅ | ✅ | ✅ | ✅ |
+| w3 | q48 | reverse | ✅ | ✅ | ✅ | ✅ |
+| w4 | q54 | reverse | ✅ | ✅ | ✅ | ✅ |
+| w5 | q57 | reverse | ✅ | ✅ | ✅ | ✅ |
+| w6 | q55 | reverse | ✅ | ✅ | ✅ | ✅ |
 
 ### ✅ action_contact_civil_servant
 
 | Wave | Source | Transform | Coverage | Transform | Range | Crosstab |
 |------|--------|-----------|----------|-----------|-------|----------|
-| w1 | q073 | scale_convert | ✅ | ✅ | ✅ | ✅ |
-| w2 | q79 | scale_convert | ✅ | ✅ | ✅ | ✅ |
-| w3 | q65 | scale_convert | ✅ | ✅ | ✅ | ✅ |
-| w4 | q70 | scale_convert | ✅ | ✅ | ✅ | ✅ |
-| w5 | q71 | scale_convert | ✅ | ✅ | ✅ | ✅ |
-| w6 | q69 | scale_convert | ✅ | ✅ | ✅ | ✅ |
+| w1 | q073 | reverse | ✅ | ✅ | ✅ | ✅ |
+| w2 | q79 | reverse | ✅ | ✅ | ✅ | ✅ |
+| w3 | q65 | reverse | ✅ | ✅ | ✅ | ✅ |
+| w4 | q70 | reverse | ✅ | ✅ | ✅ | ✅ |
+| w5 | q71 | reverse | ✅ | ✅ | ✅ | ✅ |
+| w6 | q69 | reverse | ✅ | ✅ | ✅ | ✅ |
 
 ### ✅ action_contact_elected
 
 | Wave | Source | Transform | Coverage | Transform | Range | Crosstab |
 |------|--------|-----------|----------|-----------|-------|----------|
-| w1 | q075 | scale_convert | ✅ | ✅ | ✅ | ✅ |
-| w2 | q81 | scale_convert | ✅ | ✅ | ✅ | ✅ |
-| w3 | q64 | scale_convert | ✅ | ✅ | ✅ | ✅ |
-| w4 | q69 | scale_convert | ✅ | ✅ | ✅ | ✅ |
-| w5 | q70 | scale_convert | ✅ | ✅ | ✅ | ✅ |
-| w6 | q68 | scale_convert | ✅ | ✅ | ✅ | ✅ |
+| w1 | q075 | reverse | ✅ | ✅ | ✅ | ✅ |
+| w2 | q81 | reverse | ✅ | ✅ | ✅ | ✅ |
+| w3 | q64 | reverse | ✅ | ✅ | ✅ | ✅ |
+| w4 | q69 | reverse | ✅ | ✅ | ✅ | ✅ |
+| w5 | q70 | reverse | ✅ | ✅ | ✅ | ✅ |
+| w6 | q68 | reverse | ✅ | ✅ | ✅ | ✅ |
 
 ### ✅ action_contact_elected_w4
 
@@ -1771,11 +1844,11 @@ Generated: 2026-01-14 18:48:05.693623
 
 | Wave | Source | Transform | Coverage | Transform | Range | Crosstab |
 |------|--------|-----------|----------|-----------|-------|----------|
-| w2 | q84 | scale_convert | ✅ | ✅ | ✅ | ✅ |
-| w3 | q66 | scale_convert | ✅ | ✅ | ✅ | ✅ |
-| w4 | q71 | scale_convert | ✅ | ✅ | ✅ | ✅ |
-| w5 | q72 | scale_convert | ✅ | ✅ | ✅ | ✅ |
-| w6 | q70 | scale_convert | ✅ | ✅ | ✅ | ✅ |
+| w2 | q84 | reverse | ✅ | ✅ | ✅ | ✅ |
+| w3 | q66 | reverse | ✅ | ✅ | ✅ | ✅ |
+| w4 | q71 | reverse | ✅ | ✅ | ✅ | ✅ |
+| w5 | q72 | reverse | ✅ | ✅ | ✅ | ✅ |
+| w6 | q70 | reverse | ✅ | ✅ | ✅ | ✅ |
 
 ### ✅ action_contact_influential_3cat
 
@@ -1793,10 +1866,10 @@ Generated: 2026-01-14 18:48:05.693623
 
 | Wave | Source | Transform | Coverage | Transform | Range | Crosstab |
 |------|--------|-----------|----------|-----------|-------|----------|
-| w3 | q68 | scale_convert | ✅ | ✅ | ✅ | ✅ |
-| w4 | q73 | scale_convert | ✅ | ✅ | ✅ | ✅ |
-| w5 | q73 | scale_convert | ✅ | ✅ | ✅ | ✅ |
-| w6 | q71 | scale_convert | ✅ | ✅ | ✅ | ✅ |
+| w3 | q68 | reverse | ✅ | ✅ | ✅ | ✅ |
+| w4 | q73 | reverse | ✅ | ✅ | ✅ | ✅ |
+| w5 | q73 | reverse | ✅ | ✅ | ✅ | ✅ |
+| w6 | q71 | reverse | ✅ | ✅ | ✅ | ✅ |
 
 ### ✅ action_contact_media_w1
 
@@ -1838,11 +1911,11 @@ Generated: 2026-01-14 18:48:05.693623
 
 | Wave | Source | Transform | Coverage | Transform | Range | Crosstab |
 |------|--------|-----------|----------|-----------|-------|----------|
-| w2 | q88 | scale_convert | ✅ | ✅ | ✅ | ✅ |
-| w3 | q71 | scale_convert | ✅ | ✅ | ✅ | ✅ |
-| w4 | q76 | scale_convert | ✅ | ✅ | ✅ | ✅ |
-| w5 | q79 | scale_convert | ✅ | ✅ | ✅ | ✅ |
-| w6 | q76 | scale_convert | ✅ | ✅ | ✅ | ✅ |
+| w2 | q88 | reverse | ✅ | ✅ | ✅ | ✅ |
+| w3 | q71 | reverse | ✅ | ✅ | ✅ | ✅ |
+| w4 | q76 | reverse | ✅ | ✅ | ✅ | ✅ |
+| w5 | q79 | reverse | ✅ | ✅ | ✅ | ✅ |
+| w6 | q76 | reverse | ✅ | ✅ | ✅ | ✅ |
 
 ### ✅ action_demonstration_w1
 
@@ -1861,25 +1934,25 @@ Generated: 2026-01-14 18:48:05.693623
 | Wave | Source | Transform | Coverage | Transform | Range | Crosstab |
 |------|--------|-----------|----------|-----------|-------|----------|
 | w4 | q52 | identity | ❌ | ✅ | ✅ | ✅ |
-| w5 | q76 | scale_convert | ✅ | ✅ | ✅ | ✅ |
-| w6 | q73 | scale_convert | ✅ | ✅ | ✅ | ✅ |
+| w5 | q76 | reverse | ✅ | ✅ | ✅ | ✅ |
+| w6 | q73 | reverse | ✅ | ✅ | ✅ | ✅ |
 
 ### ✅ action_join_cause
 
 | Wave | Source | Transform | Coverage | Transform | Range | Crosstab |
 |------|--------|-----------|----------|-----------|-------|----------|
-| w5 | q77 | scale_convert | ✅ | ✅ | ✅ | ✅ |
-| w6 | q74 | scale_convert | ✅ | ✅ | ✅ | ✅ |
+| w5 | q77 | reverse | ✅ | ✅ | ✅ | ✅ |
+| w6 | q74 | reverse | ✅ | ✅ | ✅ | ✅ |
 
 ### ✅ action_petition
 
 | Wave | Source | Transform | Coverage | Transform | Range | Crosstab |
 |------|--------|-----------|----------|-----------|-------|----------|
-| w2 | q87 | scale_convert | ✅ | ✅ | ✅ | ✅ |
-| w3 | q70 | scale_convert | ✅ | ✅ | ✅ | ✅ |
-| w4 | q75 | scale_convert | ✅ | ✅ | ✅ | ✅ |
-| w5 | q74 | scale_convert | ✅ | ✅ | ✅ | ✅ |
-| w6 | q72 | scale_convert | ✅ | ✅ | ✅ | ✅ |
+| w2 | q87 | reverse | ✅ | ✅ | ✅ | ✅ |
+| w3 | q70 | reverse | ✅ | ✅ | ✅ | ✅ |
+| w4 | q75 | reverse | ✅ | ✅ | ✅ | ✅ |
+| w5 | q74 | reverse | ✅ | ✅ | ✅ | ✅ |
+| w6 | q72 | reverse | ✅ | ✅ | ✅ | ✅ |
 
 ### ✅ action_petition_w4
 
@@ -1891,9 +1964,9 @@ Generated: 2026-01-14 18:48:05.693623
 
 | Wave | Source | Transform | Coverage | Transform | Range | Crosstab |
 |------|--------|-----------|----------|-----------|-------|----------|
-| w4 | q74 | scale_convert | ✅ | ✅ | ✅ | ✅ |
-| w5 | q78 | scale_convert | ✅ | ✅ | ✅ | ✅ |
-| w6 | q75 | scale_convert | ✅ | ✅ | ✅ | ✅ |
+| w4 | q74 | reverse | ✅ | ✅ | ✅ | ✅ |
+| w5 | q78 | reverse | ✅ | ✅ | ✅ | ✅ |
+| w6 | q75 | reverse | ✅ | ✅ | ✅ | ✅ |
 
 ### ✅ action_resolve_local_w4
 
@@ -1905,8 +1978,8 @@ Generated: 2026-01-14 18:48:05.693623
 
 | Wave | Source | Transform | Coverage | Transform | Range | Crosstab |
 |------|--------|-----------|----------|-----------|-------|----------|
-| w5 | q80 | scale_convert | ✅ | ✅ | ✅ | ✅ |
-| w6 | q77 | scale_convert | ✅ | ✅ | ✅ | ✅ |
+| w5 | q80 | reverse | ✅ | ✅ | ✅ | ✅ |
+| w6 | q77 | reverse | ✅ | ✅ | ✅ | ✅ |
 
 ### ✅ action_violence_3cat
 
@@ -1977,11 +2050,11 @@ Generated: 2026-01-14 18:48:05.693623
 
 | Wave | Source | Transform | Coverage | Transform | Range | Crosstab |
 |------|--------|-----------|----------|-----------|-------|----------|
-| w2 | q43 | scale_convert | ✅ | ✅ | ✅ | ✅ |
-| w3 | q37 | scale_convert | ✅ | ✅ | ✅ | ✅ |
-| w4 | q38 | scale_convert | ✅ | ✅ | ✅ | ✅ |
-| w5 | q38 | scale_convert | ✅ | ✅ | ✅ | ✅ |
-| w6 | q38 | scale_convert | ✅ | ✅ | ✅ | ✅ |
+| w2 | q43 | reverse | ✅ | ✅ | ✅ | ✅ |
+| w3 | q37 | reverse | ✅ | ✅ | ✅ | ✅ |
+| w4 | q38 | reverse | ✅ | ✅ | ✅ | ✅ |
+| w5 | q38 | reverse | ✅ | ✅ | ✅ | ✅ |
+| w6 | q38 | reverse | ✅ | ✅ | ✅ | ✅ |
 
 ### ✅ helped_party_campaign
 
@@ -2040,27 +2113,31 @@ Generated: 2026-01-14 18:48:05.693623
 | w5 | q33 | scale_convert | ⚠️ | ⏭️ | ✅ | ✅ |
 | w6 | q33 | scale_convert | ❌ | ⏭️ | ✅ | ✅ |
 
-### ✅ voted_winning_losing
+### ❌ voted_winning_losing
 
 | Wave | Source | Transform | Coverage | Transform | Range | Crosstab |
 |------|--------|-----------|----------|-----------|-------|----------|
+| w2 | q39a | identity | ✅ | ⏭️ | ✅ | ✅ |
+| w3 | q33a | identity | ✅ | ⏭️ | ✅ | ✅ |
 | w4 | q34a | identity | ✅ | ⏭️ | ✅ | ✅ |
+| w5 | q34a | identity | ⚠️ | ⏭️ | ✅ | ✅ |
+| w6 | q34a | identity | ❌ | ⏭️ | ✅ | ✅ |
 
 ### ❌ voting_frequency
 
 | Wave | Source | Transform | Coverage | Transform | Range | Crosstab |
 |------|--------|-----------|----------|-----------|-------|----------|
-| w2 | q90 | scale_convert | ✅ | ✅ | ✅ | ✅ |
-| w3 | q73 | scale_convert | ❌ | ✅ | ✅ | ✅ |
-| w4 | q78 | scale_convert | ✅ | ✅ | ✅ | ✅ |
-| w5 | q81 | scale_convert | ✅ | ✅ | ✅ | ✅ |
-| w6 | q78 | scale_convert | ✅ | ✅ | ✅ | ✅ |
+| w2 | q90 | reverse | ✅ | ✅ | ✅ | ✅ |
+| w3 | q73 | reverse | ❌ | ✅ | ✅ | ✅ |
+| w4 | q78 | reverse | ✅ | ✅ | ✅ | ✅ |
+| w5 | q81 | reverse | ✅ | ✅ | ✅ | ✅ |
+| w6 | q78 | reverse | ✅ | ✅ | ✅ | ✅ |
 
 ### ✅ voting_pattern_self_description
 
 | Wave | Source | Transform | Coverage | Transform | Range | Crosstab |
 |------|--------|-----------|----------|-----------|-------|----------|
-| w4 | q78 | scale_convert | ✅ | ✅ | ✅ | ✅ |
+| w4 | q78 | reverse | ✅ | ✅ | ✅ | ✅ |
 
 ### ✅ worked_for_candidate
 
@@ -2110,11 +2187,11 @@ Generated: 2026-01-14 18:48:05.693623
 | Wave | Source | Transform | Coverage | Transform | Range | Crosstab |
 |------|--------|-----------|----------|-----------|-------|----------|
 | w1 | q023 | scale_convert | ✅ | ❌ | ✅ | ✅ |
-| w2 | q52 | scale_convert | ✅ | ✅ | ✅ | ✅ |
-| w3 | q46 | scale_convert | ✅ | ✅ | ✅ | ✅ |
-| w4 | q46 | scale_convert | ✅ | ✅ | ✅ | ✅ |
-| w5 | q48 | scale_convert | ✅ | ✅ | ✅ | ✅ |
-| w6 | q49 | scale_convert | ✅ | ✅ | ✅ | ✅ |
+| w2 | q52 | reverse | ✅ | ✅ | ✅ | ✅ |
+| w3 | q46 | reverse | ✅ | ✅ | ✅ | ✅ |
+| w4 | q46 | reverse | ✅ | ✅ | ✅ | ✅ |
+| w5 | q48 | reverse | ✅ | ✅ | ✅ | ✅ |
+| w6 | q49 | reverse | ✅ | ✅ | ✅ | ✅ |
 
 ### ✅ pol_news_follow
 
@@ -2122,10 +2199,10 @@ Generated: 2026-01-14 18:48:05.693623
 |------|--------|-----------|----------|-----------|-------|----------|
 | w1 | q057 | scale_convert | ✅ | ✅ | ✅ | ✅ |
 | w2 | q50 | identity | ✅ | ✅ | ✅ | ✅ |
-| w3 | q44 | scale_convert | ✅ | ✅ | ✅ | ✅ |
-| w4 | q45 | scale_convert | ✅ | ✅ | ✅ | ✅ |
-| w5 | q47 | scale_convert | ✅ | ✅ | ✅ | ✅ |
-| w6 | q48 | scale_convert | ✅ | ✅ | ✅ | ✅ |
+| w3 | q44 | reverse | ✅ | ✅ | ✅ | ✅ |
+| w4 | q45 | reverse | ✅ | ✅ | ✅ | ✅ |
+| w5 | q47 | reverse | ✅ | ✅ | ✅ | ✅ |
+| w6 | q48 | reverse | ✅ | ✅ | ✅ | ✅ |
 
 ### ❌ pol_news_newspaper
 
@@ -2151,10 +2228,10 @@ Generated: 2026-01-14 18:48:05.693623
 |------|--------|-----------|----------|-----------|-------|----------|
 | w1 | q056 | identity | ✅ | ✅ | ✅ | ✅ |
 | w2 | q49 | identity | ✅ | ✅ | ✅ | ✅ |
-| w3 | q43 | scale_convert | ✅ | ✅ | ✅ | ✅ |
-| w4 | q44 | scale_convert | ✅ | ✅ | ✅ | ✅ |
-| w5 | q46 | scale_convert | ✅ | ✅ | ✅ | ✅ |
-| w6 | q47 | scale_convert | ✅ | ✅ | ✅ | ✅ |
+| w3 | q43 | reverse | ✅ | ✅ | ✅ | ✅ |
+| w4 | q44 | reverse | ✅ | ✅ | ✅ | ✅ |
+| w5 | q46 | reverse | ✅ | ✅ | ✅ | ✅ |
+| w6 | q47 | reverse | ✅ | ✅ | ✅ | ✅ |
 
 ### ✅ sat_president_govt
 
@@ -2170,10 +2247,10 @@ Generated: 2026-01-14 18:48:05.693623
 
 | Wave | Source | Transform | Coverage | Transform | Range | Crosstab |
 |------|--------|-----------|----------|-----------|-------|----------|
-| w3 | q80 | scale_convert | ✅ | ✅ | ✅ | ✅ |
-| w4 | q83 | scale_convert | ✅ | ✅ | ✅ | ✅ |
-| w5 | q86 | scale_convert | ✅ | ✅ | ✅ | ✅ |
-| w6 | q80 | scale_convert | ✅ | ✅ | ✅ | ✅ |
+| w3 | q80 | reverse | ✅ | ✅ | ✅ | ✅ |
+| w4 | q83 | reverse | ✅ | ✅ | ✅ | ✅ |
+| w5 | q86 | reverse | ✅ | ✅ | ✅ | ✅ |
+| w6 | q80 | reverse | ✅ | ✅ | ✅ | ✅ |
 
 ### ✅ system_deserves_support
 
@@ -2197,30 +2274,30 @@ Generated: 2026-01-14 18:48:05.693623
 
 | Wave | Source | Transform | Coverage | Transform | Range | Crosstab |
 |------|--------|-----------|----------|-----------|-------|----------|
-| w3 | q83 | scale_convert | ✅ | ✅ | ✅ | ✅ |
-| w4 | q86 | scale_convert | ✅ | ✅ | ✅ | ✅ |
-| w5 | q89 | scale_convert | ✅ | ✅ | ✅ | ✅ |
-| w6 | q83 | scale_convert | ✅ | ✅ | ✅ | ✅ |
+| w3 | q83 | reverse | ✅ | ✅ | ✅ | ✅ |
+| w4 | q86 | reverse | ✅ | ✅ | ✅ | ✅ |
+| w5 | q89 | reverse | ✅ | ✅ | ✅ | ✅ |
+| w6 | q83 | reverse | ✅ | ✅ | ✅ | ✅ |
 
 ### ✅ system_proud
 
 | Wave | Source | Transform | Coverage | Transform | Range | Crosstab |
 |------|--------|-----------|----------|-----------|-------|----------|
-| w3 | q81 | scale_convert | ✅ | ✅ | ✅ | ✅ |
-| w4 | q84 | scale_convert | ✅ | ✅ | ✅ | ✅ |
-| w5 | q87 | scale_convert | ✅ | ✅ | ✅ | ✅ |
-| w6 | q81 | scale_convert | ✅ | ✅ | ✅ | ✅ |
+| w3 | q81 | reverse | ✅ | ✅ | ✅ | ✅ |
+| w4 | q84 | reverse | ✅ | ✅ | ✅ | ✅ |
+| w5 | q87 | reverse | ✅ | ✅ | ✅ | ✅ |
+| w6 | q81 | reverse | ✅ | ✅ | ✅ | ✅ |
 
 ### ✅ efficacy_ability_participate
 
 | Wave | Source | Transform | Coverage | Transform | Range | Crosstab |
 |------|--------|-----------|----------|-----------|-------|----------|
-| w1 | q126 | scale_convert | ✅ | ✅ | ✅ | ✅ |
-| w2 | q127 | scale_convert | ✅ | ✅ | ✅ | ✅ |
-| w3 | q133 | scale_convert | ✅ | ✅ | ✅ | ✅ |
-| w4 | q134 | scale_convert | ✅ | ✅ | ✅ | ✅ |
-| w5 | q141 | scale_convert | ✅ | ✅ | ✅ | ✅ |
-| w6 | q133 | scale_convert | ✅ | ✅ | ✅ | ✅ |
+| w1 | q126 | reverse | ✅ | ✅ | ✅ | ✅ |
+| w2 | q127 | reverse | ✅ | ✅ | ✅ | ✅ |
+| w3 | q133 | reverse | ✅ | ✅ | ✅ | ✅ |
+| w4 | q134 | reverse | ✅ | ✅ | ✅ | ✅ |
+| w5 | q141 | reverse | ✅ | ✅ | ✅ | ✅ |
+| w6 | q133 | reverse | ✅ | ✅ | ✅ | ✅ |
 
 ### ✅ efficacy_no_influence
 
@@ -2247,7 +2324,7 @@ Generated: 2026-01-14 18:48:05.693623
 
 | Wave | Source | Transform | Coverage | Transform | Range | Crosstab |
 |------|--------|-----------|----------|-----------|-------|----------|
-| w6 | q45 | scale_convert | ✅ | ✅ | ✅ | ✅ |
+| w6 | q45 | reverse | ✅ | ✅ | ✅ | ✅ |
 
 ### ❌ access_healthcare
 
@@ -2263,14 +2340,14 @@ Generated: 2026-01-14 18:48:05.693623
 
 | Wave | Source | Transform | Coverage | Transform | Range | Crosstab |
 |------|--------|-----------|----------|-----------|-------|----------|
-| w4 | q39 | scale_convert | ❌ | ✅ | ✅ | ✅ |
+| w4 | q39 | reverse | ❌ | ✅ | ✅ | ✅ |
 
 ### ⚠️ access_internet
 
 | Wave | Source | Transform | Coverage | Transform | Range | Crosstab |
 |------|--------|-----------|----------|-----------|-------|----------|
-| w5 | q44 | scale_convert | ⚠️ | ✅ | ✅ | ✅ |
-| w6 | q44 | scale_convert | ✅ | ✅ | ✅ | ✅ |
+| w5 | q44 | reverse | ⚠️ | ✅ | ✅ | ✅ |
+| w6 | q44 | reverse | ✅ | ✅ | ✅ | ✅ |
 
 ### ❌ access_police
 
@@ -2286,66 +2363,66 @@ Generated: 2026-01-14 18:48:05.693623
 
 | Wave | Source | Transform | Coverage | Transform | Range | Crosstab |
 |------|--------|-----------|----------|-----------|-------|----------|
-| w4 | q40 | scale_convert | ❌ | ✅ | ✅ | ✅ |
+| w4 | q40 | reverse | ❌ | ✅ | ✅ | ✅ |
 
 ### ✅ access_roads
 
 | Wave | Source | Transform | Coverage | Transform | Range | Crosstab |
 |------|--------|-----------|----------|-----------|-------|----------|
-| w5 | q39 | scale_convert | ✅ | ✅ | ✅ | ✅ |
-| w6 | q39 | scale_convert | ✅ | ✅ | ✅ | ✅ |
+| w5 | q39 | reverse | ✅ | ✅ | ✅ | ✅ |
+| w6 | q39 | reverse | ✅ | ✅ | ✅ | ✅ |
 
 ### ⚠️ access_transport
 
 | Wave | Source | Transform | Coverage | Transform | Range | Crosstab |
 |------|--------|-----------|----------|-----------|-------|----------|
-| w5 | q41 | scale_convert | ⚠️ | ✅ | ✅ | ✅ |
-| w6 | q41 | scale_convert | ✅ | ✅ | ✅ | ✅ |
+| w5 | q41 | reverse | ⚠️ | ✅ | ✅ | ✅ |
+| w6 | q41 | reverse | ✅ | ✅ | ✅ | ✅ |
 
 ### ✅ access_water
 
 | Wave | Source | Transform | Coverage | Transform | Range | Crosstab |
 |------|--------|-----------|----------|-----------|-------|----------|
-| w5 | q40 | scale_convert | ✅ | ✅ | ✅ | ✅ |
-| w6 | q40 | scale_convert | ✅ | ✅ | ✅ | ✅ |
+| w5 | q40 | reverse | ✅ | ✅ | ✅ | ✅ |
+| w6 | q40 | reverse | ✅ | ✅ | ✅ | ✅ |
 
 ### ✅ local_safety
 
 | Wave | Source | Transform | Coverage | Transform | Range | Crosstab |
 |------|--------|-----------|----------|-----------|-------|----------|
-| w2 | q32 | scale_convert | ✅ | ✅ | ✅ | ✅ |
-| w3 | q42 | scale_convert | ✅ | ✅ | ✅ | ✅ |
-| w4 | q43 | scale_convert | ✅ | ✅ | ✅ | ✅ |
-| w5 | q45 | scale_convert | ✅ | ✅ | ✅ | ✅ |
-| w6 | q46 | scale_convert | ✅ | ✅ | ✅ | ✅ |
+| w2 | q32 | reverse | ✅ | ✅ | ✅ | ✅ |
+| w3 | q42 | reverse | ✅ | ✅ | ✅ | ✅ |
+| w4 | q43 | reverse | ✅ | ✅ | ✅ | ✅ |
+| w5 | q45 | reverse | ✅ | ✅ | ✅ | ✅ |
+| w6 | q46 | reverse | ✅ | ✅ | ✅ | ✅ |
 
 ### ✅ govt_resp_basic_needs
 
 | Wave | Source | Transform | Coverage | Transform | Range | Crosstab |
 |------|--------|-----------|----------|-----------|-------|----------|
-| w5 | q160d | scale_convert | ✅ | ✅ | ✅ | ✅ |
-| w6 | q160d | scale_convert | ✅ | ✅ | ✅ | ✅ |
+| w5 | q160d | reverse | ✅ | ✅ | ✅ | ✅ |
+| w6 | q160d | reverse | ✅ | ✅ | ✅ | ✅ |
 
 ### ✅ govt_resp_healthcare
 
 | Wave | Source | Transform | Coverage | Transform | Range | Crosstab |
 |------|--------|-----------|----------|-----------|-------|----------|
-| w5 | q160c | scale_convert | ✅ | ✅ | ✅ | ✅ |
-| w6 | q160c | scale_convert | ✅ | ✅ | ✅ | ✅ |
+| w5 | q160c | reverse | ✅ | ✅ | ✅ | ✅ |
+| w6 | q160c | reverse | ✅ | ✅ | ✅ | ✅ |
 
 ### ✅ govt_resp_housing
 
 | Wave | Source | Transform | Coverage | Transform | Range | Crosstab |
 |------|--------|-----------|----------|-----------|-------|----------|
-| w5 | q160b | scale_convert | ✅ | ✅ | ✅ | ✅ |
-| w6 | q160b | scale_convert | ✅ | ✅ | ✅ | ✅ |
+| w5 | q160b | reverse | ✅ | ✅ | ✅ | ✅ |
+| w6 | q160b | reverse | ✅ | ✅ | ✅ | ✅ |
 
 ### ✅ govt_resp_inequality
 
 | Wave | Source | Transform | Coverage | Transform | Range | Crosstab |
 |------|--------|-----------|----------|-----------|-------|----------|
-| w5 | q160a | scale_convert | ✅ | ✅ | ✅ | ✅ |
-| w6 | q160a | scale_convert | ✅ | ✅ | ✅ | ✅ |
+| w5 | q160a | reverse | ✅ | ✅ | ✅ | ✅ |
+| w6 | q160a | reverse | ✅ | ✅ | ✅ | ✅ |
 
 ### ✅ internet_access_home
 
@@ -2363,17 +2440,17 @@ Generated: 2026-01-14 18:48:05.693623
 
 | Wave | Source | Transform | Coverage | Transform | Range | Crosstab |
 |------|--------|-----------|----------|-----------|-------|----------|
-| w4 | q51 | scale_convert | ❌ | ✅ | ✅ | ✅ |
+| w4 | q51 | reverse | ❌ | ✅ | ✅ | ✅ |
 
-### ❌ news_internet
+### ✅ news_internet
 
 | Wave | Source | Transform | Coverage | Transform | Range | Crosstab |
 |------|--------|-----------|----------|-----------|-------|----------|
-| w2 | q66 | identity | ❌ | ✅ | ✅ | ❌ |
-| w3 | q45 | identity | ❌ | ✅ | ✅ | ❌ |
-| w4 | q49 | identity | ❌ | ✅ | ✅ | ❌ |
-| w5 | q49 | identity | ❌ | ✅ | ✅ | ❌ |
-| w6 | q50 | identity | ❌ | ✅ | ✅ | ❌ |
+| w2 | q66 | identity | ✅ | ✅ | ✅ | ✅ |
+| w3 | q45 | identity | ✅ | ✅ | ✅ | ✅ |
+| w4 | q49 | identity | ✅ | ✅ | ✅ | ✅ |
+| w5 | q49 | identity | ✅ | ✅ | ✅ | ✅ |
+| w6 | q50 | identity | ✅ | ✅ | ✅ | ✅ |
 
 ### ✅ political_info_channel
 
@@ -2386,30 +2463,30 @@ Generated: 2026-01-14 18:48:05.693623
 
 | Wave | Source | Transform | Coverage | Transform | Range | Crosstab |
 |------|--------|-----------|----------|-----------|-------|----------|
-| w5 | q51a | scale_convert | ✅ | ✅ | ✅ | ✅ |
-| w6 | q52a | scale_convert | ✅ | ✅ | ✅ | ✅ |
+| w5 | q51a | reverse | ✅ | ✅ | ✅ | ✅ |
+| w6 | q52a | reverse | ✅ | ✅ | ✅ | ✅ |
 
 ### ❌ sm_express_political
 
 | Wave | Source | Transform | Coverage | Transform | Range | Crosstab |
 |------|--------|-----------|----------|-----------|-------|----------|
-| w4 | q52 | scale_convert | ❌ | ✅ | ✅ | ✅ |
-| w5 | q51b | scale_convert | ✅ | ✅ | ✅ | ✅ |
-| w6 | q52b | scale_convert | ✅ | ✅ | ✅ | ✅ |
+| w4 | q52 | reverse | ❌ | ✅ | ✅ | ✅ |
+| w5 | q51b | reverse | ✅ | ✅ | ✅ | ✅ |
+| w6 | q52b | reverse | ✅ | ✅ | ✅ | ✅ |
 
 ### ✅ sm_organize_politics
 
 | Wave | Source | Transform | Coverage | Transform | Range | Crosstab |
 |------|--------|-----------|----------|-----------|-------|----------|
-| w5 | q51d | scale_convert | ✅ | ✅ | ✅ | ✅ |
-| w6 | q52d | scale_convert | ✅ | ✅ | ✅ | ✅ |
+| w5 | q51d | reverse | ✅ | ✅ | ✅ | ✅ |
+| w6 | q52d | reverse | ✅ | ✅ | ✅ | ✅ |
 
 ### ✅ sm_share_news
 
 | Wave | Source | Transform | Coverage | Transform | Range | Crosstab |
 |------|--------|-----------|----------|-----------|-------|----------|
-| w5 | q51c | scale_convert | ✅ | ✅ | ✅ | ✅ |
-| w6 | q52c | scale_convert | ✅ | ✅ | ✅ | ✅ |
+| w5 | q51c | reverse | ✅ | ✅ | ✅ | ✅ |
+| w6 | q52c | reverse | ✅ | ✅ | ✅ | ✅ |
 
 ### ✅ sm_use_any
 
@@ -2464,11 +2541,11 @@ Generated: 2026-01-14 18:48:05.693623
 
 | Wave | Source | Transform | Coverage | Transform | Range | Crosstab |
 |------|--------|-----------|----------|-----------|-------|----------|
-| w2 | q26 | identity | ✅ | ✅ | ✅ | ✅ |
-| w3 | q27 | scale_convert | ✅ | ✅ | ✅ | ✅ |
-| w4 | q28 | scale_convert | ✅ | ✅ | ✅ | ✅ |
+| w2 | q26 | identity | ✅ | ❌ | ✅ | ❌ |
+| w3 | q27 | reverse | ✅ | ❌ | ✅ | ❌ |
+| w4 | q28 | reverse | ✅ | ✅ | ✅ | ✅ |
 | w5 | q26 | reverse | ✅ | ❌ | ✅ | ✅ |
-| w6 | q26 | scale_convert | ✅ | ✅ | ✅ | ✅ |
+| w6 | q26 | reverse | ✅ | ✅ | ✅ | ✅ |
 
 ### ❌ trust_generalized_binary
 
@@ -2485,226 +2562,231 @@ Generated: 2026-01-14 18:48:05.693623
 
 | Wave | Source | Transform | Coverage | Transform | Range | Crosstab |
 |------|--------|-----------|----------|-----------|-------|----------|
-| w3 | q49 | scale_convert | ✅ | ✅ | ✅ | ✅ |
-| w4 | q24 | scale_convert | ✅ | ✅ | ✅ | ✅ |
-| w5 | q23 | scale_convert | ✅ | ✅ | ✅ | ✅ |
-| w6 | q23 | scale_convert | ✅ | ✅ | ✅ | ✅ |
+| w3 | q49 | reverse | ✅ | ✅ | ✅ | ✅ |
+| w4 | q24 | reverse | ✅ | ✅ | ✅ | ✅ |
+| w5 | q23 | reverse | ✅ | ✅ | ✅ | ✅ |
+| w6 | q23 | reverse | ✅ | ✅ | ✅ | ✅ |
 
 ### ✅ trust_govt_do_right
 
 | Wave | Source | Transform | Coverage | Transform | Range | Crosstab |
 |------|--------|-----------|----------|-----------|-------|----------|
-| w1 | q131 | scale_convert | ✅ | ✅ | ✅ | ✅ |
-| w2 | q130 | scale_convert | ✅ | ✅ | ✅ | ✅ |
-| w3 | q136 | scale_convert | ✅ | ✅ | ✅ | ✅ |
-| w4 | q137 | scale_convert | ✅ | ✅ | ✅ | ✅ |
-| w5 | q144 | scale_convert | ✅ | ✅ | ✅ | ✅ |
-| w6 | q136 | scale_convert | ✅ | ✅ | ✅ | ✅ |
+| w1 | q131 | reverse | ✅ | ✅ | ✅ | ✅ |
+| w2 | q130 | reverse | ✅ | ✅ | ✅ | ✅ |
+| w3 | q136 | reverse | ✅ | ✅ | ✅ | ✅ |
+| w4 | q137 | reverse | ✅ | ✅ | ✅ | ✅ |
+| w5 | q144 | reverse | ✅ | ✅ | ✅ | ✅ |
+| w6 | q136 | reverse | ✅ | ✅ | ✅ | ✅ |
 
 ### ❌ trust_neighbors
 
 | Wave | Source | Transform | Coverage | Transform | Range | Crosstab |
 |------|--------|-----------|----------|-----------|-------|----------|
-| w2 | q25 | identity | ✅ | ✅ | ✅ | ✅ |
-| w3 | q26 | scale_convert | ✅ | ✅ | ✅ | ✅ |
-| w4 | q27 | scale_convert | ✅ | ✅ | ✅ | ✅ |
+| w2 | q25 | identity | ✅ | ❌ | ✅ | ❌ |
+| w3 | q26 | reverse | ✅ | ❌ | ✅ | ❌ |
+| w4 | q27 | reverse | ✅ | ✅ | ✅ | ✅ |
 | w5 | q25 | reverse | ✅ | ❌ | ✅ | ✅ |
-| w6 | q25 | scale_convert | ✅ | ✅ | ✅ | ✅ |
+| w6 | q25 | reverse | ✅ | ✅ | ✅ | ✅ |
 
 ### ❌ trust_relatives
 
 | Wave | Source | Transform | Coverage | Transform | Range | Crosstab |
 |------|--------|-----------|----------|-----------|-------|----------|
-| w2 | q24 | identity | ✅ | ✅ | ✅ | ✅ |
-| w3 | q25 | scale_convert | ✅ | ✅ | ✅ | ✅ |
-| w4 | q26 | scale_convert | ✅ | ✅ | ✅ | ✅ |
+| w2 | q24 | identity | ✅ | ❌ | ✅ | ❌ |
+| w3 | q25 | reverse | ✅ | ❌ | ✅ | ❌ |
+| w4 | q26 | reverse | ✅ | ✅ | ✅ | ✅ |
 | w5 | q24 | reverse | ✅ | ❌ | ✅ | ✅ |
-| w6 | q24 | scale_convert | ✅ | ✅ | ✅ | ✅ |
+| w6 | q24 | reverse | ✅ | ✅ | ✅ | ✅ |
 
 ### ❌ trust_strangers
 
 | Wave | Source | Transform | Coverage | Transform | Range | Crosstab |
 |------|--------|-----------|----------|-----------|-------|----------|
 | w5 | q27 | reverse | ✅ | ❌ | ✅ | ✅ |
-| w6 | q27 | scale_convert | ✅ | ✅ | ✅ | ✅ |
+| w6 | q27 | reverse | ✅ | ✅ | ✅ | ✅ |
 
 ### ✅ trad_accommodate_neighbor
 
 | Wave | Source | Transform | Coverage | Transform | Range | Crosstab |
 |------|--------|-----------|----------|-----------|-------|----------|
-| w1 | q066 | scale_convert | ✅ | ✅ | ✅ | ✅ |
-| w2 | q58 | scale_convert | ✅ | ✅ | ✅ | ✅ |
+| w1 | q066 | reverse | ✅ | ✅ | ✅ | ✅ |
+| w2 | q58 | reverse | ✅ | ✅ | ✅ | ✅ |
 
 ### ✅ trad_avoid_conflict
 
 | Wave | Source | Transform | Coverage | Transform | Range | Crosstab |
 |------|--------|-----------|----------|-----------|-------|----------|
-| w3 | q59 | scale_convert | ✅ | ✅ | ✅ | ✅ |
-| w4 | q64 | scale_convert | ✅ | ✅ | ✅ | ✅ |
-| w5 | q66 | scale_convert | ✅ | ✅ | ✅ | ✅ |
-| w6 | q64 | scale_convert | ✅ | ✅ | ✅ | ✅ |
+| w3 | q59 | reverse | ✅ | ✅ | ✅ | ✅ |
+| w4 | q64 | reverse | ✅ | ✅ | ✅ | ✅ |
+| w5 | q66 | reverse | ✅ | ✅ | ✅ | ✅ |
+| w6 | q64 | reverse | ✅ | ✅ | ✅ | ✅ |
 
 ### ✅ trad_avoid_quarrel
 
 | Wave | Source | Transform | Coverage | Transform | Range | Crosstab |
 |------|--------|-----------|----------|-----------|-------|----------|
-| w3 | q58 | scale_convert | ✅ | ✅ | ✅ | ✅ |
-| w4 | q63 | scale_convert | ✅ | ✅ | ✅ | ✅ |
-| w5 | q65 | scale_convert | ✅ | ✅ | ✅ | ✅ |
-| w6 | q63 | scale_convert | ✅ | ✅ | ✅ | ✅ |
+| w3 | q58 | reverse | ✅ | ✅ | ✅ | ✅ |
+| w4 | q63 | reverse | ✅ | ✅ | ✅ | ✅ |
+| w5 | q65 | reverse | ✅ | ✅ | ✅ | ✅ |
+| w6 | q63 | reverse | ✅ | ✅ | ✅ | ✅ |
 
 ### ✅ trad_defer_coworkers
 
 | Wave | Source | Transform | Coverage | Transform | Range | Crosstab |
 |------|--------|-----------|----------|-----------|-------|----------|
-| w1 | q068 | scale_convert | ✅ | ✅ | ✅ | ✅ |
-| w2 | q59 | scale_convert | ✅ | ✅ | ✅ | ✅ |
-| w3 | q60 | scale_convert | ✅ | ✅ | ✅ | ✅ |
-| w4 | q65 | scale_convert | ✅ | ✅ | ✅ | ✅ |
-| w5 | q67 | scale_convert | ✅ | ✅ | ✅ | ✅ |
-| w6 | q65 | scale_convert | ✅ | ✅ | ✅ | ✅ |
+| w1 | q068 | reverse | ✅ | ✅ | ✅ | ✅ |
+| w2 | q59 | reverse | ✅ | ✅ | ✅ | ✅ |
+| w3 | q60 | reverse | ✅ | ✅ | ✅ | ✅ |
+| w4 | q65 | reverse | ✅ | ✅ | ✅ | ✅ |
+| w5 | q67 | reverse | ✅ | ✅ | ✅ | ✅ |
+| w6 | q65 | reverse | ✅ | ✅ | ✅ | ✅ |
 
 ### ✅ trad_elder_dispute
 
 | Wave | Source | Transform | Coverage | Transform | Range | Crosstab |
 |------|--------|-----------|----------|-----------|-------|----------|
-| w1 | q071 | scale_convert | ✅ | ✅ | ✅ | ✅ |
+| w1 | q071 | reverse | ✅ | ✅ | ✅ | ✅ |
 
 ### ✅ trad_family_first
 
 | Wave | Source | Transform | Coverage | Transform | Range | Crosstab |
 |------|--------|-----------|----------|-----------|-------|----------|
-| w1 | q069 | scale_convert | ✅ | ✅ | ✅ | ✅ |
-| w2 | q60 | scale_convert | ✅ | ✅ | ✅ | ✅ |
-| w3 | q50 | scale_convert | ✅ | ✅ | ✅ | ✅ |
-| w4 | q55 | scale_convert | ✅ | ✅ | ✅ | ✅ |
-| w5 | q58 | scale_convert | ✅ | ✅ | ✅ | ✅ |
-| w6 | q56 | scale_convert | ✅ | ✅ | ✅ | ✅ |
+| w1 | q069 | reverse | ✅ | ✅ | ✅ | ✅ |
+| w2 | q60 | reverse | ✅ | ✅ | ✅ | ✅ |
+| w3 | q50 | reverse | ✅ | ✅ | ✅ | ✅ |
+| w4 | q55 | reverse | ✅ | ✅ | ✅ | ✅ |
+| w5 | q58 | reverse | ✅ | ✅ | ✅ | ✅ |
+| w6 | q56 | reverse | ✅ | ✅ | ✅ | ✅ |
 
 ### ✅ trad_fatalism
 
 | Wave | Source | Transform | Coverage | Transform | Range | Crosstab |
 |------|--------|-----------|----------|-----------|-------|----------|
-| w1 | q067 | scale_convert | ✅ | ✅ | ✅ | ✅ |
-| w3 | q61 | scale_convert | ✅ | ✅ | ✅ | ✅ |
-| w4 | q66 | scale_convert | ✅ | ✅ | ✅ | ✅ |
-| w5 | q68 | scale_convert | ✅ | ✅ | ✅ | ✅ |
-| w6 | q66 | scale_convert | ✅ | ✅ | ✅ | ✅ |
+| w1 | q067 | reverse | ✅ | ✅ | ✅ | ✅ |
+| w3 | q61 | reverse | ✅ | ✅ | ✅ | ✅ |
+| w4 | q66 | reverse | ✅ | ✅ | ✅ | ✅ |
+| w5 | q68 | reverse | ✅ | ✅ | ✅ | ✅ |
+| w6 | q66 | reverse | ✅ | ✅ | ✅ | ✅ |
 
 ### ✅ trad_group_sacrifice
 
 | Wave | Source | Transform | Coverage | Transform | Range | Crosstab |
 |------|--------|-----------|----------|-----------|-------|----------|
-| w3 | q51 | scale_convert | ✅ | ✅ | ✅ | ✅ |
-| w4 | q56 | scale_convert | ✅ | ✅ | ✅ | ✅ |
-| w5 | q59 | scale_convert | ✅ | ✅ | ✅ | ✅ |
-| w6 | q57 | scale_convert | ✅ | ✅ | ✅ | ✅ |
+| w3 | q51 | reverse | ✅ | ✅ | ✅ | ✅ |
+| w4 | q56 | reverse | ✅ | ✅ | ✅ | ✅ |
+| w5 | q59 | reverse | ✅ | ✅ | ✅ | ✅ |
+| w6 | q57 | reverse | ✅ | ✅ | ✅ | ✅ |
 
 ### ✅ trad_hierarchical_obedience
 
 | Wave | Source | Transform | Coverage | Transform | Range | Crosstab |
 |------|--------|-----------|----------|-----------|-------|----------|
-| w1 | q133 | scale_convert | ✅ | ✅ | ✅ | ✅ |
-| w2 | q134 | scale_convert | ✅ | ✅ | ✅ | ✅ |
-| w3 | q141 | scale_convert | ✅ | ✅ | ✅ | ✅ |
-| w4 | q142 | scale_convert | ✅ | ✅ | ✅ | ✅ |
-| w5 | q149 | scale_convert | ✅ | ✅ | ✅ | ✅ |
-| w6 | q149 | scale_convert | ✅ | ✅ | ✅ | ✅ |
+| w1 | q133 | reverse | ✅ | ✅ | ✅ | ✅ |
+| w2 | q134 | reverse | ✅ | ✅ | ✅ | ✅ |
+| w3 | q141 | reverse | ✅ | ✅ | ✅ | ✅ |
+| w4 | q142 | reverse | ✅ | ✅ | ✅ | ✅ |
+| w5 | q149 | reverse | ✅ | ✅ | ✅ | ✅ |
+| w6 | q149 | reverse | ✅ | ✅ | ✅ | ✅ |
 
 ### ✅ trad_hire_relatives
 
 | Wave | Source | Transform | Coverage | Transform | Range | Crosstab |
 |------|--------|-----------|----------|-----------|-------|----------|
-| w1 | q065 | scale_convert | ✅ | ✅ | ✅ | ✅ |
+| w1 | q065 | reverse | ✅ | ✅ | ✅ | ✅ |
 
 ### ✅ trad_longterm_gains
 
 | Wave | Source | Transform | Coverage | Transform | Range | Crosstab |
 |------|--------|-----------|----------|-----------|-------|----------|
-| w4 | q68 | scale_convert | ✅ | ✅ | ✅ | ✅ |
+| w4 | q68 | reverse | ✅ | ✅ | ✅ | ✅ |
 
 ### ✅ trad_longterm_planning
 
 | Wave | Source | Transform | Coverage | Transform | Range | Crosstab |
 |------|--------|-----------|----------|-----------|-------|----------|
-| w4 | q59 | scale_convert | ✅ | ✅ | ✅ | ✅ |
+| w4 | q59 | reverse | ✅ | ✅ | ✅ | ✅ |
 
 ### ✅ trad_longterm_relation
 
 | Wave | Source | Transform | Coverage | Transform | Range | Crosstab |
 |------|--------|-----------|----------|-----------|-------|----------|
-| w3 | q53 | scale_convert | ✅ | ✅ | ✅ | ✅ |
-| w4 | q58 | scale_convert | ✅ | ✅ | ✅ | ✅ |
-| w5 | q61 | scale_convert | ✅ | ✅ | ✅ | ✅ |
-| w6 | q59 | scale_convert | ✅ | ✅ | ✅ | ✅ |
+| w3 | q53 | reverse | ✅ | ✅ | ✅ | ✅ |
+| w4 | q58 | reverse | ✅ | ✅ | ✅ | ✅ |
+| w5 | q61 | reverse | ✅ | ✅ | ✅ | ✅ |
+| w6 | q59 | reverse | ✅ | ✅ | ✅ | ✅ |
 
 ### ✅ trad_male_supervisor
 
 | Wave | Source | Transform | Coverage | Transform | Range | Crosstab |
 |------|--------|-----------|----------|-----------|-------|----------|
-| w1 | q070 | scale_convert | ✅ | ✅ | ✅ | ✅ |
+| w1 | q070 | reverse | ✅ | ✅ | ✅ | ✅ |
 
 ### ✅ trad_motherinlaw_obey
 
 | Wave | Source | Transform | Coverage | Transform | Range | Crosstab |
 |------|--------|-----------|----------|-----------|-------|----------|
-| w1 | q072 | scale_convert | ✅ | ✅ | ✅ | ✅ |
-| w3 | q56 | scale_convert | ✅ | ✅ | ✅ | ✅ |
-| w4 | q61 | scale_convert | ✅ | ✅ | ✅ | ✅ |
-| w5 | q63 | scale_convert | ✅ | ✅ | ✅ | ✅ |
-| w6 | q61 | scale_convert | ✅ | ✅ | ✅ | ✅ |
+| w1 | q072 | reverse | ✅ | ✅ | ✅ | ✅ |
+| w3 | q56 | reverse | ✅ | ✅ | ✅ | ✅ |
+| w4 | q61 | reverse | ✅ | ✅ | ✅ | ✅ |
+| w5 | q63 | reverse | ✅ | ✅ | ✅ | ✅ |
+| w6 | q61 | reverse | ✅ | ✅ | ✅ | ✅ |
 
 ### ✅ trad_national_sacrifice
 
 | Wave | Source | Transform | Coverage | Transform | Range | Crosstab |
 |------|--------|-----------|----------|-----------|-------|----------|
-| w3 | q52 | scale_convert | ✅ | ✅ | ✅ | ✅ |
-| w4 | q57 | scale_convert | ✅ | ✅ | ✅ | ✅ |
-| w5 | q60 | scale_convert | ✅ | ✅ | ✅ | ✅ |
-| w6 | q58 | scale_convert | ✅ | ✅ | ✅ | ✅ |
+| w3 | q52 | reverse | ✅ | ✅ | ✅ | ✅ |
+| w4 | q57 | reverse | ✅ | ✅ | ✅ | ✅ |
+| w5 | q60 | reverse | ✅ | ✅ | ✅ | ✅ |
+| w6 | q58 | reverse | ✅ | ✅ | ✅ | ✅ |
 
 ### ✅ trad_obey_parents
 
 | Wave | Source | Transform | Coverage | Transform | Range | Crosstab |
 |------|--------|-----------|----------|-----------|-------|----------|
-| w1 | q064 | scale_convert | ✅ | ✅ | ✅ | ✅ |
-| w2 | q56 | scale_convert | ✅ | ✅ | ✅ | ✅ |
-| w3 | q55 | scale_convert | ✅ | ✅ | ✅ | ✅ |
-| w4 | q60 | scale_convert | ✅ | ✅ | ✅ | ✅ |
-| w5 | q62 | scale_convert | ✅ | ✅ | ✅ | ✅ |
-| w6 | q60 | scale_convert | ✅ | ✅ | ✅ | ✅ |
+| w1 | q064 | reverse | ✅ | ✅ | ✅ | ✅ |
+| w2 | q56 | reverse | ✅ | ✅ | ✅ | ✅ |
+| w3 | q55 | reverse | ✅ | ✅ | ✅ | ✅ |
+| w4 | q60 | reverse | ✅ | ✅ | ✅ | ✅ |
+| w5 | q62 | reverse | ✅ | ✅ | ✅ | ✅ |
+| w6 | q60 | reverse | ✅ | ✅ | ✅ | ✅ |
 
 ### ✅ trad_son_preference
 
 | Wave | Source | Transform | Coverage | Transform | Range | Crosstab |
 |------|--------|-----------|----------|-----------|-------|----------|
-| w3 | q62 | scale_convert | ✅ | ✅ | ✅ | ✅ |
-| w4 | q67 | scale_convert | ✅ | ✅ | ✅ | ✅ |
-| w5 | q69 | scale_convert | ✅ | ✅ | ✅ | ✅ |
-| w6 | q67 | scale_convert | ✅ | ✅ | ✅ | ✅ |
+| w3 | q62 | reverse | ✅ | ✅ | ✅ | ✅ |
+| w4 | q67 | reverse | ✅ | ✅ | ✅ | ✅ |
+| w5 | q69 | reverse | ✅ | ✅ | ✅ | ✅ |
+| w6 | q67 | reverse | ✅ | ✅ | ✅ | ✅ |
 
 ### ✅ trad_teacher_authority
 
 | Wave | Source | Transform | Coverage | Transform | Range | Crosstab |
 |------|--------|-----------|----------|-----------|-------|----------|
-| w2 | q57 | scale_convert | ✅ | ✅ | ✅ | ✅ |
-| w3 | q57 | scale_convert | ✅ | ✅ | ✅ | ✅ |
-| w4 | q62 | scale_convert | ✅ | ✅ | ✅ | ✅ |
-| w5 | q64 | scale_convert | ✅ | ✅ | ✅ | ✅ |
-| w6 | q62 | scale_convert | ✅ | ✅ | ✅ | ✅ |
+| w2 | q57 | reverse | ✅ | ✅ | ✅ | ✅ |
+| w3 | q57 | reverse | ✅ | ✅ | ✅ | ✅ |
+| w4 | q62 | reverse | ✅ | ✅ | ✅ | ✅ |
+| w5 | q64 | reverse | ✅ | ✅ | ✅ | ✅ |
+| w6 | q62 | reverse | ✅ | ✅ | ✅ | ✅ |
+
+### ✅ weight
+
+| Wave | Source | Transform | Coverage | Transform | Range | Crosstab |
+|------|--------|-----------|----------|-----------|-------|----------|
+| w3 | allweight | identity | ✅ | ✅ | ✅ | ⏭️ |
+| w4 | w | identity | ✅ | ✅ | ✅ | ⏭️ |
+| w5 | w | identity | ✅ | ✅ | ✅ | ⏭️ |
+| w6 | w | identity | ✅ | ✅ | ✅ | ⏭️ |
+
+### ✅ weight_cross
+
+| Wave | Source | Transform | Coverage | Transform | Range | Crosstab |
+|------|--------|-----------|----------|-----------|-------|----------|
+| w3 | couweight | identity | ✅ | ✅ | ✅ | ⏭️ |
+| w4 | w_cross | identity | ✅ | ✅ | ✅ | ⏭️ |
 
 ## Issues Detail
-
-### demo_crit_poor_economy (w5)
-
-
-### demo_crit_poor_economy (w6)
-
-
-### community_leader_contact (w3)
-
-- ❌ **coverage**: Gained 10881 values (harmonized > raw) - check logic
-- ❌ **crosstab**: Missing codes not converted to NA
 
 ### community_leader_contact (w5)
 
@@ -2766,174 +2848,61 @@ Generated: 2026-01-14 18:48:05.693623
 
 - ⚠️ **coverage**: 0.12% coverage loss (14 values)
 
-### country (w1)
-
-- ❌ **coverage**: Gained 2961 values (harmonized > raw) - check logic
-- ❌ **crosstab**: Missing codes not converted to NA
-
-### country (w2)
-
-- ❌ **coverage**: Gained 4731 values (harmonized > raw) - check logic
-- ❌ **crosstab**: Missing codes not converted to NA
-
-### country (w3)
-
-- ❌ **coverage**: Gained 4654 values (harmonized > raw) - check logic
-- ❌ **crosstab**: Missing codes not converted to NA
-
-### country (w4)
-
-- ❌ **coverage**: Gained 4407 values (harmonized > raw) - check logic
-- ❌ **crosstab**: Missing codes not converted to NA
-
-### country (w5)
-
-- ❌ **coverage**: Gained 3999 values (harmonized > raw) - check logic
-- ❌ **crosstab**: Missing codes not converted to NA
-
 ### current_status_unemployed (w3)
 
 - ❌ **coverage**: 25.4% coverage loss (2283 of 8995 values)
 
-### education_level (w1)
-
-- ❌ **coverage**: Gained 5127 values (harmonized > raw) - check logic
-- ❌ **crosstab**: Missing codes not converted to NA
-
-### education_level (w2)
-
-- ❌ **coverage**: Gained 7188 values (harmonized > raw) - check logic
-- ❌ **crosstab**: Missing codes not converted to NA
-
-### education_level (w3)
-
-- ❌ **coverage**: Gained 8797 values (harmonized > raw) - check logic
-- ❌ **crosstab**: Missing codes not converted to NA
-
-### education_level (w4)
-
-- ❌ **coverage**: Gained 8488 values (harmonized > raw) - check logic
-- ❌ **crosstab**: Missing codes not converted to NA
-
-### education_level (w5)
-
-- ❌ **coverage**: Gained 12621 values (harmonized > raw) - check logic
-- ❌ **crosstab**: Missing codes not converted to NA
-
-### education_level (w6)
-
-- ❌ **coverage**: Gained 6109 values (harmonized > raw) - check logic
-- ❌ **crosstab**: Missing codes not converted to NA
-
-### education_years (w1)
-
-- ❌ **coverage**: Gained 2067 values (harmonized > raw) - check logic
-- ❌ **crosstab**: Missing codes not converted to NA
-
 ### education_years (w2)
 
-- ❌ **coverage**: Gained 3398 values (harmonized > raw) - check logic
-- ❌ **crosstab**: Missing codes not converted to NA
+- ❌ **coverage**: 1.6% coverage loss (183 of 11374 values)
 
 ### education_years (w3)
 
-- ❌ **coverage**: Gained 3036 values (harmonized > raw) - check logic
-- ❌ **crosstab**: Missing codes not converted to NA
+- ⚠️ **coverage**: 0.64% coverage loss (95 values)
 
 ### education_years (w4)
 
-- ❌ **coverage**: Gained 3541 values (harmonized > raw) - check logic
-- ❌ **crosstab**: Missing codes not converted to NA
+- ⚠️ **coverage**: 0.35% coverage loss (56 values)
 
 ### education_years (w5)
 
-- ❌ **coverage**: Gained 3359 values (harmonized > raw) - check logic
-- ❌ **crosstab**: Missing codes not converted to NA
+- ❌ **coverage**: 2.4% coverage loss (496 of 20367 values)
 
 ### education_years (w6)
 
-- ❌ **coverage**: Gained 1642 values (harmonized > raw) - check logic
-- ❌ **crosstab**: Missing codes not converted to NA
-
-### hh_income (w4)
-
-- ❌ **coverage**: Gained 3112 values (harmonized > raw) - check logic
-- ❌ **crosstab**: Missing codes not converted to NA
-
-### hh_income (w5)
-
-- ❌ **coverage**: Gained 3994 values (harmonized > raw) - check logic
-- ❌ **crosstab**: Missing codes not converted to NA
-
-### hh_size (w1)
-
-- ❌ **coverage**: Gained 885 values (harmonized > raw) - check logic
-- ❌ **crosstab**: Missing codes not converted to NA
-
-### hh_size (w2)
-
-- ❌ **coverage**: Gained 1596 values (harmonized > raw) - check logic
-- ❌ **crosstab**: Missing codes not converted to NA
-
-### hh_size (w3)
-
-- ❌ **coverage**: Gained 1594 values (harmonized > raw) - check logic
-- ❌ **crosstab**: Missing codes not converted to NA
-
-### hh_size (w4)
-
-- ❌ **coverage**: Gained 1624 values (harmonized > raw) - check logic
-- ❌ **crosstab**: Missing codes not converted to NA
-
-### hh_size (w5)
-
-- ❌ **coverage**: Gained 2498 values (harmonized > raw) - check logic
-- ❌ **crosstab**: Missing codes not converted to NA
-
-### hh_size (w6)
-
-- ❌ **coverage**: Gained 743 values (harmonized > raw) - check logic
-- ❌ **crosstab**: Missing codes not converted to NA
+- ⚠️ **coverage**: 0.11% coverage loss (11 values)
 
 ### idnumber (w1)
 
-- ❌ **coverage**: Gained 24 values (harmonized > raw) - check logic
 - ⚠️ **range**: No valid_range specified in YAML
-- ❌ **crosstab**: Missing codes not converted to NA
 
 ### idnumber (w2)
 
-- ❌ **coverage**: Gained 33 values (harmonized > raw) - check logic
 - ⚠️ **range**: No valid_range specified in YAML
-- ❌ **crosstab**: Missing codes not converted to NA
 
 ### idnumber (w3)
 
-- ❌ **coverage**: Gained 32 values (harmonized > raw) - check logic
 - ⚠️ **range**: No valid_range specified in YAML
-- ❌ **crosstab**: Missing codes not converted to NA
 
 ### idnumber (w4)
 
-- ❌ **coverage**: Gained 36 values (harmonized > raw) - check logic
 - ⚠️ **range**: No valid_range specified in YAML
-- ❌ **crosstab**: Missing codes not converted to NA
 
 ### idnumber (w5)
 
 - ⚠️ **range**: No valid_range specified in YAML
-- ❌ **crosstab**: Missing codes not converted to NA
 
 ### idnumber (w6)
 
-- ❌ **coverage**: Gained 12 values (harmonized > raw) - check logic
 - ⚠️ **range**: No valid_range specified in YAML
-- ❌ **crosstab**: Missing codes not converted to NA
 
-### religion (w1)
+### int_month (w3)
 
-- ❌ **coverage**: Gained 1961 values (harmonized > raw) - check logic
-- ❌ **crosstab**: Missing codes not converted to NA
+- ❌ **coverage**: 5.2% coverage loss (1004 of 19436 values)
+
+### int_year (w3)
+
+- ❌ **coverage**: 5.2% coverage loss (1005 of 19436 values)
 
 ### religion (w5)
 
@@ -2943,35 +2912,9 @@ Generated: 2026-01-14 18:48:05.693623
 
 - ❌ **coverage**: 6.2% coverage loss (571 of 9180 values)
 
-### religiosity_practice (w1)
-
-- ❌ **coverage**: Gained 2129 values (harmonized > raw) - check logic
-- ❌ **crosstab**: Missing codes not converted to NA
-
-### religiosity_practice (w2)
-
-- ❌ **coverage**: Gained 4655 values (harmonized > raw) - check logic
-- ❌ **crosstab**: Missing codes not converted to NA
-
 ### religiosity_practice (w3)
 
-- ❌ **coverage**: Gained 1518 values (harmonized > raw) - check logic
-- ❌ **crosstab**: Missing codes not converted to NA
-
-### religiosity_practice (w4)
-
-- ❌ **coverage**: Gained 3847 values (harmonized > raw) - check logic
-- ❌ **crosstab**: Missing codes not converted to NA
-
-### religiosity_practice (w5)
-
-- ❌ **coverage**: Gained 4070 values (harmonized > raw) - check logic
-- ❌ **crosstab**: Missing codes not converted to NA
-
-### religiosity_practice (w6)
-
-- ❌ **coverage**: Gained 1927 values (harmonized > raw) - check logic
-- ❌ **crosstab**: Missing codes not converted to NA
+- ❌ **coverage**: 26.8% coverage loss (3634 of 13562 values)
 
 ### religiosity_self (w3)
 
@@ -2992,31 +2935,6 @@ Generated: 2026-01-14 18:48:05.693623
 ### seeking_employment (w6)
 
 - ❌ **coverage**: 12.0% coverage loss (465 of 3880 values)
-
-### subjective_social_status (w2)
-
-- ❌ **coverage**: Gained 3918 values (harmonized > raw) - check logic
-- ❌ **crosstab**: Missing codes not converted to NA
-
-### subjective_social_status (w3)
-
-- ❌ **coverage**: Gained 3602 values (harmonized > raw) - check logic
-- ❌ **crosstab**: Missing codes not converted to NA
-
-### subjective_social_status (w4)
-
-- ❌ **coverage**: Gained 4045 values (harmonized > raw) - check logic
-- ❌ **crosstab**: Missing codes not converted to NA
-
-### subjective_social_status (w5)
-
-- ❌ **coverage**: Gained 6019 values (harmonized > raw) - check logic
-- ❌ **crosstab**: Missing codes not converted to NA
-
-### subjective_social_status (w6)
-
-- ❌ **coverage**: Gained 2963 values (harmonized > raw) - check logic
-- ❌ **crosstab**: Missing codes not converted to NA
 
 ### econ_family_income_fair (w5)
 
@@ -3198,6 +3116,49 @@ Generated: 2026-01-14 18:48:05.693623
 
 - ❌ **coverage**: 8.0% coverage loss (1051 of 13157 values)
 
+### dem_essential_core (w2)
+
+- ⚠️ **coverage**: 0.12% coverage loss (10 values)
+
+### dem_meaning_set4 (w6)
+
+- ⚠️ **coverage**: 0.33% coverage loss (37 values)
+
+### electoral_status (w2)
+
+- ❌ **coverage**: 27.9% coverage loss (3981 of 14250 values)
+
+### electoral_status (w3)
+
+- ❌ **coverage**: 20.0% coverage loss (2250 of 11241 values)
+
+### electoral_status (w4)
+
+- ❌ **coverage**: 38.8% coverage loss (7041 of 18127 values)
+
+### electoral_status (w5)
+
+- ❌ **coverage**: 36.8% coverage loss (8697 of 23615 values)
+
+### electoral_status (w6)
+
+- ❌ **coverage**: 28.0% coverage loss (2813 of 10038 values)
+
+### procedural_preference_index (w3)
+
+- ❌ **coverage**: 5.1% coverage loss (890 of 17560 values)
+- ❌ **crosstab**: 4 raw values map to multiple outputs
+
+### procedural_preference_index (w4)
+
+- ❌ **coverage**: 5.6% coverage loss (1047 of 18750 values)
+- ❌ **crosstab**: 4 raw values map to multiple outputs
+
+### procedural_preference_index (w6)
+
+- ❌ **coverage**: 4.0% coverage loss (449 of 11098 values)
+- ❌ **crosstab**: 4 raw values map to multiple outputs
+
 ### action_internet_political (w4)
 
 - ❌ **coverage**: 75.0% coverage loss (8034 of 10705 values)
@@ -3225,6 +3186,14 @@ Generated: 2026-01-14 18:48:05.693623
 ### voted_last_election (w6)
 
 - ❌ **coverage**: 4.0% coverage loss (456 of 11414 values)
+
+### voted_winning_losing (w5)
+
+- ⚠️ **coverage**: 0.37% coverage loss (55 values)
+
+### voted_winning_losing (w6)
+
+- ❌ **coverage**: 1.4% coverage loss (99 of 7324 values)
 
 ### voting_frequency (w3)
 
@@ -3306,34 +3275,19 @@ Generated: 2026-01-14 18:48:05.693623
 
 - ❌ **coverage**: 49.6% coverage loss (5341 of 10772 values)
 
-### news_internet (w2)
-
-- ❌ **coverage**: Gained 382 values (harmonized > raw) - check logic
-- ❌ **crosstab**: Missing codes not converted to NA
-
-### news_internet (w3)
-
-- ❌ **coverage**: Gained 155 values (harmonized > raw) - check logic
-- ❌ **crosstab**: Missing codes not converted to NA
-
-### news_internet (w4)
-
-- ❌ **coverage**: Gained 10540 values (harmonized > raw) - check logic
-- ❌ **crosstab**: Missing codes not converted to NA
-
-### news_internet (w5)
-
-- ❌ **coverage**: Gained 8554 values (harmonized > raw) - check logic
-- ❌ **crosstab**: Missing codes not converted to NA
-
-### news_internet (w6)
-
-- ❌ **coverage**: Gained 2105 values (harmonized > raw) - check logic
-- ❌ **crosstab**: Missing codes not converted to NA
-
 ### sm_express_political (w4)
 
 - ❌ **coverage**: 80.6% coverage loss (8623 of 10705 values)
+
+### trust_acquaintances (w2)
+
+- ❌ **transformation**: identity (r ≈ +1) FAILED: r=0.851, ρ=0.858 (expected >0.99)
+- ❌ **crosstab**: 4 raw values map to multiple outputs
+
+### trust_acquaintances (w3)
+
+- ❌ **transformation**: reversal (r ≈ -1) FAILED: r=-0.838, ρ=-0.855 (expected <-0.99)
+- ❌ **crosstab**: 4 raw values map to multiple outputs
 
 ### trust_acquaintances (w5)
 
@@ -3351,9 +3305,29 @@ Generated: 2026-01-14 18:48:05.693623
 
 - ❌ **coverage**: 1.0% coverage loss (272 of 26058 values)
 
+### trust_neighbors (w2)
+
+- ❌ **transformation**: identity (r ≈ +1) FAILED: r=0.781, ρ=0.816 (expected >0.99)
+- ❌ **crosstab**: 4 raw values map to multiple outputs
+
+### trust_neighbors (w3)
+
+- ❌ **transformation**: reversal (r ≈ -1) FAILED: r=-0.765, ρ=-0.809 (expected <-0.99)
+- ❌ **crosstab**: 4 raw values map to multiple outputs
+
 ### trust_neighbors (w5)
 
 - ❌ **transformation**: reversal (r ≈ -1) FAILED: r=-0.953, ρ=-0.976 (expected <-0.99)
+
+### trust_relatives (w2)
+
+- ❌ **transformation**: identity (r ≈ +1) FAILED: r=0.716, ρ=0.798 (expected >0.99)
+- ❌ **crosstab**: 4 raw values map to multiple outputs
+
+### trust_relatives (w3)
+
+- ❌ **transformation**: reversal (r ≈ -1) FAILED: r=-0.693, ρ=-0.820 (expected <-0.99)
+- ❌ **crosstab**: 4 raw values map to multiple outputs
 
 ### trust_relatives (w5)
 
