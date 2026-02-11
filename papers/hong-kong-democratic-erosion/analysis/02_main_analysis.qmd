@@ -697,6 +697,237 @@ cat("This is substantively implausible and consistent with preference falsificat
 
 
 # ============================================================
+# SECTION 9: Democracy Items Crosstab (Low-Missingness Items)
+# ============================================================
+# Broader picture of democratic attitudes using items with lower
+# missingness than democracy_satisfaction, complementing the
+# primary analysis.
+
+```{r democracy-items-crosstab}
+# Define the democracy items to examine, ordered by missingness
+dem_items <- tribble(
+  ~variable, ~label, ~type, ~scale_description,
+  "dem_vs_econ", "Democracy vs. Econ. Development", "ordinal",
+    "1=Econ definitely more, 2=Econ somewhat, 3=Dem somewhat, 4=Dem definitely, 5=Both equally",
+  "dem_vs_equality", "Freedom vs. Equality", "ordinal",
+    "1=Ineq definitely, 2=Ineq somewhat, 3=Both equally, 4=Freedom somewhat, 5=Freedom definitely",
+  "dem_essential_harmonized", "Most Essential Element of Democracy", "nominal",
+    "1=Electoral, 2=Expressive, 3=Redistributive, 4=Basic needs, 5=Good governance",
+  "dem_procedural_vs_substantive", "Procedural vs. Substantive Conception", "binary",
+    "0=Substantive, 1=Procedural",
+  "dem_free_speech", "Free to Speak Without Fear", "ordinal",
+    "1=Strongly disagree, 2=Somewhat disagree, 3=Somewhat agree, 4=Strongly agree",
+  "dem_always_preferable", "Democracy Always Preferable", "nominal",
+    "1=Democracy always, 2=Authoritarian sometimes, 3=Doesn't matter",
+  "democracy_satisfaction", "Democratic Satisfaction", "ordinal",
+    "1=Not at all satisfied, 2=Not very, 3=Fairly, 4=Very satisfied"
+)
+
+# Filter to variables present in the data
+dem_items <- dem_items |>
+  filter(variable %in% names(hk5_analysis))
+
+# --- Part A: Missingness rates by period ---
+dem_missing <- map_dfr(dem_items$variable, function(var) {
+  protest_data <- hk5_analysis |> filter(period == "Protest")
+  postnsl_data <- hk5_analysis |> filter(period == "Post-NSL")
+  tibble(
+    variable = var,
+    n_protest = nrow(protest_data),
+    n_protest_valid = sum(!is.na(protest_data[[var]])),
+    pct_missing_protest = mean(is.na(protest_data[[var]])) * 100,
+    n_postnsl = nrow(postnsl_data),
+    n_postnsl_valid = sum(!is.na(postnsl_data[[var]])),
+    pct_missing_postnsl = mean(is.na(postnsl_data[[var]])) * 100
+  )
+}) |>
+  left_join(dem_items |> select(variable, label), by = "variable")
+
+# --- Part B: Effect sizes for ordinal/continuous items ---
+dem_effects <- map_dfr(dem_items$variable, function(var) {
+  protest <- hk5_analysis |> filter(period == "Protest") |> pull(!!sym(var)) |> na.omit()
+  postnsl <- hk5_analysis |> filter(period == "Post-NSL") |> pull(!!sym(var)) |> na.omit()
+
+  if (length(protest) < 10 | length(postnsl) < 10) return(NULL)
+
+  item_type <- dem_items$type[dem_items$variable == var]
+
+  if (item_type %in% c("ordinal", "binary")) {
+    tt <- t.test(protest, postnsl)
+    pooled_sd <- sqrt(((length(protest) - 1) * sd(protest)^2 +
+                         (length(postnsl) - 1) * sd(postnsl)^2) /
+                        (length(protest) + length(postnsl) - 2))
+    d <- (mean(postnsl) - mean(protest)) / pooled_sd
+
+    tibble(
+      variable = var,
+      protest_mean = mean(protest),
+      postnsl_mean = mean(postnsl),
+      delta = mean(postnsl) - mean(protest),
+      cohens_d = d,
+      p_value = tt$p.value,
+      test_type = "t-test",
+      n_protest = length(protest),
+      n_postnsl = length(postnsl)
+    )
+  } else {
+    # Nominal: chi-squared test
+    combined <- hk5_analysis |>
+      filter(period %in% c("Protest", "Post-NSL"), !is.na(!!sym(var)))
+    ct <- table(combined$period, combined[[var]])
+    chi <- chisq.test(ct)
+
+    # Cramér's V
+    n <- sum(ct)
+    k <- min(nrow(ct), ncol(ct))
+    cramers_v <- sqrt(chi$statistic / (n * (k - 1)))
+
+    tibble(
+      variable = var,
+      protest_mean = NA_real_,
+      postnsl_mean = NA_real_,
+      delta = NA_real_,
+      cohens_d = as.numeric(cramers_v),
+      p_value = chi$p.value,
+      test_type = "chi-squared (Cramér's V)",
+      n_protest = sum(ct["Protest", ]),
+      n_postnsl = sum(ct["Post-NSL", ])
+    )
+  }
+}) |>
+  left_join(dem_items |> select(variable, label, type), by = "variable")
+
+# --- Part C: Response distributions for nominal items ---
+dem_distributions <- map_dfr(
+  dem_items$variable[dem_items$type == "nominal"],
+  function(var) {
+    combined <- hk5_analysis |>
+      filter(period %in% c("Protest", "Post-NSL"), !is.na(!!sym(var)))
+    combined |>
+      group_by(period) |>
+      count(value = !!sym(var)) |>
+      mutate(pct = n / sum(n) * 100) |>
+      ungroup() |>
+      mutate(variable = var)
+  }
+) |>
+  left_join(dem_items |> select(variable, label), by = "variable")
+
+# --- Part D: Summary table for manuscript ---
+dem_summary_table <- dem_effects |>
+  left_join(dem_missing |> select(variable, pct_missing_protest, pct_missing_postnsl),
+            by = "variable") |>
+  arrange(pct_missing_protest) |>
+  select(label, type, n_protest, n_postnsl,
+         pct_missing_protest, pct_missing_postnsl,
+         protest_mean, postnsl_mean, delta, cohens_d, p_value, test_type)
+
+cat("=== Democracy Items Summary ===\n\n")
+dem_summary_table |>
+  mutate(
+    across(c(protest_mean, postnsl_mean, delta, cohens_d,
+             pct_missing_protest, pct_missing_postnsl), ~round(.x, 3)),
+    p_value = format.pval(p_value, digits = 3),
+    sig = case_when(
+      as.numeric(p_value) < 0.001 ~ "***",
+      as.numeric(p_value) < 0.01  ~ "**",
+      as.numeric(p_value) < 0.05  ~ "*",
+      TRUE ~ ""
+    )
+  ) |>
+  kable(
+    col.names = c("Variable", "Type", "N (Pre)", "N (Post)",
+                   "% Miss (Pre)", "% Miss (Post)",
+                   "Mean (Pre)", "Mean (Post)", "Delta",
+                   "Effect Size", "p", "Test", ""),
+    caption = "Democracy items: pre/post NSL comparison ordered by missingness rate",
+    booktabs = TRUE
+  ) |>
+  kable_styling(latex_options = c("scale_down", "hold_position"))
+```
+
+```{r dem-essential-distribution}
+# Detailed distribution table for the forced-choice democracy item
+cat("\n=== dem_essential_harmonized: Response distributions by period ===\n")
+
+essential_labels <- c(
+  "1" = "Electoral (free/fair elections)",
+  "2" = "Expressive (freedom to express)",
+  "3" = "Redistributive (narrow gap)",
+  "4" = "Basic needs (necessities for all)",
+  "5" = "Good governance (no waste)"
+)
+
+essential_dist <- hk5_analysis |>
+  filter(period %in% c("Protest", "Post-NSL"),
+         !is.na(dem_essential_harmonized)) |>
+  group_by(period) |>
+  count(response = dem_essential_harmonized) |>
+  mutate(
+    pct = n / sum(n) * 100,
+    response_label = essential_labels[as.character(response)]
+  ) |>
+  ungroup()
+
+essential_wide <- essential_dist |>
+  select(period, response_label, pct) |>
+  pivot_wider(names_from = period, values_from = pct, values_fill = 0) |>
+  mutate(
+    shift = `Post-NSL` - Protest,
+    response_label = factor(response_label, levels = essential_labels)
+  ) |>
+  arrange(response_label)
+
+essential_wide |>
+  mutate(across(c(Protest, `Post-NSL`, shift), ~round(.x, 1))) |>
+  kable(
+    col.names = c("Response", "% Protest", "% Post-NSL", "Shift (pp)"),
+    caption = "Most essential element of democracy: response distribution by period (HK Wave 5)",
+    booktabs = TRUE
+  ) |>
+  kable_styling(latex_options = c("hold_position"))
+
+# Also compute for dem_always_preferable
+cat("\n=== dem_always_preferable: Response distributions by period ===\n")
+
+preferable_labels <- c(
+  "1" = "Democracy always preferable",
+  "2" = "Authoritarian sometimes preferable",
+  "3" = "Doesn't matter"
+)
+
+preferable_dist <- hk5_analysis |>
+  filter(period %in% c("Protest", "Post-NSL"),
+         !is.na(dem_always_preferable)) |>
+  group_by(period) |>
+  count(response = dem_always_preferable) |>
+  mutate(
+    pct = n / sum(n) * 100,
+    response_label = preferable_labels[as.character(response)]
+  ) |>
+  ungroup()
+
+preferable_wide <- preferable_dist |>
+  select(period, response_label, pct) |>
+  pivot_wider(names_from = period, values_from = pct, values_fill = 0) |>
+  mutate(
+    shift = `Post-NSL` - Protest,
+    response_label = factor(response_label, levels = preferable_labels)
+  ) |>
+  arrange(response_label)
+
+preferable_wide |>
+  mutate(across(c(Protest, `Post-NSL`, shift), ~round(.x, 1))) |>
+  kable(
+    col.names = c("Response", "% Protest", "% Post-NSL", "Shift (pp)"),
+    caption = "Democracy always preferable: response distribution by period (HK Wave 5)",
+    booktabs = TRUE
+  ) |>
+  kable_styling(latex_options = c("hold_position"))
+```
+
+
+# ============================================================
 # SAVE ALL RESULTS
 # ============================================================
 
@@ -716,6 +947,12 @@ if (exists("combined_table")) results_to_save$combined_table <- combined_table
 if (exists("reweighted_results")) results_to_save$reweighted_results <- reweighted_results
 if (exists("falsification_results")) results_to_save$falsification_results <- falsification_results
 if (exists("nr_comparison")) results_to_save$nr_comparison <- nr_comparison
+if (exists("dem_summary_table")) results_to_save$dem_summary_table <- dem_summary_table
+if (exists("dem_effects")) results_to_save$dem_effects <- dem_effects
+if (exists("dem_missing")) results_to_save$dem_missing <- dem_missing
+if (exists("dem_distributions")) results_to_save$dem_distributions <- dem_distributions
+if (exists("essential_wide")) results_to_save$essential_wide <- essential_wide
+if (exists("preferable_wide")) results_to_save$preferable_wide <- preferable_wide
 
 # Save individual objects to the environment for easy loading
 for (nm in names(results_to_save)) {

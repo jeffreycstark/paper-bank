@@ -384,6 +384,46 @@ nsl_tests |>
   )
 ```
 
+Because several democracy items in the ABS instrument carry non-trivial missingness (democracy suitability exceeds 60%, and democratic satisfaction reaches approximately 11%), it is important to establish that the observed patterns are not driven by the items most vulnerable to non-response. @tbl-dem-items reports pre/post NSL comparisons for seven democracy-related items, ordered by missingness rate. The two items with the lowest missingness, the forced-choice item asking whether democracy or economic development is more important (1.4% missing) and the parallel item on political freedom versus reducing inequality (3.0% missing), both show statistically significant post-NSL shifts away from prioritizing democracy and political freedom ($d = -0.18$, $p = .002$ and $d = -0.25$, $p < .001$, respectively). These items, by virtue of their low missingness, are least susceptible to the concern that differential non-response distorts the observed differences. The forced-choice item on democracy's most essential element (4.4% missing) shows a significant compositional shift ($p < .001$): the share of respondents selecting free expression rose from 18.2% to 28.1%, while clean governance fell from 14.3% to 8.9%, a pattern discussed further in Section 4.5. Taken together, the low-missingness items confirm that the attitudinal shifts documented in @tbl-nsl are not artifacts of differential item non-response: the same directional patterns appear on items with missingness rates as low as 1--3%.
+
+```{r}
+#| label: tbl-dem-items
+#| tbl-cap: "Democracy-related items ordered by missingness rate: pre/post NSL comparison (Hong Kong Wave 5). Ordinal items report means and Cohen's d; nominal items report Cramér's V."
+
+load("../analysis/results/main_analysis_results.RData")
+
+dem_summary_table |>
+  mutate(
+    across(c(pct_missing_protest, pct_missing_postnsl), ~round(.x, 1)),
+    across(c(protest_mean, postnsl_mean, delta, cohens_d), ~round(.x, 3)),
+    p_value = format.pval(p_value, digits = 3),
+    sig = case_when(
+      as.numeric(p_value) < 0.001 ~ "***",
+      as.numeric(p_value) < 0.01  ~ "**",
+      as.numeric(p_value) < 0.05  ~ "*",
+      TRUE ~ ""
+    )
+  ) |>
+  select(label, n_protest, n_postnsl, pct_missing_protest, pct_missing_postnsl,
+         protest_mean, postnsl_mean, cohens_d, p_value, sig) |>
+  kable(
+    col.names = c("Variable", "N (Pre)", "N (Post)",
+                   "\\% Miss (Pre)", "\\% Miss (Post)",
+                   "Mean (Pre)", "Mean (Post)",
+                   "Effect", "p", ""),
+    booktabs = TRUE,
+    escape = FALSE
+  ) |>
+  kable_styling(latex_options = c("scale_down", "hold_position"), font_size = 9) |>
+  column_spec(1, width = "3.5cm") |>
+  footnote(
+    general = "Ordinal items: Cohen's d (Post-NSL $-$ Protest) / pooled SD. Nominal items: Cram\\'{e}r's V from $\\chi^2$ test. Items ordered by protest-period missingness rate.",
+    general_title = "Note: ",
+    escape = FALSE,
+    footnote_as_chunk = TRUE
+  )
+```
+
 These unadjusted comparisons could be driven by compositional differences between the two sub-samples. To address this, I estimated OLS regressions for four pre-specified primary outcomes (trust in police, trust in national government, democracy suitability, and freedom to organize) controlling for age, gender, and education level (SE5, ordinal 1--10 scale with non-substantive responses set to missing). @tbl-adjusted reports the unadjusted, covariate-adjusted, and entropy-balanced estimates side by side. As a further check, I reweighted the post-NSL sample to match the protest-period sample on demographic covariates using entropy balancing, then re-estimated the post-NSL effect. The results are substantively unchanged across all three specifications, indicating that the observed shifts are not artifacts of compositional differences in the observable demographics.
 
 ```{r}
@@ -665,6 +705,8 @@ Second, the consolidation failure account, that Hong Kong residents never held d
 Third, the information environment account is supported by a striking shift in perceptions of China. Post-NSL respondents rated China as substantially more democratic on a 1--10 scale ($d = +0.47$, $p < .001$), an effect size nearly as large as the trust in police increase. This shift is consistent with the contraction of independent media between fieldwork periods: respondents in 2021, operating in an information environment dominated by pro-government outlets, were assessing China's political system through a fundamentally different lens than those interviewed in late 2019. Whether this reflects genuine belief revision or strategic signaling, it confirms that the post-NSL survey environment was not equivalent to the protest-period environment in ways that extend well beyond institutional trust.
 
 Fourth, item-level response rates reveal a pattern of differential sensitivity across question types (see Appendix Section H for the full item non-response table). Trust items (police, courts, parliament, civil service) maintained near-identical response rates across periods, with mean change of $+0.3$ percentage points. Normative democracy items, by contrast, declined by a mean of $6.2$ percentage points: "democracy is always preferable" dropped from 93.9% to 88.8%, "system deserves support" from 93.2% to 87.0%, and "extent of current democracy" from 54.8% to 45.3%. Governance perception items fell by a mean of $2.7$ percentage points. Low-sensitivity benchmark items (political interest, rich/poor equality) remained essentially stable ($+0.6$ pp mean change). Respondents did not disengage from the survey instrument as a whole; they selectively avoided items requiring explicit democratic commitments. This divergence is consistent with @Jiang2016-hh's finding that sensitive and insensitive survey items produce systematically different response patterns under authoritarian constraint. Critically, @Shamaileh2025-hh demonstrates through simulation that differential non-response rates provide only a lower bound on preference falsification: as repression increases, respondents shift from non-response to actively mimicking the regime-preferred answer, making the most repressive environments appear similar to free ones on non-response metrics alone. The Hong Kong data illustrate this dynamic: trust items show near-perfect response rates in both periods precisely because the regime-preferred answer (high trust) is easy to provide, while the modest decline in normative democracy item response rates likely understates the true extent of preference distortion.
+
+Fifth, crosstabulations of core democracy items reveal a patterned mix of plausible value shifts and substantively implausible movements, with the direction of implausibility tracking item sensitivity. On low-missingness trade-off items, post-NSL respondents placed slightly less priority on democracy relative to economic performance (`dem_vs_econ`; 1.4% missing; $d = -0.18$, $p = .002$) and equality (`dem_vs_equality`; 3.0% missing; $d = -0.25$, $p < .001$). On a conception item, post-NSL respondents shifted modestly toward a more procedural understanding of democracy (4.4% missing; $d = 0.14$, $p = .02$). These movements are substantively plausible: abstract value trade-offs may genuinely shift under crisis conditions. In contrast, a clearly sensitive climate item---freedom to speak without fear---shows a large post-NSL increase (`dem_free_speech`; 8.0% missing; $d = 0.41$, $p < .001$), a direction difficult to reconcile with contemporaneous institutional changes. Democratic commitment moves in the expected regime-consistent direction, with lower endorsement that democracy is "always preferable" (9.1% missing; $d = 0.36$, $p < .001$), while democratic satisfaction changes little (11.1% missing; $d = 0.10$, $p = .113$). Taken together, the democracy items suggest that while some attitudinal change is plausible on abstract value-trade-off questions with low missingness, responses on politically sensitive items are systematically distorted in the post-NSL survey environment, with both the magnitude of implausible shifts and the rate of item non-response rising in tandem with political sensitivity.
 
 Taken together, these supplementary indicators narrow the interpretive range. The trust increase is not plausibly a product of protest fatigue alone: respondents know they are less free. It is not a product of shallow democratic values: procedural commitments strengthened. The most parsimonious remaining account combines preference falsification with information environment effects, operating within a sample already shaped by compositional selection.
 
