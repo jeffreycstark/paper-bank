@@ -64,73 +64,213 @@ if (file.exists("../analysis/results/main_analysis_results.RData")) {
 
 # Variable Definitions and Coding {#sec-variables}
 
-@tbl-var-definitions presents the full set of variables used in the analysis, including original ABS item names, scale ranges, coding direction, and any recoding decisions.
+@tbl-var-definitions presents the full set of variables used in the analysis, with metadata extracted directly from the YAML harmonization specifications used in the data pipeline.
+
+```{r var-metadata-helpers}
+#| include: false
+
+library(yaml)
+
+# --- Helper: extract variable metadata from YAML spec files ---
+extract_var_metadata <- function(yaml_dir, var_ids) {
+  yaml_files <- list.files(yaml_dir, pattern = "\\.yml$", full.names = TRUE)
+
+  all_vars <- list()
+  for (f in yaml_files) {
+    spec <- yaml::read_yaml(f)
+    if (!is.null(spec$variables)) {
+      for (v in spec$variables) {
+        all_vars[[v$id]] <- v
+      }
+    }
+  }
+
+  map_dfr(var_ids, function(vid) {
+    v <- all_vars[[vid]]
+    if (is.null(v)) {
+      return(tibble(var_id = vid, w5_item = NA_character_,
+                    scale_text = NA_character_, recode_note = NA_character_))
+    }
+
+    # W5 item code
+    w5_item <- if (!is.null(v$source$w5)) as.character(v$source$w5) else NA_character_
+
+    # Scale text
+    smin <- v$scale$min
+    smax <- v$scale$max
+    scale_text <- if (!is.null(smin) && !is.null(smax)) {
+      lo_lab <- v$scale$labels[[as.character(smin)]]
+      hi_lab <- v$scale$labels[[as.character(smax)]]
+      if (!is.null(lo_lab) && !is.null(hi_lab)) {
+        paste0(smin, "--", smax, " (", lo_lab, " to ", hi_lab, ")")
+      } else {
+        paste0(smin, "--", smax)
+      }
+    } else { NA_character_ }
+
+    # Recoding note for W5
+    recode_note <- NA_character_
+    harm <- v$harmonize
+    if (!is.null(harm$exceptions$w5)) {
+      exc <- harm$exceptions$w5
+      fn_name <- exc$fn %||% exc$method %||% "custom"
+      recode_note <- switch(fn_name,
+        "identity" = "None",
+        "safe_reverse_4pt" = "Reversed (4pt)",
+        "safe_reverse_5pt" = "Reversed (5pt)",
+        "safe_reverse_3pt" = "Reversed (3pt)",
+        "safe_6pt_to_4pt" = "6pt rescaled to 4pt",
+        "safe_4pt_none" = "None",
+        "safe_reverse_2pt" = "Reversed (2pt)",
+        fn_name
+      )
+    } else if (!is.null(harm$w5)) {
+      w5h <- harm$w5
+      fn_name <- w5h$fn %||% w5h$method %||% "custom"
+      recode_note <- switch(fn_name,
+        "identity" = "None",
+        "recode" = "Recoded (see spec)",
+        fn_name
+      )
+    } else if (!is.null(harm$default)) {
+      def <- harm$default
+      fn_name <- def$fn %||% def$method %||% "custom"
+      recode_note <- switch(fn_name,
+        "identity" = "None",
+        "safe_reverse_4pt" = "Reversed (4pt)",
+        "safe_reverse_5pt" = "Reversed (5pt)",
+        "safe_reverse_3pt" = "Reversed (3pt)",
+        "safe_6pt_to_4pt" = "6pt rescaled to 4pt",
+        "safe_4pt_none" = "None",
+        "safe_reverse_2pt" = "Reversed (2pt)",
+        "middle_identity_5pt" = "Midpoint recoded",
+        fn_name
+      )
+    }
+
+    tibble(var_id = vid, w5_item = w5_item,
+           scale_text = scale_text, recode_note = recode_note)
+  })
+}
+```
 
 ```{r}
 #| label: tbl-var-definitions
-#| tbl-cap: "Variable definitions, scales, and coding for all variables used in the analysis."
+#| tbl-cap: "Variable definitions, scales, and coding for all variables used in the analysis. Metadata extracted from YAML harmonization specifications; N statistics computed from the full Hong Kong Wave 5 sample."
 
-var_defs <- tribble(
-  ~Variable, ~Scale, ~Category, ~Description,
-  "Trust in police", "1--4", "Institutional trust",
-    "Degree of trust in the police (1 = none at all, 4 = a great deal).",
-  "Trust in national government", "1--4", "Institutional trust",
-    "Degree of trust in the national government.",
-  "Trust in president/CE", "1--4", "Institutional trust",
-    "Degree of trust in the president or chief executive.",
-  "Trust in parliament", "1--4", "Institutional trust",
-    "Degree of trust in the parliament or legislature.",
-  "Trust in courts", "1--4", "Institutional trust",
-    "Degree of trust in the courts of justice.",
-  "Trust in civil service", "1--4", "Institutional trust",
-    "Degree of trust in the civil service.",
+yaml_dir <- "../../../src/config/harmonize_validated/"
 
-  "Democracy suitability", "1--10", "Democratic attitudes",
-    "How suitable is democracy for the respondent's country (1 = completely unsuitable, 10 = completely suitable).",
-  "Extent of current democracy", "1--10", "Democratic attitudes",
-    "How democratic the respondent rates the current political system (1 = completely undemocratic, 10 = completely democratic).",
-  "Current government rating", "1--10", "Democratic attitudes",
-    "How dictatorial or democratic the current government is perceived to be (1 = very dictatorial, 10 = very democratic).",
-  "Democracy always preferable", "1--3", "Democratic attitudes",
-    "Whether democracy is always preferable (1), authoritarian government is sometimes preferable (2), or it doesn't matter (3).",
-  "Democratic satisfaction", "1--4", "Democratic attitudes",
-    "Satisfaction with the way democracy works (1 = not at all satisfied, 4 = very satisfied).",
-
-  "Freedom to organize", "1--4", "Governance quality",
-    "Agreement that people are free to join any organization without fear (1 = strongly disagree, 4 = strongly agree).",
-  "Freedom of speech", "1--4", "Governance quality",
-    "Agreement that people can speak freely without fear (1 = strongly disagree, 4 = strongly agree).",
-  "Elections free and fair", "1--4", "Governance quality",
-    "Rating of how free and fair the last election was (1 = not free or fair, 4 = completely free and fair).",
-  "Rich and poor treated equally", "1--4", "Governance quality",
-    "Assessment of whether rich and poor are treated equally under the law.",
-
-  "System deserves support", "1--4", "System support",
-    "Agreement that the political system deserves support even when it runs into problems (1 = strongly disagree, 4 = strongly agree).",
-  "System pride", "1--4", "System support",
-    "Degree of pride in the country's system of government.",
-
-  "Political interest", "1--4", "Control",
-    "Self-reported level of interest in politics (1 = not at all interested, 4 = very interested).",
-  "Willing to emigrate", "1--4", "Control",
-    "Willingness to live in another country if given the opportunity.",
-
-  "Essential element of democracy", "Categorical", "Derived",
-    "Forced-choice item: most essential element of democracy (1 = free expression, 2 = free elections, 4 = basic necessities, 5 = clean governance).",
-  "Procedural vs.\\ substantive", "0/1", "Derived",
-    "Binary indicator derived from the essential element item (0 = substantive conception, 1 = procedural conception)."
+# --- Display name and category mapping (controls sort order) ---
+var_meta <- tribble(
+  ~var_id,                         ~display_name,                          ~category,
+  # Institutional Trust (6)
+  "trust_police",                  "Trust in police",                      "Institutional Trust",
+  "trust_national_government",     "Trust in national government",         "Institutional Trust",
+  "trust_president",               "Trust in president/CE",                "Institutional Trust",
+  "trust_parliament",              "Trust in parliament",                  "Institutional Trust",
+  "trust_courts",                  "Trust in courts",                      "Institutional Trust",
+  "trust_civil_service",           "Trust in civil service",               "Institutional Trust",
+  # Democratic Attitudes (5)
+  "dem_always_preferable",         "Democracy always preferable",          "Democratic Attitudes",
+  "democracy_satisfaction",        "Democratic satisfaction",              "Democratic Attitudes",
+  "democracy_suitability",         "Democracy suitability",               "Democratic Attitudes",
+  "dem_extent_current",            "Extent of current democracy",          "Democratic Attitudes",
+  "dem_country_present_govt",      "Current government dem.\\ rating",     "Democratic Attitudes",
+  # Governance Perceptions (5)
+  "gov_free_to_organize",          "Freedom to organize",                  "Governance Perceptions",
+  "dem_free_speech",               "Freedom of speech",                    "Governance Perceptions",
+  "election_free_fair",            "Elections free and fair",              "Governance Perceptions",
+  "rich_poor_treated_equally",     "Rich and poor treated equally",        "Governance Perceptions",
+  "gov_opposition_opportunities",  "Opposition opportunities",             "Governance Perceptions",
+  # System Support (3)
+  "system_deserves_support",       "System deserves support",              "System Support",
+  "system_proud",                  "System pride",                         "System Support",
+  "system_needs_change",           "System needs change",                  "System Support",
+  # Authoritarian Alternatives (3)
+  "strongman_rule",                "Strongman rule",                       "Authoritarian Alternatives",
+  "military_rule",                 "Military rule",                        "Authoritarian Alternatives",
+  "single_party_rule",             "Single-party rule",                    "Authoritarian Alternatives",
+  # Political Efficacy & Participation (4)
+  "political_interest",            "Political interest",                   "Political Efficacy \\& Participation",
+  "efficacy_ability_participate",  "Efficacy: ability to participate",     "Political Efficacy \\& Participation",
+  "efficacy_no_influence",         "Efficacy: no influence",               "Political Efficacy \\& Participation",
+  "action_demonstration",          "Demonstration attendance",             "Political Efficacy \\& Participation",
+  # Alternative Explanations & Controls (9)
+  "dem_rating_china",              "China democratic rating",              "Alternative Explanations \\& Controls",
+  "sat_president_govt",            "Satisfaction w/ president/govt",       "Alternative Explanations \\& Controls",
+  "dem_country_future",            "Democratic future (10 yrs)",           "Alternative Explanations \\& Controls",
+  "dem_essential_harmonized",      "Essential element of democracy",       "Alternative Explanations \\& Controls",
+  "dem_procedural_vs_substantive", "Procedural vs.\\ substantive",        "Alternative Explanations \\& Controls",
+  "nat_willing_emigrate",          "Willingness to emigrate",             "Alternative Explanations \\& Controls",
+  "dem_best_form",                 "Democracy is best form",              "Alternative Explanations \\& Controls",
+  "gov_courts_powerless",          "Courts powerless vs.\\ leaders",      "Alternative Explanations \\& Controls",
+  "govt_responds_people",          "Government responds to people",        "Alternative Explanations \\& Controls"
 )
 
-var_defs |>
-  select(Variable, Scale, Description) |>
-  kable(booktabs = TRUE) |>
-  kable_styling(latex_options = c("scale_down", "hold_position")) |>
-  pack_rows("Institutional trust", 1, 6) |>
-  pack_rows("Democratic attitudes", 7, 11) |>
-  pack_rows("Governance quality", 12, 15) |>
-  pack_rows("System support", 16, 17) |>
-  pack_rows("Control variables", 18, 19) |>
-  pack_rows("Derived variables", 20, 21)
+# --- Extract YAML metadata ---
+yaml_info <- extract_var_metadata(yaml_dir, var_meta$var_id)
+
+# --- Compute N valid / N missing from hk5 ---
+n_stats <- map_dfr(var_meta$var_id, function(vid) {
+  if (vid %in% names(hk5)) {
+    n_valid <- sum(!is.na(hk5[[vid]]))
+    n_miss  <- sum(is.na(hk5[[vid]]))
+  } else {
+    n_valid <- NA_integer_
+    n_miss  <- NA_integer_
+  }
+  tibble(var_id = vid, n_valid = n_valid, n_missing = n_miss)
+})
+
+# --- Merge everything ---
+tbl_data <- var_meta |>
+  left_join(yaml_info, by = "var_id") |>
+  left_join(n_stats, by = "var_id") |>
+  mutate(
+    w5_item = ifelse(is.na(w5_item) | w5_item == "NULL", "---", w5_item),
+    recode_note = replace_na(recode_note, "---"),
+    question_wording = ""
+  )
+
+# --- Build table ---
+display_tbl <- tbl_data |>
+  select(display_name, w5_item, scale_text, recode_note, n_valid, n_missing, question_wording)
+
+# Compute pack_rows groups
+cat_counts <- tbl_data |>
+  group_by(category) |>
+  summarise(n = n(), .groups = "drop") |>
+  mutate(end = cumsum(n), start = end - n + 1)
+
+# Preserve category order from var_meta
+cat_order <- unique(tbl_data$category)
+cat_counts <- cat_counts |> arrange(match(category, cat_order))
+
+kbl <- display_tbl |>
+  kable(
+    col.names = c("Variable", "ABS W5 Item", "Response Scale",
+                   "Recoding", "N Valid", "N Missing", "Question Wording"),
+    booktabs = TRUE,
+    longtable = TRUE
+  ) |>
+  kable_styling(
+    latex_options = c("scale_down", "hold_position", "repeat_header"),
+    font_size = 9
+  ) |>
+  column_spec(7, width = "3cm")
+
+# Apply pack_rows dynamically
+for (i in seq_len(nrow(cat_counts))) {
+  kbl <- kbl |>
+    pack_rows(cat_counts$category[i], cat_counts$start[i], cat_counts$end[i])
+}
+
+kbl |>
+  footnote(
+    general = "N statistics refer to the full Hong Kong Wave 5 sample (all fieldwork periods). Scale descriptions reflect the harmonized coding direction after any recoding. Question wording column reserved for final manuscript preparation.",
+    general_title = "Note: ",
+    footnote_as_chunk = TRUE
+  )
 ```
 
 
