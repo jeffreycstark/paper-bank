@@ -14,6 +14,22 @@ library(tidyverse)
 library(knitr)
 library(kableExtra)
 library(broom)
+
+# --- Weighted statistics helper functions ---
+weighted_var <- function(x, w) {
+  mu <- weighted.mean(x, w)
+  sum(w * (x - mu)^2) / (sum(w) - 1)
+}
+weighted_sd <- function(x, w) sqrt(weighted_var(x, w))
+weighted_cohens_d <- function(x1, w1, x2, w2) {
+  m1 <- weighted.mean(x1, w1)
+  m2 <- weighted.mean(x2, w2)
+  v1 <- weighted_var(x1, w1)
+  v2 <- weighted_var(x2, w2)
+  pooled_sd <- sqrt(((length(x1) - 1) * v1 + (length(x2) - 1) * v2) /
+                      (length(x1) + length(x2) - 2))
+  (m2 - m1) / pooled_sd
+}
 ```
 
 # Load Prepared Data
@@ -122,15 +138,15 @@ cat("Covariates for adjusted models:", paste(covariates, collapse = ", "), "\n")
 
 # Run OLS for each primary outcome: unadjusted + adjusted
 ols_results <- map_dfr(primary_outcomes, function(outcome) {
-  # Unadjusted
+  # Unadjusted (weighted)
   f_unadj <- as.formula(paste(outcome, "~ post_nsl"))
-  m_unadj <- lm(f_unadj, data = hk5_analysis)
+  m_unadj <- lm(f_unadj, data = hk5_analysis, weights = weight)
   t_unadj <- tidy(m_unadj) |> filter(term == "post_nsl")
 
-  # Adjusted
+  # Adjusted (weighted)
   if (length(covariates) > 0) {
     f_adj <- as.formula(paste(outcome, "~ post_nsl +", paste(covariates, collapse = " + ")))
-    m_adj <- lm(f_adj, data = hk5_analysis)
+    m_adj <- lm(f_adj, data = hk5_analysis, weights = weight)
     t_adj <- tidy(m_adj) |> filter(term == "post_nsl")
     n_adj <- nobs(m_adj)
     r2_adj <- glance(m_adj)$r.squared
@@ -179,7 +195,7 @@ for (outcome in primary_outcomes) {
   } else {
     f_adj <- as.formula(paste(outcome, "~ post_nsl"))
   }
-  m <- lm(f_adj, data = hk5_analysis)
+  m <- lm(f_adj, data = hk5_analysis, weights = weight)
   print(summary(m))
 }
 ```
@@ -335,28 +351,32 @@ for (v in extra_candidates) {
 # Run t-tests + Cohen's d for falsification variables
 if (length(falsification_vars) > 0) {
   falsification_results <- map_dfr(falsification_vars, function(var) {
-    protest <- hk5_analysis |> filter(period == "Protest") |> pull(!!sym(var)) |> na.omit()
-    postnsl <- hk5_analysis |> filter(period == "Post-NSL") |> pull(!!sym(var)) |> na.omit()
+    dat_pro <- hk5_analysis |> filter(period == "Protest", !is.na(!!sym(var)))
+    dat_post <- hk5_analysis |> filter(period == "Post-NSL", !is.na(!!sym(var)))
 
-    if (length(protest) < 10 | length(postnsl) < 10) return(NULL)
+    if (nrow(dat_pro) < 10 | nrow(dat_post) < 10) return(NULL)
 
-    tt <- t.test(protest, postnsl)
-    pooled_sd <- sqrt(((length(protest) - 1) * sd(protest)^2 +
-                         (length(postnsl) - 1) * sd(postnsl)^2) /
-                        (length(protest) + length(postnsl) - 2))
-    d <- (mean(postnsl) - mean(protest)) / pooled_sd
+    # Weighted OLS for p-value
+    dat_both <- bind_rows(dat_pro, dat_post)
+    m <- lm(as.formula(paste(var, "~ post_nsl")), data = dat_both, weights = weight)
+    coef_row <- summary(m)$coefficients["post_nsl", ]
+
+    d <- weighted_cohens_d(
+      dat_pro[[var]], dat_pro$weight,
+      dat_post[[var]], dat_post$weight
+    )
 
     tibble(
       variable = var,
-      protest_mean = mean(protest),
-      postnsl_mean = mean(postnsl),
-      delta = mean(postnsl) - mean(protest),
+      protest_mean = weighted.mean(dat_pro[[var]], dat_pro$weight),
+      postnsl_mean = weighted.mean(dat_post[[var]], dat_post$weight),
+      delta = postnsl_mean - protest_mean,
       cohens_d = d,
-      p_value = tt$p.value,
+      p_value = coef_row["Pr(>|t|)"],
       sig = case_when(
-        tt$p.value < 0.001 ~ "***",
-        tt$p.value < 0.01  ~ "**",
-        tt$p.value < 0.05  ~ "*",
+        coef_row["Pr(>|t|)"] < 0.001 ~ "***",
+        coef_row["Pr(>|t|)"] < 0.01  ~ "**",
+        coef_row["Pr(>|t|)"] < 0.05  ~ "*",
         TRUE ~ "ns"
       )
     )
@@ -407,17 +427,17 @@ sensitivity_hierarchy <- tribble(
 sensitivity_hierarchy <- sensitivity_hierarchy |>
   filter(variable %in% names(hk5_analysis))
 
-# Compute Cohen's d for each
+# Compute weighted Cohen's d for each
 sensitivity_results <- map_dfr(sensitivity_hierarchy$variable, function(var) {
-  protest <- hk5_analysis |> filter(period == "Protest") |> pull(!!sym(var)) |> na.omit()
-  postnsl <- hk5_analysis |> filter(period == "Post-NSL") |> pull(!!sym(var)) |> na.omit()
+  dat_pro <- hk5_analysis |> filter(period == "Protest", !is.na(!!sym(var)))
+  dat_post <- hk5_analysis |> filter(period == "Post-NSL", !is.na(!!sym(var)))
 
-  if (length(protest) < 10 | length(postnsl) < 10) return(NULL)
+  if (nrow(dat_pro) < 10 | nrow(dat_post) < 10) return(NULL)
 
-  pooled_sd <- sqrt(((length(protest) - 1) * sd(protest)^2 +
-                       (length(postnsl) - 1) * sd(postnsl)^2) /
-                      (length(protest) + length(postnsl) - 2))
-  d <- (mean(postnsl) - mean(protest)) / pooled_sd
+  d <- weighted_cohens_d(
+    dat_pro[[var]], dat_pro$weight,
+    dat_post[[var]], dat_post$weight
+  )
 
   tibble(variable = var, cohens_d = d)
 }) |>
@@ -743,38 +763,43 @@ dem_missing <- map_dfr(dem_items$variable, function(var) {
 }) |>
   left_join(dem_items |> select(variable, label), by = "variable")
 
-# --- Part B: Effect sizes for ordinal/continuous items ---
+# --- Part B: Effect sizes for ordinal/continuous items (weighted) ---
 dem_effects <- map_dfr(dem_items$variable, function(var) {
-  protest <- hk5_analysis |> filter(period == "Protest") |> pull(!!sym(var)) |> na.omit()
-  postnsl <- hk5_analysis |> filter(period == "Post-NSL") |> pull(!!sym(var)) |> na.omit()
+  dat_pro <- hk5_analysis |> filter(period == "Protest", !is.na(!!sym(var)))
+  dat_post <- hk5_analysis |> filter(period == "Post-NSL", !is.na(!!sym(var)))
 
-  if (length(protest) < 10 | length(postnsl) < 10) return(NULL)
+  if (nrow(dat_pro) < 10 | nrow(dat_post) < 10) return(NULL)
 
   item_type <- dem_items$type[dem_items$variable == var]
 
   if (item_type %in% c("ordinal", "binary")) {
-    tt <- t.test(protest, postnsl)
-    pooled_sd <- sqrt(((length(protest) - 1) * sd(protest)^2 +
-                         (length(postnsl) - 1) * sd(postnsl)^2) /
-                        (length(protest) + length(postnsl) - 2))
-    d <- (mean(postnsl) - mean(protest)) / pooled_sd
+    # Weighted OLS for p-value
+    dat_both <- bind_rows(dat_pro, dat_post)
+    m <- lm(as.formula(paste(var, "~ post_nsl")), data = dat_both, weights = weight)
+    coef_row <- summary(m)$coefficients["post_nsl", ]
+
+    d <- weighted_cohens_d(
+      dat_pro[[var]], dat_pro$weight,
+      dat_post[[var]], dat_post$weight
+    )
 
     tibble(
       variable = var,
-      protest_mean = mean(protest),
-      postnsl_mean = mean(postnsl),
-      delta = mean(postnsl) - mean(protest),
+      protest_mean = weighted.mean(dat_pro[[var]], dat_pro$weight),
+      postnsl_mean = weighted.mean(dat_post[[var]], dat_post$weight),
+      delta = postnsl_mean - protest_mean,
       cohens_d = d,
-      p_value = tt$p.value,
-      test_type = "t-test",
-      n_protest = length(protest),
-      n_postnsl = length(postnsl)
+      p_value = coef_row["Pr(>|t|)"],
+      test_type = "weighted OLS",
+      n_protest = nrow(dat_pro),
+      n_postnsl = nrow(dat_post)
     )
   } else {
-    # Nominal: chi-squared test
-    combined <- hk5_analysis |>
-      filter(period %in% c("Protest", "Post-NSL"), !is.na(!!sym(var)))
-    ct <- table(combined$period, combined[[var]])
+    # Nominal: chi-squared test (unweighted — counts are counts)
+    ct <- table(
+      c(rep("Protest", nrow(dat_pro)), rep("Post-NSL", nrow(dat_post))),
+      c(dat_pro[[var]], dat_post[[var]])
+    )
     chi <- chisq.test(ct)
 
     # Cramér's V
@@ -790,8 +815,8 @@ dem_effects <- map_dfr(dem_items$variable, function(var) {
       cohens_d = as.numeric(cramers_v),
       p_value = chi$p.value,
       test_type = "chi-squared (Cramér's V)",
-      n_protest = sum(ct["Protest", ]),
-      n_postnsl = sum(ct["Post-NSL", ])
+      n_protest = nrow(dat_pro),
+      n_postnsl = nrow(dat_post)
     )
   }
 }) |>

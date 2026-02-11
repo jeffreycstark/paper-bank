@@ -157,30 +157,30 @@ wvs_means <- wvs_hk_clean |>
   pivot_longer(everything(), names_to = "variable", values_to = "mean") |>
   mutate(source = "WVS W7 (Pre-protest)", .before = 1)
 
-# ABS W5 Protest period
+# ABS W5 Protest period (weighted)
 abs_protest <- hk5 |>
   filter(period == "Protest") |>
   summarise(
-    trust_police    = mean(trust_police, na.rm = TRUE),
-    trust_govt      = mean(trust_national_government, na.rm = TRUE),
-    trust_parliament = mean(trust_parliament, na.rm = TRUE),
-    trust_courts    = mean(trust_courts, na.rm = TRUE),
-    trust_military  = mean(trust_military, na.rm = TRUE),
-    dem_suitability = mean(democracy_suitability, na.rm = TRUE)
+    trust_police    = weighted.mean(trust_police, weight, na.rm = TRUE),
+    trust_govt      = weighted.mean(trust_national_government, weight, na.rm = TRUE),
+    trust_parliament = weighted.mean(trust_parliament, weight, na.rm = TRUE),
+    trust_courts    = weighted.mean(trust_courts, weight, na.rm = TRUE),
+    trust_military  = weighted.mean(trust_military, weight, na.rm = TRUE),
+    dem_suitability = weighted.mean(democracy_suitability, weight, na.rm = TRUE)
   ) |>
   pivot_longer(everything(), names_to = "variable", values_to = "mean") |>
   mutate(source = "ABS W5 (Protest)", .before = 1)
 
-# ABS W5 Post-NSL period
+# ABS W5 Post-NSL period (weighted)
 abs_postnsl <- hk5 |>
   filter(period == "Post-NSL") |>
   summarise(
-    trust_police    = mean(trust_police, na.rm = TRUE),
-    trust_govt      = mean(trust_national_government, na.rm = TRUE),
-    trust_parliament = mean(trust_parliament, na.rm = TRUE),
-    trust_courts    = mean(trust_courts, na.rm = TRUE),
-    trust_military  = mean(trust_military, na.rm = TRUE),
-    dem_suitability = mean(democracy_suitability, na.rm = TRUE)
+    trust_police    = weighted.mean(trust_police, weight, na.rm = TRUE),
+    trust_govt      = weighted.mean(trust_national_government, weight, na.rm = TRUE),
+    trust_parliament = weighted.mean(trust_parliament, weight, na.rm = TRUE),
+    trust_courts    = weighted.mean(trust_courts, weight, na.rm = TRUE),
+    trust_military  = weighted.mean(trust_military, weight, na.rm = TRUE),
+    dem_suitability = weighted.mean(democracy_suitability, weight, na.rm = TRUE)
   ) |>
   pivot_longer(everything(), names_to = "variable", values_to = "mean") |>
   mutate(source = "ABS W5 (Post-NSL)", .before = 1)

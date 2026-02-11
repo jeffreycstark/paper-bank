@@ -49,6 +49,22 @@ Additional variables included for theoretical completeness:
 library(tidyverse)
 library(knitr)
 library(kableExtra)
+
+# --- Weighted statistics helper functions ---
+weighted_var <- function(x, w) {
+  mu <- weighted.mean(x, w)
+  sum(w * (x - mu)^2) / (sum(w) - 1)
+}
+weighted_sd <- function(x, w) sqrt(weighted_var(x, w))
+weighted_cohens_d <- function(x1, w1, x2, w2) {
+  m1 <- weighted.mean(x1, w1)
+  m2 <- weighted.mean(x2, w2)
+  v1 <- weighted_var(x1, w1)
+  v2 <- weighted_var(x2, w2)
+  pooled_sd <- sqrt(((length(x1) - 1) * v1 + (length(x2) - 1) * v2) /
+                      (length(x1) + length(x2) - 2))
+  (m2 - m1) / pooled_sd
+}
 ```
 
 # Load Prepared Data
@@ -59,7 +75,8 @@ load("results/prepared_data.RData")
 # Analytical sample: Protest vs Post-NSL only
 hk5_analysis <- hk5 |>
   filter(period %in% c("Protest", "Post-NSL")) |>
-  mutate(period = droplevels(period))
+  mutate(period = droplevels(period),
+         post_nsl = as.numeric(period == "Post-NSL"))
 
 cat("Protest:", sum(hk5_analysis$period == "Protest"),
     "| Post-NSL:", sum(hk5_analysis$period == "Post-NSL"), "\n")
@@ -105,37 +122,42 @@ categorical_vars <- categorical_vars[categorical_vars %in% names(hk5_analysis)]
 
 ```{r continuous-tests}
 cont_results <- map_dfr(continuous_vars, function(var) {
-  protest <- hk5_analysis |> filter(period == "Protest") |> pull(!!sym(var)) |> na.omit()
-  postnsl <- hk5_analysis |> filter(period == "Post-NSL") |> pull(!!sym(var)) |> na.omit()
+  dat_pro <- hk5_analysis |> filter(period == "Protest", !is.na(!!sym(var)))
+  dat_post <- hk5_analysis |> filter(period == "Post-NSL", !is.na(!!sym(var)))
 
-  if (length(protest) < 10 | length(postnsl) < 10) return(NULL)
+  if (nrow(dat_pro) < 10 | nrow(dat_post) < 10) return(NULL)
 
-  tt <- t.test(protest, postnsl)
-  wt <- wilcox.test(protest, postnsl, exact = FALSE)
+  # Weighted OLS for p-value
+  dat_both <- bind_rows(dat_pro, dat_post)
+  m <- lm(as.formula(paste(var, "~ post_nsl")), data = dat_both, weights = weight)
+  coef_row <- summary(m)$coefficients["post_nsl", ]
 
-  pooled_sd <- sqrt(((length(protest) - 1) * sd(protest)^2 +
-                       (length(postnsl) - 1) * sd(postnsl)^2) /
-                      (length(protest) + length(postnsl) - 2))
-  d <- (mean(postnsl) - mean(protest)) / pooled_sd
+  # Mann-Whitney (unweighted, non-parametric check)
+  wt <- wilcox.test(dat_pro[[var]], dat_post[[var]], exact = FALSE)
+
+  d <- weighted_cohens_d(
+    dat_pro[[var]], dat_pro$weight,
+    dat_post[[var]], dat_post$weight
+  )
 
   tibble(
     variable = var,
     label = var_labels[var],
-    n_protest = length(protest),
-    n_postnsl = length(postnsl),
-    protest_mean = mean(protest),
-    protest_sd = sd(protest),
-    postnsl_mean = mean(postnsl),
-    postnsl_sd = sd(postnsl),
+    n_protest = nrow(dat_pro),
+    n_postnsl = nrow(dat_post),
+    protest_mean = weighted.mean(dat_pro[[var]], dat_pro$weight),
+    protest_sd = weighted_sd(dat_pro[[var]], dat_pro$weight),
+    postnsl_mean = weighted.mean(dat_post[[var]], dat_post$weight),
+    postnsl_sd = weighted_sd(dat_post[[var]], dat_post$weight),
     cohens_d = d,
-    t_stat = tt$statistic,
-    t_p = tt$p.value,
+    t_stat = coef_row["t value"],
+    t_p = coef_row["Pr(>|t|)"],
     mw_stat = wt$statistic,
     mw_p = wt$p.value,
     sig = case_when(
-      tt$p.value < 0.001 ~ "***",
-      tt$p.value < 0.01  ~ "**",
-      tt$p.value < 0.05  ~ "*",
+      coef_row["Pr(>|t|)"] < 0.001 ~ "***",
+      coef_row["Pr(>|t|)"] < 0.01  ~ "**",
+      coef_row["Pr(>|t|)"] < 0.05  ~ "*",
       TRUE ~ ""
     )
   )
@@ -252,7 +274,7 @@ cat("\nChi-squared test: X2 =", round(dem_ess_chi$statistic, 2),
 proc_by_period <- dem_ess_data |>
   mutate(procedural = dem_essential_harmonized %in% c(1, 2)) |>
   group_by(period) |>
-  summarise(pct_procedural = mean(procedural) * 100, .groups = "drop")
+  summarise(pct_procedural = weighted.mean(procedural, weight) * 100, .groups = "drop")
 cat("\nProcedural (free expression + free elections) share:\n")
 cat("  Protest:", round(proc_by_period$pct_procedural[1], 1), "%\n")
 cat("  Post-NSL:", round(proc_by_period$pct_procedural[2], 1), "%\n")
@@ -355,7 +377,7 @@ china_data <- hk5_analysis |> filter(!is.na(dem_rating_china))
 
 china_means <- china_data |>
   group_by(period) |>
-  summarise(mean_val = mean(dem_rating_china), .groups = "drop")
+  summarise(mean_val = weighted.mean(dem_rating_china, weight), .groups = "drop")
 
 ggplot(china_data, aes(x = dem_rating_china, fill = period, color = period)) +
   geom_density(alpha = 0.35, bw = 0.7) +
@@ -397,7 +419,7 @@ demo_data <- hk5_analysis |> filter(!is.na(action_demonstration))
 
 demo_means <- demo_data |>
   group_by(period) |>
-  summarise(mean_val = mean(action_demonstration), .groups = "drop")
+  summarise(mean_val = weighted.mean(action_demonstration, weight), .groups = "drop")
 
 demo_bar <- demo_data |>
   count(period, action_demonstration) |>
@@ -489,8 +511,8 @@ demo_age <- hk5_analysis |>
   filter(!is.na(action_demonstration), !is.na(age_group)) |>
   group_by(period, age_group) |>
   summarise(
-    mean = mean(action_demonstration),
-    se = sd(action_demonstration) / sqrt(n()),
+    mean = weighted.mean(action_demonstration, weight),
+    se = weighted_sd(action_demonstration, weight) / sqrt(n()),
     n = n(),
     .groups = "drop"
   )
@@ -526,8 +548,8 @@ china_age <- hk5_analysis |>
   filter(!is.na(dem_rating_china), !is.na(age_group)) |>
   group_by(period, age_group) |>
   summarise(
-    mean = mean(dem_rating_china),
-    se = sd(dem_rating_china) / sqrt(n()),
+    mean = weighted.mean(dem_rating_china, weight),
+    se = weighted_sd(dem_rating_china, weight) / sqrt(n()),
     n = n(),
     .groups = "drop"
   )

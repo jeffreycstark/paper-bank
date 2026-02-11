@@ -124,53 +124,96 @@ kable(z_display, caption = "Wave 5 z-scores (std. devs from cross-national mean)
 
 # 4. Pre/Post NSL Comparison (HK Wave 5)
 
+All estimates incorporate ABS-provided post-stratification weights.
+
+```{r weighted-helpers}
+# --- Weighted statistics helper functions ---
+
+weighted_var <- function(x, w) {
+  # Reliability-weighted (frequency) variance
+  mu <- weighted.mean(x, w)
+  sum(w * (x - mu)^2) / (sum(w) - 1)
+}
+
+weighted_sd <- function(x, w) sqrt(weighted_var(x, w))
+
+weighted_cohens_d <- function(x1, w1, x2, w2) {
+  m1 <- weighted.mean(x1, w1)
+  m2 <- weighted.mean(x2, w2)
+  v1 <- weighted_var(x1, w1)
+  v2 <- weighted_var(x2, w2)
+  n1 <- length(x1)
+  n2 <- length(x2)
+  pooled_sd <- sqrt(((n1 - 1) * v1 + (n2 - 1) * v2) / (n1 + n2 - 2))
+  (m2 - m1) / pooled_sd
+}
+```
+
 ```{r pre-post-nsl}
-nsl_long <- hk5 |>
-  filter(period %in% c("Protest", "Post-NSL")) |>
+hk5_nsl <- hk5 |>
+  filter(period %in% c("Protest", "Post-NSL"))
+
+nsl_long <- hk5_nsl |>
   pivot_longer(cols = all_of(key_vars), names_to = "variable", values_to = "value") |>
   filter(!is.na(value))
 
 nsl_comparison <- nsl_long |>
   group_by(variable, period) |>
   summarise(
-    mean = mean(value),
-    sd = sd(value),
+    mean = weighted.mean(value, weight),
+    sd = weighted_sd(value, weight),
     n = n(),
     .groups = "drop"
   )
 
-# T-tests and effect sizes
-nsl_tests <- nsl_long |>
-  group_by(variable) |>
-  summarise(
-    protest_mean = mean(value[period == "Protest"]),
-    postnsl_mean = mean(value[period == "Post-NSL"]),
+# Weighted t-tests via lm(weights=) and weighted effect sizes
+nsl_tests <- map_dfr(unique(nsl_long$variable), function(var) {
+  dat <- hk5_nsl |>
+    filter(!is.na(!!sym(var))) |>
+    mutate(post_nsl = as.numeric(period == "Post-NSL"))
+
+  if (sum(dat$period == "Protest") < 30 | sum(dat$period == "Post-NSL") < 30) return(NULL)
+
+  protest_vals <- dat |> filter(period == "Protest")
+  postnsl_vals <- dat |> filter(period == "Post-NSL")
+
+  # Weighted means and SDs
+  protest_mean <- weighted.mean(protest_vals[[var]], protest_vals$weight)
+  postnsl_mean <- weighted.mean(postnsl_vals[[var]], postnsl_vals$weight)
+  protest_sd <- weighted_sd(protest_vals[[var]], protest_vals$weight)
+  postnsl_sd <- weighted_sd(postnsl_vals[[var]], postnsl_vals$weight)
+
+  # Weighted OLS for p-value
+  m <- lm(as.formula(paste(var, "~ post_nsl")), data = dat, weights = weight)
+  sm <- summary(m)
+  coef_row <- sm$coefficients["post_nsl", ]
+
+  # Weighted Cohen's d
+  d <- weighted_cohens_d(
+    protest_vals[[var]], protest_vals$weight,
+    postnsl_vals[[var]], postnsl_vals$weight
+  )
+
+  tibble(
+    variable = var,
+    protest_mean = protest_mean,
+    postnsl_mean = postnsl_mean,
     delta = postnsl_mean - protest_mean,
-    protest_sd = sd(value[period == "Protest"]),
-    postnsl_sd = sd(value[period == "Post-NSL"]),
-    protest_n = sum(period == "Protest"),
-    postnsl_n = sum(period == "Post-NSL"),
-    tt = list(t.test(value ~ period)),
-    .groups = "drop"
-  ) |>
-  mutate(
-    t_stat = map_dbl(tt, "statistic"),
-    p_value = map_dbl(tt, "p.value")
-  ) |>
-  select(-tt) |>
-  mutate(
-    # Cohen's d
-    pooled_sd = sqrt(((protest_n - 1) * protest_sd^2 + (postnsl_n - 1) * postnsl_sd^2) /
-                       (protest_n + postnsl_n - 2)),
-    cohens_d = delta / pooled_sd,
+    protest_sd = protest_sd,
+    postnsl_sd = postnsl_sd,
+    protest_n = nrow(protest_vals),
+    postnsl_n = nrow(postnsl_vals),
+    t_stat = coef_row["t value"],
+    p_value = coef_row["Pr(>|t|)"],
+    cohens_d = d,
     sig = case_when(
-      p_value < 0.001 ~ "***",
-      p_value < 0.01 ~ "**",
-      p_value < 0.05 ~ "*",
+      coef_row["Pr(>|t|)"] < 0.001 ~ "***",
+      coef_row["Pr(>|t|)"] < 0.01 ~ "**",
+      coef_row["Pr(>|t|)"] < 0.05 ~ "*",
       TRUE ~ ""
     )
-  ) |>
-  filter(protest_n >= 30, postnsl_n >= 30) |>
+  )
+}) |>
   arrange(p_value)
 
 kable(
@@ -178,7 +221,7 @@ kable(
     select(variable, protest_mean, postnsl_mean, delta, cohens_d, p_value, sig) |>
     mutate(across(c(protest_mean, postnsl_mean, delta, cohens_d), ~round(.x, 3)),
            p_value = format.pval(p_value, digits = 3)),
-  caption = "Pre/Post NSL comparison (HK Wave 5)"
+  caption = "Pre/Post NSL comparison (HK Wave 5, weighted)"
 )
 ```
 
@@ -197,13 +240,13 @@ age_means <- hk5 |>
   pivot_longer(cols = all_of(age_vars), names_to = "variable", values_to = "value") |>
   filter(!is.na(value)) |>
   group_by(variable, age_group) |>
-  summarise(mean = mean(value), n = n(), .groups = "drop")
+  summarise(mean = weighted.mean(value, weight), n = n(), .groups = "drop")
 
 # ANOVA for each variable
 age_anova <- map_dfr(age_vars, function(var) {
   dat <- hk5 |> filter(!is.na(age_group), !is.na(!!sym(var)))
   if (nrow(dat) < 10) return(NULL)
-  fit <- aov(as.formula(paste(var, "~ age_group")), data = dat)
+  fit <- aov(as.formula(paste(var, "~ age_group")), data = dat, weights = weight)
   s <- summary(fit)[[1]]
   tibble(
     variable = var,
@@ -238,7 +281,7 @@ age_nsl <- hk5 |>
   pivot_longer(cols = all_of(interaction_vars), names_to = "variable", values_to = "value") |>
   filter(!is.na(value)) |>
   group_by(variable, age_group, period) |>
-  summarise(mean = mean(value), n = n(), .groups = "drop") |>
+  summarise(mean = weighted.mean(value, weight), n = n(), .groups = "drop") |>
   pivot_wider(names_from = period, values_from = c(mean, n)) |>
   mutate(delta = `mean_Post-NSL` - mean_Protest)
 
