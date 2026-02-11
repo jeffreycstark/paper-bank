@@ -438,6 +438,9 @@ variables:
     concept: governance
     description: "What are the most important problems facing this country that government should address?"
     type: nominal
+    missing:
+      use_convention: treat_as_na
+      codes: [998, 999]
     source:
       w1: null
       w2: null
@@ -447,19 +450,19 @@ variables:
       w6: q97
     scale:
       min: 1
-      max: 99
+      max: 996
       labels:
         1: "Management of the economy"
         2: "Wages, incomes and salaries"
         3: "Unemployment"
         4: "Poverty/destitution"
-      note: "Many category codes - see codebook for full list"
+      note: "Many category codes (including 900-series); see codebook for full list. 998/999 are missing."
     harmonize:
       default:
         method: identity
         note: "Nominal - use for frequency analysis within waves"
     qc:
-      valid_range: [1, 99]
+      valid_range: [1, 996]
       validate:
         - waves: [w3, w4, w5, w6]
           phrase: "important problem|problem.*facing"

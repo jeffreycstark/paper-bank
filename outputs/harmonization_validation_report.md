@@ -1,12 +1,12 @@
 # Harmonization Validation Report
 
-Generated: 2026-02-11 07:40:17.001141
+Generated: 2026-02-11 08:34:03.353761
 
 ## Summary
 
-- ✅ OK: 946
+- ✅ OK: 978
 - ⚠️ Warnings: 28
-- ❌ Errors: 107
+- ❌ Errors: 76
 - ⏭️ Skipped: 4
 
 ## Results by Variable
@@ -178,15 +178,15 @@ Generated: 2026-02-11 07:40:17.001141
 | w5 | q154 | reverse | ✅ | ✅ | ✅ | ✅ |
 | w6 | q154 | reverse | ✅ | ✅ | ✅ | ✅ |
 
-### ❌ community_leader_contact
+### ✅ community_leader_contact
 
 | Wave | Source | Transform | Coverage | Transform | Range | Crosstab |
 |------|--------|-----------|----------|-----------|-------|----------|
 | w2 | q84 | reverse | ✅ | ✅ | ✅ | ✅ |
 | w3 | q66 | scale_convert | ✅ | ✅ | ✅ | ✅ |
 | w4 | q71 | reverse | ✅ | ✅ | ✅ | ✅ |
-| w5 | q72 | scale_convert | ✅ | ❌ | ✅ | ✅ |
-| w6 | q70 | scale_convert | ✅ | ❌ | ✅ | ✅ |
+| w5 | q72 | scale_convert | ✅ | ⏭️ | ✅ | ✅ |
+| w6 | q70 | scale_convert | ✅ | ⏭️ | ✅ | ✅ |
 
 ### ✅ influence_asked_by_others
 
@@ -200,13 +200,14 @@ Generated: 2026-02-11 07:40:17.001141
 |------|--------|-----------|----------|-----------|-------|----------|
 | w2 | q29 | scale_convert | ✅ | ✅ | ✅ | ✅ |
 
-### ❌ social_support_available
+### ✅ social_support_available
 
 | Wave | Source | Transform | Coverage | Transform | Range | Crosstab |
 |------|--------|-----------|----------|-----------|-------|----------|
-| w3 | q29 | reverse | ❌ | ⏭️ | ✅ | ✅ |
-| w4 | q30 | reverse | ❌ | ⏭️ | ✅ | ✅ |
-| w5 | q31 | reverse | ❌ | ⏭️ | ✅ | ✅ |
+| w3 | q29 | identity | ✅ | ✅ | ✅ | ✅ |
+| w4 | q30 | identity | ✅ | ✅ | ✅ | ✅ |
+| w5 | q31 | identity | ✅ | ✅ | ✅ | ✅ |
+| w6 | q31 | identity | ✅ | ✅ | ✅ | ✅ |
 
 ### ✅ corrupt_better_than_before
 
@@ -863,12 +864,12 @@ Generated: 2026-02-11 07:40:17.001141
 |------|--------|-----------|----------|-----------|-------|----------|
 | w4 | q154 | identity | ✅ | ⏭️ | ✅ | ✅ |
 
-### ❌ econ_family_income_fair
+### ✅ econ_family_income_fair
 
 | Wave | Source | Transform | Coverage | Transform | Range | Crosstab |
 |------|--------|-----------|----------|-----------|-------|----------|
 | w4 | q159 | reverse | ✅ | ✅ | ✅ | ✅ |
-| w5 | q163 | reverse | ✅ | ❌ | ✅ | ✅ |
+| w5 | q163 | reverse | ✅ | ⏭️ | ✅ | ✅ |
 | w6 | q163 | reverse | ✅ | ✅ | ✅ | ✅ |
 
 ### ✅ econ_family_income_fair_6pt
@@ -1369,12 +1370,12 @@ Generated: 2026-02-11 07:40:17.001141
 
 | Wave | Source | Transform | Coverage | Transform | Range | Crosstab |
 |------|--------|-----------|----------|-----------|-------|----------|
-| w3 | q96 | identity | ❌ | ⏭️ | ✅ | ✅ |
-| w4 | q99 | identity | ❌ | ⏭️ | ✅ | ✅ |
+| w3 | q96 | identity | ✅ | ⏭️ | ✅ | ✅ |
+| w4 | q99 | identity | ✅ | ⏭️ | ✅ | ✅ |
 | w5 | q106 | identity | ❌ | ⏭️ | ✅ | ⏭️ |
-| w6 | q97 | identity | ❌ | ⏭️ | ✅ | ✅ |
+| w6 | q97 | identity | ✅ | ⏭️ | ✅ | ✅ |
 
-### ❌ trust_civil_service
+### ✅ trust_civil_service
 
 | Wave | Source | Transform | Coverage | Transform | Range | Crosstab |
 |------|--------|-----------|----------|-----------|-------|----------|
@@ -1382,10 +1383,10 @@ Generated: 2026-02-11 07:40:17.001141
 | w2 | q12 | identity | ✅ | ✅ | ✅ | ✅ |
 | w3 | q12 | reverse | ✅ | ✅ | ✅ | ✅ |
 | w4 | q12 | reverse | ✅ | ✅ | ✅ | ✅ |
-| w5 | q12 | scale_convert | ✅ | ❌ | ✅ | ✅ |
+| w5 | q12 | scale_convert | ✅ | ⏭️ | ✅ | ✅ |
 | w6 | q12 | reverse | ✅ | ✅ | ✅ | ✅ |
 
-### ❌ trust_courts
+### ✅ trust_courts
 
 | Wave | Source | Transform | Coverage | Transform | Range | Crosstab |
 |------|--------|-----------|----------|-----------|-------|----------|
@@ -1393,7 +1394,7 @@ Generated: 2026-02-11 07:40:17.001141
 | w2 | q8 | identity | ✅ | ✅ | ✅ | ✅ |
 | w3 | q8 | reverse | ✅ | ✅ | ✅ | ✅ |
 | w4 | q8 | reverse | ✅ | ✅ | ✅ | ✅ |
-| w5 | q8 | scale_convert | ✅ | ❌ | ✅ | ✅ |
+| w5 | q8 | scale_convert | ✅ | ⏭️ | ✅ | ✅ |
 | w6 | q8 | reverse | ✅ | ✅ | ✅ | ✅ |
 
 ### ❌ trust_election_commission
@@ -1404,10 +1405,10 @@ Generated: 2026-02-11 07:40:17.001141
 | w2 | q18 | identity | ✅ | ✅ | ✅ | ✅ |
 | w3 | q18 | reverse | ✅ | ✅ | ✅ | ✅ |
 | w4 | q18 | reverse | ✅ | ✅ | ✅ | ✅ |
-| w5 | q16 | scale_convert | ✅ | ❌ | ✅ | ✅ |
+| w5 | q16 | scale_convert | ✅ | ⏭️ | ✅ | ✅ |
 | w6 | q18 | reverse | ❌ | ✅ | ✅ | ✅ |
 
-### ❌ trust_local_government
+### ✅ trust_local_government
 
 | Wave | Source | Transform | Coverage | Transform | Range | Crosstab |
 |------|--------|-----------|----------|-----------|-------|----------|
@@ -1415,10 +1416,10 @@ Generated: 2026-02-11 07:40:17.001141
 | w2 | q15 | identity | ✅ | ✅ | ✅ | ✅ |
 | w3 | q15 | reverse | ✅ | ✅ | ✅ | ✅ |
 | w4 | q15 | reverse | ✅ | ✅ | ✅ | ✅ |
-| w5 | q15 | scale_convert | ✅ | ❌ | ✅ | ✅ |
+| w5 | q15 | scale_convert | ✅ | ⏭️ | ✅ | ✅ |
 | w6 | q15 | reverse | ✅ | ✅ | ✅ | ✅ |
 
-### ❌ trust_military
+### ✅ trust_military
 
 | Wave | Source | Transform | Coverage | Transform | Range | Crosstab |
 |------|--------|-----------|----------|-----------|-------|----------|
@@ -1426,10 +1427,10 @@ Generated: 2026-02-11 07:40:17.001141
 | w2 | q13 | identity | ✅ | ✅ | ✅ | ✅ |
 | w3 | q13 | reverse | ✅ | ✅ | ✅ | ✅ |
 | w4 | q13 | reverse | ✅ | ✅ | ✅ | ✅ |
-| w5 | q13 | scale_convert | ✅ | ❌ | ✅ | ✅ |
+| w5 | q13 | scale_convert | ✅ | ⏭️ | ✅ | ✅ |
 | w6 | q13 | reverse | ✅ | ✅ | ✅ | ✅ |
 
-### ❌ trust_national_government
+### ✅ trust_national_government
 
 | Wave | Source | Transform | Coverage | Transform | Range | Crosstab |
 |------|--------|-----------|----------|-----------|-------|----------|
@@ -1437,10 +1438,10 @@ Generated: 2026-02-11 07:40:17.001141
 | w2 | q9 | identity | ✅ | ✅ | ✅ | ✅ |
 | w3 | q9 | reverse | ✅ | ✅ | ✅ | ✅ |
 | w4 | q9 | reverse | ✅ | ✅ | ✅ | ✅ |
-| w5 | q9 | scale_convert | ✅ | ❌ | ✅ | ✅ |
+| w5 | q9 | scale_convert | ✅ | ⏭️ | ✅ | ✅ |
 | w6 | q9 | reverse | ✅ | ✅ | ✅ | ✅ |
 
-### ❌ trust_newspapers
+### ✅ trust_newspapers
 
 | Wave | Source | Transform | Coverage | Transform | Range | Crosstab |
 |------|--------|-----------|----------|-----------|-------|----------|
@@ -1448,7 +1449,7 @@ Generated: 2026-02-11 07:40:17.001141
 | w2 | q16 | identity | ✅ | ✅ | ✅ | ✅ |
 | w3 | q16 | reverse | ✅ | ✅ | ✅ | ✅ |
 | w4 | q16 | reverse | ✅ | ✅ | ✅ | ✅ |
-| w5 | q54 | scale_convert | ✅ | ❌ | ✅ | ✅ |
+| w5 | q54 | scale_convert | ✅ | ⏭️ | ✅ | ✅ |
 | w6 | q16 | reverse | ✅ | ✅ | ✅ | ✅ |
 
 ### ❌ trust_ngos
@@ -1459,10 +1460,10 @@ Generated: 2026-02-11 07:40:17.001141
 | w2 | q19 | identity | ✅ | ✅ | ✅ | ✅ |
 | w3 | q19 | reverse | ✅ | ✅ | ✅ | ✅ |
 | w4 | q19 | reverse | ✅ | ✅ | ✅ | ✅ |
-| w5 | q17 | scale_convert | ✅ | ❌ | ✅ | ✅ |
+| w5 | q17 | scale_convert | ✅ | ⏭️ | ✅ | ✅ |
 | w6 | q19 | reverse | ❌ | ✅ | ✅ | ✅ |
 
-### ❌ trust_parliament
+### ✅ trust_parliament
 
 | Wave | Source | Transform | Coverage | Transform | Range | Crosstab |
 |------|--------|-----------|----------|-----------|-------|----------|
@@ -1470,10 +1471,10 @@ Generated: 2026-02-11 07:40:17.001141
 | w2 | q11 | identity | ✅ | ✅ | ✅ | ✅ |
 | w3 | q11 | reverse | ✅ | ✅ | ✅ | ✅ |
 | w4 | q11 | reverse | ✅ | ✅ | ✅ | ✅ |
-| w5 | q11 | scale_convert | ✅ | ❌ | ✅ | ✅ |
+| w5 | q11 | scale_convert | ✅ | ⏭️ | ✅ | ✅ |
 | w6 | q11 | reverse | ✅ | ✅ | ✅ | ✅ |
 
-### ❌ trust_police
+### ✅ trust_police
 
 | Wave | Source | Transform | Coverage | Transform | Range | Crosstab |
 |------|--------|-----------|----------|-----------|-------|----------|
@@ -1481,10 +1482,10 @@ Generated: 2026-02-11 07:40:17.001141
 | w2 | q14 | identity | ✅ | ✅ | ✅ | ✅ |
 | w3 | q14 | reverse | ✅ | ✅ | ✅ | ✅ |
 | w4 | q14 | reverse | ✅ | ✅ | ✅ | ✅ |
-| w5 | q14 | scale_convert | ✅ | ❌ | ✅ | ✅ |
+| w5 | q14 | scale_convert | ✅ | ⏭️ | ✅ | ✅ |
 | w6 | q14 | reverse | ✅ | ✅ | ✅ | ✅ |
 
-### ❌ trust_political_parties
+### ✅ trust_political_parties
 
 | Wave | Source | Transform | Coverage | Transform | Range | Crosstab |
 |------|--------|-----------|----------|-----------|-------|----------|
@@ -1492,20 +1493,20 @@ Generated: 2026-02-11 07:40:17.001141
 | w2 | q10 | identity | ✅ | ✅ | ✅ | ✅ |
 | w3 | q10 | reverse | ✅ | ✅ | ✅ | ✅ |
 | w4 | q10 | reverse | ✅ | ✅ | ✅ | ✅ |
-| w5 | q10 | scale_convert | ✅ | ❌ | ✅ | ✅ |
+| w5 | q10 | scale_convert | ✅ | ⏭️ | ✅ | ✅ |
 | w6 | q10 | reverse | ✅ | ✅ | ✅ | ✅ |
 
-### ❌ trust_president
+### ✅ trust_president
 
 | Wave | Source | Transform | Coverage | Transform | Range | Crosstab |
 |------|--------|-----------|----------|-----------|-------|----------|
 | w2 | q7 | identity | ✅ | ✅ | ✅ | ✅ |
 | w3 | q7 | reverse | ✅ | ✅ | ✅ | ✅ |
 | w4 | q7 | reverse | ✅ | ✅ | ✅ | ✅ |
-| w5 | q7 | scale_convert | ✅ | ❌ | ✅ | ✅ |
+| w5 | q7 | scale_convert | ✅ | ⏭️ | ✅ | ✅ |
 | w6 | q7 | reverse | ✅ | ✅ | ✅ | ✅ |
 
-### ❌ trust_television
+### ✅ trust_television
 
 | Wave | Source | Transform | Coverage | Transform | Range | Crosstab |
 |------|--------|-----------|----------|-----------|-------|----------|
@@ -1513,7 +1514,7 @@ Generated: 2026-02-11 07:40:17.001141
 | w2 | q17 | identity | ✅ | ✅ | ✅ | ✅ |
 | w3 | q17 | reverse | ✅ | ✅ | ✅ | ✅ |
 | w4 | q17 | reverse | ✅ | ✅ | ✅ | ✅ |
-| w5 | q53 | scale_convert | ✅ | ❌ | ✅ | ✅ |
+| w5 | q53 | scale_convert | ✅ | ⏭️ | ✅ | ✅ |
 | w6 | q17 | reverse | ✅ | ✅ | ✅ | ✅ |
 
 ### ✅ dem_rating_china
@@ -1738,15 +1739,15 @@ Generated: 2026-02-11 07:40:17.001141
 | w4 | q91 | identity | ✅ | ⏭️ | ✅ | ✅ |
 | w6 | q88 | identity | ⚠️ | ⏭️ | ✅ | ✅ |
 
-### ❌ electoral_status
+### ✅ electoral_status
 
 | Wave | Source | Transform | Coverage | Transform | Range | Crosstab |
 |------|--------|-----------|----------|-----------|-------|----------|
-| w2 | q39a | identity | ❌ | ⏭️ | ✅ | ✅ |
-| w3 | q33a | identity | ❌ | ⏭️ | ✅ | ✅ |
-| w4 | q34a | identity | ❌ | ⏭️ | ✅ | ✅ |
-| w5 | q34a | identity | ❌ | ⏭️ | ✅ | ✅ |
-| w6 | q34a | identity | ❌ | ⏭️ | ✅ | ✅ |
+| w2 | q39a | identity | ✅ | ⏭️ | ✅ | ✅ |
+| w3 | q33a | identity | ✅ | ⏭️ | ✅ | ✅ |
+| w4 | q34a | identity | ✅ | ⏭️ | ✅ | ✅ |
+| w5 | q34a | identity | ✅ | ⏭️ | ✅ | ✅ |
+| w6 | q34a | identity | ✅ | ⏭️ | ✅ | ✅ |
 
 ### ❌ procedural_preference_index
 
@@ -2544,7 +2545,7 @@ Generated: 2026-02-11 07:40:17.001141
 | w2 | q26 | identity | ✅ | ❌ | ✅ | ❌ |
 | w3 | q27 | reverse | ✅ | ❌ | ✅ | ❌ |
 | w4 | q28 | reverse | ✅ | ✅ | ✅ | ✅ |
-| w5 | q26 | reverse | ✅ | ❌ | ✅ | ✅ |
+| w5 | q26 | reverse | ✅ | ⏭️ | ✅ | ✅ |
 | w6 | q26 | reverse | ✅ | ✅ | ✅ | ✅ |
 
 ### ❌ trust_generalized_binary
@@ -2585,7 +2586,7 @@ Generated: 2026-02-11 07:40:17.001141
 | w2 | q25 | identity | ✅ | ❌ | ✅ | ❌ |
 | w3 | q26 | reverse | ✅ | ❌ | ✅ | ❌ |
 | w4 | q27 | reverse | ✅ | ✅ | ✅ | ✅ |
-| w5 | q25 | reverse | ✅ | ❌ | ✅ | ✅ |
+| w5 | q25 | reverse | ✅ | ⏭️ | ✅ | ✅ |
 | w6 | q25 | reverse | ✅ | ✅ | ✅ | ✅ |
 
 ### ❌ trust_relatives
@@ -2595,14 +2596,14 @@ Generated: 2026-02-11 07:40:17.001141
 | w2 | q24 | identity | ✅ | ❌ | ✅ | ❌ |
 | w3 | q25 | reverse | ✅ | ❌ | ✅ | ❌ |
 | w4 | q26 | reverse | ✅ | ✅ | ✅ | ✅ |
-| w5 | q24 | reverse | ✅ | ❌ | ✅ | ✅ |
+| w5 | q24 | reverse | ✅ | ⏭️ | ✅ | ✅ |
 | w6 | q24 | reverse | ✅ | ✅ | ✅ | ✅ |
 
-### ❌ trust_strangers
+### ✅ trust_strangers
 
 | Wave | Source | Transform | Coverage | Transform | Range | Crosstab |
 |------|--------|-----------|----------|-----------|-------|----------|
-| w5 | q27 | reverse | ✅ | ❌ | ✅ | ✅ |
+| w5 | q27 | reverse | ✅ | ⏭️ | ✅ | ✅ |
 | w6 | q27 | reverse | ✅ | ✅ | ✅ | ✅ |
 
 ### ✅ trad_accommodate_neighbor
@@ -2788,26 +2789,6 @@ Generated: 2026-02-11 07:40:17.001141
 
 ## Issues Detail
 
-### community_leader_contact (w5)
-
-- ❌ **transformation**: scale conversion (|ρ| ≈ 1) FAILED: r=-0.892, ρ=-0.741 (expected >0.99)
-
-### community_leader_contact (w6)
-
-- ❌ **transformation**: scale conversion (|ρ| ≈ 1) FAILED: r=-0.894, ρ=-0.733 (expected >0.99)
-
-### social_support_available (w3)
-
-- ❌ **coverage**: 42.8% coverage loss (8164 of 19073 values)
-
-### social_support_available (w4)
-
-- ❌ **coverage**: 45.1% coverage loss (9172 of 20359 values)
-
-### social_support_available (w5)
-
-- ❌ **coverage**: 47.6% coverage loss (12498 of 26253 values)
-
 ### corrupt_local_govt (w6)
 
 - ❌ **transformation**: scale conversion (|ρ| ≈ 1) FAILED: r=0.960, ρ=0.980 (expected >0.99)
@@ -2936,10 +2917,6 @@ Generated: 2026-02-11 07:40:17.001141
 
 - ❌ **coverage**: 12.0% coverage loss (465 of 3880 values)
 
-### econ_family_income_fair (w5)
-
-- ❌ **transformation**: reversal (r ≈ -1) FAILED: r=-0.979, ρ=-0.946 (expected <-0.99)
-
 ### glob_cultural_defense (w1)
 
 - ❌ **coverage**: 81.6% coverage loss (8993 of 11025 values)
@@ -2980,81 +2957,17 @@ Generated: 2026-02-11 07:40:17.001141
 
 - ❌ **coverage**: 20.9% coverage loss (2221 of 10604 values)
 
-### problem_most_important (w3)
-
-- ❌ **coverage**: 100.0% coverage loss (15927 of 15927 values)
-
-### problem_most_important (w4)
-
-- ❌ **coverage**: 8.1% coverage loss (1262 of 15619 values)
-
 ### problem_most_important (w5)
 
-- ❌ **coverage**: 21.2% coverage loss (4455 of 21016 values)
-
-### problem_most_important (w6)
-
-- ❌ **coverage**: 4.1% coverage loss (434 of 10657 values)
-
-### trust_civil_service (w5)
-
-- ❌ **transformation**: scale conversion (|ρ| ≈ 1) FAILED: r=-0.961, ρ=-0.979 (expected >0.99)
-
-### trust_courts (w5)
-
-- ❌ **transformation**: scale conversion (|ρ| ≈ 1) FAILED: r=-0.958, ρ=-0.961 (expected >0.99)
-
-### trust_election_commission (w5)
-
-- ❌ **transformation**: scale conversion (|ρ| ≈ 1) FAILED: r=-0.962, ρ=-0.977 (expected >0.99)
+- ❌ **coverage**: 3.3% coverage loss (591 of 18082 values)
 
 ### trust_election_commission (w6)
 
 - ❌ **coverage**: 71.9% coverage loss (7212 of 10025 values)
 
-### trust_local_government (w5)
-
-- ❌ **transformation**: scale conversion (|ρ| ≈ 1) FAILED: r=-0.963, ρ=-0.981 (expected >0.99)
-
-### trust_military (w5)
-
-- ❌ **transformation**: scale conversion (|ρ| ≈ 1) FAILED: r=-0.937, ρ=-0.884 (expected >0.99)
-
-### trust_national_government (w5)
-
-- ❌ **transformation**: scale conversion (|ρ| ≈ 1) FAILED: r=-0.962, ρ=-0.966 (expected >0.99)
-
-### trust_newspapers (w5)
-
-- ❌ **transformation**: scale conversion (|ρ| ≈ 1) FAILED: r=-0.961, ρ=-0.984 (expected >0.99)
-
-### trust_ngos (w5)
-
-- ❌ **transformation**: scale conversion (|ρ| ≈ 1) FAILED: r=-0.966, ρ=-0.988 (expected >0.99)
-
 ### trust_ngos (w6)
 
 - ❌ **coverage**: 73.3% coverage loss (2886 of 3939 values)
-
-### trust_parliament (w5)
-
-- ❌ **transformation**: scale conversion (|ρ| ≈ 1) FAILED: r=-0.965, ρ=-0.973 (expected >0.99)
-
-### trust_police (w5)
-
-- ❌ **transformation**: scale conversion (|ρ| ≈ 1) FAILED: r=-0.958, ρ=-0.960 (expected >0.99)
-
-### trust_political_parties (w5)
-
-- ❌ **transformation**: scale conversion (|ρ| ≈ 1) FAILED: r=-0.968, ρ=-0.982 (expected >0.99)
-
-### trust_president (w5)
-
-- ❌ **transformation**: scale conversion (|ρ| ≈ 1) FAILED: r=-0.964, ρ=-0.970 (expected >0.99)
-
-### trust_television (w5)
-
-- ❌ **transformation**: scale conversion (|ρ| ≈ 1) FAILED: r=-0.954, ρ=-0.970 (expected >0.99)
 
 ### intl_china_country_influence_valence_w4 (w4)
 
@@ -3123,26 +3036,6 @@ Generated: 2026-02-11 07:40:17.001141
 ### dem_meaning_set4 (w6)
 
 - ⚠️ **coverage**: 0.33% coverage loss (37 values)
-
-### electoral_status (w2)
-
-- ❌ **coverage**: 27.9% coverage loss (3981 of 14250 values)
-
-### electoral_status (w3)
-
-- ❌ **coverage**: 20.0% coverage loss (2250 of 11241 values)
-
-### electoral_status (w4)
-
-- ❌ **coverage**: 38.8% coverage loss (7041 of 18127 values)
-
-### electoral_status (w5)
-
-- ❌ **coverage**: 36.8% coverage loss (8697 of 23615 values)
-
-### electoral_status (w6)
-
-- ❌ **coverage**: 28.0% coverage loss (2813 of 10038 values)
 
 ### procedural_preference_index (w3)
 
@@ -3289,10 +3182,6 @@ Generated: 2026-02-11 07:40:17.001141
 - ❌ **transformation**: reversal (r ≈ -1) FAILED: r=-0.838, ρ=-0.855 (expected <-0.99)
 - ❌ **crosstab**: 4 raw values map to multiple outputs
 
-### trust_acquaintances (w5)
-
-- ❌ **transformation**: reversal (r ≈ -1) FAILED: r=-0.966, ρ=-0.994 (expected <-0.99)
-
 ### trust_generalized_binary (w1)
 
 - ❌ **coverage**: 1.1% coverage loss (129 of 11878 values)
@@ -3315,10 +3204,6 @@ Generated: 2026-02-11 07:40:17.001141
 - ❌ **transformation**: reversal (r ≈ -1) FAILED: r=-0.765, ρ=-0.809 (expected <-0.99)
 - ❌ **crosstab**: 4 raw values map to multiple outputs
 
-### trust_neighbors (w5)
-
-- ❌ **transformation**: reversal (r ≈ -1) FAILED: r=-0.953, ρ=-0.976 (expected <-0.99)
-
 ### trust_relatives (w2)
 
 - ❌ **transformation**: identity (r ≈ +1) FAILED: r=0.716, ρ=0.798 (expected >0.99)
@@ -3328,12 +3213,4 @@ Generated: 2026-02-11 07:40:17.001141
 
 - ❌ **transformation**: reversal (r ≈ -1) FAILED: r=-0.693, ρ=-0.820 (expected <-0.99)
 - ❌ **crosstab**: 4 raw values map to multiple outputs
-
-### trust_relatives (w5)
-
-- ❌ **transformation**: reversal (r ≈ -1) FAILED: r=-0.915, ρ=-0.876 (expected <-0.99)
-
-### trust_strangers (w5)
-
-- ❌ **transformation**: reversal (r ≈ -1) FAILED: r=-0.965, ρ=-0.994 (expected <-0.99)
 

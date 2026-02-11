@@ -351,6 +351,9 @@ variables:
     concept: electoral_preferences
     description: "Electoral winner/loser status - whether respondent's preferred party/candidate won most recent election"
     type: nominal
+    missing:
+      use_convention: treat_as_na
+      codes: [0, 3]
     source:
       w1: null
       w2: q39a

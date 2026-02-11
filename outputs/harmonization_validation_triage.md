@@ -1,25 +1,19 @@
 # Harmonization Validation Triage
 
-Generated: 2026-02-11 07:41:14.181927
+Generated: 2026-02-11 08:35:13.823072
 
 ## Summary by Likely Cause
 
-- raw_out_of_range_or_missing_codes: 92
-- transform_mismatch_or_data_anomaly: 26
+- raw_out_of_range_or_missing_codes: 81
+- transform_mismatch_or_data_anomaly: 8
 - range_spec_mismatch: 6
 - transform_mismatch_or_data_anomaly; one_to_many_mapping: 6
 - coverage_loss; one_to_many_mapping: 3
-- monotonic_scale_mismatch: 2
 
 ## Issue Details
 
 | spec | var_id | wave | source_var | status | error_checks | likely_cause | suggestion |
 |---|---|---|---|---|---|---|---|
-| clientelism | community_leader_contact | w5 | q72 | error | transformation | transform_mismatch_or_data_anomaly | Inspect raw labels/value distributions for anomalies. |
-| clientelism | community_leader_contact | w6 | q70 | error | transformation | transform_mismatch_or_data_anomaly | Inspect raw labels/value distributions for anomalies. |
-| clientelism | social_support_available | w3 | q29 | error | coverage | raw_out_of_range_or_missing_codes | Inspect raw codes; add to missing_conventions or update valid_range. |
-| clientelism | social_support_available | w4 | q30 | error | coverage | raw_out_of_range_or_missing_codes | Inspect raw codes; add to missing_conventions or update valid_range. |
-| clientelism | social_support_available | w5 | q31 | error | coverage | raw_out_of_range_or_missing_codes | Inspect raw codes; add to missing_conventions or update valid_range. |
 | corruption | corrupt_local_govt | w6 | q115 | error | transformation | transform_mismatch_or_data_anomaly | Inspect raw labels/value distributions for anomalies. |
 | corruption | corrupt_national_govt | w6 | q116 | error | transformation | transform_mismatch_or_data_anomaly | Inspect raw labels/value distributions for anomalies. |
 | democracy_satisfaction | hh_income_sat | w5 | SE14A | error | transformation | transform_mismatch_or_data_anomaly | Inspect raw labels/value distributions for anomalies. |
@@ -52,7 +46,6 @@ Generated: 2026-02-11 07:41:14.181927
 | demographics | seeking_employment | w4 | se9d | error | coverage | raw_out_of_range_or_missing_codes | Inspect raw codes; add to missing_conventions or update valid_range. |
 | demographics | seeking_employment | w5 | SE9D | error | coverage | raw_out_of_range_or_missing_codes | Inspect raw codes; add to missing_conventions or update valid_range. |
 | demographics | seeking_employment | w6 | se9d | error | coverage | raw_out_of_range_or_missing_codes | Inspect raw codes; add to missing_conventions or update valid_range. |
-| economic_attitudes | econ_family_income_fair | w5 | q163 | error | transformation | transform_mismatch_or_data_anomaly | Inspect raw labels/value distributions for anomalies. |
 | globalization | glob_cultural_defense | w1 | q142 | error | coverage | raw_out_of_range_or_missing_codes | Inspect raw codes; add to missing_conventions or update valid_range. |
 | globalization | glob_cultural_defense | w2 | q144 | error | coverage | raw_out_of_range_or_missing_codes | Inspect raw codes; add to missing_conventions or update valid_range. |
 | globalization | glob_cultural_defense | w3 | q151 | error | coverage | raw_out_of_range_or_missing_codes | Inspect raw codes; add to missing_conventions or update valid_range. |
@@ -63,25 +56,9 @@ Generated: 2026-02-11 07:41:14.181927
 | governance | gov_economic_equality | w1 | q106 | error | coverage | raw_out_of_range_or_missing_codes | Inspect raw codes; add to missing_conventions or update valid_range. |
 | governance | gov_elections_real_choice | w5 | q119 | warn | coverage | raw_out_of_range_or_missing_codes | Inspect raw codes; add to missing_conventions or update valid_range. |
 | governance | gov_free_to_organize | w1 | q113 | error | coverage | raw_out_of_range_or_missing_codes | Inspect raw codes; add to missing_conventions or update valid_range. |
-| governance | problem_most_important | w3 | q96 | error | coverage | raw_out_of_range_or_missing_codes | Inspect raw codes; add to missing_conventions or update valid_range. |
-| governance | problem_most_important | w4 | q99 | error | coverage | raw_out_of_range_or_missing_codes | Inspect raw codes; add to missing_conventions or update valid_range. |
 | governance | problem_most_important | w5 | q106 | error | coverage | raw_out_of_range_or_missing_codes | Inspect raw codes; add to missing_conventions or update valid_range. |
-| governance | problem_most_important | w6 | q97 | error | coverage | raw_out_of_range_or_missing_codes | Inspect raw codes; add to missing_conventions or update valid_range. |
-| institutional_trust | trust_civil_service | w5 | q12 | error | transformation | transform_mismatch_or_data_anomaly | Inspect raw labels/value distributions for anomalies. |
-| institutional_trust | trust_courts | w5 | q8 | error | transformation | transform_mismatch_or_data_anomaly | Inspect raw labels/value distributions for anomalies. |
-| institutional_trust | trust_election_commission | w5 | q16 | error | transformation | transform_mismatch_or_data_anomaly | Inspect raw labels/value distributions for anomalies. |
 | institutional_trust | trust_election_commission | w6 | q18 | error | coverage | raw_out_of_range_or_missing_codes | Inspect raw codes; add to missing_conventions or update valid_range. |
-| institutional_trust | trust_local_government | w5 | q15 | error | transformation | transform_mismatch_or_data_anomaly | Inspect raw labels/value distributions for anomalies. |
-| institutional_trust | trust_military | w5 | q13 | error | transformation | transform_mismatch_or_data_anomaly | Inspect raw labels/value distributions for anomalies. |
-| institutional_trust | trust_national_government | w5 | q9 | error | transformation | transform_mismatch_or_data_anomaly | Inspect raw labels/value distributions for anomalies. |
-| institutional_trust | trust_newspapers | w5 | q54 | error | transformation | transform_mismatch_or_data_anomaly | Inspect raw labels/value distributions for anomalies. |
-| institutional_trust | trust_ngos | w5 | q17 | error | transformation | transform_mismatch_or_data_anomaly | Inspect raw labels/value distributions for anomalies. |
 | institutional_trust | trust_ngos | w6 | q19 | error | coverage | raw_out_of_range_or_missing_codes | Inspect raw codes; add to missing_conventions or update valid_range. |
-| institutional_trust | trust_parliament | w5 | q11 | error | transformation | transform_mismatch_or_data_anomaly | Inspect raw labels/value distributions for anomalies. |
-| institutional_trust | trust_police | w5 | q14 | error | transformation | transform_mismatch_or_data_anomaly | Inspect raw labels/value distributions for anomalies. |
-| institutional_trust | trust_political_parties | w5 | q10 | error | transformation | transform_mismatch_or_data_anomaly | Inspect raw labels/value distributions for anomalies. |
-| institutional_trust | trust_president | w5 | q7 | error | transformation | transform_mismatch_or_data_anomaly | Inspect raw labels/value distributions for anomalies. |
-| institutional_trust | trust_television | w5 | q53 | error | transformation | transform_mismatch_or_data_anomaly | Inspect raw labels/value distributions for anomalies. |
 | international_relations | intl_china_country_influence_valence_w4 | w4 | q169 | error | coverage | raw_out_of_range_or_missing_codes | Inspect raw codes; add to missing_conventions or update valid_range. |
 | international_relations | intl_china_world_influence | w5 | q178 | error | coverage | raw_out_of_range_or_missing_codes | Inspect raw codes; add to missing_conventions or update valid_range. |
 | international_relations | intl_close_to_asean | w6 | q186 | warn | coverage | raw_out_of_range_or_missing_codes | Inspect raw codes; add to missing_conventions or update valid_range. |
@@ -99,11 +76,6 @@ Generated: 2026-02-11 07:41:14.181927
 | international_relations | intl_usa_world_influence | w5 | q176 | error | coverage | raw_out_of_range_or_missing_codes | Inspect raw codes; add to missing_conventions or update valid_range. |
 | meaning_of_democracy | dem_essential_core | w2 | q92 | warn | coverage | raw_out_of_range_or_missing_codes | Inspect raw codes; add to missing_conventions or update valid_range. |
 | meaning_of_democracy | dem_meaning_set4 | w6 | q88 | warn | coverage | raw_out_of_range_or_missing_codes | Inspect raw codes; add to missing_conventions or update valid_range. |
-| meaning_of_democracy | electoral_status | w2 | q39a | error | coverage | raw_out_of_range_or_missing_codes | Inspect raw codes; add to missing_conventions or update valid_range. |
-| meaning_of_democracy | electoral_status | w3 | q33a | error | coverage | raw_out_of_range_or_missing_codes | Inspect raw codes; add to missing_conventions or update valid_range. |
-| meaning_of_democracy | electoral_status | w4 | q34a | error | coverage | raw_out_of_range_or_missing_codes | Inspect raw codes; add to missing_conventions or update valid_range. |
-| meaning_of_democracy | electoral_status | w5 | q34a | error | coverage | raw_out_of_range_or_missing_codes | Inspect raw codes; add to missing_conventions or update valid_range. |
-| meaning_of_democracy | electoral_status | w6 | q34a | error | coverage | raw_out_of_range_or_missing_codes | Inspect raw codes; add to missing_conventions or update valid_range. |
 | meaning_of_democracy | procedural_preference_index | w3 | q85 | error | coverage, crosstab | coverage_loss; one_to_many_mapping | Check recode logic for dropped values. Check recode function for non-deterministic mapping. |
 | meaning_of_democracy | procedural_preference_index | w4 | q88 | error | coverage, crosstab | coverage_loss; one_to_many_mapping | Check recode logic for dropped values. Check recode function for non-deterministic mapping. |
 | meaning_of_democracy | procedural_preference_index | w6 | q85 | error | coverage, crosstab | coverage_loss; one_to_many_mapping | Check recode logic for dropped values. Check recode function for non-deterministic mapping. |
@@ -139,14 +111,10 @@ Generated: 2026-02-11 07:41:14.181927
 | social_media | sm_express_political | w4 | q52 | error | coverage | raw_out_of_range_or_missing_codes | Inspect raw codes; add to missing_conventions or update valid_range. |
 | social_trust | trust_acquaintances | w2 | q26 | error | transformation, crosstab | transform_mismatch_or_data_anomaly; one_to_many_mapping | Inspect raw labels/value distributions for anomalies. Check recode function for non-deterministic mapping. |
 | social_trust | trust_acquaintances | w3 | q27 | error | transformation, crosstab | transform_mismatch_or_data_anomaly; one_to_many_mapping | Inspect raw labels/value distributions for anomalies. Check recode function for non-deterministic mapping. |
-| social_trust | trust_acquaintances | w5 | q26 | error | transformation | monotonic_scale_mismatch | Scale conversion may be off; recheck recode function. |
 | social_trust | trust_generalized_binary | w1 | q024 | error | coverage | raw_out_of_range_or_missing_codes | Inspect raw codes; add to missing_conventions or update valid_range. |
 | social_trust | trust_generalized_binary | w3 | q23 | warn | coverage | raw_out_of_range_or_missing_codes | Inspect raw codes; add to missing_conventions or update valid_range. |
 | social_trust | trust_generalized_binary | w5 | q22 | error | coverage | raw_out_of_range_or_missing_codes | Inspect raw codes; add to missing_conventions or update valid_range. |
 | social_trust | trust_neighbors | w2 | q25 | error | transformation, crosstab | transform_mismatch_or_data_anomaly; one_to_many_mapping | Inspect raw labels/value distributions for anomalies. Check recode function for non-deterministic mapping. |
 | social_trust | trust_neighbors | w3 | q26 | error | transformation, crosstab | transform_mismatch_or_data_anomaly; one_to_many_mapping | Inspect raw labels/value distributions for anomalies. Check recode function for non-deterministic mapping. |
-| social_trust | trust_neighbors | w5 | q25 | error | transformation | transform_mismatch_or_data_anomaly | Inspect raw labels/value distributions for anomalies. |
 | social_trust | trust_relatives | w2 | q24 | error | transformation, crosstab | transform_mismatch_or_data_anomaly; one_to_many_mapping | Inspect raw labels/value distributions for anomalies. Check recode function for non-deterministic mapping. |
 | social_trust | trust_relatives | w3 | q25 | error | transformation, crosstab | transform_mismatch_or_data_anomaly; one_to_many_mapping | Inspect raw labels/value distributions for anomalies. Check recode function for non-deterministic mapping. |
-| social_trust | trust_relatives | w5 | q24 | error | transformation | transform_mismatch_or_data_anomaly | Inspect raw labels/value distributions for anomalies. |
-| social_trust | trust_strangers | w5 | q27 | error | transformation | monotonic_scale_mismatch | Scale conversion may be off; recheck recode function. |

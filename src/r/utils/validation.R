@@ -500,7 +500,13 @@ validate_variable_wave <- function(raw_data, harmonized_data, var_spec,
 
   # Run all checks
   # Skip transformation (correlation) check for nominal/categorical variables
-  skip_transform_fns <- c("extract_month_from_date", "extract_year_from_date")
+  skip_transform_fns <- c(
+    "extract_month_from_date",
+    "extract_year_from_date",
+    "collapse_5pt_leader_to_3pt",
+    "collapse_6pt_to_4pt_reverse",
+    "safe_6pt_to_4pt"
+  )
   if (is_nominal) {
     transformation_result <- list(
       status = "skip",

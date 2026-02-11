@@ -144,31 +144,32 @@ variables:
   - id: social_support_available
     concept: social_capital
     description: "If you have a difficult problem, are there people outside your household you can ask for help?"
-    type: nominal
+    type: ordinal
     source:
       w1: null
       w2: null
       w3: q29
       w4: q30
       w5: q31
-      w6: null
+      w6: q31
     # Verified 2025-01-11:
-    # W3-W5: Binary (1=Yes, 2=No)
-    # Target: 1=No, 2=Yes (high = has support)
+    # W3-W6: 4-point scale (1=No, 2=Yes a few, 3=Yes some, 4=Yes a lot)
+    # Target: keep 4-point ordering (low -> high support)
 
     scale:
       min: 1
-      max: 2
+      max: 4
       labels:
-        1: "No"
-        2: "Yes"
+        1: "No, nobody"
+        2: "Yes, a few"
+        3: "Yes, some"
+        4: "Yes, a lot"
     harmonize:
       default:
-        method: r_function
-        fn: safe_reverse_2pt
-        note: "Raw: 1=Yes, 2=No; reverse so high=has support"
+        method: identity
+        note: "Raw scale already ordered low (no support) to high (a lot)"
     qc:
-      valid_range: [1, 2]
+      valid_range: [1, 4]
       validate:
-        - waves: [w3, w4, w5]
+        - waves: [w3, w4, w5, w6]
           phrase: "difficult.*problem|ask.*help"
