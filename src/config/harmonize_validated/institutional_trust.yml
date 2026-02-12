@@ -102,8 +102,8 @@ variables:
       w3: q18
       w4: q18
       w5: q16
-      w6: q18
-    note: "W5 uses q16 (election commission shifted in W5 questionnaire)"
+      w6: q16
+    note: "W5/W6 use q16 (election commission shifted in W5+ questionnaires)"
     scale:
       min: 1
       max: 4
@@ -304,8 +304,8 @@ variables:
       w3: q19
       w4: q19
       w5: q17
-      w6: q19
-    note: "W5 uses q17 (NGOs shifted in W5 questionnaire)"
+      w6: q17
+    note: "W5/W6 use q17 (NGOs shifted in W5+ questionnaires)"
     scale:
       min: 1
       max: 4

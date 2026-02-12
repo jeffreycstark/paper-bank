@@ -6,6 +6,15 @@ missing_conventions:
   treat_as_na:
     codes: [-1, 0, 7, 8, 9, 97, 98, 99]
     description: "Standard missing codes"
+  treat_as_na_dev_model:
+    codes: [-1, 0, 90, 97, 98, 99]
+    description: "Missing codes for development model (keeps 7/8/9 as valid responses)"
+  treat_as_na_country_list:
+    codes: [-1, 0, 90, 97, 98, 99]
+    description: "Missing codes for country list items (keeps 1-29 as valid responses)"
+  treat_as_na_10pt:
+    codes: [-1, 0, 97, 98, 99]
+    description: "Missing codes for 10-point valence scales (keeps 7-9 as valid responses)"
 variables:
   # ===========================================================================
   # GROUP 8: Democracy Ratings of Other Countries
@@ -247,18 +256,20 @@ variables:
     note: "Wave 4 version - may have different scale than w6"
     scale:
       min: 1
-      max: 4
+      max: 6
       labels:
         1: "Very negative"
-        2: "Somewhat negative"
-        3: "Somewhat positive"
-        4: "Very positive"
+        2: "Negative"
+        3: "Somewhat negative"
+        4: "Somewhat positive"
+        5: "Positive"
+        6: "Very positive"
     harmonize:
       default:
         method: r_function
-        fn: safe_4pt_none
+        fn: safe_reverse_6pt
     qc:
-      valid_range: [1, 4]
+      valid_range: [1, 6]
       validate:
         - waves: [w4]
           phrase: "China.*influence.*positive|China.*influence.*negative"
@@ -266,6 +277,8 @@ variables:
     concept: international_relations
     description: "Generally speaking, the influence China has on world affairs is?"
     type: ordinal
+    missing:
+      use_convention: treat_as_na_10pt
     source:
       w1: null
       w2: null
@@ -287,8 +300,15 @@ variables:
       default:
         method: r_function
         fn: safe_reverse_6pt
+      exceptions:
+        w5:
+          method: r_function
+          fn: collapse_10pt_to_6pt
+          note: "W5 10-point scale (1=highly negative → 10=highly positive); collapse to 6-point without reversal"
     qc:
       valid_range: [1, 6]
+      coverage_missing_codes_by_wave:
+        w6: [7, 8, 9]
       validate:
         - waves: [w5, w6]
           phrase: "China.*influence.*world"
@@ -328,6 +348,8 @@ variables:
     concept: international_relations
     description: "Which country should be a model for our own country's future development?"
     type: nominal
+    missing:
+      use_convention: treat_as_na_dev_model
     source:
       w1: null
       w2: null
@@ -348,7 +370,14 @@ variables:
         7: "Our own model"
     harmonize:
       default:
-        method: identity
+        method: r_function
+        fn: recode_dev_model_w3_w4_w6
+        note: "Collapse expanded country list to 1-7; specific countries/combinations -> Other"
+      exceptions:
+        w5:
+          method: r_function
+          fn: recode_dev_model_w5
+          note: "W5 uses different coding (own model=8, Russia=6); collapse to 1-7"
     qc:
       valid_range: [1, 7]
       validate:
@@ -404,18 +433,19 @@ variables:
     note: "Wave 4 only - interest in foreign affairs"
     scale:
       min: 1
-      max: 4
+      max: 5
       labels:
         1: "Not at all closely"
-        2: "Not very closely"
-        3: "Somewhat closely"
-        4: "Very closely"
+        2: "Very little"
+        3: "Not too closely"
+        4: "Somewhat closely"
+        5: "Very closely"
     harmonize:
       default:
         method: r_function
-        fn: safe_reverse_4pt
+        fn: safe_reverse_5pt
     qc:
-      valid_range: [1, 4]
+      valid_range: [1, 5]
       validate:
         - waves: [w4]
           phrase: "foreign.*countr|follow.*foreign"
@@ -423,6 +453,8 @@ variables:
     concept: international_relations
     description: "In ten years, which country will have the most influence in Asia?"
     type: nominal
+    missing:
+      use_convention: treat_as_na_country_list
     source:
       w1: null
       w2: null
@@ -441,7 +473,8 @@ variables:
         5: "Other"
     harmonize:
       default:
-        method: identity
+        method: r_function
+        fn: collapse_influence_country_to_5
     qc:
       valid_range: [1, 5]
       validate:
@@ -454,6 +487,8 @@ variables:
     concept: international_relations
     description: "Which country has the most influence in Asia?"
     type: nominal
+    missing:
+      use_convention: treat_as_na_country_list
     source:
       w1: null
       w2: null
@@ -472,7 +507,8 @@ variables:
         5: "Other"
     harmonize:
       default:
-        method: identity
+        method: r_function
+        fn: collapse_influence_country_to_5
     qc:
       valid_range: [1, 5]
       validate:
@@ -610,18 +646,20 @@ variables:
     note: "Wave 4 version - may have different scale than w6"
     scale:
       min: 1
-      max: 4
+      max: 6
       labels:
         1: "Very negative"
-        2: "Somewhat negative"
-        3: "Somewhat positive"
-        4: "Very positive"
+        2: "Negative"
+        3: "Somewhat negative"
+        4: "Somewhat positive"
+        5: "Positive"
+        6: "Very positive"
     harmonize:
       default:
         method: r_function
-        fn: safe_4pt_none
+        fn: safe_reverse_6pt
     qc:
-      valid_range: [1, 4]
+      valid_range: [1, 6]
       validate:
         - waves: [w4]
           phrase: "USA.*influence.*positive|USA.*influence.*negative"
@@ -629,6 +667,8 @@ variables:
     concept: international_relations
     description: "Generally speaking, the influence the USA has on world affairs is?"
     type: ordinal
+    missing:
+      use_convention: treat_as_na_10pt
     source:
       w1: null
       w2: null
@@ -650,8 +690,15 @@ variables:
       default:
         method: r_function
         fn: safe_reverse_6pt
+      exceptions:
+        w5:
+          method: r_function
+          fn: collapse_10pt_to_6pt
+          note: "W5 10-point scale (1=highly negative → 10=highly positive); collapse to 6-point without reversal"
     qc:
       valid_range: [1, 6]
+      coverage_missing_codes_by_wave:
+        w6: [7, 8, 9]
       validate:
         - waves: [w5, w6]
           phrase: "USA.*influence.*world|United States.*world"

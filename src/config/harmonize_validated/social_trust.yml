@@ -35,14 +35,21 @@ variables:
         note: "W3, W4, W6 coded 1=Great deal → 4=None; reverse so high=trust"
       exceptions:
         w2:
-          method: identity
-          note: "W2 already coded 1=None → 4=Great deal"
+          method: r_function
+          fn: reverse_trust_vietnam_w2
+          note: "W2 identity for most countries; Vietnam (country=11) coded 1=Great deal → 4=None"
+        w3:
+          method: r_function
+          fn: reverse_trust_vietnam_w3
+          note: "W3 reverse for most countries; Vietnam (country=11) coded 1=None → 4=Great deal"
         w5:
           method: r_function
           fn: collapse_6pt_to_4pt_reverse
           note: "W5 has 6pt scale; collapse and reverse"
     qc:
       valid_range: [1, 4]
+      group_by: country
+      transformation_allow_reverse: true
       validate:
         - waves: [w2, w3, w4, w5, w6]
           phrase: "people.*interact"
@@ -53,6 +60,9 @@ variables:
     concept: social_trust
     description: "Would you say most people can be trusted or must be very careful in dealing with people?"
     type: nominal
+    missing:
+      use_convention: treat_as_na
+      codes: [3, 6]
     source:
       w1: q024
       w2: q23
@@ -76,16 +86,22 @@ variables:
         note: "W3, W4, W6 coded 1=Trusted, 2=Careful"
       exceptions:
         w1:
-          method: r_function
-          fn: recode_w1_trust_binary
+          method: recode
+          mapping:
+            1: 2
+            2: 1
+            3: null
           note: "W1 has 3 categories: 1=Careful→2, 2=Trusted→1, 3=Both→NA"
         w2:
           method: r_function
           fn: safe_reverse_2pt
           note: "W2 coded 1=Careful, 2=Trusted; reverse to match W3-W6"
         w5:
-          method: r_function
-          fn: recode_w5_trust_binary
+          method: recode
+          mapping:
+            1: 1
+            2: 2
+            3: null
           note: "W5 has 3 categories: 1=Trusted→1, 2=Careful→2, 3=Depends→NA"
     qc:
       valid_range: [1, 2]
@@ -188,14 +204,21 @@ variables:
         note: "W3, W4, W6 coded 1=Great deal → 4=None; reverse so high=trust"
       exceptions:
         w2:
-          method: identity
-          note: "W2 already coded 1=None → 4=Great deal"
+          method: r_function
+          fn: reverse_trust_vietnam_w2
+          note: "W2 identity for most countries; Vietnam (country=11) coded 1=Great deal → 4=None"
+        w3:
+          method: r_function
+          fn: reverse_trust_vietnam_w3
+          note: "W3 reverse for most countries; Vietnam (country=11) coded 1=None → 4=Great deal"
         w5:
           method: r_function
           fn: collapse_6pt_to_4pt_reverse
           note: "W5 has 6pt scale; collapse and reverse"
     qc:
       valid_range: [1, 4]
+      group_by: country
+      transformation_allow_reverse: true
       validate:
         - waves: [w2, w3, w4, w5, w6]
           phrase: "neighbor"
@@ -233,14 +256,21 @@ variables:
         note: "W3, W4, W6 coded 1=Great deal → 4=None; reverse so high=trust"
       exceptions:
         w2:
-          method: identity
-          note: "W2 already coded 1=None → 4=Great deal"
+          method: r_function
+          fn: reverse_trust_vietnam_w2
+          note: "W2 identity for most countries; Vietnam (country=11) coded 1=Great deal → 4=None"
+        w3:
+          method: r_function
+          fn: reverse_trust_vietnam_w3
+          note: "W3 reverse for most countries; Vietnam (country=11) coded 1=None → 4=Great deal"
         w5:
           method: r_function
           fn: collapse_6pt_to_4pt_reverse
           note: "W5 has 6pt scale (1=Trust fully → 6=Distrust fully); collapse and reverse"
     qc:
       valid_range: [1, 4]
+      group_by: country
+      transformation_allow_reverse: true
       validate:
         - waves: [w2, w3, w4, w5, w6]
           phrase: "trust.*relative"

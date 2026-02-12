@@ -267,6 +267,145 @@ if (is.na(pearson) || is.na(spearman)) {
   )
 }
 
+prepare_group_vec <- function(raw_data, group_by) {
+  if (is.null(group_by) || length(group_by) == 0) {
+    return(NULL)
+  }
+
+  group_vars <- as.character(group_by)
+  missing_vars <- setdiff(group_vars, names(raw_data))
+  if (length(missing_vars) > 0) {
+    return(NULL)
+  }
+
+  group_list <- lapply(group_vars, function(g) {
+    gv <- raw_data[[g]]
+    if (inherits(gv, "haven_labelled")) {
+      gv <- haven::zap_labels(gv)
+    }
+    gv
+  })
+
+  if (length(group_list) == 1) {
+    return(group_list[[1]])
+  }
+
+  interaction(group_list, drop = TRUE, sep = "|")
+}
+
+validate_transformation_abs <- function(raw_vec, harmonized_vec,
+                                        threshold = 0.99) {
+  raw_numeric <- suppressWarnings(as.numeric(raw_vec))
+  harm_numeric <- suppressWarnings(as.numeric(harmonized_vec))
+
+  if (all(is.na(raw_numeric)) || all(is.na(harm_numeric))) {
+    return(list(
+      status = "skip",
+      check = "transformation",
+      method = "abs",
+      pearson = NA,
+      spearman = NA,
+      message = "Non-numeric variable (skipping correlation check)"
+    ))
+  }
+
+  pearson <- suppressWarnings(
+    cor(raw_numeric, harm_numeric, use = "complete.obs", method = "pearson")
+  )
+  spearman <- suppressWarnings(
+    cor(raw_numeric, harm_numeric, use = "complete.obs", method = "spearman")
+  )
+
+  if (is.na(pearson) || is.na(spearman)) {
+    return(list(
+      status = "warn",
+      check = "transformation",
+      method = "abs",
+      pearson = pearson,
+      spearman = spearman,
+      message = "Insufficient data for correlation check"
+    ))
+  }
+
+  if (abs(pearson) > threshold && abs(spearman) > threshold) {
+    status <- "ok"
+    message <- sprintf("Grouped |r|=%.3f, |ρ|=%.3f ✓", pearson, spearman)
+  } else {
+    status <- "error"
+    message <- sprintf("Grouped FAILED: |r|=%.3f, |ρ|=%.3f (expected >%.2f)",
+                       pearson, spearman, threshold)
+  }
+
+  list(
+    status = status,
+    check = "transformation",
+    method = "abs",
+    pearson = pearson,
+    spearman = spearman,
+    message = message
+  )
+}
+
+validate_transformation_grouped <- function(raw_vec, harmonized_vec, group_vec,
+                                            method = "identity",
+                                            threshold = 0.99,
+                                            allow_reverse = FALSE) {
+  groups <- unique(group_vec[!is.na(group_vec)])
+  if (length(groups) == 0) {
+    return(list(
+      status = "skip",
+      check = "transformation",
+      method = method,
+      message = "No groups with data (skipping grouped transformation)"
+    ))
+  }
+
+  results <- lapply(groups, function(g) {
+    idx <- group_vec == g
+    if (allow_reverse) {
+      validate_transformation_abs(raw_vec[idx], harmonized_vec[idx], threshold)
+    } else {
+      validate_transformation(raw_vec[idx], harmonized_vec[idx], method, threshold)
+    }
+  })
+
+  statuses <- vapply(results, function(r) r$status %||% "skip", character(1))
+  n_error <- sum(statuses == "error")
+  n_warn <- sum(statuses == "warn")
+  n_ok <- sum(statuses == "ok")
+  n_skip <- sum(statuses == "skip")
+
+  if (n_error > 0) {
+    status <- "error"
+  } else if (n_warn > 0) {
+    status <- "warn"
+  } else if (n_ok > 0) {
+    status <- "ok"
+  } else {
+    status <- "skip"
+  }
+
+  err_groups <- groups[statuses == "error"]
+  err_preview <- if (length(err_groups) > 0) {
+    paste(head(err_groups, 5), collapse = ", ")
+  } else {
+    ""
+  }
+
+  message <- sprintf(
+    "Grouped transformation by group: ok=%d, warn=%d, error=%d, skip=%d%s",
+    n_ok, n_warn, n_error, n_skip,
+    if (nzchar(err_preview)) sprintf(" (examples: %s)", err_preview) else ""
+  )
+
+  list(
+    status = status,
+    check = "transformation",
+    method = method,
+    message = message
+  )
+}
+
 
 #' Create and validate crosstab of raw vs harmonized values
 #'
@@ -359,6 +498,49 @@ validate_crosstab <- function(raw_vec, harmonized_vec, missing_codes = c()) {
     multi_output = multi_output,
     missing_leaked = missing_leaked,
     crosstab = crosstab,
+    message = message
+  )
+}
+
+validate_crosstab_grouped <- function(raw_vec, harmonized_vec, group_vec,
+                                      missing_codes = c()) {
+  groups <- unique(group_vec[!is.na(group_vec)])
+  if (length(groups) == 0) {
+    return(list(
+      status = "skip",
+      check = "crosstab",
+      message = "No groups with data (skipping grouped crosstab)"
+    ))
+  }
+
+  results <- lapply(groups, function(g) {
+    idx <- group_vec == g
+    validate_crosstab(raw_vec[idx], harmonized_vec[idx], missing_codes)
+  })
+
+  statuses <- vapply(results, function(r) r$status %||% "skip", character(1))
+  n_error <- sum(statuses == "error")
+  n_ok <- sum(statuses == "ok")
+  n_skip <- sum(statuses == "skip")
+
+  status <- if (n_error > 0) "error" else if (n_ok > 0) "ok" else "skip"
+
+  err_groups <- groups[statuses == "error"]
+  err_preview <- if (length(err_groups) > 0) {
+    paste(head(err_groups, 5), collapse = ", ")
+  } else {
+    ""
+  }
+
+  message <- sprintf(
+    "Grouped crosstab by group: ok=%d, error=%d, skip=%d%s",
+    n_ok, n_error, n_skip,
+    if (nzchar(err_preview)) sprintf(" (examples: %s)", err_preview) else ""
+  )
+
+  list(
+    status = status,
+    check = "crosstab",
     message = message
   )
 }
@@ -498,15 +680,45 @@ validate_variable_wave <- function(raw_data, harmonized_data, var_spec,
   var_type <- var_spec$type %||% "ordinal"
   is_nominal <- var_type == "nominal"
 
+  group_by <- var_spec$qc$group_by %||% NULL
+  group_vec <- NULL
+  if (!is.null(group_by)) {
+    group_vec <- prepare_group_vec(raw_data, group_by)
+  }
+
+  raw_vec_check <- raw_vec
+  raw_for_coverage <- raw_vec
+  crosstab_missing_codes <- missing_codes
+
+  if (wave_method == "derive" && nzchar(fn_name) && exists(fn_name, mode = "function")) {
+    raw_vec_check <- get(fn_name, mode = "function")(
+      data = raw_data,
+      wave_name = wave_name,
+      sources = wave_rule$sources %||% NULL
+    )
+    raw_for_coverage <- raw_vec_check
+    crosstab_missing_codes <- numeric(0)
+  }
+
+  skip_transform_check <- isTRUE(var_spec$qc$skip_transformation_check)
+  skip_coverage_check <- isTRUE(var_spec$qc$skip_coverage_check)
+  skip_crosstab_check <- isTRUE(var_spec$qc$skip_crosstab_check)
+  allow_reverse <- isTRUE(var_spec$qc$transformation_allow_reverse)
+
   # Run all checks
   # Skip transformation (correlation) check for nominal/categorical variables
   skip_transform_fns <- c(
     "extract_month_from_date",
     "extract_year_from_date",
     "collapse_5pt_leader_to_3pt",
+    "collapse_10pt_to_6pt",
+    "collapse_5pt_to_4pt_then_reverse",
     "collapse_6pt_to_4pt_reverse",
     "safe_6pt_to_4pt",
-    "recode_w6_corruption"
+    "recode_w1_discuss",
+    "recode_w6_corruption",
+    "middle_identity_5pt",
+    "middle_reverse_5pt"
   )
   if (is_nominal) {
     transformation_result <- list(
@@ -514,17 +726,46 @@ validate_variable_wave <- function(raw_data, harmonized_data, var_spec,
       check = "transformation",
       message = "Skipped: nominal/categorical variable (correlation not meaningful)"
     )
+  } else if (skip_transform_check) {
+    transformation_result <- list(
+      status = "skip",
+      check = "transformation",
+      message = "Skipped: skip_transformation_check set in YAML"
+    )
   } else if (transform_type == "skip" || fn_name %in% skip_transform_fns) {
     transformation_result <- list(
       status = "skip",
       check = "transformation",
       message = "Skipped: transformation not monotonic or not comparable"
     )
+  } else if (!is.null(group_vec)) {
+    transformation_result <- validate_transformation_grouped(
+      raw_vec_check,
+      harmonized_vec,
+      group_vec,
+      method = transform_type,
+      allow_reverse = allow_reverse
+    )
   } else {
-    transformation_result <- validate_transformation(raw_vec, harmonized_vec, transform_type)
+    transformation_result <- validate_transformation(raw_vec_check, harmonized_vec, transform_type)
   }
 
   coverage_missing_codes <- missing_codes
+  if (!is.null(var_spec$qc[["coverage_missing_codes"]])) {
+    coverage_missing_codes <- unique(c(
+      coverage_missing_codes,
+      as.numeric(var_spec$qc[["coverage_missing_codes"]])
+    ))
+  }
+  if (!is.null(var_spec$qc[["coverage_missing_codes_by_wave"]][[wave_name]])) {
+    coverage_missing_codes <- unique(c(
+      coverage_missing_codes,
+      as.numeric(var_spec$qc[["coverage_missing_codes_by_wave"]][[wave_name]])
+    ))
+  }
+  if (wave_method == "derive") {
+    coverage_missing_codes <- numeric(0)
+  }
   if (wave_method == "recode" && !is.null(wave_rule$mapping)) {
     mapping <- wave_rule$mapping
     drop_mask <- vapply(
@@ -539,7 +780,6 @@ validate_variable_wave <- function(raw_data, harmonized_data, var_spec,
     }
   }
 
-  raw_for_coverage <- raw_vec
   if (fn_name %in% c("extract_month_from_date", "extract_year_from_date")) {
     if (exists(fn_name, mode = "function")) {
       raw_for_coverage <- get(fn_name, mode = "function")(
@@ -561,10 +801,28 @@ validate_variable_wave <- function(raw_data, harmonized_data, var_spec,
   }
 
   checks <- list(
-    coverage = validate_coverage(raw_for_coverage, harmonized_vec, coverage_missing_codes),
+    coverage = if (skip_coverage_check) {
+      list(
+        status = "skip",
+        check = "coverage",
+        message = "Skipped: skip_coverage_check set in YAML"
+      )
+    } else {
+      validate_coverage(raw_for_coverage, harmonized_vec, coverage_missing_codes)
+    },
     transformation = transformation_result,
     range = range_result,
-    crosstab = validate_crosstab(raw_vec, harmonized_vec, missing_codes)
+    crosstab = if (skip_crosstab_check) {
+      list(
+        status = "skip",
+        check = "crosstab",
+        message = "Skipped: skip_crosstab_check set in YAML"
+      )
+    } else if (!is.null(group_vec)) {
+      validate_crosstab_grouped(raw_vec_check, harmonized_vec, group_vec, crosstab_missing_codes)
+    } else {
+      validate_crosstab(raw_vec_check, harmonized_vec, crosstab_missing_codes)
+    }
   )
 
   # Aggregate status

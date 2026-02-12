@@ -26,6 +26,8 @@ here::i_am("src/r/data_prep_modules/2.5_validate_harmonization.R")
 # Load validation functions
 source(here::here("src/r/utils/validation.R"))
 source(here::here("src/r/data_prep_modules/_yaml_utils.R"))
+source(here::here("src/r/harmonize/_load_harmonize.R"))
+source(here::here("src/r/utils/recoding.R"))
 
 # ==============================================================================
 # HELPER FUNCTIONS

@@ -85,7 +85,8 @@ variables:
     harmonize:
       default:
         method: r_function
-        fn: safe_reverse_4pt
+        fn: collapse_6pt_to_4pt_reverse
+        note: "W4 has 6pt scale (1=Everyday → 6=Never); collapse to 4pt and reverse"
     qc:
       valid_range: [1, 4]
       validate:

@@ -216,6 +216,9 @@ variables:
     concept: political_attitudes
     description: "How often do you follow news about politics in the daily newspaper?"
     type: ordinal
+    missing:
+      use_convention: treat_as_na
+      codes: [6]
     source:
       w1: q058
       w2: null
@@ -245,6 +248,9 @@ variables:
     concept: political_attitudes
     description: "How often do you follow news about politics on the radio?"
     type: ordinal
+    missing:
+      use_convention: treat_as_na
+      codes: [6]
     source:
       w1: q060
       w2: null
@@ -274,6 +280,9 @@ variables:
     concept: political_attitudes
     description: "How often do you follow news about politics on television?"
     type: ordinal
+    missing:
+      use_convention: treat_as_na
+      codes: [6]
     source:
       w1: q059
       w2: null

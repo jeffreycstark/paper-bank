@@ -267,18 +267,150 @@ p_combined <- combined_data |>
 ggsave("figures/wvs_sensitivity_gradient_combined.pdf", p_combined, width = 10, height = 7)
 ggsave("figures/wvs_sensitivity_gradient_combined.png", p_combined, width = 10, height = 7, dpi = 300)
 
-# ─── 8. Save results ────────────────────────────────────────────────────────
+# ─── 8. Statistical tests ────────────────────────────────────────────────────
+
+# For each country, test whether NR rates differ across sensitivity categories.
+# Two approaches:
+#   (a) Item-level: Kruskal-Wallis on W7 NR rates across 3 categories
+#       (unit of analysis = item, N is small so this is illustrative)
+#   (b) Respondent-level: For each respondent, compute proportion of items
+#       answered within each category; test whether category predicts response.
+#       More powerful because N = respondents.
+
+library(broom)
+
+# --- (a) Item-level Kruskal-Wallis ---
+item_level_tests <- all_results |>
+  filter(label != "Army rule") |>
+  group_by(country) |>
+  summarise(
+    kw_stat = kruskal.test(w7_nr ~ factor(sensitivity))$statistic,
+    kw_df = kruskal.test(w7_nr ~ factor(sensitivity))$parameter,
+    kw_p = kruskal.test(w7_nr ~ factor(sensitivity))$p.value,
+    .groups = "drop"
+  )
+
+cat("\n=== Item-level Kruskal-Wallis tests (W7 NR ~ sensitivity category) ===\n")
+print(item_level_tests)
+
+# --- (b) Respondent-level chi-squared tests ---
+# For each item, construct a 2×3 contingency: (responded / didn't) × (Dem / Trust / Control)
+# Pool across items within category to get aggregate response counts.
+
+respondent_level_tests <- list()
+
+for (cty_iso in c(792, 643)) {
+  cty_name <- if (cty_iso == 792) "Turkey" else "Russia"
+
+  w7c <- w7_raw |> filter(B_COUNTRY == cty_iso)
+  n_resp <- nrow(w7c)
+
+  item_subset <- item_map |> filter(label != "Army rule")
+
+  # Count total responses and non-responses per category
+  cat_counts <- item_subset |>
+    rowwise() |>
+    mutate(
+      n_responded = sum(!is.na(w7c[[w7_var]]) & w7c[[w7_var]] > 0),
+      n_missing = n_resp - n_responded
+    ) |>
+    ungroup() |>
+    group_by(sensitivity) |>
+    summarise(
+      total_responded = sum(n_responded),
+      total_missing = sum(n_missing),
+      n_items = n(),
+      .groups = "drop"
+    )
+
+  # Chi-squared test on the 3×2 contingency table
+  cont_table <- matrix(
+    c(cat_counts$total_responded, cat_counts$total_missing),
+    nrow = 3, ncol = 2,
+    dimnames = list(cat_counts$sensitivity, c("Responded", "Missing"))
+  )
+
+  chi_test <- chisq.test(cont_table)
+
+  # Pairwise: Democracy vs Trust, Democracy vs Control, Trust vs Control
+  pairs <- list(
+    c("Democracy", "Trust"),
+    c("Democracy", "Control"),
+    c("Trust", "Control")
+  )
+
+  pairwise_results <- map_dfr(pairs, function(pair) {
+    idx <- cat_counts$sensitivity %in% pair
+    sub_table <- cont_table[idx, ]
+    test <- chisq.test(sub_table)
+    tibble(
+      comparison = paste(pair, collapse = " vs. "),
+      chi_sq = test$statistic,
+      df = test$parameter,
+      p_value = test$p.value
+    )
+  })
+
+  respondent_level_tests[[cty_name]] <- list(
+    omnibus = tibble(
+      country = cty_name,
+      chi_sq = chi_test$statistic,
+      df = chi_test$parameter,
+      p_value = chi_test$p.value
+    ),
+    pairwise = pairwise_results |> mutate(country = cty_name, .before = 1),
+    contingency = cont_table
+  )
+
+  cat(sprintf("\n=== %s: Respondent-level chi-squared (pooled item-responses) ===\n", cty_name))
+  cat("Contingency table (items pooled within category):\n")
+  print(cont_table)
+  cat(sprintf("Omnibus chi-squared: %.1f, df=%d, p < %.1e\n",
+              chi_test$statistic, chi_test$parameter, chi_test$p.value))
+  cat("Pairwise comparisons:\n")
+  print(pairwise_results)
+}
+
+# --- (c) Effect sizes: odds ratios for Democracy vs Trust NR ---
+or_results <- map_dfr(c("Turkey", "Russia"), function(cty_name) {
+  ct <- respondent_level_tests[[cty_name]]$contingency
+  # Democracy vs Trust: 2×2 sub-table
+  dem_row <- which(rownames(ct) == "Democracy")
+  trust_row <- which(rownames(ct) == "Trust")
+  sub <- ct[c(dem_row, trust_row), ]
+  # OR = (Dem_missing / Dem_responded) / (Trust_missing / Trust_responded)
+  or_val <- (sub[1, 2] / sub[1, 1]) / (sub[2, 2] / sub[2, 1])
+  log_or_se <- sqrt(1/sub[1,1] + 1/sub[1,2] + 1/sub[2,1] + 1/sub[2,2])
+  or_ci_lo <- exp(log(or_val) - 1.96 * log_or_se)
+  or_ci_hi <- exp(log(or_val) + 1.96 * log_or_se)
+  tibble(
+    country = cty_name,
+    odds_ratio = or_val,
+    or_ci_lo = or_ci_lo,
+    or_ci_hi = or_ci_hi
+  )
+})
+
+cat("\n=== Odds ratios: Democracy vs Trust non-response ===\n")
+print(or_results)
+
+# ─── 9. Save results ────────────────────────────────────────────────────────
 
 wvs_gradient_results <- all_results
 wvs_gradient_summary <- gradient_summary
+wvs_gradient_item_tests <- item_level_tests
+wvs_gradient_respondent_tests <- respondent_level_tests
+wvs_gradient_odds_ratios <- or_results
 
 save(wvs_gradient_results, wvs_gradient_summary,
+     wvs_gradient_item_tests, wvs_gradient_respondent_tests,
+     wvs_gradient_odds_ratios,
      file = "results/wvs_sensitivity_gradient.RData")
 
 cat("\n✓ Results saved to results/wvs_sensitivity_gradient.RData\n")
 cat("✓ Figures saved to figures/\n")
 
-# ─── 9. Print key findings for manuscript ────────────────────────────────────
+# ─── 10. Print key findings for manuscript ───────────────────────────────────
 
 cat("\n=== KEY FINDINGS FOR MANUSCRIPT ===\n")
 

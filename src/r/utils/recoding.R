@@ -81,6 +81,46 @@ safe_reverse_4pt <- function(x,
   )
 }
 
+reverse_trust_vietnam_w2 <- function(x,
+                                     data = NULL,
+                                     var_name = NULL,
+                                     validate_all = NULL) {
+  if (is.null(data) || !"country" %in% names(data)) {
+    stop("❌ reverse_trust_vietnam_w2 requires `data$country`")
+  }
+
+  country <- data$country
+  if (inherits(country, "haven_labelled")) {
+    country <- haven::zap_labels(country)
+  }
+  country <- suppressWarnings(as.numeric(country))
+
+  out <- x
+  idx <- !is.na(out) & country == 11
+  out[idx] <- 5 - out[idx]
+  out
+}
+
+reverse_trust_vietnam_w3 <- function(x,
+                                     data = NULL,
+                                     var_name = NULL,
+                                     validate_all = NULL) {
+  if (is.null(data) || !"country" %in% names(data)) {
+    stop("❌ reverse_trust_vietnam_w3 requires `data$country`")
+  }
+
+  country <- data$country
+  if (inherits(country, "haven_labelled")) {
+    country <- haven::zap_labels(country)
+  }
+  country <- suppressWarnings(as.numeric(country))
+
+  out <- x
+  idx <- !is.na(out) & country != 11
+  out[idx] <- 5 - out[idx]
+  out
+}
+
 safe_reverse_5pt <- function(x,
                               data = NULL,
                               var_name = NULL,
@@ -719,6 +759,78 @@ collapse_6pt_to_4pt_reverse <- function(x,
 }
 
 # ------------------------------------------------------------------------------
+# INTERNATIONAL RELATIONS: Scale and category collapses
+# ------------------------------------------------------------------------------
+
+collapse_10pt_to_6pt <- function(x,
+                                 ...) {
+  dplyr::case_when(
+    is.na(x) ~ NA_real_,
+    x %in% 1:2 ~ 1,
+    x %in% 3:4 ~ 2,
+    x == 5 ~ 3,
+    x == 6 ~ 4,
+    x %in% 7:8 ~ 5,
+    x %in% 9:10 ~ 6,
+    TRUE ~ NA_real_
+  )
+}
+
+collapse_influence_country_to_5 <- function(x,
+                                            ...) {
+  dplyr::case_when(
+    is.na(x) ~ NA_real_,
+    x %in% 1:4 ~ as.numeric(x),
+    x %in% c(-1, 0, 90, 97, 98, 99) ~ NA_real_,
+    TRUE ~ 5
+  )
+}
+
+# ------------------------------------------------------------------------------
+# INTERNATIONAL RELATIONS: Development model recodes
+# ------------------------------------------------------------------------------
+
+recode_dev_model_w3_w4_w6 <- function(x,
+                                      missing_codes = c(-1, 0, 90, 97, 98, 99),
+                                      ...) {
+  #' Collapse expanded country lists to 1-7 scale for W3/W4/W6
+  #'
+  #' Target:
+  #'   1=USA, 2=China, 3=India, 4=Japan, 5=Singapore, 6=Other, 7=Own model
+  #'
+  dplyr::case_when(
+    x %in% missing_codes ~ NA_real_,
+    x %in% 1:5 ~ as.numeric(x),
+    x == 6 ~ 6,   # Other
+    x == 7 ~ 7,   # Own model
+    x >= 8 ~ 6,   # Specific countries/combinations -> Other
+    TRUE ~ NA_real_
+  )
+}
+
+recode_dev_model_w5 <- function(x,
+                                missing_codes = c(-1, 0, 90, 97, 98, 99),
+                                ...) {
+  #' Collapse expanded country lists to 1-7 scale for W5
+  #'
+  #' W5 codes:
+  #'   1-5 match target (USA/China/India/Japan/Singapore)
+  #'   6=Russia -> Other
+  #'   7=Other -> Other
+  #'   8=Own model -> 7
+  #'   9+ specific countries -> Other
+  dplyr::case_when(
+    x %in% missing_codes ~ NA_real_,
+    x %in% 1:5 ~ as.numeric(x),
+    x == 6 ~ 6,   # Russia -> Other
+    x == 7 ~ 6,   # Other
+    x == 8 ~ 7,   # Own model
+    x >= 9 ~ 6,   # Specific countries -> Other
+    TRUE ~ NA_real_
+  )
+}
+
+# ------------------------------------------------------------------------------
 # CORRUPTION: Wave 2 anti-corruption effort recode
 # ------------------------------------------------------------------------------
 
@@ -1207,6 +1319,57 @@ recode_voted_default <- function(x,
     x == 1104 ~ NA_real_,
     TRUE ~ NA_real_
   )
+}
+
+
+#' Recode voted_winning_losing with vote-status mask
+#'
+#' Keep winner/loser only when respondent reports voting; otherwise NA.
+#' W2 vote item q38: 1=No, 2=Yes
+#' W3-W6 vote item q32/q33: 1=Yes, 2=No
+#' @param x Numeric vector (winner/loser codes)
+#' @param data Full wave data frame (used to read raw vote item)
+#' @param var_name Variable name for winner/loser (q39a/q33a/q34a)
+#' @return Numeric vector (1=Winner, 2=Loser, others→NA)
+recode_voted_winning_losing_masked <- function(x,
+                                               data = NULL,
+                                               var_name = NULL,
+                                               validate_all = NULL) {
+  x_num <- suppressWarnings(as.numeric(x))
+
+  # Determine the vote-status variable for the wave
+  vote_var <- NULL
+  yes_code <- NULL
+  if (!is.null(var_name)) {
+    if (var_name == "q39a") {
+      # W2 winner/loser -> vote question is q38 (1=No, 2=Yes)
+      vote_var <- "q38"
+      yes_code <- 2
+    } else if (var_name == "q33a") {
+      # W3 winner/loser -> vote question is q32 (1=Yes, 2=No)
+      vote_var <- "q32"
+      yes_code <- 1
+    } else if (var_name == "q34a") {
+      # W4-W6 winner/loser -> vote question is q33 (1=Yes, 2=No)
+      vote_var <- "q33"
+      yes_code <- 1
+    }
+  }
+
+  # Default: keep only valid winner/loser codes
+  out <- dplyr::case_when(
+    x_num %in% c(1, 2) ~ x_num,
+    TRUE ~ NA_real_
+  )
+
+  # Apply vote-status mask if we can locate the vote variable
+  if (!is.null(data) && !is.null(vote_var) && vote_var %in% names(data)) {
+    vote_raw <- suppressWarnings(as.numeric(data[[vote_var]]))
+    voted_yes <- vote_raw == yes_code
+    out[!voted_yes] <- NA_real_
+  }
+
+  out
 }
 
 

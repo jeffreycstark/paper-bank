@@ -94,6 +94,9 @@ variables:
     concept: demographics
     description: "What is your current status? (for non-employed)"
     type: nominal
+    missing:
+      use_convention: treat_as_na
+      codes: [90]
     source:
       w1: null
       w2: null
@@ -115,6 +118,18 @@ variables:
     harmonize:
       default:
         method: identity
+      exceptions:
+        w3:
+          method: recode
+          mapping:
+            1: 1
+            2: 2
+            3: 3
+            4: 4
+            5: 5
+            6: 6
+            10: 6
+            90: null
     qc:
       valid_range: [1, 6]
       validate:
@@ -489,6 +504,9 @@ variables:
     concept: demographics
     description: "Religious affiliation"
     type: nominal
+    missing:
+      use_convention: treat_as_na
+      codes: [996, 998, 999, 9998, 9999]
     source:
       w1: se006
       w2: se6
@@ -516,7 +534,7 @@ variables:
       default:
         method: identity
     qc:
-      valid_range: [1, 99]
+      valid_range: [1, 9999]
       validate:
         - waves: [w1, w2, w3, w4, w5, w6]
           phrase: "religion"
@@ -524,6 +542,9 @@ variables:
     concept: demographics
     description: "How often do you practice religious services or rituals?"
     type: ordinal
+    missing:
+      use_convention: treat_as_na
+      codes: [90]
     source:
       w1: se007
       w2: se7
@@ -558,6 +579,9 @@ variables:
     concept: demographics
     description: "Would you describe yourself as religious?"
     type: ordinal
+    missing:
+      use_convention: treat_as_na
+      codes: [90]
     source:
       w1: null
       w2: se7a
@@ -586,6 +610,8 @@ variables:
     concept: demographics
     description: "Are you currently seeking employment?"
     type: nominal
+    missing:
+      use_convention: treat_as_na
     source:
       w1: null
       w2: null
@@ -595,15 +621,16 @@ variables:
       w6: se9d
     scale:
       min: 1
-      max: 2
+      max: 3
       labels:
         1: "Yes"
         2: "No"
+        3: "Never employed"
     harmonize:
       default:
         method: identity
     qc:
-      valid_range: [1, 2]
+      valid_range: [1, 3]
       validate:
         - waves: [w3, w4, w5, w6]
           phrase: "seeking employment"

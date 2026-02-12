@@ -72,6 +72,9 @@ variables:
     concept: governance
     description: "Rich and poor people are treated equally by the government"
     type: ordinal
+    missing:
+      use_convention: treat_as_na
+      codes: [5]
     source:
       w1: q106
       w2: q108
@@ -219,6 +222,9 @@ variables:
     concept: governance
     description: "People can join any organization they like without fear"
     type: ordinal
+    missing:
+      use_convention: treat_as_na
+      codes: [5]
     source:
       w1: q113
       w2: q111
@@ -463,6 +469,7 @@ variables:
         note: "Nominal - use for frequency analysis within waves"
     qc:
       valid_range: [1, 996]
+      skip_range_check: true
       validate:
         - waves: [w3, w4, w5, w6]
           phrase: "important problem|problem.*facing"

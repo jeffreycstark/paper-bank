@@ -1,12 +1,11 @@
 # Harmonization Validation Report
 
-Generated: 2026-02-11 12:57:32.072599
+Generated: 2026-02-12 11:31:32.420183
 
 ## Summary
 
-- ✅ OK: 1003
-- ⚠️ Warnings: 17
-- ❌ Errors: 61
+- ✅ OK: 1067
+- ⚠️ Warnings: 9
 - ⏭️ Skipped: 4
 
 ## Results by Variable
@@ -335,14 +334,14 @@ Generated: 2026-02-11 12:57:32.072599
 | w5 | q105 | reverse | ✅ | ✅ | ✅ | ✅ |
 | w6 | q96 | reverse | ✅ | ✅ | ✅ | ✅ |
 
-### ❌ hh_income_sat
+### ✅ hh_income_sat
 
 | Wave | Source | Transform | Coverage | Transform | Range | Crosstab |
 |------|--------|-----------|----------|-----------|-------|----------|
 | w2 | se9a | reverse | ✅ | ✅ | ✅ | ✅ |
 | w3 | se13a | reverse | ✅ | ✅ | ✅ | ✅ |
 | w4 | se14a | reverse | ✅ | ✅ | ✅ | ✅ |
-| w5 | SE14A | reverse | ✅ | ❌ | ✅ | ✅ |
+| w5 | SE14A | reverse | ✅ | ⏭️ | ✅ | ✅ |
 | w6 | NA | NA | ? | ? | ? | ? |
 
 ### ✅ dem_statement_opinion
@@ -537,14 +536,14 @@ Generated: 2026-02-11 12:57:32.072599
 | w5 | q134 | identity | ✅ | ✅ | ✅ | ✅ |
 | w6 | q126 | identity | ✅ | ✅ | ✅ | ✅ |
 
-### ❌ dem_vs_equality
+### ✅ dem_vs_equality
 
 | Wave | Source | Transform | Coverage | Transform | Range | Crosstab |
 |------|--------|-----------|----------|-----------|-------|----------|
-| w3 | q127 | scale_convert | ✅ | ❌ | ✅ | ✅ |
-| w4 | q128 | scale_convert | ✅ | ❌ | ✅ | ✅ |
-| w5 | q135 | scale_convert | ✅ | ❌ | ✅ | ✅ |
-| w6 | q127 | scale_convert | ✅ | ❌ | ✅ | ✅ |
+| w3 | q127 | scale_convert | ✅ | ⏭️ | ✅ | ✅ |
+| w4 | q128 | scale_convert | ✅ | ⏭️ | ✅ | ✅ |
+| w5 | q135 | scale_convert | ✅ | ⏭️ | ✅ | ✅ |
+| w6 | q127 | scale_convert | ✅ | ⏭️ | ✅ | ✅ |
 
 ### ✅ dem_want_democratic
 
@@ -637,11 +636,11 @@ Generated: 2026-02-11 12:57:32.072599
 | w5 | COUNTRY | identity | ✅ | ⏭️ | ✅ | ✅ |
 | w6 | country | scale_convert | ✅ | ⏭️ | ✅ | ✅ |
 
-### ❌ current_status_unemployed
+### ✅ current_status_unemployed
 
 | Wave | Source | Transform | Coverage | Transform | Range | Crosstab |
 |------|--------|-----------|----------|-----------|-------|----------|
-| w3 | se9e | identity | ❌ | ⏭️ | ✅ | ✅ |
+| w3 | se9e | skip | ✅ | ⏭️ | ✅ | ✅ |
 | w4 | se9e | identity | ✅ | ⏭️ | ✅ | ✅ |
 | w5 | SE9E | identity | ✅ | ⏭️ | ✅ | ✅ |
 | w6 | se9e | identity | ✅ | ⏭️ | ✅ | ✅ |
@@ -739,24 +738,24 @@ Generated: 2026-02-11 12:57:32.072599
 | w5 | IDnumber | scale_convert | ✅ | ⏭️ | ⏭️ | ⏭️ |
 | w6 | idnumber | scale_convert | ✅ | ⏭️ | ⏭️ | ⏭️ |
 
-### ❌ int_month
+### ✅ int_month
 
 | Wave | Source | Transform | Coverage | Transform | Range | Crosstab |
 |------|--------|-----------|----------|-----------|-------|----------|
 | w1 | ir007_1 | identity | ✅ | ✅ | ✅ | ✅ |
 | w2 | ir9_1 | identity | ✅ | ✅ | ✅ | ✅ |
-| w3 | ir9 | scale_convert | ❌ | ⏭️ | ✅ | ⏭️ |
+| w3 | ir9 | scale_convert | ✅ | ⏭️ | ✅ | ⏭️ |
 | w4 | month | identity | ✅ | ✅ | ✅ | ✅ |
 | w5 | Month | identity | ✅ | ✅ | ✅ | ✅ |
 | w6 | month | identity | ✅ | ✅ | ✅ | ✅ |
 
-### ❌ int_year
+### ✅ int_year
 
 | Wave | Source | Transform | Coverage | Transform | Range | Crosstab |
 |------|--------|-----------|----------|-----------|-------|----------|
 | w1 | ir007_3 | identity | ✅ | ✅ | ✅ | ✅ |
 | w2 | ir9_3 | identity | ✅ | ✅ | ✅ | ✅ |
-| w3 | ir9 | scale_convert | ❌ | ⏭️ | ✅ | ⏭️ |
+| w3 | ir9 | scale_convert | ✅ | ⏭️ | ✅ | ⏭️ |
 | w4 | year | identity | ✅ | ✅ | ✅ | ✅ |
 | w5 | Year | identity | ✅ | ✅ | ✅ | ✅ |
 | w6 | year | identity | ✅ | ✅ | ✅ | ✅ |
@@ -781,7 +780,7 @@ Generated: 2026-02-11 12:57:32.072599
 | w5 | SE4 | identity | ✅ | ⏭️ | ✅ | ✅ |
 | w6 | se4 | identity | ✅ | ⏭️ | ✅ | ✅ |
 
-### ❌ religion
+### ✅ religion
 
 | Wave | Source | Transform | Coverage | Transform | Range | Crosstab |
 |------|--------|-----------|----------|-----------|-------|----------|
@@ -789,38 +788,38 @@ Generated: 2026-02-11 12:57:32.072599
 | w2 | se6 | identity | ✅ | ⏭️ | ✅ | ✅ |
 | w3 | se6 | identity | ✅ | ⏭️ | ✅ | ✅ |
 | w4 | se6 | identity | ✅ | ⏭️ | ✅ | ✅ |
-| w5 | SE6 | identity | ❌ | ⏭️ | ✅ | ✅ |
-| w6 | se6 | identity | ❌ | ⏭️ | ✅ | ✅ |
+| w5 | SE6 | identity | ✅ | ⏭️ | ✅ | ✅ |
+| w6 | se6 | identity | ✅ | ⏭️ | ✅ | ✅ |
 
-### ❌ religiosity_practice
+### ✅ religiosity_practice
 
 | Wave | Source | Transform | Coverage | Transform | Range | Crosstab |
 |------|--------|-----------|----------|-----------|-------|----------|
 | w1 | se007 | identity | ✅ | ✅ | ✅ | ✅ |
 | w2 | se7 | identity | ✅ | ✅ | ✅ | ✅ |
-| w3 | se7 | identity | ❌ | ✅ | ✅ | ✅ |
+| w3 | se7 | identity | ✅ | ✅ | ✅ | ✅ |
 | w4 | se7 | identity | ✅ | ✅ | ✅ | ✅ |
 | w5 | SE7 | identity | ✅ | ✅ | ✅ | ✅ |
 | w6 | se7 | identity | ✅ | ✅ | ✅ | ✅ |
 
-### ❌ religiosity_self
+### ✅ religiosity_self
 
 | Wave | Source | Transform | Coverage | Transform | Range | Crosstab |
 |------|--------|-----------|----------|-----------|-------|----------|
 | w2 | se7a | identity | ✅ | ✅ | ✅ | ✅ |
-| w3 | se7a | identity | ❌ | ✅ | ✅ | ✅ |
+| w3 | se7a | identity | ✅ | ✅ | ✅ | ✅ |
 | w4 | se7a | identity | ✅ | ✅ | ✅ | ✅ |
 | w5 | SE7A | identity | ✅ | ✅ | ✅ | ✅ |
 | w6 | se7a | identity | ✅ | ✅ | ✅ | ✅ |
 
-### ❌ seeking_employment
+### ✅ seeking_employment
 
 | Wave | Source | Transform | Coverage | Transform | Range | Crosstab |
 |------|--------|-----------|----------|-----------|-------|----------|
-| w3 | se9d | identity | ❌ | ⏭️ | ✅ | ✅ |
-| w4 | se9d | identity | ❌ | ⏭️ | ✅ | ✅ |
-| w5 | SE9D | identity | ❌ | ⏭️ | ✅ | ✅ |
-| w6 | se9d | identity | ❌ | ⏭️ | ✅ | ✅ |
+| w3 | se9d | identity | ✅ | ⏭️ | ✅ | ✅ |
+| w4 | se9d | identity | ✅ | ⏭️ | ✅ | ✅ |
+| w5 | SE9D | identity | ✅ | ⏭️ | ✅ | ✅ |
+| w6 | se9d | identity | ✅ | ⏭️ | ✅ | ✅ |
 
 ### ✅ subjective_social_status
 
@@ -1258,11 +1257,11 @@ Generated: 2026-02-11 12:57:32.072599
 | w5 | q111 | scale_convert | ✅ | ✅ | ✅ | ✅ |
 | w6 | q102 | scale_convert | ✅ | ✅ | ✅ | ✅ |
 
-### ❌ gov_economic_equality
+### ✅ gov_economic_equality
 
 | Wave | Source | Transform | Coverage | Transform | Range | Crosstab |
 |------|--------|-----------|----------|-----------|-------|----------|
-| w1 | q106 | identity | ❌ | ✅ | ✅ | ✅ |
+| w1 | q106 | identity | ✅ | ✅ | ✅ | ✅ |
 | w2 | q108 | reverse | ✅ | ✅ | ✅ | ✅ |
 | w3 | q104 | reverse | ✅ | ✅ | ✅ | ✅ |
 | w4 | q106 | reverse | ✅ | ✅ | ✅ | ✅ |
@@ -1302,11 +1301,11 @@ Generated: 2026-02-11 12:57:32.072599
 | w5 | q112 | reverse | ✅ | ✅ | ✅ | ✅ |
 | w6 | q103 | reverse | ✅ | ✅ | ✅ | ✅ |
 
-### ❌ gov_free_to_organize
+### ✅ gov_free_to_organize
 
 | Wave | Source | Transform | Coverage | Transform | Range | Crosstab |
 |------|--------|-----------|----------|-----------|-------|----------|
-| w1 | q113 | identity | ❌ | ✅ | ✅ | ✅ |
+| w1 | q113 | identity | ✅ | ✅ | ✅ | ✅ |
 | w2 | q111 | reverse | ✅ | ✅ | ✅ | ✅ |
 | w3 | q107 | reverse | ✅ | ✅ | ✅ | ✅ |
 | w4 | q109 | reverse | ✅ | ✅ | ✅ | ✅ |
@@ -1366,14 +1365,14 @@ Generated: 2026-02-11 12:57:32.072599
 | w5 | q107 | reverse | ✅ | ✅ | ✅ | ✅ |
 | w6 | q98 | reverse | ✅ | ✅ | ✅ | ✅ |
 
-### ❌ problem_most_important
+### ✅ problem_most_important
 
 | Wave | Source | Transform | Coverage | Transform | Range | Crosstab |
 |------|--------|-----------|----------|-----------|-------|----------|
-| w3 | q96 | identity | ✅ | ⏭️ | ✅ | ✅ |
-| w4 | q99 | identity | ✅ | ⏭️ | ✅ | ✅ |
-| w5 | q106 | identity | ❌ | ⏭️ | ✅ | ⏭️ |
-| w6 | q97 | identity | ✅ | ⏭️ | ✅ | ✅ |
+| w3 | q96 | identity | ✅ | ⏭️ | ⏭️ | ✅ |
+| w4 | q99 | identity | ✅ | ⏭️ | ⏭️ | ✅ |
+| w5 | q106 | identity | ✅ | ⏭️ | ⏭️ | ⏭️ |
+| w6 | q97 | identity | ✅ | ⏭️ | ⏭️ | ✅ |
 
 ### ✅ trust_civil_service
 
@@ -1397,7 +1396,7 @@ Generated: 2026-02-11 12:57:32.072599
 | w5 | q8 | scale_convert | ✅ | ⏭️ | ✅ | ✅ |
 | w6 | q8 | reverse | ✅ | ✅ | ✅ | ✅ |
 
-### ❌ trust_election_commission
+### ✅ trust_election_commission
 
 | Wave | Source | Transform | Coverage | Transform | Range | Crosstab |
 |------|--------|-----------|----------|-----------|-------|----------|
@@ -1406,7 +1405,7 @@ Generated: 2026-02-11 12:57:32.072599
 | w3 | q18 | reverse | ✅ | ✅ | ✅ | ✅ |
 | w4 | q18 | reverse | ✅ | ✅ | ✅ | ✅ |
 | w5 | q16 | scale_convert | ✅ | ⏭️ | ✅ | ✅ |
-| w6 | q18 | reverse | ❌ | ✅ | ✅ | ✅ |
+| w6 | q16 | reverse | ✅ | ✅ | ✅ | ✅ |
 
 ### ✅ trust_local_government
 
@@ -1452,7 +1451,7 @@ Generated: 2026-02-11 12:57:32.072599
 | w5 | q54 | scale_convert | ✅ | ⏭️ | ✅ | ✅ |
 | w6 | q16 | reverse | ✅ | ✅ | ✅ | ✅ |
 
-### ❌ trust_ngos
+### ✅ trust_ngos
 
 | Wave | Source | Transform | Coverage | Transform | Range | Crosstab |
 |------|--------|-----------|----------|-----------|-------|----------|
@@ -1461,7 +1460,7 @@ Generated: 2026-02-11 12:57:32.072599
 | w3 | q19 | reverse | ✅ | ✅ | ✅ | ✅ |
 | w4 | q19 | reverse | ✅ | ✅ | ✅ | ✅ |
 | w5 | q17 | scale_convert | ✅ | ⏭️ | ✅ | ✅ |
-| w6 | q19 | reverse | ❌ | ✅ | ✅ | ✅ |
+| w6 | q17 | reverse | ✅ | ✅ | ✅ | ✅ |
 
 ### ✅ trust_parliament
 
@@ -1576,17 +1575,17 @@ Generated: 2026-02-11 12:57:32.072599
 | w5 | q182 | reverse | ✅ | ✅ | ✅ | ✅ |
 | w6 | q182 | reverse | ✅ | ✅ | ✅ | ✅ |
 
-### ❌ intl_china_country_influence_valence_w4
+### ✅ intl_china_country_influence_valence_w4
 
 | Wave | Source | Transform | Coverage | Transform | Range | Crosstab |
 |------|--------|-----------|----------|-----------|-------|----------|
-| w4 | q169 | scale_convert | ❌ | ✅ | ✅ | ✅ |
+| w4 | q169 | reverse | ✅ | ✅ | ✅ | ✅ |
 
-### ❌ intl_china_world_influence
+### ✅ intl_china_world_influence
 
 | Wave | Source | Transform | Coverage | Transform | Range | Crosstab |
 |------|--------|-----------|----------|-----------|-------|----------|
-| w5 | q178 | reverse | ❌ | ✅ | ✅ | ✅ |
+| w5 | q178 | scale_convert | ✅ | ⏭️ | ✅ | ✅ |
 | w6 | q177 | reverse | ✅ | ✅ | ✅ | ✅ |
 
 ### ⚠️ intl_close_to_asean
@@ -1597,14 +1596,14 @@ Generated: 2026-02-11 12:57:32.072599
 | w5 | q186 | reverse | ✅ | ✅ | ✅ | ✅ |
 | w6 | q186 | reverse | ⚠️ | ✅ | ✅ | ✅ |
 
-### ❌ intl_development_model
+### ✅ intl_development_model
 
 | Wave | Source | Transform | Coverage | Transform | Range | Crosstab |
 |------|--------|-----------|----------|-----------|-------|----------|
-| w3 | q159 | identity | ❌ | ⏭️ | ✅ | ✅ |
-| w4 | q167 | identity | ❌ | ⏭️ | ✅ | ✅ |
-| w5 | q180 | identity | ❌ | ⏭️ | ✅ | ✅ |
-| w6 | q180 | identity | ✅ | ⏭️ | ✅ | ✅ |
+| w3 | q159 | scale_convert | ✅ | ⏭️ | ✅ | ✅ |
+| w4 | q167 | scale_convert | ✅ | ⏭️ | ✅ | ✅ |
+| w5 | q180 | scale_convert | ✅ | ⏭️ | ✅ | ✅ |
+| w6 | q180 | scale_convert | ✅ | ⏭️ | ✅ | ✅ |
 
 ### ✅ intl_eu_world_influence
 
@@ -1612,29 +1611,29 @@ Generated: 2026-02-11 12:57:32.072599
 |------|--------|-----------|----------|-----------|-------|----------|
 | w6 | q178 | reverse | ✅ | ✅ | ✅ | ✅ |
 
-### ❌ intl_follow_foreign_events
+### ✅ intl_follow_foreign_events
 
 | Wave | Source | Transform | Coverage | Transform | Range | Crosstab |
 |------|--------|-----------|----------|-----------|-------|----------|
-| w4 | q150 | reverse | ❌ | ✅ | ✅ | ✅ |
+| w4 | q150 | reverse | ✅ | ✅ | ✅ | ✅ |
 
-### ❌ intl_future_influence_asia
-
-| Wave | Source | Transform | Coverage | Transform | Range | Crosstab |
-|------|--------|-----------|----------|-----------|-------|----------|
-| w3 | q158 | identity | ⚠️ | ⏭️ | ✅ | ✅ |
-| w4 | q166 | identity | ❌ | ⏭️ | ✅ | ✅ |
-| w5 | q179 | identity | ⚠️ | ⏭️ | ✅ | ✅ |
-| w6 | q179 | identity | ✅ | ⏭️ | ✅ | ✅ |
-
-### ❌ intl_most_influence_asia
+### ✅ intl_future_influence_asia
 
 | Wave | Source | Transform | Coverage | Transform | Range | Crosstab |
 |------|--------|-----------|----------|-----------|-------|----------|
-| w3 | q156 | identity | ⚠️ | ⏭️ | ✅ | ✅ |
-| w4 | q163 | identity | ❌ | ⏭️ | ✅ | ✅ |
-| w5 | q174 | identity | ⚠️ | ⏭️ | ✅ | ✅ |
-| w6 | q173 | identity | ✅ | ⏭️ | ✅ | ✅ |
+| w3 | q158 | scale_convert | ✅ | ⏭️ | ✅ | ✅ |
+| w4 | q166 | scale_convert | ✅ | ⏭️ | ✅ | ✅ |
+| w5 | q179 | scale_convert | ✅ | ⏭️ | ✅ | ✅ |
+| w6 | q179 | scale_convert | ✅ | ⏭️ | ✅ | ✅ |
+
+### ✅ intl_most_influence_asia
+
+| Wave | Source | Transform | Coverage | Transform | Range | Crosstab |
+|------|--------|-----------|----------|-----------|-------|----------|
+| w3 | q156 | scale_convert | ✅ | ⏭️ | ✅ | ✅ |
+| w4 | q163 | scale_convert | ✅ | ⏭️ | ✅ | ✅ |
+| w5 | q174 | scale_convert | ✅ | ⏭️ | ✅ | ✅ |
+| w6 | q173 | scale_convert | ✅ | ⏭️ | ✅ | ✅ |
 
 ### ✅ intl_usa_asia_goodharm
 
@@ -1664,17 +1663,17 @@ Generated: 2026-02-11 12:57:32.072599
 | w5 | q184 | reverse | ✅ | ✅ | ✅ | ✅ |
 | w6 | q184 | reverse | ✅ | ✅ | ✅ | ✅ |
 
-### ❌ intl_usa_country_influence_valence_w4
+### ✅ intl_usa_country_influence_valence_w4
 
 | Wave | Source | Transform | Coverage | Transform | Range | Crosstab |
 |------|--------|-----------|----------|-----------|-------|----------|
-| w4 | q171 | scale_convert | ❌ | ✅ | ✅ | ✅ |
+| w4 | q171 | reverse | ✅ | ✅ | ✅ | ✅ |
 
-### ❌ intl_usa_world_influence
+### ✅ intl_usa_world_influence
 
 | Wave | Source | Transform | Coverage | Transform | Range | Crosstab |
 |------|--------|-----------|----------|-----------|-------|----------|
-| w5 | q176 | reverse | ❌ | ✅ | ✅ | ✅ |
+| w5 | q176 | scale_convert | ✅ | ⏭️ | ✅ | ✅ |
 | w6 | q175 | reverse | ✅ | ✅ | ✅ | ✅ |
 
 ### ✅ dem_essential_harmonized
@@ -1749,15 +1748,15 @@ Generated: 2026-02-11 12:57:32.072599
 | w5 | q34a | identity | ✅ | ⏭️ | ✅ | ✅ |
 | w6 | q34a | identity | ✅ | ⏭️ | ✅ | ✅ |
 
-### ❌ procedural_preference_index
+### ✅ procedural_preference_index
 
 | Wave | Source | Transform | Coverage | Transform | Range | Crosstab |
 |------|--------|-----------|----------|-----------|-------|----------|
 | w2 | q92 | skip | ✅ | ⏭️ | ✅ | ✅ |
-| w3 | q85 | skip | ❌ | ⏭️ | ✅ | ❌ |
-| w4 | q88 | skip | ❌ | ⏭️ | ✅ | ❌ |
+| w3 | q85 | skip | ✅ | ⏭️ | ✅ | ✅ |
+| w4 | q88 | skip | ✅ | ⏭️ | ✅ | ✅ |
 | w5 | q98 | skip | ✅ | ⏭️ | ✅ | ✅ |
-| w6 | q85 | skip | ❌ | ⏭️ | ✅ | ❌ |
+| w6 | q85 | skip | ✅ | ⏭️ | ✅ | ✅ |
 
 ### ✅ nat_proud_citizen
 
@@ -2091,16 +2090,11 @@ Generated: 2026-02-11 12:57:32.072599
 | w5 | q36 | identity | ✅ | ⏭️ | ✅ | ✅ |
 | w6 | q36 | identity | ✅ | ⏭️ | ✅ | ✅ |
 
-### ❌ vote_buying_offered
+### ✅ vote_buying_offered
 
 | Wave | Source | Transform | Coverage | Transform | Range | Crosstab |
 |------|--------|-----------|----------|-----------|-------|----------|
-| w1 | q116 | identity | ✅ | ⏭️ | ✅ | ✅ |
-| w2 | q119 | identity | ✅ | ⏭️ | ✅ | ✅ |
-| w3 | q119 | identity | ❌ | ⏭️ | ✅ | ✅ |
-| w4 | q120 | identity | ❌ | ⏭️ | ✅ | ✅ |
-| w5 | q127 | identity | ✅ | ⏭️ | ✅ | ✅ |
-| w6 | q79 | identity | ❌ | ⏭️ | ✅ | ✅ |
+| w6 | q79 | identity | ✅ | ✅ | ✅ | ✅ |
 
 ### ✅ voted_last_election
 
@@ -2113,22 +2107,22 @@ Generated: 2026-02-11 12:57:32.072599
 | w5 | q33 | scale_convert | ✅ | ⏭️ | ✅ | ✅ |
 | w6 | q33 | scale_convert | ✅ | ⏭️ | ✅ | ✅ |
 
-### ❌ voted_winning_losing
+### ✅ voted_winning_losing
 
 | Wave | Source | Transform | Coverage | Transform | Range | Crosstab |
 |------|--------|-----------|----------|-----------|-------|----------|
-| w2 | q39a | identity | ✅ | ⏭️ | ✅ | ✅ |
-| w3 | q33a | identity | ✅ | ⏭️ | ✅ | ✅ |
-| w4 | q34a | identity | ✅ | ⏭️ | ✅ | ✅ |
-| w5 | q34a | identity | ⚠️ | ⏭️ | ✅ | ✅ |
-| w6 | q34a | identity | ❌ | ⏭️ | ✅ | ✅ |
+| w2 | q39a | scale_convert | ⏭️ | ⏭️ | ✅ | ⏭️ |
+| w3 | q33a | scale_convert | ⏭️ | ⏭️ | ✅ | ⏭️ |
+| w4 | q34a | scale_convert | ⏭️ | ⏭️ | ✅ | ⏭️ |
+| w5 | q34a | scale_convert | ⏭️ | ⏭️ | ✅ | ⏭️ |
+| w6 | q34a | scale_convert | ⏭️ | ⏭️ | ✅ | ⏭️ |
 
-### ❌ voting_frequency
+### ✅ voting_frequency
 
 | Wave | Source | Transform | Coverage | Transform | Range | Crosstab |
 |------|--------|-----------|----------|-----------|-------|----------|
 | w2 | q90 | reverse | ✅ | ✅ | ✅ | ✅ |
-| w3 | q73 | reverse | ❌ | ✅ | ✅ | ✅ |
+| w3 | q73 | reverse | ✅ | ✅ | ✅ | ✅ |
 | w4 | q78 | reverse | ✅ | ✅ | ✅ | ✅ |
 | w5 | q81 | reverse | ✅ | ✅ | ✅ | ✅ |
 | w6 | q78 | reverse | ✅ | ✅ | ✅ | ✅ |
@@ -2182,11 +2176,11 @@ Generated: 2026-02-11 12:57:32.072599
 | w5 | q117 | scale_convert | ⚠️ | ✅ | ✅ | ✅ |
 | w6 | q108 | scale_convert | ⚠️ | ✅ | ✅ | ✅ |
 
-### ❌ pol_discuss
+### ✅ pol_discuss
 
 | Wave | Source | Transform | Coverage | Transform | Range | Crosstab |
 |------|--------|-----------|----------|-----------|-------|----------|
-| w1 | q023 | scale_convert | ✅ | ❌ | ✅ | ✅ |
+| w1 | q023 | scale_convert | ✅ | ⏭️ | ✅ | ✅ |
 | w2 | q52 | reverse | ✅ | ✅ | ✅ | ✅ |
 | w3 | q46 | reverse | ✅ | ✅ | ✅ | ✅ |
 | w4 | q46 | reverse | ✅ | ✅ | ✅ | ✅ |
@@ -2204,23 +2198,23 @@ Generated: 2026-02-11 12:57:32.072599
 | w5 | q47 | reverse | ✅ | ✅ | ✅ | ✅ |
 | w6 | q48 | reverse | ✅ | ✅ | ✅ | ✅ |
 
-### ❌ pol_news_newspaper
+### ✅ pol_news_newspaper
 
 | Wave | Source | Transform | Coverage | Transform | Range | Crosstab |
 |------|--------|-----------|----------|-----------|-------|----------|
-| w1 | q058 | identity | ❌ | ✅ | ✅ | ✅ |
+| w1 | q058 | identity | ✅ | ✅ | ✅ | ✅ |
 
-### ❌ pol_news_radio
-
-| Wave | Source | Transform | Coverage | Transform | Range | Crosstab |
-|------|--------|-----------|----------|-----------|-------|----------|
-| w1 | q060 | identity | ❌ | ✅ | ✅ | ✅ |
-
-### ❌ pol_news_television
+### ✅ pol_news_radio
 
 | Wave | Source | Transform | Coverage | Transform | Range | Crosstab |
 |------|--------|-----------|----------|-----------|-------|----------|
-| w1 | q059 | identity | ❌ | ✅ | ✅ | ✅ |
+| w1 | q060 | identity | ✅ | ✅ | ✅ | ✅ |
+
+### ✅ pol_news_television
+
+| Wave | Source | Transform | Coverage | Transform | Range | Crosstab |
+|------|--------|-----------|----------|-----------|-------|----------|
+| w1 | q059 | identity | ✅ | ✅ | ✅ | ✅ |
 
 ### ✅ political_interest
 
@@ -2326,44 +2320,44 @@ Generated: 2026-02-11 12:57:32.072599
 |------|--------|-----------|----------|-----------|-------|----------|
 | w6 | q45 | reverse | ✅ | ✅ | ✅ | ✅ |
 
-### ❌ access_healthcare
+### ✅ access_healthcare
 
 | Wave | Source | Transform | Coverage | Transform | Range | Crosstab |
 |------|--------|-----------|----------|-----------|-------|----------|
-| w2 | q46 | identity | ❌ | ✅ | ✅ | ✅ |
-| w3 | q40 | identity | ❌ | ✅ | ✅ | ✅ |
-| w4 | q41 | identity | ❌ | ✅ | ✅ | ✅ |
+| w2 | q46 | identity | ✅ | ✅ | ✅ | ✅ |
+| w3 | q40 | identity | ✅ | ✅ | ✅ | ✅ |
+| w4 | q41 | identity | ✅ | ✅ | ✅ | ✅ |
 | w5 | q42 | reverse | ✅ | ✅ | ✅ | ✅ |
 | w6 | q42 | reverse | ✅ | ✅ | ✅ | ✅ |
 
-### ❌ access_identity_document
+### ✅ access_identity_document
 
 | Wave | Source | Transform | Coverage | Transform | Range | Crosstab |
 |------|--------|-----------|----------|-----------|-------|----------|
-| w4 | q39 | reverse | ❌ | ✅ | ✅ | ✅ |
+| w4 | q39 | reverse | ✅ | ✅ | ✅ | ✅ |
 
-### ⚠️ access_internet
+### ✅ access_internet
 
 | Wave | Source | Transform | Coverage | Transform | Range | Crosstab |
 |------|--------|-----------|----------|-----------|-------|----------|
-| w5 | q44 | reverse | ⚠️ | ✅ | ✅ | ✅ |
+| w5 | q44 | reverse | ✅ | ✅ | ✅ | ✅ |
 | w6 | q44 | reverse | ✅ | ✅ | ✅ | ✅ |
 
-### ❌ access_police
+### ✅ access_police
 
 | Wave | Source | Transform | Coverage | Transform | Range | Crosstab |
 |------|--------|-----------|----------|-----------|-------|----------|
-| w2 | q47 | identity | ❌ | ✅ | ✅ | ✅ |
-| w3 | q41 | identity | ❌ | ✅ | ✅ | ✅ |
-| w4 | q42 | identity | ❌ | ✅ | ✅ | ✅ |
-| w5 | q43 | reverse | ❌ | ✅ | ✅ | ✅ |
+| w2 | q47 | identity | ✅ | ✅ | ✅ | ✅ |
+| w3 | q41 | identity | ✅ | ✅ | ✅ | ✅ |
+| w4 | q42 | identity | ✅ | ✅ | ✅ | ✅ |
+| w5 | q43 | reverse | ✅ | ✅ | ✅ | ✅ |
 | w6 | q43 | reverse | ✅ | ✅ | ✅ | ✅ |
 
-### ❌ access_public_school
+### ✅ access_public_school
 
 | Wave | Source | Transform | Coverage | Transform | Range | Crosstab |
 |------|--------|-----------|----------|-----------|-------|----------|
-| w4 | q40 | reverse | ❌ | ✅ | ✅ | ✅ |
+| w4 | q40 | reverse | ✅ | ✅ | ✅ | ✅ |
 
 ### ✅ access_roads
 
@@ -2372,11 +2366,11 @@ Generated: 2026-02-11 12:57:32.072599
 | w5 | q39 | reverse | ✅ | ✅ | ✅ | ✅ |
 | w6 | q39 | reverse | ✅ | ✅ | ✅ | ✅ |
 
-### ⚠️ access_transport
+### ✅ access_transport
 
 | Wave | Source | Transform | Coverage | Transform | Range | Crosstab |
 |------|--------|-----------|----------|-----------|-------|----------|
-| w5 | q41 | reverse | ⚠️ | ✅ | ✅ | ✅ |
+| w5 | q41 | reverse | ✅ | ✅ | ✅ | ✅ |
 | w6 | q41 | reverse | ✅ | ✅ | ✅ | ✅ |
 
 ### ✅ access_water
@@ -2436,11 +2430,11 @@ Generated: 2026-02-11 12:57:32.072599
 |------|--------|-----------|----------|-----------|-------|----------|
 | w4 | q48 | identity | ✅ | ⏭️ | ✅ | ✅ |
 
-### ❌ internet_political_info
+### ✅ internet_political_info
 
 | Wave | Source | Transform | Coverage | Transform | Range | Crosstab |
 |------|--------|-----------|----------|-----------|-------|----------|
-| w4 | q51 | reverse | ❌ | ✅ | ✅ | ✅ |
+| w4 | q51 | reverse | ✅ | ⏭️ | ✅ | ✅ |
 
 ### ✅ news_internet
 
@@ -2542,25 +2536,25 @@ Generated: 2026-02-11 12:57:32.072599
 |------|--------|-----------|----------|-----------|-------|----------|
 | w6 | q51a_youtube | identity | ✅ | ⏭️ | ✅ | ✅ |
 
-### ❌ trust_acquaintances
+### ✅ trust_acquaintances
 
 | Wave | Source | Transform | Coverage | Transform | Range | Crosstab |
 |------|--------|-----------|----------|-----------|-------|----------|
-| w2 | q26 | identity | ✅ | ❌ | ✅ | ❌ |
-| w3 | q27 | reverse | ✅ | ❌ | ✅ | ❌ |
+| w2 | q26 | reverse | ✅ | ✅ | ✅ | ✅ |
+| w3 | q27 | reverse | ✅ | ✅ | ✅ | ✅ |
 | w4 | q28 | reverse | ✅ | ✅ | ✅ | ✅ |
 | w5 | q26 | reverse | ✅ | ⏭️ | ✅ | ✅ |
 | w6 | q26 | reverse | ✅ | ✅ | ✅ | ✅ |
 
-### ❌ trust_generalized_binary
+### ✅ trust_generalized_binary
 
 | Wave | Source | Transform | Coverage | Transform | Range | Crosstab |
 |------|--------|-----------|----------|-----------|-------|----------|
-| w1 | q024 | scale_convert | ❌ | ⏭️ | ✅ | ✅ |
+| w1 | q024 | skip | ✅ | ⏭️ | ✅ | ✅ |
 | w2 | q23 | reverse | ✅ | ⏭️ | ✅ | ✅ |
-| w3 | q23 | identity | ⚠️ | ⏭️ | ✅ | ✅ |
+| w3 | q23 | identity | ✅ | ⏭️ | ✅ | ✅ |
 | w4 | q23 | identity | ✅ | ⏭️ | ✅ | ✅ |
-| w5 | q22 | scale_convert | ❌ | ⏭️ | ✅ | ✅ |
+| w5 | q22 | skip | ✅ | ⏭️ | ✅ | ✅ |
 | w6 | q22 | identity | ✅ | ⏭️ | ✅ | ✅ |
 
 ### ✅ trust_generalized_ordinal
@@ -2583,22 +2577,22 @@ Generated: 2026-02-11 12:57:32.072599
 | w5 | q144 | reverse | ✅ | ✅ | ✅ | ✅ |
 | w6 | q136 | reverse | ✅ | ✅ | ✅ | ✅ |
 
-### ❌ trust_neighbors
+### ✅ trust_neighbors
 
 | Wave | Source | Transform | Coverage | Transform | Range | Crosstab |
 |------|--------|-----------|----------|-----------|-------|----------|
-| w2 | q25 | identity | ✅ | ❌ | ✅ | ❌ |
-| w3 | q26 | reverse | ✅ | ❌ | ✅ | ❌ |
+| w2 | q25 | reverse | ✅ | ✅ | ✅ | ✅ |
+| w3 | q26 | reverse | ✅ | ✅ | ✅ | ✅ |
 | w4 | q27 | reverse | ✅ | ✅ | ✅ | ✅ |
 | w5 | q25 | reverse | ✅ | ⏭️ | ✅ | ✅ |
 | w6 | q25 | reverse | ✅ | ✅ | ✅ | ✅ |
 
-### ❌ trust_relatives
+### ✅ trust_relatives
 
 | Wave | Source | Transform | Coverage | Transform | Range | Crosstab |
 |------|--------|-----------|----------|-----------|-------|----------|
-| w2 | q24 | identity | ✅ | ❌ | ✅ | ❌ |
-| w3 | q25 | reverse | ✅ | ❌ | ✅ | ❌ |
+| w2 | q24 | reverse | ✅ | ✅ | ✅ | ✅ |
+| w3 | q25 | reverse | ✅ | ✅ | ✅ | ✅ |
 | w4 | q26 | reverse | ✅ | ✅ | ✅ | ✅ |
 | w5 | q24 | reverse | ✅ | ⏭️ | ✅ | ✅ |
 | w6 | q24 | reverse | ✅ | ✅ | ✅ | ✅ |
@@ -2793,26 +2787,6 @@ Generated: 2026-02-11 12:57:32.072599
 
 ## Issues Detail
 
-### hh_income_sat (w5)
-
-- ❌ **transformation**: reversal (r ≈ -1) FAILED: r=-0.918, ρ=-0.908 (expected <-0.99)
-
-### dem_vs_equality (w3)
-
-- ❌ **transformation**: scale conversion (|ρ| ≈ 1) FAILED: r=0.790, ρ=0.929 (expected >0.99)
-
-### dem_vs_equality (w4)
-
-- ❌ **transformation**: scale conversion (|ρ| ≈ 1) FAILED: r=0.791, ρ=0.919 (expected >0.99)
-
-### dem_vs_equality (w5)
-
-- ❌ **transformation**: scale conversion (|ρ| ≈ 1) FAILED: r=0.773, ρ=0.915 (expected >0.99)
-
-### dem_vs_equality (w6)
-
-- ❌ **transformation**: scale conversion (|ρ| ≈ 1) FAILED: r=0.854, ρ=0.960 (expected >0.99)
-
 ### age (w3)
 
 - ⚠️ **coverage**: 0.10% coverage loss (20 values)
@@ -2825,176 +2799,17 @@ Generated: 2026-02-11 12:57:32.072599
 
 - ⚠️ **coverage**: 0.12% coverage loss (14 values)
 
-### current_status_unemployed (w3)
-
-- ❌ **coverage**: 25.4% coverage loss (2283 of 8995 values)
-
-### int_month (w3)
-
-- ❌ **coverage**: 5.2% coverage loss (1004 of 19436 values)
-
-### int_year (w3)
-
-- ❌ **coverage**: 5.2% coverage loss (1005 of 19436 values)
-
-### religion (w5)
-
-- ❌ **coverage**: 36.2% coverage loss (9731 of 26889 values)
-
-### religion (w6)
-
-- ❌ **coverage**: 6.2% coverage loss (571 of 9180 values)
-
-### religiosity_practice (w3)
-
-- ❌ **coverage**: 26.8% coverage loss (3634 of 13562 values)
-
-### religiosity_self (w3)
-
-- ❌ **coverage**: 36.3% coverage loss (6975 of 19189 values)
-
-### seeking_employment (w3)
-
-- ❌ **coverage**: 10.8% coverage loss (570 of 5302 values)
-
-### seeking_employment (w4)
-
-- ❌ **coverage**: 10.1% coverage loss (502 of 4970 values)
-
-### seeking_employment (w5)
-
-- ❌ **coverage**: 12.3% coverage loss (999 of 8098 values)
-
-### seeking_employment (w6)
-
-- ❌ **coverage**: 12.0% coverage loss (465 of 3880 values)
-
-### gov_economic_equality (w1)
-
-- ❌ **coverage**: 10.4% coverage loss (1167 of 11237 values)
-
 ### gov_elections_real_choice (w5)
 
 - ⚠️ **coverage**: 0.44% coverage loss (84 values)
-
-### gov_free_to_organize (w1)
-
-- ❌ **coverage**: 20.9% coverage loss (2221 of 10604 values)
-
-### problem_most_important (w5)
-
-- ❌ **coverage**: 3.3% coverage loss (591 of 18082 values)
-
-### trust_election_commission (w6)
-
-- ❌ **coverage**: 71.9% coverage loss (7212 of 10025 values)
-
-### trust_ngos (w6)
-
-- ❌ **coverage**: 73.3% coverage loss (2886 of 3939 values)
-
-### intl_china_country_influence_valence_w4 (w4)
-
-- ❌ **coverage**: 19.7% coverage loss (2788 of 14144 values)
-
-### intl_china_world_influence (w5)
-
-- ❌ **coverage**: 11.1% coverage loss (1521 of 13750 values)
 
 ### intl_close_to_asean (w6)
 
 - ⚠️ **coverage**: 0.96% coverage loss (50 values)
 
-### intl_development_model (w3)
-
-- ❌ **coverage**: 3.3% coverage loss (406 of 12169 values)
-
-### intl_development_model (w4)
-
-- ❌ **coverage**: 5.1% coverage loss (718 of 14015 values)
-
-### intl_development_model (w5)
-
-- ❌ **coverage**: 6.2% coverage loss (1193 of 19229 values)
-
-### intl_follow_foreign_events (w4)
-
-- ❌ **coverage**: 16.4% coverage loss (3308 of 20142 values)
-
-### intl_future_influence_asia (w3)
-
-- ⚠️ **coverage**: 0.48% coverage loss (77 values)
-
-### intl_future_influence_asia (w4)
-
-- ❌ **coverage**: 1.3% coverage loss (200 of 15846 values)
-
-### intl_future_influence_asia (w5)
-
-- ⚠️ **coverage**: 0.70% coverage loss (153 values)
-
-### intl_most_influence_asia (w3)
-
-- ⚠️ **coverage**: 0.42% coverage loss (70 values)
-
-### intl_most_influence_asia (w4)
-
-- ❌ **coverage**: 1.4% coverage loss (234 of 16585 values)
-
-### intl_most_influence_asia (w5)
-
-- ⚠️ **coverage**: 0.56% coverage loss (126 values)
-
-### intl_usa_country_influence_valence_w4 (w4)
-
-- ❌ **coverage**: 11.4% coverage loss (1848 of 16216 values)
-
-### intl_usa_world_influence (w5)
-
-- ❌ **coverage**: 8.0% coverage loss (1051 of 13157 values)
-
 ### dem_meaning_set4 (w6)
 
 - ⚠️ **coverage**: 0.33% coverage loss (37 values)
-
-### procedural_preference_index (w3)
-
-- ❌ **coverage**: 5.1% coverage loss (890 of 17560 values)
-- ❌ **crosstab**: 4 raw values map to multiple outputs
-
-### procedural_preference_index (w4)
-
-- ❌ **coverage**: 5.6% coverage loss (1047 of 18750 values)
-- ❌ **crosstab**: 4 raw values map to multiple outputs
-
-### procedural_preference_index (w6)
-
-- ❌ **coverage**: 4.0% coverage loss (448 of 11097 values)
-- ❌ **crosstab**: 4 raw values map to multiple outputs
-
-### vote_buying_offered (w3)
-
-- ❌ **coverage**: 14.0% coverage loss (2383 of 17062 values)
-
-### vote_buying_offered (w4)
-
-- ❌ **coverage**: 85.2% coverage loss (14357 of 16854 values)
-
-### vote_buying_offered (w6)
-
-- ❌ **coverage**: 77.6% coverage loss (8708 of 11215 values)
-
-### voted_winning_losing (w5)
-
-- ⚠️ **coverage**: 0.37% coverage loss (55 values)
-
-### voted_winning_losing (w6)
-
-- ❌ **coverage**: 1.4% coverage loss (99 of 7324 values)
-
-### voting_frequency (w3)
-
-- ❌ **coverage**: 1.0% coverage loss (193 of 18586 values)
 
 ### citizen_loyalty_country (w2)
 
@@ -3007,110 +2822,4 @@ Generated: 2026-02-11 12:57:32.072599
 ### govt_withholds_info (w6)
 
 - ⚠️ **coverage**: 0.35% coverage loss (37 values)
-
-### pol_discuss (w1)
-
-- ❌ **transformation**: scale conversion (|ρ| ≈ 1) FAILED: r=0.932, ρ=0.931 (expected >0.99)
-
-### pol_news_newspaper (w1)
-
-- ❌ **coverage**: 27.5% coverage loss (1127 of 4101 values)
-
-### pol_news_radio (w1)
-
-- ❌ **coverage**: 12.7% coverage loss (519 of 4086 values)
-
-### pol_news_television (w1)
-
-- ❌ **coverage**: 59.4% coverage loss (2433 of 4093 values)
-
-### access_healthcare (w2)
-
-- ❌ **coverage**: 4.4% coverage loss (760 of 17420 values)
-
-### access_healthcare (w3)
-
-- ❌ **coverage**: 3.6% coverage loss (693 of 19187 values)
-
-### access_healthcare (w4)
-
-- ❌ **coverage**: 3.1% coverage loss (640 of 20393 values)
-
-### access_identity_document (w4)
-
-- ❌ **coverage**: 2.8% coverage loss (566 of 20407 values)
-
-### access_internet (w5)
-
-- ⚠️ **coverage**: 0.79% coverage loss (174 values)
-
-### access_police (w2)
-
-- ❌ **coverage**: 29.9% coverage loss (5118 of 17132 values)
-
-### access_police (w3)
-
-- ❌ **coverage**: 23.4% coverage loss (4434 of 18948 values)
-
-### access_police (w4)
-
-- ❌ **coverage**: 21.7% coverage loss (4296 of 19761 values)
-
-### access_police (w5)
-
-- ❌ **coverage**: 2.0% coverage loss (496 of 24941 values)
-
-### access_public_school (w4)
-
-- ❌ **coverage**: 11.7% coverage loss (2277 of 19464 values)
-
-### access_transport (w5)
-
-- ⚠️ **coverage**: 0.11% coverage loss (28 values)
-
-### internet_political_info (w4)
-
-- ❌ **coverage**: 49.6% coverage loss (5341 of 10772 values)
-
-### trust_acquaintances (w2)
-
-- ❌ **transformation**: identity (r ≈ +1) FAILED: r=0.851, ρ=0.858 (expected >0.99)
-- ❌ **crosstab**: 4 raw values map to multiple outputs
-
-### trust_acquaintances (w3)
-
-- ❌ **transformation**: reversal (r ≈ -1) FAILED: r=-0.838, ρ=-0.855 (expected <-0.99)
-- ❌ **crosstab**: 4 raw values map to multiple outputs
-
-### trust_generalized_binary (w1)
-
-- ❌ **coverage**: 1.1% coverage loss (129 of 11878 values)
-
-### trust_generalized_binary (w3)
-
-- ⚠️ **coverage**: 0.70% coverage loss (133 values)
-
-### trust_generalized_binary (w5)
-
-- ❌ **coverage**: 1.0% coverage loss (272 of 26058 values)
-
-### trust_neighbors (w2)
-
-- ❌ **transformation**: identity (r ≈ +1) FAILED: r=0.781, ρ=0.816 (expected >0.99)
-- ❌ **crosstab**: 4 raw values map to multiple outputs
-
-### trust_neighbors (w3)
-
-- ❌ **transformation**: reversal (r ≈ -1) FAILED: r=-0.765, ρ=-0.809 (expected <-0.99)
-- ❌ **crosstab**: 4 raw values map to multiple outputs
-
-### trust_relatives (w2)
-
-- ❌ **transformation**: identity (r ≈ +1) FAILED: r=0.716, ρ=0.798 (expected >0.99)
-- ❌ **crosstab**: 4 raw values map to multiple outputs
-
-### trust_relatives (w3)
-
-- ❌ **transformation**: reversal (r ≈ -1) FAILED: r=-0.693, ρ=-0.820 (expected <-0.99)
-- ❌ **crosstab**: 4 raw values map to multiple outputs
 

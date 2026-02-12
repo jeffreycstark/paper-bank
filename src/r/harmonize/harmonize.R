@@ -123,6 +123,13 @@ harmonize_variable <- function(
       }
     }
 
+    if (!is.null(var_spec$missing$codes)) {
+      missing_codes <- unique(c(
+        missing_codes,
+        as.numeric(var_spec$missing$codes)
+      ))
+    }
+
     x <- apply_missing(x, missing_codes)
 
     # ---- select harmonization rule ----
