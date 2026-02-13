@@ -950,6 +950,41 @@ The decomposition yields no clear differentiation between key opposition support
 
 These null results likely reflect two factors. First, the limited country coverage (3 of 14 analysis countries) substantially reduces statistical power and eliminates much of the cross-national variation that drives the main results. Second, the additional missingness inherent in party-level coding further shrinks effective sample sizes, particularly for the "other" category. The binary winner-loser distinction, which the ABS pre-codes across all surveyed countries, provides broader coverage and cleaner identification. The three-way decomposition remains a promising avenue for future research with more granular partisan data covering a wider set of countries.
 
+# Thailand Wave 4 Exclusion Robustness {#sec-thai-w4}
+
+Thailand Wave 4 (2014--2016) was fielded after the May 2014 military coup, which followed the Constitutional Court's annulment of the February 2014 election. The ABS coded winner/loser status for 382 of 1,200 respondents (31.8%) based on prior electoral behavior; the remaining 51.1% are coded as missing on q34a, likely reflecting respondent reluctance to disclose vote choice under military rule. To verify that the inclusion of this country-wave does not distort the pooled estimates, Table K1 re-estimates all four multinomial logit models with Thailand W4 excluded ($N \approx 380$ observations dropped per set).
+
+```{r tbl-thai-w4-robustness}
+#| tbl-cap: "Pooled AMEs: Full Sample vs. Thailand W4 Excluded"
+
+thai_rob <- read_csv(here("papers", "meaning-of-democracy-revision", "analysis",
+                          "revised", "results",
+                          "robustness_thai_w4_exclusion.csv"),
+                     show_col_types = FALSE)
+
+thai_rob %>%
+  mutate(
+    Item = item,
+    `Full Sample (pp)` = sprintf("%+.2f (%.2f)", ame_full * 100, se_full * 100),
+    `Thai W4 Excluded (pp)` = sprintf("%+.2f (%.2f)", ame_no_thai4 * 100, se_no_thai4 * 100),
+    `Diff (pp)` = sprintf("%+.2f", diff_pp)
+  ) %>%
+  select(Set = set, Item, `Full Sample (pp)`, `Thai W4 Excluded (pp)`, `Diff (pp)`) %>%
+  kbl(booktabs = TRUE, align = c("l", "l", "r", "r", "r")) %>%
+  kable_styling(latex_options = c("hold_position", "striped"),
+                font_size = 9) %>%
+  pack_rows("Set 1", 1, 4) %>%
+  pack_rows("Set 2", 5, 8) %>%
+  pack_rows("Set 3", 9, 12) %>%
+  pack_rows("Set 4", 13, 16) %>%
+  footnote(
+    general = "Average marginal effects in percentage points, with bootstrap standard errors in parentheses. Maximum absolute difference across all 16 items: 0.28 percentage points. All coefficient signs are identical.",
+    general_title = "Note: ",
+    footnote_as_chunk = TRUE,
+    threeparttable = TRUE
+  )
+```
+
 # References {-}
 
 ::: {#refs}
