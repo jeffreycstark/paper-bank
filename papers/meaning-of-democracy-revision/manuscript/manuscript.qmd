@@ -318,7 +318,6 @@ khm <- cw_gap %>% filter(country_name == "Cambodia") %>% arrange(wave)
 Figure 1 plots the procedural--substantive gap for each country across survey waves. A positive value indicates that losers disproportionately favor procedural conceptions. The within-country trajectories provide the analysis's most compelling evidence for positional updating.
 
 ```{r fig-trajectories, fig.width=10, fig.height=6}
-#| label: fig-trajectories
 #| fig-cap: "Loser Effect Trajectories: Procedural--Substantive Gap by Country and Wave"
 #| fig-alt: "Line plot showing procedural-substantive gap trajectories across three survey waves for eleven Asian countries. Thailand shows dramatic increase from near zero to over 20 percentage points. South Korea remains near zero throughout. Cambodia maintains a high gap around 13 points. Other countries shown in gray."
 
@@ -373,7 +372,7 @@ plot_data %>%
   )) +
   labs(
     x = "Survey Wave",
-    y = "Procedural − Substantive Gap\n(percentage points)",
+    y = "Procedural - Substantive Gap\n(percentage points)",
     color = NULL, fill = NULL,
     caption = "Note: Gray lines show remaining countries. Shaded bands show 95% CIs for highlighted countries.\nPositive values = losers favor procedural items relative to substantive items."
   ) +
@@ -391,7 +390,6 @@ South Korea presents the mirror image. Despite experiencing its own political up
 Cambodia shows a persistently large gap (approximately 13 pp across all three waves) that, notably, did not grow following the dissolution of the main opposition party (CNRP) in 2017. In a competitive authoritarian context, the stakes of losing were already effectively maximized---losers' procedural orientation had little room to intensify further. Among the remaining countries (@tbl-country-gaps), Malaysia shows a large gap that narrows across waves, potentially reflecting the political opening that culminated in the 2018 alternation. Myanmar's single observation captures a strikingly large gap consistent with the high stakes of its fragile democratic transition. Taiwan's trajectory is distinctive, reversing from positive to negative by Wave 6---a pattern that may reflect the unusual dynamics of cross-strait identity politics. Japan provides the expected baseline for a consolidated democracy: modest and stable across waves.
 
 ```{r tbl-country-gaps}
-#| label: tbl-country-gaps
 #| tbl-cap: "Procedural--Substantive Gap by Country and Wave"
 
 gap_tbl <- cw_gap %>%
@@ -455,7 +453,6 @@ n_proc_int_total <- nrow(proc_fairness)
 The positional updating account predicts that the loser effect should intensify among losers who perceive elections as unfair, since these citizens face the most acute procedural threat. If instead the loser effect reflects stable normative commitments to procedural democracy, it should appear regardless of whether losers perceive the process as fair---committed proceduralists would prioritize procedures as a matter of principle, not instrumental concern. To test this, I interact loser status with a binary indicator of whether respondents perceived the most recent election as unfair, following @Mauk2022-xx.
 
 ```{r fig-fairness}
-#| label: fig-fairness
 #| fig-cap: "Fairness Interaction: Loser Effect by Perceived Electoral Fairness"
 #| fig-alt: "Dot plot showing loser effects separately for respondents perceiving fair vs. unfair elections, across sixteen items. Liberal procedural items show substantially larger loser effects among those perceiving unfair elections."
 #| fig-width: 8
@@ -537,3 +534,4 @@ The most consequential implication is structural. Democratic erosion does not me
 \singlespacing
 
 ::: {#refs}
+:::
