@@ -1,70 +1,59 @@
-library(haven)
+library(arrow)
 library(tidyverse)
 
-get_script_dir <- function() {
-  args <- commandArgs(trailingOnly = FALSE)
-  file_arg <- grep("^--file=", args, value = TRUE)
-  if (length(file_arg) > 0) {
-    return(dirname(normalizePath(sub("^--file=", "", file_arg[1]))))
-  }
-  if (!is.null(sys.frames()[[1]]$ofile)) {
-    return(dirname(normalizePath(sys.frames()[[1]]$ofile)))
-  }
-  getwd()
-}
+# Load harmonized WVS data
+wvs_path <- "/Users/jeffreystark/Development/Research/survey-data-prep/data/processed/wvs_harmonized.parquet"
 
-analysis_dir <- get_script_dir()
-project_root <- normalizePath(file.path(analysis_dir, "..", "..", ".."))
+stopifnot("Harmonized WVS parquet not found" = file.exists(wvs_path))
 
-# Load WVS
-alt_paths <- list.files(
-  file.path(project_root, "data", "raw", "wvs_wave7"),
-  pattern = "\\.dta$",
-  full.names = TRUE
-)
-wvs_path <- alt_paths[1]
-cat("Loading:", wvs_path, "\n")
+wvs <- read_parquet(wvs_path)
+hk <- wvs |> filter(country == "HKG", wave == 7)
 
-wvs_raw <- read_dta(wvs_path, encoding = "latin1")
-hk <- wvs_raw |> filter(B_COUNTRY_ALPHA == "HKG" | B_COUNTRY == 344)
+cat("Hong Kong W7 N:", nrow(hk), "\n")
 
-# Check Q235 label and distribution
-cat("\n=== Q235 ===\n")
-cat("Label:", attr(hk$Q235, "label"), "\n")
+# Check democracy items
+cat("\n=== dem_importance_democracy ===\n")
 cat("Distribution:\n")
-print(table(as.numeric(hk$Q235), useNA = "always"))
+print(table(hk$dem_importance_democracy, useNA = "always"))
+cat("Mean:", round(mean(hk$dem_importance_democracy, na.rm = TRUE), 2), "\n")
 
-# Also check Q250 which is sometimes the democracy importance item
-if ("Q250" %in% names(hk)) {
-  cat("\n=== Q250 ===\n")
-  cat("Label:", attr(hk$Q250, "label"), "\n")
-  cat("Distribution:\n")
-  print(table(as.numeric(hk$Q250), useNA = "always"))
-}
+cat("\n=== dem_how_democratic ===\n")
+cat("Distribution:\n")
+print(table(hk$dem_how_democratic, useNA = "always"))
+cat("Mean:", round(mean(hk$dem_how_democratic, na.rm = TRUE), 2), "\n")
 
-# Search for democracy-related variables
-cat("\n=== Variables with 'democr' in label ===\n")
-for (v in names(hk)) {
-  lab <- attr(hk[[v]], "label")
-  if (!is.null(lab) && grepl("democr", lab, ignore.case = TRUE)) {
-    cat(v, ":", lab, "\n")
-    vals <- as.numeric(hk[[v]])
-    vals_valid <- vals[vals > 0]
-    if (length(vals_valid) > 0) {
-      cat("  Valid N:", length(vals_valid), " Mean:", round(mean(vals_valid), 2),
-          " Range:", min(vals_valid), "-", max(vals_valid), "\n")
-    }
+cat("\n=== dem_strong_leader ===\n")
+cat("Distribution:\n")
+print(table(hk$dem_strong_leader, useNA = "always"))
+cat("Mean:", round(mean(hk$dem_strong_leader, na.rm = TRUE), 2), "\n")
+
+cat("\n=== dem_democratic_system ===\n")
+cat("Distribution:\n")
+print(table(hk$dem_democratic_system, useNA = "always"))
+cat("Mean:", round(mean(hk$dem_democratic_system, na.rm = TRUE), 2), "\n")
+
+# Search for all democracy-related variables
+cat("\n=== All dem_ variables ===\n")
+dem_vars <- grep("^dem_", names(hk), value = TRUE)
+for (v in dem_vars) {
+  vals <- hk[[v]]
+  vals_valid <- vals[!is.na(vals)]
+  if (length(vals_valid) > 0) {
+    cat(v, ": Valid N:", length(vals_valid), " Mean:", round(mean(vals_valid), 2),
+        " Range:", min(vals_valid), "-", max(vals_valid), "\n")
+  } else {
+    cat(v, ": No valid observations\n")
   }
 }
 
-# Also check confidence variables
-cat("\n=== Confidence variable labels ===\n")
-for (v in c("Q65", "Q69", "Q70", "Q71", "Q72")) {
+# Check trust variables (already reversed: higher = more trust)
+cat("\n=== Trust variable means (1-4, higher = more trust) ===\n")
+trust_vars <- c("trust_police", "trust_courts", "trust_government",
+                "trust_parliament", "trust_armed_forces", "trust_political_parties")
+for (v in trust_vars) {
   if (v %in% names(hk)) {
-    lab <- attr(hk[[v]], "label")
-    cat(v, ":", lab, "\n")
-    vals <- as.numeric(hk[[v]])
-    vals_valid <- vals[vals > 0]
-    cat("  Valid N:", length(vals_valid), " Mean:", round(mean(vals_valid), 2), "\n")
+    vals <- hk[[v]]
+    vals_valid <- vals[!is.na(vals)]
+    cat(v, ": Valid N:", length(vals_valid), " Mean:", round(mean(vals_valid), 2), "\n")
   }
 }
