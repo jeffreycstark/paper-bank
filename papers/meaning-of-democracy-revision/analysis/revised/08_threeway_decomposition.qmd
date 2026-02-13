@@ -20,21 +20,21 @@ library(here)
 library(knitr)
 library(kableExtra)
 
-here::i_am("papers/meaning-of-democracy/analysis/revised/08_threeway_decomposition.qmd")
+here::i_am("papers/meaning-of-democracy-revision/analysis/revised/08_threeway_decomposition.qmd")
 
 # Output directory
-output_dir <- here("papers", "meaning-of-democracy", "analysis", "revised", "results")
+output_dir <- here("papers", "meaning-of-democracy-revision", "analysis", "revised", "results")
 if (!dir.exists(output_dir)) dir.create(output_dir, recursive = TRUE)
 
 # Load master data
 abs <- readRDS(here("data", "processed", "abs_econdev_authpref.rds"))
 
 # Load three-way vote coding from archive
-vote_3way <- readRDS(here("papers", "meaning-of-democracy", "analysis",
+vote_3way <- readRDS(here("papers", "meaning-of-democracy-revision", "analysis",
                           "_archive_binary", "data", "vote_winner_opposition.rds"))
 
 # Item metadata
-item_meta <- readRDS(here("papers", "meaning-of-democracy", "analysis",
+item_meta <- readRDS(here("papers", "meaning-of-democracy-revision", "analysis",
                           "data", "item_metadata.rds"))
 
 # Country codes for the three coded countries

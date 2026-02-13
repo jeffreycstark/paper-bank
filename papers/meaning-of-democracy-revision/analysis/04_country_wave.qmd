@@ -34,11 +34,11 @@ library(kableExtra)
 library(here)
 library(purrr)
 
-here::i_am("papers/meaning-of-democracy/analysis/04_country_wave.qmd")
+here::i_am("papers/meaning-of-democracy-revision/analysis/04_country_wave.qmd")
 
 # Directories
-data_dir <- here("papers", "meaning-of-democracy", "analysis", "revised", "data")
-results_dir <- here("papers", "meaning-of-democracy", "analysis", "revised", "results")
+data_dir <- here("papers", "meaning-of-democracy-revision", "analysis", "revised", "data")
+results_dir <- here("papers", "meaning-of-democracy-revision", "analysis", "revised", "results")
 
 # Load data
 w346_data <- readRDS(file.path(data_dir, "w346_main.rds"))

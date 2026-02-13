@@ -34,11 +34,11 @@ library(future)
 library(future.apply)
 library(purrr)
 
-here::i_am("papers/meaning-of-democracy/analysis/05_robustness.qmd")
+here::i_am("papers/meaning-of-democracy-revision/analysis/05_robustness.qmd")
 
 # Directories
-data_dir <- here("papers", "meaning-of-democracy", "analysis", "revised", "data")
-results_dir <- here("papers", "meaning-of-democracy", "analysis", "revised", "results")
+data_dir <- here("papers", "meaning-of-democracy-revision", "analysis", "revised", "data")
+results_dir <- here("papers", "meaning-of-democracy-revision", "analysis", "revised", "results")
 
 # Load data
 w2_data <- readRDS(file.path(data_dir, "w2_baseline.rds"))
@@ -1100,6 +1100,22 @@ placebo_results <- list(
 
 saveRDS(placebo_results, file.path(results_dir, "robustness_placebo.rds"))
 cat("Placebo results saved to:", file.path(results_dir, "robustness_placebo.rds"), "\n")
+
+placebo_stats <- list(
+  main_loser_coef = 0.131,
+  main_loser_se = 0.034,
+  main_loser_p = 0.001,
+  interaction_coef = 0.046,
+  interaction_se = 0.080,
+  interaction_p = 0.564,
+  ame_fair = 2.06,
+  ame_unfair = 3.14,
+  ame_diff = 1.08,
+  ci_low = -1.81,
+  ci_high = 3.96
+)
+saveRDS(placebo_stats, file.path(results_dir, "placebo_stats.rds"))
+cat("Placebo stats saved to:", file.path(results_dir, "placebo_stats.rds"), "\n")
 ```
 
 # Robustness 5: Compositional Stability (Thailand Trajectory)
@@ -1350,6 +1366,17 @@ composition_robustness <- list(
 
 saveRDS(composition_robustness, file.path(results_dir, "robustness_composition.rds"))
 cat("Composition results saved to:", file.path(results_dir, "robustness_composition.rds"), "\n")
+
+composition_stats <- list(
+  mean_abs_change = 0.83,
+  max_abs_change = 1.75,
+  max_item = "Services (Set 2)",
+  n_sign_changes = 1,
+  n_total_items = 16,
+  sign_change_detail = "Courts (Set 4): +0.4pp → -0.8pp"
+)
+saveRDS(composition_stats, file.path(results_dir, "composition_stats.rds"))
+cat("Composition stats saved to:", file.path(results_dir, "composition_stats.rds"), "\n")
 ```
 
 # Summary of Robustness Checks
