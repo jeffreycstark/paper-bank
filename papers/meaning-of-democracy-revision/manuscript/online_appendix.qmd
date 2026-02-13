@@ -157,7 +157,7 @@ ref_elections <- tibble::tribble(
   "Taiwan", "W4", "Presidential", "Jan 2012", "Ma Ying-jeou (KMT)", "Tsai Ing-wen (DPP)", "CEC",
   "Taiwan", "W6", "Presidential", "Jan 2020", "Tsai Ing-wen (DPP)", "Han Kuo-yu (KMT)", "CEC",
   "Thailand", "W3", "Parliamentary", "Dec 2007", "PPP (pro-Thaksin)", "Democrat Party", "ECT",
-  "Thailand", "W4", "---", "---", "Excluded (2014 coup)", "---", "---",
+  "Thailand", "W4", "Prior electoral behavior", "Post-coup", "ABS-coded (N = 382)", "See Appendix B.4", "ABS",
   "Thailand", "W6", "Parliamentary", "Mar 2019", "PPRP coalition", "Pheu Thai", "ECT",
   "Indonesia", "W2", "Presidential", "Sep 2004", "SBY (Democrat)", "Megawati (PDI-P)", "IFES",
   "Indonesia", "W3", "Presidential", "Jul 2009", "SBY (Democrat)", "Megawati (PDI-P)", "IFES",
@@ -189,7 +189,7 @@ if (knitr::is_latex_output()) {
     column_spec(6, width = "3cm") %>%
     column_spec(7, width = "1.8cm") %>%
     footnote(
-      general = "Dashes indicate the country was not surveyed in that wave or, for Thailand W4, that no valid reference election existed. Source abbreviations: NEC = National Election Commission of Korea; CEC = Central Election Commission of Taiwan; ECT = Election Commission of Thailand; IFES = IFES ElectionGuide [@International-Foundation-for-Electoral-Systems2024-vn].",
+      general = "Dashes indicate the country was not surveyed in that wave. For Thailand W4, no standard reference election existed; the ABS coded winner/loser status based on prior electoral behavior (see Appendix B.4). Source abbreviations: NEC = National Election Commission of Korea; CEC = Central Election Commission of Taiwan; ECT = Election Commission of Thailand; IFES = IFES ElectionGuide [@International-Foundation-for-Electoral-Systems2024-vn].",
       general_title = "Note: ",
       footnote_as_chunk = TRUE,
       threeparttable = TRUE
@@ -224,7 +224,7 @@ verification <- tibble::tribble(
   "S. Korea", "W4", "2012 Pres", "Park (Saenuri) 51.6%", "Moon (DUP) 48.0%", "conservative = winner", "Verified",
   "S. Korea", "W6", "2022 Pres", "Yoon (PPP) 48.6%", "Lee (Dem) 47.8%", "conservative = winner", "Verified",
   "Thailand", "W3", "2007 Parl", "PPP 233 seats", "Democrat 164 seats", "pro-Thaksin = winner", "Verified",
-  "Thailand", "W4", "---", "No valid election", "---", "NA (excluded)", "Verified",
+  "Thailand", "W4", "Post-coup", "ABS-coded (N = 382)", "Based on prior electoral behavior", "Retained; see B.4", "Verified",
   "Thailand", "W6", "2019 Parl", "PPRP coalition", "Pheu Thai 136 seats", "pro-military = winner", "Verified"
 )
 
@@ -262,7 +262,7 @@ Two features of the party coding merit additional comment:
 
 ## Special Cases
 
-**Thailand Wave 4 (fieldwork August--October 2014).** Thailand's February 2, 2014 general election was annulled by the Constitutional Court on March 21, 2014, and the military seized power in a coup on May 22, 2014---before ABS fieldwork began. With no valid prior election to reference, all Thailand Wave 4 respondents are coded as missing for electoral status and excluded from the winner-loser analysis.
+**Thailand Wave 4 (fieldwork August--October 2014).** Thailand's February 2, 2014 general election was annulled by the Constitutional Court on March 21, 2014, and the military seized power in a coup on May 22, 2014---before ABS fieldwork began. Despite the absence of a valid recent election, the ABS nevertheless coded winner/loser status for 382 of 1,200 respondents (31.8%) based on prior electoral behavior. The relatively high rate of missing data on q34a (51.1%) likely reflects respondent reluctance to disclose vote choice under military rule rather than a failure of the survey instrument. This country-wave is retained in the main analysis; Appendix Table K1 verifies that excluding it changes no pooled coefficient by more than 0.28 percentage points.
 
 **Thailand Wave 6 --- government formation.** In the March 2019 election, Pheu Thai won the most seats (136) but Palang Pracharath (PPRP, 116 seats) formed the governing coalition with allied parties and the support of the military-appointed Senate. Respondents are coded as winners or losers based on government formation rather than seat plurality, consistent with the standard practice of defining winners by who governs [@ECT2019].
 
