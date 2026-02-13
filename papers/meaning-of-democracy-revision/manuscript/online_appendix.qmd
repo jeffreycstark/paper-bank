@@ -1,5 +1,5 @@
 ---
-title: "Online Appendix: What Does Democracy Mean to Losers?"
+title: "Online Appendix: The Meaning of Losing"
 author:
   - name: Jeffrey Stark
     affiliations:

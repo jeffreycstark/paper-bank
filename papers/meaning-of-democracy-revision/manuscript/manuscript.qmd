@@ -1,5 +1,5 @@
 ---
-title: "What Does Democracy Mean to Electoral Losers? Evidence from Asia"
+title: "The Meaning of Losing: How Democratic Erosion Reshapes Citizens' Conceptions of Democracy"
 author:
   - name: Jeffrey Stark
     affiliations:
