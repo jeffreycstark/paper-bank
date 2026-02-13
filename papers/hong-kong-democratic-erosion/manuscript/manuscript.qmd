@@ -31,6 +31,7 @@ format:
       - text: |
           \usepackage{setspace}
           \usepackage{booktabs}
+          \usepackage{caption}
           \usepackage{longtable}
           \usepackage{array}
           \usepackage{multirow}
@@ -38,6 +39,8 @@ format:
           \usepackage{graphicx}
           \usepackage{threeparttable}
           \usepackage{threeparttablex}
+          \captionsetup{width=\textwidth}
+          \setlength\LTcapwidth{\textwidth}
           \floatplacement{figure}{H}
           \floatplacement{table}{H}
           \raggedright
@@ -94,7 +97,7 @@ These findings contribute to literatures on democratic erosion, preference falsi
 
 ## Democratic Erosion and Public Opinion
 
-The study of democratic erosion has expanded rapidly in the past decade. At the macro level, scholars have documented a global "democratic recession" [@Diamond2015-yb] and a "third wave of autocratization" affecting democracies and hybrid regimes across all world regions [@Luhrmann2019-ow; @Mechkova2017-na]. Case studies of Hungary, Poland, Turkey, and the United States have traced the micro-processes through which democratic institutions are hollowed out [e.g., @Bermeo2016-xj; @Levitsky2018-mr; @Waldner2018-yw; @Haggard2021-xb]. Hong Kong represents an unusually rapid and complete instance of this global pattern, and the ABS data offer a rare opportunity to observe the attitudinal consequences of democratic erosion at the individual level.
+The study of democratic erosion has expanded rapidly in the past decade. At the macro level, scholars have documented a global "democratic recession" [@Diamond2015-ac] and a "third wave of autocratization" affecting democracies and hybrid regimes across all world regions [@Luhrmann2019-ow; @Mechkova2017-na]. Case studies of Hungary, Poland, Turkey, and the United States have traced the micro-processes through which democratic institutions are hollowed out [e.g., @Bermeo2016-xj; @Levitsky2018-mr; @Waldner2018-yw; @Haggard2021-xb]. Hong Kong represents an unusually rapid and complete instance of this global pattern, and the ABS data offer a rare opportunity to observe the attitudinal consequences of democratic erosion at the individual level.
 
 A central concern in this literature is whether publics recognize erosion when it occurs and, if so, whether their attitudes shift in ways that either resist or facilitate further backsliding. The evidence is mixed. @Svolik2019-zi argues that political polarization undermines the public's capacity to serve as a democratic check, since voters in polarized electorates are willing to trade democratic principles for partisan interests, a finding confirmed experimentally across multiple countries [@Graham2020-jr; @Svolik2023-rg]. Studies of Hungary under Orbán suggest that supporters of the ruling party revise their democratic standards downward to accommodate authoritarian practices, while opponents become more committed to procedural democracy. In the United States, partisan polarization structures responses to democratic norm violations, with co-partisans of the norm violator largely tolerating the transgression. At the macro level, @Claassen2020-hk finds that public support for democracy has measurable effects on democratic survival, suggesting that the attitudinal shifts documented here carry implications beyond measurement. These findings suggest that democratic attitudes are neither fixed cultural dispositions nor simple reflections of institutional reality, but are mediated by political identity, information environments, and the perceived stakes of political competition.
 
@@ -374,11 +377,15 @@ nsl_tests |>
     booktabs = TRUE,
     caption = "Pre/Post NSL comparison within Hong Kong Wave 5. Effect sizes (Cohen's d) and significance levels."
   ) |>
-  kable_styling(latex_options = c("hold_position"), font_size = 9) |>
+  kable_styling(latex_options = c("scale_down", "hold_position"), font_size = 9) |>
   column_spec(1, width = "3.8cm") |>
   footnote(
-    symbol = "Higher values indicate more perceived freedom of speech. The positive post-NSL shift (respondents claiming more free speech) is consistent with preference falsification.",
-    general = "Cohen's d computed as (Post-NSL - Protest) / pooled SD; positive values indicate higher post-NSL responses.",
+    symbol = "Higher values indicate more perceived freedom of speech.",
+    general = c(
+      "The positive post-NSL shift on that item is consistent with preference falsification.",
+      "Cohen's d computed as (Post-NSL - Protest) / pooled SD.",
+      "Positive values indicate higher post-NSL responses."
+    ),
     general_title = "Note: ",
     footnote_as_chunk = TRUE
   )
@@ -832,17 +839,17 @@ gradient |>
     col.names = c("Institution", "Rank", "Rationale", "d"),
     booktabs = TRUE
   ) |>
-  kable_styling(latex_options = c("hold_position"), font_size = 10) |>
+  kable_styling(latex_options = c("scale_down", "hold_position"), font_size = 10) |>
   column_spec(1, width = "2.5cm") |>
   column_spec(2, width = "1cm") |>
   column_spec(3, width = "5.5cm") |>
   column_spec(4, width = "1cm") |>
   footnote(
-    general = paste0(
-      "Sensitivity ranking derived from the theoretical framework (Section 2.2) ",
-      "based on each institution's direct association with coercive enforcement. ",
-      "Rankings were specified prior to examining effect sizes. ",
-      "Spearman correlation between rank and d: r = ", round(r_gradient, 2), "."
+    general = c(
+      "Sensitivity ranking derived from the theoretical framework (Section 2.2).",
+      "Based on each institution's direct association with coercive enforcement.",
+      "Rankings were specified prior to examining effect sizes.",
+      paste0("Spearman correlation between rank and d: r = ", round(r_gradient, 2), ".")
     ),
     general_title = "Note: ",
     footnote_as_chunk = TRUE
@@ -857,7 +864,7 @@ A further concern is whether democracy suitability's approximately 60% item-leve
 
 Independent evidence from other survey sources corroborates the differential sensitivity interpretation. Using online panel data collected before and after the NSL, @Kobayashi2022-ih found that pro-democracy respondents subject to political repression were more likely to drop out of political polls, and that those who remained falsified potentially sensitive past behavior, providing direct panel-level evidence for both the compositional selection and preference falsification mechanisms identified here. @Yang2023-dd used HKPORI tracking data with synthetic difference-in-differences to demonstrate a significant differential treatment effect on politically sensitive poll items (attitudes toward Taiwan and Tibet independence) compared to less sensitive items following the NSL's implementation, a pattern closely analogous to the sensitivity gradient documented above. These findings, drawn from independent data sources and distinct methodological designs, converge on the same conclusion: the post-NSL environment was associated with systematically inflated regime-favorable responses on politically sensitive survey items while less sensitive items remained comparatively unaffected.
 
-World Values Survey Wave 7 [@Haerpfer2022-hh], fielded in Hong Kong in 2018 ($N = 2{,}075$; mixed PAPI and CAWI mode), provides an additional pre-crisis baseline that sharpens the interpretation of the ABS trust shifts. A methodological caveat is warranted: the WVS employed a mix of paper-and-pencil (PAPI) and computer-assisted web interviewing (CAWI) in Hong Kong, whereas the ABS used face-to-face interviews throughout. This mode difference has implications for the present argument. A substantial literature documents that self-administered modes (including CAWI) reduce social desirability bias on sensitive items relative to interviewer-administered modes, since respondents are more willing to express critical or socially undesirable views in the absence of an interviewer [e.g., @Kreuter2008-gm; @Heerwegh2009-tp]. If the WVS CAWI component reduced social desirability pressure, then WVS pre-crisis trust levels may *understate* the face-to-face social desirability equilibrium. This implies that the ABS protest-period collapse in trust, measured face-to-face under conditions of political mobilization that made regime criticism socially acceptable, may represent an unusually honest signal, while the post-NSL "recovery" to WVS-comparable levels reflects the reassertion of social desirability norms under authoritarian constraint. Absolute levels across the two instruments are therefore not directly comparable, but the relative positioning of trust items (police and government vs. courts) and the direction of change from the pre-protest baseline remain informative.
+World Values Survey Wave 7 [@Haerpfer-C-Inglehart-R-Moreno-A-Welzel-C-Kizilova-K-Diez-Medrano-J-Lagos-M-Norris-P-Ponarin-E-Puranen-B2022-rw], fielded in Hong Kong in 2018 ($N = 2{,}075$; mixed PAPI and CAWI mode), provides an additional pre-crisis baseline that sharpens the interpretation of the ABS trust shifts. A methodological caveat is warranted: the WVS employed a mix of paper-and-pencil (PAPI) and computer-assisted web interviewing (CAWI) in Hong Kong, whereas the ABS used face-to-face interviews throughout. This mode difference has implications for the present argument. A substantial literature documents that self-administered modes (including CAWI) reduce social desirability bias on sensitive items relative to interviewer-administered modes, since respondents are more willing to express critical or socially undesirable views in the absence of an interviewer [e.g., @Kreuter2008-gm; @Heerwegh2009-tp]. If the WVS CAWI component reduced social desirability pressure, then WVS pre-crisis trust levels may *understate* the face-to-face social desirability equilibrium. This implies that the ABS protest-period collapse in trust, measured face-to-face under conditions of political mobilization that made regime criticism socially acceptable, may represent an unusually honest signal, while the post-NSL "recovery" to WVS-comparable levels reflects the reassertion of social desirability norms under authoritarian constraint. Absolute levels across the two instruments are therefore not directly comparable, but the relative positioning of trust items (police and government vs. courts) and the direction of change from the pre-protest baseline remain informative.
 
 On comparable 1--4 confidence scales, WVS pre-protest means for police (2.70) and national government (2.50) closely match the ABS post-NSL means (2.64 and 2.63, respectively), while ABS protest-period means fell well below both benchmarks (2.15 for each). In other words, the post-NSL trust "recovery" does not represent a surge to new heights but a reversion to approximately the pre-protest status quo, consistent with falsification restoring the baseline social desirability equilibrium rather than generating genuine new confidence. Trust in the courts, by contrast, declined from a WVS baseline of 3.02 to 2.71 during the protests and remained depressed at 2.74 post-NSL, reinforcing the finding that the judiciary is the institution least subject to falsification pressure. Democracy suitability tells the opposite story: the WVS baseline of 7.83 (on a 1--10 scale) fell to 6.94 during the protests and continued declining to 5.74 post-NSL, with no sign of recovery. This monotonic decline on a less politically sensitive evaluative item, set against the V-shaped rebound of trust in coercive institutions, is precisely the divergent pattern predicted by differential sensitivity to falsification pressure.
 
