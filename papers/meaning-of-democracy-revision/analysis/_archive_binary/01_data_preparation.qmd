@@ -1,0 +1,292 @@
+---
+title: "Data Preparation"
+subtitle: "Meaning of Democracy Paper"
+author: "Jeffrey Stark"
+date: today
+format:
+  html:
+    toc: true
+    toc-depth: 3
+    code-fold: show
+    df-print: paged
+execute:
+  warning: false
+  message: false
+---
+
+# Overview
+
+This script prepares the analysis dataset from the harmonized Asian Barometer master file (`abs_econdev_authpref.rds`, 336 variables). The master file now contains all harmonized variables including:
+
+- `electoral_status`: Winner/loser status (1=Winner, 2=Loser)
+- `procedural_preference_index`: 0-4 scale (count of procedural choices)
+- `dem_procedural_vs_substantive`: Binary procedural/substantive measure
+
+# Setup
+
+```{r setup}
+library(tidyverse)
+library(here)
+
+here::i_am("papers/meaning-of-democracy/analysis/01_data_preparation.qmd")
+
+# Output directory for paper-specific analysis data
+output_dir <- here("papers", "meaning-of-democracy", "analysis", "data")
+if (!dir.exists(output_dir)) dir.create(output_dir, recursive = TRUE)
+
+# Master dataset location
+master_file <- here("data", "processed", "abs_econdev_authpref.rds")
+```
+
+# Load Master Dataset
+
+```{r load}
+abs <- readRDS(master_file)
+
+cat("Master dataset:", nrow(abs), "rows,", ncol(abs), "columns\n")
+cat("Waves:", paste(sort(unique(abs$wave)), collapse = ", "), "\n")
+```
+
+# Helper Functions
+
+```{r helpers}
+# Country name lookup (harmonized country codes)
+get_country_name <- function(code) {
+  code <- as.integer(code)
+  case_when(
+    code == 1 ~ "Japan",
+    code == 2 ~ "Hong Kong",
+    code == 3 ~ "South Korea",
+    code == 4 ~ "China",
+    code == 5 ~ "Mongolia",
+    code == 6 ~ "Philippines",
+    code == 7 ~ "Taiwan",
+    code == 8 ~ "Thailand",
+    code == 9 ~ "Indonesia",
+    code == 10 ~ "Singapore",
+    code == 11 ~ "Vietnam",
+    code == 12 ~ "Cambodia",
+    code == 13 ~ "Malaysia",
+    code == 14 ~ "Myanmar",
+    code == 15 ~ "Australia",
+    code == 18 ~ "India",
+    TRUE ~ NA_character_
+  )
+}
+
+# Wave year lookup (approximate midpoint of fieldwork)
+get_wave_year <- function(wave) {
+  # Approximate midpoint of fieldwork for each wave
+  # Based on actual interview dates from 05_interview_dates.qmd
+  case_when(
+    wave == 1 ~ 2001L,
+    wave == 2 ~ 2006L,  # Jul 2004 - Dec 2008, bulk 2006-07
+    wave == 3 ~ 2011L,  # Jan 2010 - Nov 2012
+    wave == 4 ~ 2015L,  # Jun 2014 - Apr 2016
+    wave == 5 ~ 2017L,
+    wave == 6 ~ 2022L,  # Jul 2021 - Feb 2023
+    TRUE ~ NA_integer_
+  )
+}
+```
+
+# Check Key Variables
+
+```{r check-vars}
+# Verify electoral_status and procedural_preference_index are present
+cat("=== KEY VARIABLES CHECK ===\n\n")
+
+# electoral_status
+cat("electoral_status:\n")
+if ("electoral_status" %in% names(abs)) {
+  cat("  Present: YES\n")
+  cat("  Values:", paste(sort(unique(abs$electoral_status[!is.na(abs$electoral_status)])), collapse = ", "), "\n")
+  cat("  Non-missing by wave:\n")
+  abs %>% 
+    filter(!is.na(electoral_status)) %>% 
+    count(wave) %>% 
+    mutate(label = paste0("    W", wave, ": ", n)) %>% 
+    pull(label) %>% 
+    cat(sep = "\n")
+} else {
+  cat("  Present: NO - check harmonization\n")
+}
+
+cat("\n")
+
+# procedural_preference_index
+cat("procedural_preference_index:\n")
+if ("procedural_preference_index" %in% names(abs)) {
+  cat("  Present: YES\n")
+  cat("  Range:", min(abs$procedural_preference_index, na.rm = TRUE), "-", 
+      max(abs$procedural_preference_index, na.rm = TRUE), "\n")
+  cat("  Non-missing by wave:\n")
+  abs %>% 
+    filter(!is.na(procedural_preference_index)) %>% 
+    count(wave) %>% 
+    mutate(label = paste0("    W", wave, ": ", n)) %>% 
+    pull(label) %>% 
+    cat(sep = "\n")
+} else {
+  cat("  Present: NO - check harmonization\n")
+}
+```
+
+# Process Dataset
+
+```{r process}
+# Filter to waves with both electoral_status and procedural_preference_index
+# W2, W3, W4, W6 have these variables (W1 and W5 do not)
+# IMPORTANT: Also filter to only voters (voted_last_election == 1)
+# W2 has ~654 cases with electoral_status but voted_last_election != 1
+combined <- abs %>%
+  filter(wave %in% c(2, 3, 4, 6)) %>%
+  filter(voted_last_election == 1) %>%  # Only include actual voters
+  filter(!is.na(electoral_status), !is.na(procedural_preference_index)) %>%
+  mutate(
+    # Format wave label
+    wave_label = paste0("W", wave),
+    wave_year = get_wave_year(wave),
+    country_name = get_country_name(country),
+    
+    # Winner/loser as character (1=Winner, 2=Loser in harmonized data)
+    winner_loser = case_when(
+      electoral_status == 1 ~ "Winner",
+      electoral_status == 2 ~ "Loser",
+      TRUE ~ NA_character_
+    ),
+    
+    # Procedural index (already 0-4 scale from harmonization)
+    procedural_index = procedural_preference_index,
+    
+    # Binary procedural measure (>=2 procedural choices = procedural)
+    # For W2: 0 or 4 only, so threshold works correctly
+    procedural_single = if_else(procedural_index >= 2, 1L, 0L),
+    
+    # Measure type (single item for W2, four-set battery for W3/W4/W6)
+    measure_type = if_else(wave == 2, "single_item", "four_set")
+  ) %>%
+  filter(!is.na(country_name))
+
+cat("\n=== COMBINED DATASET ===\n")
+cat("Total observations:", nrow(combined), "\n")
+cat("Waves:", paste(unique(combined$wave_label), collapse = ", "), "\n")
+cat("Countries:", n_distinct(combined$country_name), "\n")
+```
+
+# Summary Statistics
+
+```{r summary}
+# By wave
+cat("=== SAMPLE BY WAVE ===\n")
+combined %>%
+  group_by(wave_label, wave_year) %>%
+  summarise(
+    n = n(),
+    n_winner = sum(winner_loser == "Winner"),
+    n_loser = sum(winner_loser == "Loser"),
+    pct_procedural = round(mean(procedural_single) * 100, 1),
+    .groups = "drop"
+  ) %>%
+  knitr::kable(caption = "Sample by Wave")
+
+# By country
+cat("\n=== SAMPLE BY COUNTRY AND WAVE ===\n")
+combined %>%
+  count(country_name, wave_label) %>%
+  pivot_wider(names_from = wave_label, values_from = n, values_fill = 0) %>%
+  mutate(total = rowSums(across(starts_with("W")))) %>%
+  arrange(desc(total)) %>%
+  knitr::kable(caption = "Sample by Country and Wave")
+```
+
+# Country Coverage Analysis
+
+```{r coverage}
+# Which countries have data in which waves?
+coverage <- combined %>%
+  distinct(country_name, wave_label) %>%
+  mutate(present = 1) %>%
+  pivot_wider(names_from = wave_label, values_from = present, values_fill = 0) %>%
+  mutate(
+    n_waves = rowSums(across(starts_with("W"))),
+    trajectory_possible = n_waves >= 3
+  ) %>%
+  arrange(desc(n_waves))
+
+cat("=== COUNTRY COVERAGE ===\n")
+print(coverage, n = 20)
+
+cat("\n=== COUNTRIES WITH 3+ WAVES (trajectory analysis possible) ===\n")
+trajectory_countries <- coverage %>% filter(trajectory_possible) %>% pull(country_name)
+cat(paste(trajectory_countries, collapse = ", "), "\n")
+```
+
+# Save Analysis Dataset
+
+```{r save}
+# Select and reorder columns for analysis dataset
+analysis_data <- combined %>%
+  select(
+    wave = wave_label,
+    wave_year,
+    country_name,
+    winner_loser,
+    procedural_single,
+    procedural_index,
+    measure_type
+  )
+
+# Save
+saveRDS(analysis_data, file.path(output_dir, "winner_loser_4waves.rds"))
+write_csv(analysis_data, file.path(output_dir, "winner_loser_4waves.csv"))
+
+cat("\n=== SAVED ===\n")
+cat("RDS:", file.path(output_dir, "winner_loser_4waves.rds"), "\n")
+cat("CSV:", file.path(output_dir, "winner_loser_4waves.csv"), "\n")
+cat("Rows:", nrow(analysis_data), "\n")
+cat("Cols:", ncol(analysis_data), "\n")
+```
+
+# Variable Codebook
+
+| Variable | Description | Source |
+|----------|-------------|--------|
+| `wave` | Survey wave (W2, W3, W4, W6) | `wave` column, reformatted |
+| `wave_year` | Approximate midpoint year of fieldwork | Derived from wave |
+| `country_name` | Country name | `country` column, recoded |
+| `winner_loser` | Electoral status: "Winner" or "Loser" | `electoral_status` |
+| `procedural_single` | Binary: 1 = procedural, 0 = substantive | `procedural_preference_index >= 2` |
+| `procedural_index` | 0-4 scale (W3/W4/W6) or 0/4 (W2) | `procedural_preference_index` |
+| `measure_type` | "single_item" (W2) or "four_set" (W3/W4/W6) | Derived from wave |
+
+# Data Notes
+
+## Source Variables
+
+- **Data source**: Uses harmonized variables from the main ABS data pipeline (`abs_econdev_authpref.rds`)
+- **electoral_status**: Harmonized winner/loser variable
+  - W2: q39a
+  - W3: q33a
+  - W4: q34a
+  - W6: q34a
+- **procedural_preference_index**: Harmonized 0-4 index
+  - W2: Single item (q92) scaled to 0/4
+  - W3: 4-set battery (q85-q88)
+  - W4: 4-set battery (q88-q91)
+  - W6: 4-set battery (q85-q88)
+
+## Measurement Notes
+
+- **W2 caveat**: Uses single forced-choice item (q92), not the 4-set battery. Values are only 0 or 4.
+- **Missing data**: Observations with missing winner/loser status or procedural measure are excluded.
+- **W1 and W5**: Do not have the electoral_status (winner/loser) question
+
+## Country Coverage
+
+```{r coverage-table}
+#| echo: false
+coverage %>%
+  select(country_name, W2, W3, W4, W6, n_waves) %>%
+  knitr::kable(caption = "Country × Wave Coverage Matrix")
+```

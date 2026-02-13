@@ -1,0 +1,417 @@
+---
+title: "Figure Generation"
+subtitle: "Meaning of Democracy Paper"
+author: "Jeffrey Stark"
+date: today
+format:
+  html:
+    toc: true
+    toc-depth: 3
+    code-fold: show
+    df-print: paged
+execute:
+  warning: false
+  message: false
+---
+
+# Overview
+
+This script generates publication-ready figures for the meaning of democracy paper.
+Figures are saved to the results directory in both PNG and PDF formats.
+
+# Setup
+
+```{r setup}
+library(tidyverse)
+library(knitr)
+library(kableExtra)
+library(here)
+
+here::i_am("papers/meaning-of-democracy/analysis/03_figures.qmd")
+
+# Directories
+results_dir <- here("papers", "meaning-of-democracy", "analysis", "revised", "results")
+figures_dir <- here("papers", "meaning-of-democracy", "figures")
+if (!dir.exists(figures_dir)) dir.create(figures_dir, recursive = TRUE)
+
+# Load results
+main_results <- readRDS(file.path(results_dir, "mlogit_results.rds"))
+all_results <- main_results$all_results
+item_meta <- main_results$item_metadata
+
+# Load country-wave results (from 04_country_wave.qmd output)
+cw_results_file <- file.path(results_dir, "country_wave_results.rds")
+if (file.exists(cw_results_file)) {
+  cw_results <- readRDS(cw_results_file)
+  cw_ames <- cw_results$cw_ames
+  cw_gap <- cw_results$cw_gap
+  cat("Country-wave results loaded:", nrow(cw_ames), "item-country-wave estimates\n")
+} else {
+  cw_ames <- NULL
+  cw_gap <- NULL
+  cat("Country-wave results not found - run 04_country_wave.qmd first for trajectory figures\n")
+}
+
+cat("Main results:", nrow(all_results), "items\n")
+```
+
+# Figure 1: Main Results - All Items
+
+```{r fig1-main-results, fig.width=10, fig.height=8}
+# Coefficient plot for all items
+p1 <- all_results %>%
+  mutate(
+    item_label = fct_reorder(item_label, ame),
+    item_type = factor(item_type, levels = c("procedural", "substantive", "governance"))
+  ) %>%
+  ggplot(aes(x = ame * 100, y = item_label, color = item_type)) +
+  geom_vline(xintercept = 0, linetype = "dashed", color = "gray50") +
+  geom_errorbarh(aes(xmin = ci_low * 100, xmax = ci_high * 100), height = 0.2) +
+  geom_point(size = 3) +
+  scale_color_manual(
+    values = c("procedural" = "#2166AC", "substantive" = "#B2182B", "governance" = "#666666"),
+    name = "Item Type"
+  ) +
+  labs(
+    x = "Loser Effect (percentage points)",
+    y = NULL,
+    title = "Effect of Loser Status on Item Choice Probability",
+    subtitle = "Positive = losers more likely to choose; Negative = winners more likely",
+    caption = "Note: 95% confidence intervals from cluster bootstrap"
+  ) +
+  theme_minimal() +
+  theme(
+    legend.position = "bottom",
+    panel.grid.minor = element_blank()
+  )
+
+print(p1)
+
+ggsave(file.path(figures_dir, "fig1_loser_effects_all_items.png"), width = 10, height = 8, dpi = 300)
+ggsave(file.path(figures_dir, "fig1_loser_effects_all_items.pdf"), width = 10, height = 8)
+ggsave(file.path(results_dir, "fig_loser_effects_all_items.png"), width = 10, height = 8, dpi = 300)
+ggsave(file.path(results_dir, "fig_loser_effects_all_items.pdf"), width = 10, height = 8)
+
+cat("\nFigure 1 saved\n")
+```
+
+# Figure 1b: Main Results - Faceted by Question Set
+
+This version facets by question set (W2, Set1-4) to clarify that these are distinct measurements.
+Items labeled "Elections" in W2 and "Free Elections" in Set1 are from different survey questions
+administered in different waves.
+
+```{r fig1b-faceted, fig.width=12, fig.height=10}
+# Add wave information to distinguish question sets
+all_results_faceted <- all_results %>%
+  mutate(
+    # Create more informative set labels
+    set_label = case_when(
+      set == "W2" ~ "Wave 2 (2006)\nq92: Most essential",
+      set == "Set1" ~ "Waves 3/4/6 (2011-2022)\nSet 1: q85",
+      set == "Set2" ~ "Waves 3/4/6 (2011-2022)\nSet 2: q86",
+      set == "Set3" ~ "Waves 3/4/6 (2011-2022)\nSet 3: q87",
+      set == "Set4" ~ "Waves 3/4/6 (2011-2022)\nSet 4: q88",
+      TRUE ~ set
+    ),
+    set_label = factor(set_label, levels = c(
+      "Wave 2 (2006)\nq92: Most essential",
+      "Waves 3/4/6 (2011-2022)\nSet 1: q85",
+      "Waves 3/4/6 (2011-2022)\nSet 2: q86",
+      "Waves 3/4/6 (2011-2022)\nSet 3: q87",
+      "Waves 3/4/6 (2011-2022)\nSet 4: q88"
+    )),
+    item_label = fct_reorder(item_label, ame, .fun = mean),
+    item_type = factor(item_type, levels = c("procedural", "substantive", "governance"))
+  )
+
+p1b <- ggplot(all_results_faceted,
+              aes(x = ame * 100, y = item_label, color = item_type)) +
+  geom_vline(xintercept = 0, linetype = "dashed", color = "gray50") +
+  geom_errorbarh(aes(xmin = ci_low * 100, xmax = ci_high * 100), height = 0.3) +
+  geom_point(size = 3) +
+  facet_wrap(~set_label, scales = "free_y", ncol = 2) +
+  scale_color_manual(
+    values = c("procedural" = "#2166AC", "substantive" = "#B2182B", "governance" = "#666666"),
+    name = "Item Type",
+    labels = c("Procedural", "Substantive", "Governance")
+  ) +
+  labs(
+    x = "Loser Effect (percentage points)",
+    y = NULL,
+    title = "Effect of Loser Status on Item Choice Probability by Question Set",
+    subtitle = "Positive = losers more likely to choose; Negative = winners more likely\nEach panel shows items from a distinct survey question",
+    caption = "Note: 95% CIs from cluster bootstrap. W2 uses different question wording than W3/4/6 sets."
+  ) +
+  theme_minimal(base_size = 11) +
+  theme(
+    legend.position = "bottom",
+    panel.grid.minor = element_blank(),
+    strip.text = element_text(face = "bold", size = 9),
+    strip.background = element_rect(fill = "gray95", color = NA)
+  )
+
+print(p1b)
+
+ggsave(file.path(figures_dir, "fig1b_loser_effects_by_set.png"), width = 12, height = 10, dpi = 300)
+ggsave(file.path(figures_dir, "fig1b_loser_effects_by_set.pdf"), width = 12, height = 10)
+ggsave(file.path(results_dir, "fig_loser_effects_by_set.png"), width = 12, height = 10, dpi = 300)
+ggsave(file.path(results_dir, "fig_loser_effects_by_set.pdf"), width = 12, height = 10)
+
+cat("\nFigure 1b (faceted by set) saved\n")
+```
+
+# Figure 2: Summary by Item Type
+
+```{r fig2-by-type, fig.width=8, fig.height=6}
+# Summarize by type
+type_summary <- all_results %>%
+  group_by(item_type) %>%
+  summarise(
+    mean_ame = mean(ame),
+    se_ame = sd(ame) / sqrt(n()),
+    ci_low = mean_ame - 1.96 * se_ame,
+    ci_high = mean_ame + 1.96 * se_ame,
+    n_items = n(),
+    .groups = "drop"
+  ) %>%
+  mutate(
+    item_type = factor(item_type, levels = c("procedural", "substantive", "governance"))
+  )
+
+p2 <- ggplot(type_summary, aes(x = item_type, y = mean_ame * 100, fill = item_type)) +
+  geom_hline(yintercept = 0, linetype = "dashed", color = "gray50") +
+  geom_col(alpha = 0.7, width = 0.6) +
+  geom_errorbar(aes(ymin = ci_low * 100, ymax = ci_high * 100), width = 0.15) +
+  scale_fill_manual(
+    values = c("procedural" = "#2166AC", "substantive" = "#B2182B", "governance" = "#666666"),
+    guide = "none"
+  ) +
+  labs(
+    x = "Item Type",
+    y = "Mean Loser Effect (percentage points)",
+    title = "Average Loser Effect by Item Type",
+    subtitle = "Losers favor procedural items; winners favor substantive items"
+  ) +
+  theme_minimal() +
+  theme(panel.grid.minor = element_blank())
+
+print(p2)
+
+ggsave(file.path(figures_dir, "fig2_loser_effect_by_type.png"), width = 8, height = 6, dpi = 300)
+ggsave(file.path(figures_dir, "fig2_loser_effect_by_type.pdf"), width = 8, height = 6)
+
+cat("\nFigure 2 saved\n")
+```
+
+# Figure 3: Country Trajectories
+
+```{r fig3-trajectories, fig.width=12, fig.height=8}
+# Skip if country-wave results not available
+if (is.null(cw_gap)) {
+  cat("Skipping trajectory figures - run 04_country_wave.qmd first\n")
+} else {
+
+# Countries with multiple waves
+multi_wave_countries <- cw_gap %>%
+  group_by(country_name) %>%
+  filter(n() >= 2) %>%
+  ungroup()
+
+# Plot trajectories for countries with 3+ waves
+trajectory_countries <- multi_wave_countries %>%
+  group_by(country_name) %>%
+  filter(n() >= 3) %>%
+  ungroup()
+
+if (nrow(trajectory_countries) > 0) {
+  p3 <- ggplot(trajectory_countries, aes(x = wave, y = proc_sub_gap * 100,
+                                    color = country_name, fill = country_name,
+                                    group = country_name)) +
+    geom_ribbon(aes(ymin = proc_sub_gap_ci_low * 100, ymax = proc_sub_gap_ci_high * 100),
+                alpha = 0.2, color = NA) +
+    geom_line(linewidth = 1) +
+    geom_point(size = 3) +
+    geom_hline(yintercept = 0, linetype = "dashed", color = "gray50") +
+    scale_x_continuous(breaks = c(3, 4, 6), labels = c("W3\n(2011)", "W4\n(2015)", "W6\n(2022)")) +
+    labs(
+      x = "Wave",
+      y = "Loser Effect Gap (pp)\n(Procedural − Substantive)",
+      title = "Country Trajectories: How the Loser Effect Changes Over Time",
+      subtitle = "Shaded regions show 95% confidence intervals",
+      color = "Country",
+      fill = "Country"
+    ) +
+    theme_minimal() +
+    theme(
+      legend.position = "right",
+      panel.grid.minor = element_blank()
+    )
+
+  print(p3)
+  ggsave(file.path(figures_dir, "fig3_country_trajectories.png"), width = 12, height = 8, dpi = 300)
+  ggsave(file.path(figures_dir, "fig3_country_trajectories.pdf"), width = 12, height = 8)
+  ggsave(file.path(results_dir, "fig_country_trajectories.png"), width = 12, height = 8, dpi = 300)
+  ggsave(file.path(results_dir, "fig_country_trajectories.pdf"), width = 12, height = 8)
+
+  cat("\nFigure 3 saved\n")
+}
+} # end else block for cw_gap null check
+```
+
+# Figure 4: Highlight Countries
+
+```{r fig4-highlight, fig.width=12, fig.height=8}
+if (is.null(cw_gap)) {
+  cat("Skipping - run 04_country_wave.qmd first\n")
+} else {
+
+# Highlight key countries with contrasting patterns
+highlight_countries <- c("Thailand", "South Korea", "Taiwan", "Japan")
+
+highlight_data <- cw_gap %>%
+  filter(country_name %in% highlight_countries) %>%
+  mutate(
+    pattern = case_when(
+      country_name == "Thailand" ~ "Rising (Thailand)",
+      country_name == "South Korea" ~ "Stable (South Korea)",
+      country_name == "Taiwan" ~ "Flat (Taiwan)",
+      country_name == "Japan" ~ "Moderate (Japan)"
+    )
+  )
+
+if (nrow(highlight_data) > 0) {
+  p4 <- ggplot(highlight_data,
+               aes(x = wave, y = proc_sub_gap * 100,
+                   color = country_name, linetype = country_name)) +
+    geom_ribbon(aes(ymin = proc_sub_gap_ci_low * 100,
+                    ymax = proc_sub_gap_ci_high * 100,
+                    fill = country_name),
+                alpha = 0.15, color = NA) +
+    geom_line(linewidth = 1.5) +
+    geom_point(size = 4) +
+    geom_hline(yintercept = 0, linetype = "dashed", color = "gray50", linewidth = 0.8) +
+    scale_x_continuous(breaks = c(3, 4, 6),
+                       labels = c("Wave 3\n(2011)", "Wave 4\n(2015)", "Wave 6\n(2022)")) +
+    scale_color_manual(values = c(
+      "Thailand" = "#D62728",
+      "South Korea" = "#1F77B4",
+      "Taiwan" = "#2CA02C",
+      "Japan" = "#9467BD"
+    )) +
+    scale_fill_manual(values = c(
+      "Thailand" = "#D62728",
+      "South Korea" = "#1F77B4",
+      "Taiwan" = "#2CA02C",
+      "Japan" = "#9467BD"
+    )) +
+    scale_linetype_manual(values = c(
+      "Thailand" = "solid",
+      "South Korea" = "solid",
+      "Taiwan" = "dashed",
+      "Japan" = "dashed"
+    )) +
+    labs(
+      x = NULL,
+      y = "Loser Effect Gap (pp)\n(Procedural − Substantive)",
+      title = "Diverging Trajectories: How Loser Effects Change Over Time",
+      subtitle = "Positive gap = losers favor procedural items more than substantive\n95% confidence intervals shown",
+      color = "Country",
+      fill = "Country",
+      linetype = "Country"
+    ) +
+    theme_minimal(base_size = 14) +
+    theme(
+      legend.position = "right",
+      legend.title = element_text(face = "bold"),
+      panel.grid.minor = element_blank(),
+      plot.title = element_text(face = "bold", size = 16),
+      axis.text.x = element_text(size = 12)
+    )
+
+  print(p4)
+  ggsave(file.path(figures_dir, "fig4_highlight_trajectories.png"), width = 12, height = 8, dpi = 300)
+  ggsave(file.path(figures_dir, "fig4_highlight_trajectories.pdf"), width = 12, height = 8)
+  ggsave(file.path(results_dir, "fig_highlight_country_trajectories.png"), width = 12, height = 8, dpi = 300)
+  ggsave(file.path(results_dir, "fig_highlight_country_trajectories.pdf"), width = 12, height = 8)
+
+  cat("\nFigure 4 saved\n")
+}
+} # end else block for cw_gap null check
+```
+
+# Figure 5: Item-Level Trajectories by Country
+
+```{r fig5-item-trajectories, fig.width=14, fig.height=10}
+if (is.null(cw_ames)) {
+  cat("Skipping - run 04_country_wave.qmd first\n")
+} else {
+
+# Select focal countries
+focal_countries <- c("Thailand", "South Korea", "Taiwan", "Japan",
+                     "Philippines", "Indonesia", "Mongolia")
+
+trajectory_data <- cw_ames %>%
+  filter(country_name %in% focal_countries) %>%
+  group_by(country_name) %>%
+  filter(n_distinct(wave) >= 2) %>%
+  ungroup()
+
+if (nrow(trajectory_data) > 0) {
+  p5 <- ggplot(trajectory_data,
+               aes(x = wave, y = ame * 100, color = item_type, group = item)) +
+    geom_line(alpha = 0.5, linewidth = 0.8) +
+    geom_point(size = 2, alpha = 0.7) +
+    geom_hline(yintercept = 0, linetype = "dashed", color = "gray50") +
+    facet_wrap(~country_name, ncol = 4) +
+    scale_x_continuous(breaks = c(3, 4, 6), labels = c("W3", "W4", "W6")) +
+    scale_color_manual(
+      values = c("procedural" = "#2166AC", "substantive" = "#B2182B", "governance" = "#4DAF4A"),
+      labels = c("Procedural", "Substantive", "Governance")
+    ) +
+    labs(
+      x = "Wave",
+      y = "Loser Effect (pp)",
+      title = "Item-Level Loser Effects Across Waves",
+      subtitle = "Blue = Procedural items; Red = Substantive items; Green = Governance items",
+      color = "Item Type"
+    ) +
+    theme_minimal() +
+    theme(
+      legend.position = "bottom",
+      panel.grid.minor = element_blank(),
+      strip.text = element_text(face = "bold", size = 11)
+    )
+
+  print(p5)
+  ggsave(file.path(figures_dir, "fig5_item_trajectories.png"), width = 14, height = 10, dpi = 300)
+  ggsave(file.path(figures_dir, "fig5_item_trajectories.pdf"), width = 14, height = 10)
+  ggsave(file.path(results_dir, "fig_item_trajectories_by_country.png"), width = 14, height = 10, dpi = 300)
+  ggsave(file.path(results_dir, "fig_item_trajectories_by_country.pdf"), width = 14, height = 10)
+
+  cat("\nFigure 5 saved\n")
+}
+} # end else block for cw_ames null check
+```
+
+# Summary
+
+```{r summary}
+cat("\n========================================\n")
+cat("       FIGURES GENERATED\n")
+cat("========================================\n\n")
+
+cat("Figures saved to:\n")
+cat("  ", figures_dir, "\n")
+cat("  ", results_dir, "\n\n")
+
+cat("Files created:\n")
+cat("  - fig1_loser_effects_all_items.{png,pdf}    (all items, single panel)\n")
+cat("  - fig1b_loser_effects_by_set.{png,pdf}      (faceted by question set) ★ NEW\n")
+cat("  - fig2_loser_effect_by_type.{png,pdf}\n")
+cat("  - fig3_country_trajectories.{png,pdf}\n")
+cat("  - fig4_highlight_trajectories.{png,pdf}\n")
+cat("  - fig5_item_trajectories.{png,pdf}\n")
+cat("\nNote: Figure 1b clarifies that W2 items and W3/4/6 set items are from\n")
+cat("      distinct survey questions with different wording.\n")
+```

@@ -1,0 +1,13 @@
+country_name,n,mean_procedural,sd,pct_binary_procedural
+Thailand,878,0.915,0.263,92.7
+Philippines,591,0.849,0.343,86.3
+Singapore,865,0.824,0.364,84.2
+South Korea,1120,0.8,0.296,88
+Indonesia,1052,0.791,0.358,81.6
+Malaysia,693,0.791,0.376,81.6
+China,2324,0.79,0.401,79.6
+Vietnam,947,0.783,0.383,80.7
+Taiwan,983,0.749,0.385,78.6
+Cambodia,500,0.746,0.39,78.7
+Mongolia,986,0.615,0.378,65.5
+Japan,619,0.612,0.412,64.6
