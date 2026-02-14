@@ -408,10 +408,10 @@ Thailand provides the most dramatic support for H3. In Wave 3 (2010--2012), duri
 
 South Korea presents the mirror image. Despite experiencing its own political upheaval during this period—the impeachment and removal of President Park Geun-hye in 2016--2017 and the subsequent election of progressive Moon Jae-in—the procedural--substantive gap remained modest throughout, fluctuating between `r kor_w3_pp` pp in Wave 3 and `r kor_w4_pp` pp in Wave 4, never exceeding five percentage points. The critical difference is institutional: South Korea's crisis was resolved through constitutional procedures rather than military intervention. The impeachment demonstrated that accountability mechanisms functioned, and the 2017 election delivered genuine alternation. Under these conditions, the positional logic predicts convergence, and convergence is what the data show.
 
-Cambodia shows a persistently large gap (approximately 13 pp across all three waves) that, notably, did not grow following the dissolution of the main opposition party (CNRP) in 2017. In a competitive authoritarian context, the stakes of losing were already effectively maximized—losers' procedural orientation had little room to intensify further. Among the remaining countries (@tbl-country-gaps), Malaysia shows a large gap that narrows across waves, potentially reflecting the political opening that culminated in the 2018 alternation. Myanmar's single observation captures a strikingly large gap consistent with the high stakes of its fragile democratic transition. Taiwan's trajectory is distinctive, reversing from positive to negative by Wave 6—a pattern that may reflect the unusual dynamics of cross-strait identity politics. Japan provides the expected baseline for a consolidated democracy: modest and stable across waves.
+Cambodia shows a persistently large gap (approximately 13 pp across all three waves) that, notably, did not grow following the dissolution of the main opposition party (CNRP) in 2017. In a competitive authoritarian context, the stakes of losing were already effectively maximized—losers' procedural orientation had little room to intensify further. Among the remaining countries (Table 2), Malaysia shows a large gap that narrows across waves, potentially reflecting the political opening that culminated in the 2018 alternation. Myanmar's single observation captures a strikingly large gap consistent with the high stakes of its fragile democratic transition. Taiwan's trajectory is distinctive, reversing from positive to negative by Wave 6—a pattern that may reflect the unusual dynamics of cross-strait identity politics. Japan provides the expected baseline for a consolidated democracy: modest and stable across waves.
 
-```{r tbl-country-gaps}
-#| tbl-cap: "Procedural--Substantive Gap by Country and Wave"
+```{r country-gaps}
+#| output: asis
 
 gap_tbl <- cw_gap %>%
   mutate(
@@ -430,7 +430,8 @@ if (knitr::is_latex_output()) {
     kbl(
       booktabs = TRUE,
       longtable = FALSE,
-      linesep = ""
+      linesep = "",
+      caption = "Procedural--Substantive Gap by Country and Wave"
     ) %>%
     kable_styling(
       latex_options = c("striped", "hold_position"),
