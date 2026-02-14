@@ -11,11 +11,11 @@ date: today
 abstract: |
   Does democratic erosion reshape not just citizens' satisfaction with democracy but their understanding of what democracy means? Using multinomial logit models on four waves of Asian Barometer Survey data (2005–2022) across eleven countries, this article finds that electoral losers systematically prioritize liberal-procedural conceptions of democracy—free expression, media freedom, judicial accountability—while winners emphasize substantive outcomes like economic equality and welfare. This association varies dynamically with political context. In Thailand, the gap between winners' and losers' conceptions widened from near zero to over twenty percentage points as democratic institutions eroded after the 2014 coup; in South Korea, where a comparable crisis was resolved constitutionally, the gap remained negligible. Multiple robustness checks support the positional updating interpretation: the loser effect (1) amplifies among those perceiving elections as unfair, (2) does not extend to non-procedural domains (placebo test), and (3) persists after demographic reweighting (composition test). If this pattern reflects positional updating rather than stable sorting, the implications are troubling: erosion would concentrate procedural commitments among those whom the political system has rendered least capable of defending them—the citizens who most value democratic safeguards are precisely those who have lost the power to demand them.
 keywords:
-  - democracy
+  - democratic conceptions
   - electoral losers
   - procedural democracy
-  - Asian Barometer Survey
-  - democratic consolidation
+  - Thailand
+  - South Korea
 format:
   pdf:
     documentclass: article
