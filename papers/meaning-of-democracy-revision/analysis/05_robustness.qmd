@@ -815,6 +815,27 @@ ggsave(file.path(results_dir, "fig_robustness_fairness.pdf"),
 # Save results
 write_csv(fairness_all, file.path(results_dir, "robustness_fairness_interaction.csv"))
 cat("Fairness interaction results saved.\n")
+
+# Compute and save endogeneity diagnostics (point-biserial correlation)
+cc <- w346_data %>% filter(!is.na(loser), !is.na(election_unfair))
+props <- cc %>%
+  group_by(loser) %>%
+  summarise(
+    n = n(),
+    n_unfair = sum(election_unfair == 1),
+    pct_unfair = mean(election_unfair) * 100,
+    .groups = "drop"
+  )
+endogeneity_stats <- list(
+  r_pb = cor(cc$loser, cc$election_unfair),
+  n_complete = nrow(cc),
+  pct_unfair_winners = props$pct_unfair[props$loser == 0],
+  pct_unfair_losers = props$pct_unfair[props$loser == 1],
+  ratio = props$pct_unfair[props$loser == 1] / props$pct_unfair[props$loser == 0]
+)
+saveRDS(endogeneity_stats, file.path(results_dir, "endogeneity_stats.rds"))
+cat(sprintf("Endogeneity stats saved: r = %.4f, N = %s\n",
+            endogeneity_stats$r_pb, format(endogeneity_stats$n_complete, big.mark = ",")))
 ```
 
 # Robustness 4: Placebo Test (Basic Necessities)
