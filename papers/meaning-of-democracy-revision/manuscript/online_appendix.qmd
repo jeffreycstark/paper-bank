@@ -36,7 +36,7 @@ format:
     toc: true
     number-sections: true
     prefer-html: true
-bibliography: Winners-losers.bib
+bibliography: references.bib
 nocite: |
   @CEC2004, @CEC2008, @CEC2016, @NEC2008, @NEC2012, @NEC2020, @ECT2007, @ECT2019, @IFES_ElectionGuide
 csl: chicago-author-date.csl

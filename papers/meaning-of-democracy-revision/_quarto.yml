@@ -39,7 +39,7 @@ format:
     code-fold: true
 
 # Bibliography settings
-bibliography: manuscript/Winners-losers.bib
+bibliography: manuscript/references.bib
 csl: manuscript/apa.csl
 cite-method: citeproc
 
