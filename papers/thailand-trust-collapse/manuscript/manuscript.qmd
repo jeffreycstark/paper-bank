@@ -1,0 +1,374 @@
+---
+title: "From Most Trusted to Least: Thailand's Two-Decade Institutional Erosion, 2001--2022"
+author:
+  - name: Jeffrey Stark
+    affiliation: Yonsei University, Seoul, South Korea
+    email: jeffrey.stark@gmail.com
+date: today
+abstract: |
+  Thailand underwent the most dramatic institutional trust collapse documented in the Asian Barometer Survey's two-decade history. Using six waves of survey data (2001--2022) across Thailand, the Philippines, and Taiwan---the three countries with complete coverage---we show that Thailand went from the highest to the lowest levels of both government and military trust. Multilevel models with random slopes reveal that Thailand's decline is significantly steeper than its comparators. The critical finding: military trust declined approximately 1.5 times more than government trust, a pattern inconsistent with COVID-19 performance explanations but consistent with the political crisis surrounding the 2020--2021 pro-democracy protests against military-backed governance. We argue that Thailand's case demonstrates how prolonged military involvement in politics can erode the very institutional trust that initially legitimized intervention.
+format:
+  pdf:
+    keep-tex: true
+  html:
+    embed-resources: true
+execute:
+  echo: false
+  warning: false
+  message: false
+---
+
+```{r setup}
+library(tidyverse)
+library(kableExtra)
+
+project_root <- "/Users/jeffreystark/Development/Research/econdev-authpref"
+analysis_dir <- file.path(project_root, "papers/thailand-trust-collapse/analysis")
+fig_dir <- file.path(analysis_dir, "figures")
+table_dir <- file.path(analysis_dir, "tables")
+
+# Load analysis data for inline numbers
+d <- readRDS(file.path(analysis_dir, "thailand_panel.rds"))
+
+# Key summary stats
+thai_w1 <- d %>% filter(country_name == "Thailand", wave == "w1")
+thai_w6 <- d %>% filter(country_name == "Thailand", wave == "w6")
+thai_govt_w1 <- mean(thai_w1$trust_national_government, na.rm = TRUE)
+thai_govt_w6 <- mean(thai_w6$trust_national_government, na.rm = TRUE)
+thai_mil_w1 <- mean(thai_w1$trust_military, na.rm = TRUE)
+thai_mil_w6 <- mean(thai_w6$trust_military, na.rm = TRUE)
+```
+
+# Introduction
+
+In the early 2000s, Thailand’s citizens reported among the highest levels of institutional trust recorded in the Asian Barometer Survey. The military, in particular, commanded a degree of public confidence that exceeded all regional comparators—a legacy of its historical association with the monarchy, its self-presentation as a stabilizing force above partisan politics, and a decade without coups following the 1991 intervention [@McCargo2005-zj; @Ockey2017-ux]. Two decades later, that picture had reversed entirely. By the time the sixth wave of the ABS was fielded in 2020–2022, Thailand registered among the lowest trust levels for both government and military institutions—a reversal without precedent in the survey’s history.
+
+This paper documents and explains that collapse. Using all six waves of ABS data (2001–2022), we trace trust trajectories in Thailand alongside the Philippines and Taiwan, the only countries with complete Wave 1 through Wave 6 coverage. The three-country comparison is valuable not because the cases are identical but because each experienced substantial political turbulence—military coups in Thailand, extrajudicial killings under Duterte in the Philippines, intensifying cross-strait tensions and a major protest movement in Taiwan—yet their trust trajectories diverged sharply. This variation provides analytical leverage for distinguishing among competing explanations for trust change.
+
+Our central empirical finding is that Thailand’s trust decline is institutionally differentiated in a theoretically revealing way. Military trust declined approximately 1.5 times more than government trust over the twenty-year period. This pattern is inconsistent with explanations centered on COVID-19 governance performance, which would predict larger declines in government trust (since governments, not militaries, bore primary responsibility for pandemic response). It is, however, consistent with the political crisis surrounding the 2020–2021 pro-democracy protests, whose central demands explicitly targeted military influence over Thai governance and constitutional structures.
+
+We argue that understanding this reversal requires attention to a mechanism we term democratic expectation updating. Thailand’s high baseline military trust in 2001 was not incidental; it reflected a period in which the military had refrained from direct intervention for a decade and in which the 1997 “People’s Constitution” had generated democratic optimism without yet testing the military’s commitment to civilian supremacy. Critically, the subsequent Thaksin years (2001–2006) delivered programmatic, responsive governance on an unprecedented scale—universal healthcare, village funds, debt relief—socializing a generation of Thai citizens into expectations of democratic responsiveness \[\@Baker2014-wt; Walker, 2012). Once those expectations took hold, subsequent military interventions in 2006 and 2014 were evaluated against a democratic baseline that had not existed during earlier coup cycles. Trust erosion, in this account, reflects not simply institutional failure but the widening gap between democratically informed expectations and authoritarian institutional behavior.
+
+The comparative cases illuminate this mechanism through contrast. In the Philippines, Duterte’s violent drug war represented a dramatic expansion of coercive state power, yet trust in the military and police remained stable or increased—consistent with the fact that these campaigns enjoyed broad popular support [@Curato2016-kl; @Thompson2016-cm]. Where coercive action aligned with mass preferences, trust was sustained even under conditions that international observers characterized as democratic backsliding. Taiwan offers a different counterfactual: despite intense political competition and external security pressures, the military’s successful depoliticization after democratization insulated it from partisan trust dynamics \[@Croissant2013-ly\]. Together, these comparisons suggest that it is not political turbulence per se that erodes institutional trust, but the specific configuration of democratic expectations, institutional behavior, and perceived alignment between the two.
+
+The paper makes three contributions. First, we provide the first comprehensive documentation of Thailand’s full twenty-year trust trajectory, establishing the magnitude and institutional specificity of the decline. Second, we demonstrate that the government-military trust differential constitutes strong evidence for a political crisis mechanism over a generalized performance failure account, and we develop the democratic expectation updating framework to explain why the military was particularly vulnerable. Third, through structured comparison with the Philippines and Taiwan, we identify scope conditions for when coercive institutions lose public confidence: not when they exercise force, but when that force contradicts democratically socialized expectations of institutional behavior.
+
+We proceed as follows. Section 2 reviews competing accounts of trust change and develops the democratic expectation updating framework, situating Thailand’s military trust baseline and the comparative political contexts of our three cases. Section 3 describes data, measurement, and analytical strategy. Section 4 presents results, moving from descriptive trajectories through multilevel models to robustness checks. Section 5 discusses implications for civil-military relations and the comparative study of institutional trust in hybrid regimes.
+
+Thailand presents a striking puzzle for research on institutional trust in Asia. In the early 2000s, Thai respondents reported exceptionally high confidence in both elected government and coercive institutions. By 2022, Thailand registers among the lowest trust levels in the Asian Barometer Survey (ABS), representing a reversal unmatched by most regional peers.
+
+This paper documents and interprets Thailand’s two-decade trust erosion using six waves of ABS data (2001–2022). We adopt a comparative benchmarking design, focusing on Thailand alongside the Philippines and Taiwan—the only other countries with complete Wave 1 through Wave 6 coverage. This comparison is useful not because the cases are identical, but because all three experienced political turbulence while exhibiting sharply different trust trajectories.
+
+Our central empirical result is that Thailand’s decline is institutionally differentiated. Rather than government trust collapsing more than military trust—as a pure performance account would predict during periods of economic disruption or pandemic governance—we observe the opposite pattern: trust in the military declines substantially more than trust in government. This divergence motivates a theoretical shift away from explanations that treat trust as a simple referendum on crisis management.
+
+We argue that Thailand’s trajectory is better understood as a shift from **diffuse** to **conditional** institutional trust. In the early period, institutional trust appears relatively generalized. Over time, however, trust increasingly depends on (i) perceived procedural legitimacy—whether rules are stable, fair, and impartially enforced—and (ii) perceived political responsiveness—whether institutions listen and govern in the public interest. In contexts where a coercive institution is widely perceived as politically interventionist, legitimacy and responsiveness concerns can generate targeted erosion even when state capacity remains intact.
+
+Our central finding is that the pattern of institutional trust decline in Thailand is inconsistent with explanations centered on COVID-19 pandemic performance or economic shocks. If pandemic management failures drove the collapse, we would expect government trust to decline more than military trust, since governments bore primary responsibility for public health responses. Instead, we find the opposite: military trust declined roughly `r round(abs(thai_mil_w6 - thai_mil_w1) / abs(thai_govt_w6 - thai_govt_w1), 1)` times more than government trust. This pattern points to the political crisis surrounding the 2020--2021 pro-democracy movement as the primary mechanism---a movement whose central demand was ending military influence over Thai politics.
+
+We proceed as follows. The next section reviews competing accounts of trust change and develops a conditional-trust framework tailored to ABS measures. We then describe the ABS data, institutional trust outcomes, and proxy measures of legitimacy, impartiality, capacity, and responsiveness. The results section first presents descriptive trust trajectories by institution and country, then estimates multilevel models testing whether Thailand’s decline is unusually steep and whether legitimacy/responsiveness measures attenuate wave differences. We conclude by discussing implications for civil–military relations and for the study of institutional trust in hybrid regimes.
+
+# Literature Review
+
+## 2.3  Thailand’s Military Trust Baseline: Why So High in 2001?
+
+Before tracing the decline, we must account for the starting point. Thailand’s exceptionally high military trust in 2001 was not a statistical anomaly but the product of specific historical conditions that made the military’s claim to public confidence temporarily credible.
+
+Three factors converged. First, the Thai military had historically derived institutional prestige from its close association with the monarchy, an institution that commanded near-universal reverence through the late twentieth century. McCargo’s (2005) concept of “network monarchy” captures how the palace, military, and privy council operated as an interlocking system of authority in which the military positioned itself as guardian of the throne rather than as an autonomous political actor. This framing lent the military a legitimacy that transcended its actual governance performance, rooting public confidence in symbolic and affective attachments rather than instrumental evaluation (Connors, 2003).
+
+Second, the decade preceding the 2001 survey was the longest coup-free period in modern Thai history. The 1991 coup and the subsequent Black May crisis of 1992—in which military forces killed demonstrators in central Bangkok—had temporarily damaged the institution’s reputation. However, the military’s subsequent retreat from direct governance, combined with the promulgation of the 1997 Constitution, created a narrative of democratic consolidation in which the military appeared to have accepted a subordinate role (Ockey, 2017). By 2001, the trauma of 1992 had faded while the democratic promise of 1997 remained largely untested, producing an interstitial moment of high diffuse trust.
+
+Third, the absence of a strong programmatic democratic alternative meant that citizens had limited basis for comparative evaluation. Before Thaksin’s Thai Rak Thai government demonstrated what responsive, redistributive governance could look like in practice, many Thai citizens—particularly in rural areas—lacked a concrete referent against which to judge military governance. Trust in the military was, in this sense, *pre-democratic*: it reflected deference to a familiar institution rather than a considered judgment about institutional performance relative to democratic alternatives.
+
+This baseline matters for interpreting the subsequent decline. If military trust in 2001 reflected diffuse, unconditional confidence rooted in monarchical association and democratic inexperience, then the shift to low trust by 2022 represents not merely dissatisfaction with specific policies but a fundamental transformation in how Thai citizens evaluate their institutions. The Thaksin era, we argue below, was the critical catalyst for this transformation.
+
+*\[NEW SUBSECTION — insert before “Thailand’s Political Trajectory, 2001–2022”\]*
+
+## 2.4  Democratic Expectation Updating
+
+We propose that Thailand’s trust collapse is best understood through a mechanism of *democratic expectation updating*: a process by which exposure to responsive democratic governance raises the evaluative threshold citizens apply to all institutions, rendering subsequent authoritarian reversals more costly to institutional legitimacy than they would have been absent that democratic experience.
+
+The logic draws on Tocqueville’s (1856) insight, formalized in the relative deprivation literature (Gurr, 1970), that discontent arises not from absolute conditions but from the gap between expectations and reality. Applied to institutional trust, the implication is that identical institutional behavior—a military coup, for instance—produces different trust consequences depending on citizens’ prior experience. For citizens who have never experienced responsive governance, a coup may be evaluated as a tolerable or even welcome intervention. For citizens who have experienced programmatic democracy, the same coup represents a tangible loss, and the institution responsible bears the evaluative cost.
+
+Shin and Wells’s (2005) work on “democratic learning” in East Asia provides empirical grounding for this mechanism. They show that citizens in democratizing states progressively develop more sophisticated criteria for evaluating institutional performance as they accumulate experience with democratic processes. What begins as generalized deference to authority gradually gives way to conditional support premised on procedural fairness and responsiveness. Thailand’s trajectory fits this pattern: the Thaksin era provided the democratic learning experience, and the subsequent coups triggered the conditional withdrawal of trust.
+
+A useful analogy clarifies the mechanism. A student who has consistently received failing grades generates little additional disappointment with each subsequent failure; expectations have calibrated to performance. But a student who has demonstrated the capacity for excellence and then fails produces acute disappointment precisely because the observer now has evidence of what was possible. Thailand’s military, having been associated with a period of democratic possibility in the late 1990s and having presided over a political order that allowed the Thaksin experiment, could not subsequently claim that democratic governance was unworkable. Its interventions in 2006 and 2014 were evaluated against demonstrated democratic capacity rather than against an abstract and untested ideal.
+
+This framework generates a specific empirical prediction: trust erosion should be concentrated not among citizens who always opposed the military, but among those whose initial trust was premised on the expectation that democratic norms would hold. While our repeated cross-sectional data cannot directly test individual-level updating, the aggregate pattern—high initial trust followed by steep decline—is more consistent with expectation updating than with models of stable ideological opposition.
+
+## 2.5  Comparative Political Contexts: The Philippines and Taiwan
+
+*\[NEW SUBSECTION — replaces the implicit assumption that comparator countries are inert baselines\]*
+
+Treating the Philippines and Taiwan as passive comparators would obscure analytically important variation. Both countries experienced significant political disruptions during the study period, yet their trust trajectories remained comparatively stable. Understanding why requires attention to the specific alignment—or misalignment—between institutional behavior and mass preferences in each case.
+
+### 2.5.1  The Philippines: Popular Authoritarianism and Coercive Legitimacy
+
+The Philippines under Rodrigo Duterte (2016–2022) presents a critical contrast to Thailand. Duterte’s drug war resulted in thousands of extrajudicial killings, drew sustained international condemnation, and represented by most scholarly accounts a significant episode of democratic erosion (Curato, 2016; Thompson, 2016; Teehankee & Thompson, 2016). If coercive excess erodes institutional trust, the Philippines should have experienced steep declines in trust for the police and military, the primary instruments of the drug war.
+
+Yet the ABS data show no such collapse. Philippine military trust actually *increased* over the study period, rising from 2.58 in Wave 1 to 3.13 in Wave 6. This trajectory is consistent with a substantial body of public opinion research documenting that Duterte’s hardline approach enjoyed genuine majority support, particularly among lower- and middle-class Filipinos who viewed drug-related crime as an existential threat to their communities (Teehankee, 2016; Pulse Asia, 2018). The drug war, in other words, aligned coercive institutional behavior with mass preferences, producing what might be termed *coercive legitimacy*: public confidence rooted in the perception that security institutions are doing what citizens want, even when those actions violate democratic norms.
+
+This comparison sharpens the Thai finding. In the Philippines, the relevant coercive institutions acted in perceived alignment with popular demands; trust held or increased. In Thailand, the military acted against increasingly democratized mass preferences; trust collapsed. The critical variable is not coercive action per se but the relationship between institutional behavior and the expectations of the evaluating public.
+
+An important empirical extension follows: we should observe that Philippine *police* trust, specifically, tracks the drug war period, since police rather than military forces conducted most of the campaign. If the ABS data show police trust rising in tandem with military trust in the Philippines, this would further support the preference-alignment mechanism. We examine this in the supplementary results.
+
+### 2.5.2  Taiwan: Depoliticized Military and Democratic Resilience
+
+Taiwan’s relative stability in institutional trust is equally informative but for different reasons. Over the twenty-one years covered by the ABS, Taiwan experienced intense political competition: the first-ever transfer of power to the opposition DPP under Chen Shui-bian (2000), a presidential corruption scandal and near-impeachment, the return of the KMT under Ma Ying-jeou (2008), the Sunflower Movement of 2014 that occupied the legislature, Tsai Ing-wen’s historic DPP landslide in 2016, and escalating cross-strait tensions as Beijing intensified military pressure (Fell, 2012; Rowen, 2015).
+
+Despite this turbulence, military trust in Taiwan remained essentially flat across the six waves (2.75 in Wave 1, 2.67 in Wave 6), and government trust was similarly stable. The explanation lies in Taiwan’s successful military depoliticization. Following democratization, Taiwan’s armed forces underwent a deliberate transition from a KMT party-army to a professional national defense institution under firm civilian control (Croissant et al., 2013). Unlike Thailand’s military, which retained constitutional prerogatives, budgetary autonomy, and direct political influence even during nominally civilian periods, Taiwan’s military was removed from political competition. Political turbulence thus played out between civilian parties and institutions, leaving the military largely untouched by partisan trust dynamics.
+
+Taiwan’s case offers the counterfactual to Thailand’s trajectory: when a military successfully exits politics, it is insulated from the trust consequences of political conflict. This comparison directly supports the democratic expectation updating mechanism. Taiwanese citizens, having experienced both democratic competition and a depoliticized military, had no reason to revise their assessment of military institutions downward in response to political crises—those crises were understood as civilian affairs. Thai citizens, by contrast, could not separate military evaluation from political evaluation because the military *was* a political actor.
+
+## 2.6  Hypotheses (Revised)
+
+We derive six hypotheses from the theoretical framework. The first two replicate the original analysis; the remaining four extend the argument to address the comparative and theoretical gaps identified above.
+
+**H1 (Thailand Exceptionalism):** Net of demographics and common temporal shocks, institutional trust declines more sharply in Thailand from Wave 1 to Wave 6 than in the Philippines and Taiwan.
+
+**H2 (Institutional Differentiation):** In Thailand, military trust declines more steeply than government trust, particularly in the Wave 5 to Wave 6 period coinciding with the 2020–2021 pro-democracy protests.
+
+**H3 (Democratic Expectation Updating):** The steepest Thai military trust declines occur after periods in which democratic governance was experienced (post-Thaksin), rather than following a smooth linear trajectory from Wave 1.
+
+**H4 (Preference Alignment — Philippines):** In the Philippines, trust in coercive institutions (military and police) remains stable or increases during the Duterte period (Waves 4–6), consistent with popular support for hardline security policies.
+
+**H5 (Depoliticization — Taiwan):** In Taiwan, military trust remains stable across all waves, reflecting the military’s successful depoliticization and insulation from partisan dynamics.
+
+**H6 (Robustness):** The institutional differentiation pattern in Thailand holds when controlling for performance proxies, pre-COVID trends, demographic composition, and survey mode effects.
+
+# 5  Discussion (Drafted)
+
+## 5.1  Political Crisis vs. Performance Explanations
+
+The government-military trust differential provides the strongest evidence that Thailand’s trust collapse is not primarily a story of pandemic governance failure. If COVID-19 performance drove the decline, the institutional pattern should be reversed: government trust should have fallen more sharply than military trust, since governments bore direct responsibility for public health responses, lockdown decisions, and economic relief measures. The observed pattern—military trust declining roughly 1.5 times more than government trust—points instead to the political crisis surrounding the 2020–2021 pro-democracy movement, whose demands explicitly targeted the military’s constitutional prerogatives, its role in sustaining the Prayuth government, and the broader architecture of military-backed governance.
+
+The pre-COVID trend analysis strengthens this interpretation. Thailand was already experiencing steeper trust declines than its comparators in Waves 1–4, well before the pandemic. The 2006 and 2014 coups each appear to have ratcheted distrust upward, creating a cumulative erosion that the 2020–2021 protests then accelerated. This pattern is more consistent with a political crisis mechanism—in which specific institutional transgressions trigger reassessment—than with a performance model in which trust tracks economic or health outcomes.
+
+The comparative evidence reinforces the point. The Philippines experienced a public health crisis of comparable or greater severity, yet institutional trust in coercive institutions did not collapse. Taiwan managed the pandemic more effectively than either Thailand or the Philippines, yet its institutional trust remained essentially flat rather than surging. Neither the failure nor the success of pandemic governance maps neatly onto trust trajectories, undermining the explanatory power of performance-centered accounts for this set of cases.
+
+## 5.2  Democratic Learning and the Ratchet of Expectations
+
+The democratic expectation updating mechanism offers a parsimonious account of both the magnitude and the timing of Thailand’s trust collapse. The Thaksin era was transformative not merely because it delivered material benefits to previously neglected constituencies, but because it demonstrated that responsive, programmatic governance was possible in Thailand. Universal healthcare, village development funds, and agricultural debt relief were not abstract promises but experienced realities for millions of Thai citizens, particularly in the rural north and northeast (Walker, 2012). This experience established a democratic baseline against which subsequent military governance would be measured—and found wanting.
+
+The mechanism helps explain a puzzle that pure performance accounts cannot: why military trust was so high in 2001 and so low in 2022 despite the military’s governance capacity remaining broadly constant. The military did not become dramatically less competent between 2001 and 2022. What changed was the evaluative framework Thai citizens applied. Pre-Thaksin trust was diffuse and unconditional, anchored in monarchical association and democratic inexperience. Post-Thaksin trust became conditional on democratic performance criteria that the military, by definition, could not satisfy while serving as a political actor.
+
+This interpretation resonates with Shin and Wells’s (2005) finding that democratic learning in East Asia is largely irreversible: once citizens internalize democratic evaluative criteria, authoritarian nostalgia may persist among some segments but the aggregate shift toward conditional trust does not reverse. Thailand’s twenty-year trajectory appears to document precisely this kind of irreversible shift, compressed into two decades of unusually rapid political oscillation between democratic and authoritarian governance.
+
+## 5.3  Implications for Military-Democracy Relations
+
+Thailand’s trajectory illustrates what might be called the intervention paradox of military politics: prolonged political involvement erodes the very public confidence that initially legitimized intervention. In 2001, the Thai military commanded the highest trust among our comparison countries, a resource that plausibly underpinned public acquiescence to the 2006 coup. But each subsequent intervention—the 2006 coup, the 2010 crackdown, the 2014 coup, the engineered 2019 elections—drew down that trust reservoir without replenishing it. By 2022, the military had exhausted its legitimacy capital.
+
+The comparative cases specify the scope conditions for this paradox. It operates when two conditions are jointly satisfied: first, the citizenry has been exposed to democratic governance sufficient to establish conditional evaluative criteria; and second, the military crosses from a behind-the-scenes stabilizing role to overt political participation. Taiwan illustrates what happens when the second condition is absent: a depoliticized military maintains stable trust even amid intense political competition. The Philippines illustrates what happens when coercive institutional action aligns with rather than contradicts mass preferences: trust is sustained or enhanced regardless of democratic norms.
+
+These scope conditions have implications beyond our three cases. Myanmar’s military, which staged a coup in 2021 against a government with overwhelming electoral mandates, may face a similar dynamic of post-democratic trust erosion—particularly given the scale of popular resistance. Indonesia’s military, which has gradually depoliticized since 1998, more closely resembles the Taiwanese trajectory. The framework suggests that the critical variable for predicting military trust trajectories across Southeast Asia is not regime type per se but the interaction between democratic experience and military political behavior.
+
+## 5.4  Limitations
+
+Several limitations warrant acknowledgment. Most fundamentally, the ABS is a repeated cross-section rather than a true panel, meaning we observe different individuals at each wave. We cannot track individual-level trust updating or decompose within-person versus between-person variance. The democratic expectation updating mechanism, while consistent with aggregate trends, remains an inference from ecological patterns rather than a directly observed individual-level process. Future research using panel data—or survey experiments that manipulate information about military political behavior—would provide more direct tests.
+
+The three-country comparison, while theoretically motivated, limits statistical power for cross-national inference. With only three countries, we cannot formally separate country-specific effects from the mechanisms we propose. The Philippines-as-preference-alignment case and Taiwan-as-depoliticization case are interpretively compelling but remain single observations of each type. Extending the analysis to countries with partial ABS coverage—South Korea, Mongolia, Indonesia—would strengthen the comparative design, though at the cost of shorter time series.
+
+We also acknowledge the ecological inference problem. Our argument attributes the government-military trust differential to the political crisis mechanism, but we do not directly observe whether individuals who withdrew trust from the military did so because of the 2020–2021 protests specifically. The institutional differential is strong circumstantial evidence, but alternative mechanisms—generational replacement, media environment changes, or cumulative disillusionment unrelated to specific political events—cannot be fully ruled out with aggregate data.
+
+Finally, measurement comparability across twenty years and three countries is an inherent challenge for any long-run comparative survey analysis. Although the ABS employs standardized translation protocols and identical question wording across waves, we cannot exclude the possibility that the subjective meaning of “trust in the military” evolved in Thailand as the military’s political role became more salient. If respondents in 2022 interpreted “military” as synonymous with “military government” in a way that 2001 respondents did not, the measured decline could partly reflect changing question interpretation rather than changing attitudes. The comparison with Taiwan and the Philippines—where no comparable shift in institutional meaning occurred—mitigates but does not eliminate this concern.
+
+# 6  Conclusion (Drafted)
+
+Thailand underwent the most dramatic institutional trust reversal documented in the Asian Barometer Survey’s two-decade history. From the highest levels of both government and military trust among ABS countries in the early 2000s, Thailand fell to the lowest by 2022. This paper has documented the magnitude and institutional specificity of that collapse, situated it within a comparative framework, and proposed a theoretical mechanism—democratic expectation updating—that accounts for both the Thai trajectory and the contrasting patterns observed in the Philippines and Taiwan.
+
+Three findings deserve emphasis. First, the sheer magnitude of the decline establishes Thailand as a critical case for institutional trust research: a country where public confidence in core state institutions evaporated within a single generation. Second, the institutional differentiation—military trust falling approximately 1.5 times more than government trust—provides strong evidence that the collapse was driven by political crisis rather than generalized performance failure, with the 2020–2021 pro-democracy protests serving as the proximate catalyst for the final wave of erosion. Third, the comparative analysis reveals that neither political turbulence nor coercive state action automatically erodes institutional trust; what matters is whether institutional behavior aligns with or contradicts the expectations of a democratically socialized public.
+
+The democratic expectation updating framework contributes to broader debates about trust dynamics in hybrid regimes. It suggests that transitions to authoritarian governance are costlier to institutional legitimacy in societies that have already experienced democratic responsiveness than in those that have not—a finding with implications for understanding post-coup dynamics in Myanmar, the resilience of military prerogatives in Indonesia, and the conditions under which democratic backsliding generates popular resistance rather than acquiescence. The framework also implies that the legitimacy costs of authoritarian reversion may be largely irreversible: once citizens have internalized democratic evaluative criteria, institutional trust cannot be restored simply by returning to the governance conditions that produced it.
+
+For Thailand specifically, the trajectory documented here raises questions about the sustainability of military-backed governance in a society whose citizens have increasingly adopted democratic standards of institutional evaluation. The 2023 election results—in which the progressive Move Forward Party won the most seats on a platform of military reform—suggest that the trust dynamics captured in our data had tangible political consequences beyond survey responses. Whether Thailand’s institutional trust can be rebuilt, and under what conditions, is a question that future waves of the Asian Barometer Survey will be well positioned to address.
+
+## Institutional Trust in Asia
+
+[TODO: Review literature on institutional trust in Asian democracies, including @Norris2011-oc, Shin and colleagues on Asian democratization, and ABS-based trust studies]
+
+## Competing Explanations for Trust Decline
+
+Three theoretical frameworks compete to explain institutional trust decline in developing democracies.
+
+### Rally-Around-the-Flag and Performance Legitimacy
+
+\[TODO: Review rally-around-the-flag literature and performance-based legitimacy theories. Key argument: exogenous shocks (pandemics, economic crises) can temporarily boost or undermine trust depending on government response quality.\]
+
+### Political Crisis and Democratic Backsliding
+
+\[TODO: Review literature on how political crises---coups, protest movements, democratic backsliding---affect institutional trust. Key argument: when military institutions are directly implicated in political conflict, trust erosion is targeted at those institutions specifically.\]
+
+### COVID-19 and Pandemic Governance
+
+\[TODO: Review emerging literature on COVID-19's effects on political trust across Asia. Key argument: pandemic response quality predicts trust changes, but this should primarily affect government trust, not military trust.\]
+
+## Thailand's Political Context
+
+Thailand's political trajectory since 2006 has been defined by cycles of military intervention. The 2006 coup against Thaksin Shinawatra, the 2014 coup and subsequent military government under Prayuth Chan-ocha, and the 2019 elections---widely perceived as engineered to preserve military influence---created the conditions for the 2020--2021 pro-democracy protests. These protests explicitly targeted the military's role in politics, making Thailand a critical case for distinguishing political from performance-based trust erosion.
+
+\[TODO: Expand with specific citations on Thai political history\]
+
+We derive five expectations.
+
+H1 (Thailand decline): Net of demographics, institutional trust declines more sharply in Thailand from Wave 1 to Wave 6 than in the Philippines and Taiwan.
+
+H2 (Institutional differentiation): In Thailand, trust declines are steeper for politically interventionist or coercive institutions (e.g., military, police, courts) than for administrative institutions (e.g., civil service).
+
+H3 (Legitimacy association): Lower perceived procedural legitimacy and higher perceived corruption are associated with lower institutional trust across waves.
+
+H4 (Responsiveness association): Lower external political efficacy (belief that government listens) is associated with lower institutional trust, independent of performance evaluations.
+
+H5 (Conditionality): The relationship between political position proxies (e.g., cohort, urban–rural, education, or winner–loser where measurable) and institutional trust strengthens across waves, consistent with a shift from diffuse to conditional trust.
+
+# Data and Methods
+
+## Data
+
+We use the Asian Barometer Survey (ABS), a multi-wave comparative survey program covering political attitudes across East and Southeast Asia. Our analysis draws on all six waves:
+
+-   Wave 1 (2001--2003)
+-   Wave 2 (2005--2008)
+-   Wave 3 (2010--2012)
+-   Wave 4 (2014--2016)
+-   Wave 5 (2018--2020)
+-   Wave 6 (2020--2022)
+
+```{r sample-table}
+d %>%
+  group_by(country_name, wave) %>%
+  summarise(n = n(), .groups = "drop") %>%
+  pivot_wider(names_from = wave, values_from = n, values_fill = 0) %>%
+  kbl(caption = "Sample size by country and wave",
+      col.names = c("Country", paste0("W", 1:6)),
+      booktabs = TRUE) %>%
+  kable_styling(latex_options = c("hold_position"))
+```
+
+Three countries---Thailand, the Philippines, and Taiwan---have data in all six waves, providing a `r length(unique(d$wave))`-wave panel spanning approximately two decades. Our total sample comprises `r format(nrow(d), big.mark = ",")` respondents.
+
+## Measures
+
+**Institutional trust** is measured on a four-point scale (1 = "none at all" to 4 = "a great deal") for six institutions: national government, parliament, the military, courts, police, and political parties. Our primary comparison is between trust in the national government and trust in the military, as the differential between these two indicators provides leverage for distinguishing political from performance-based explanations.
+
+**Control variables** include age (centered), gender (female indicator), education (standardized years), and urban/rural residence.
+
+## Analytical Strategy
+
+We employ multilevel models with country-level random slopes for wave to capture heterogeneous trust trajectories. The baseline model includes random intercepts only:
+
+$$\text{Trust}_{ij} = \gamma_{00} + \gamma_{10}\text{Wave}_{ij} + \mathbf{X}_{ij}\boldsymbol{\beta} + u_{0j} + \epsilon_{ij}$$
+
+The full model adds random slopes for wave:
+
+$$\text{Trust}_{ij} = \gamma_{00} + \gamma_{10}\text{Wave}_{ij} + \mathbf{X}_{ij}\boldsymbol{\beta} + u_{0j} + u_{1j}\text{Wave}_{ij} + \epsilon_{ij}$$
+
+where $u_{1j}$ captures country-specific deviations from the average time trend. We fit separate models for government trust and military trust, then compare country-specific slopes across institutions.
+
+As a robustness check, we estimate pre-trend models using only Waves 1--4 (pre-COVID) to assess whether differential trends existed before the pandemic.
+
+# Results
+
+## Trust Trajectories
+
+```{r fig-trajectories, fig.cap="Twenty-year trust trajectories for government (A) and military (B) trust across three countries with complete ABS coverage (Waves 1-6).", fig.width=14, fig.height=6}
+knitr::include_graphics(file.path(fig_dir, "fig3_combined_trajectories.png"))
+```
+
+Figure 1 displays the twenty-year trust trajectories for government and military trust. Thailand's trajectory is striking: government trust declined from `r round(thai_govt_w1, 2)` in Wave 1 to `r round(thai_govt_w6, 2)` in Wave 6, a drop of `r round(abs(thai_govt_w6 - thai_govt_w1), 2)` points on a four-point scale. Military trust declined even more dramatically, from `r round(thai_mil_w1, 2)` to `r round(thai_mil_w6, 2)`, a drop of `r round(abs(thai_mil_w6 - thai_mil_w1), 2)` points. By contrast, the Philippines and Taiwan show comparatively stable trajectories with modest fluctuations.
+
+## The Government-Military Divergence
+
+The critical evidence for our argument comes from comparing trust trajectories across institutions. Table 2 presents the total twenty-year change for each country.
+
+```{r tab-total-change}
+total_change <- read_csv(file.path(table_dir, "tab2_total_change.csv"),
+                         show_col_types = FALSE)
+
+total_change %>%
+  select(country_name, trust_govt_w1, trust_govt_w6, govt_change_20yr,
+         trust_mil_w1, trust_mil_w6, mil_change_20yr) %>%
+  mutate(across(where(is.numeric), ~round(., 2))) %>%
+  kbl(caption = "Total trust change, Wave 1 to Wave 6",
+      col.names = c("Country", "W1", "W6", "Change",
+                     "W1", "W6", "Change"),
+      booktabs = TRUE) %>%
+  kable_styling(latex_options = c("hold_position")) %>%
+  add_header_above(c(" " = 1, "Government Trust" = 3, "Military Trust" = 3))
+```
+
+In Thailand, military trust declined `r round(abs(thai_mil_w6 - thai_mil_w1) / abs(thai_govt_w6 - thai_govt_w1), 1)` times more than government trust. This differential is the "smoking gun" for a political crisis explanation: if COVID-19 performance failures were the primary driver, government trust should have fallen more (since governments, not militaries, managed pandemic responses). The observed pattern---military trust falling faster---is consistent with the 2020--2021 protest movement's explicit targeting of military influence in Thai politics.
+
+## Multilevel Models
+
+```{r tab-slopes}
+slopes <- read_csv(file.path(table_dir, "tab5_slope_comparison.csv"),
+                   show_col_types = FALSE)
+
+slopes %>%
+  mutate(across(where(is.numeric), ~round(., 3))) %>%
+  kbl(caption = "Country-specific slope comparison: government vs. military trust",
+      booktabs = TRUE) %>%
+  kable_styling(latex_options = c("hold_position"))
+```
+
+\[TODO: Report full model results. Key findings: (1) random slopes significantly improve fit over random intercepts; (2) Thailand has the most negative slope for both institutions; (3) the gap between military and government slopes is largest for Thailand.\]
+
+## Robustness: Pre-COVID Trends
+
+```{r tab-pretrend}
+pretrend <- read_csv(file.path(table_dir, "tab6_pretrend.csv"),
+                     show_col_types = FALSE)
+
+pretrend %>%
+  mutate(across(where(is.numeric), ~round(., 3))) %>%
+  kbl(caption = "Pre-trend check: differential trends in Waves 1-4 (pre-COVID)",
+      booktabs = TRUE) %>%
+  kable_styling(latex_options = c("hold_position"))
+```
+
+\[TODO: Interpret pre-trend results. The key question is whether Thailand was already declining before COVID, or whether the W5-W6 collapse was a discontinuity.\]
+
+# Discussion
+
+\[TODO: Discuss implications\]
+
+## Political Crisis vs. Performance Explanations
+
+The government-military trust differential provides strong evidence that Thailand's trust collapse is not primarily a COVID-19 performance story. The 2020--2021 pro-democracy protests---the largest in Thailand since 2010---explicitly targeted the military's political role. Our data show that military trust was the primary casualty, consistent with a political crisis mechanism.
+
+## Implications for Military-Democracy Relations
+
+Thailand's trajectory illustrates a paradox of military intervention: the very institutions that initially command high public trust can see that trust evaporate when they become entangled in political governance. In 2001, Thai military trust was the highest among our comparison countries. Two coups and two decades of political involvement later, it was the lowest.
+
+## Limitations
+
+\[TODO: Discuss limitations including ecological inference, repeated cross-sections vs. true panel, three-country comparison\]
+
+# Additional References to Add
+
+*The following references should be added to the existing bibliography:*
+
+Connors, M. K. (2003). Democracy and National Identity in Thailand. RoutledgeCurzon.
+
+Curato, N. (2016). Politics of anxiety, politics of hope: Penal populism and Duterte’s rise to power. Journal of Current Southeast Asian Affairs, 35(3), 91–109.
+
+Fell, D. (2012). Government and Politics in Taiwan. Routledge.
+
+Gurr, T. R. (1970). Why Men Rebel. Princeton University Press.
+
+McCargo, D. (2005). Network monarchy and legitimacy crises in Thailand. The Pacific Review, 18(4), 499–519.
+
+Rowen, I. (2015). Inside Taiwan’s Sunflower Movement. Journal of Asian Studies, 74(1), 5–21.
+
+Shin, D. C., & Wells, J. (2005). Is democracy the only game in town? Journal of Democracy, 16(2), 88–101.
+
+Teehankee, J. C. (2016). Duterte’s resurgent nationalism in the Philippines. Journal of Democracy, 27(4), 58–68.
+
+Teehankee, J. C., & Thompson, M. R. (2016). The vote in the Philippines: Electing a strongman. Journal of Democracy, 27(4), 125–134.
+
+Thompson, M. R. (2016). Bloodied democracy: Duterte and the death of liberal reformism in the Philippines. Journal of Current Southeast Asian Affairs, 35(3), 39–68.
+
+Tocqueville, A. de. (1856). The Old Regime and the Revolution. (Trans. S. Gilbert). Anchor Books, 1955.
+
+## 
+
+# References

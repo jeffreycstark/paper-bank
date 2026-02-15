@@ -52,6 +52,7 @@ econdev-authpref/
 └── papers/
     ├── meaning-of-democracy-revision/   # Loser effects on democratic conceptions
     ├── hong-kong-democratic-erosion/     # HK democratic attitudes + sensitivity gradient
+    ├── thailand-trust-collapse/         # Thailand 20-year institutional trust erosion
     └── trust-dynamics/                  # Trust dynamics across Asian democracies
 ```
 
@@ -68,6 +69,11 @@ econdev-authpref/
 **Topic**: Democratic attitude erosion in Hong Kong, sensitivity gradient methodology.
 **Data**: ABS (wave 5 HK), WVS (wave 7 HK), LBS (Venezuela, Nicaragua).
 **Key files**: `analysis/00_data_preparation.qmd`, `analysis/06_wvs_triangulation.qmd`, `analysis/08_wvs_sensitivity_gradient.R`, `analysis/09_lbs_sensitivity_gradient.R`.
+
+### thailand-trust-collapse
+**Topic**: Thailand's 20-year institutional trust erosion (2001-2022), KCI journal target.
+**Data**: ABS (W1-W6, Thailand + Philippines + Taiwan comparators).
+**Key files**: `analysis/00_data_preparation.R`, `analysis/01_descriptive_analysis.R`, `analysis/02_models.R`, `manuscript/manuscript.qmd`.
 
 ### trust-dynamics
 **Topic**: Institutional trust dynamics across Asian democracies.
