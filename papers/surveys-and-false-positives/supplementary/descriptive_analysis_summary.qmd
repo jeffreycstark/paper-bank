@@ -1,0 +1,44 @@
+---
+title: "Hong Kong's Democratic Erosion: Descriptive Analysis Summary"
+subtitle: "Asian Barometer Survey, Waves 1–5 | Prepared February 2026"
+format:
+  html:
+    toc: true
+    number-sections: true
+    theme: cosmo
+---
+
+This document summarizes the exploratory descriptive analysis that identified
+Hong Kong's post-2019 democratic erosion as a viable paper topic. The full
+analysis code is in `analysis/01_descriptive_analysis.qmd` and
+`analysis/03_figures.qmd`.
+
+## Key Findings
+
+1. **HK is the most extreme cross-national outlier in ABS Wave 5** on nearly
+   every democratic attitude indicator (z = +3.18 on perceived democratic
+   deficit, z = −2.09 on freedom to organize).
+
+2. **Within-wave quasi-experiment**: W5 fieldwork (Oct 2019 – May 2021) spans
+   the NSL. Pre/post comparison shows 18 of 24 variables significantly changed,
+   with the largest effect on democracy suitability (d = −0.54).
+
+3. **Institutional trust paradoxically *increased* post-NSL** (trust in police
+   +0.49, government +0.48), likely reflecting compositional/censorship effects.
+
+4. **The "critical citizens" correlation flips in HK**: democratic commitment
+   correlates *positively* with democratic satisfaction (r = +0.13), the opposite
+   of every other ABS country.
+
+5. **Steep generational gradient**: 18–29 year-olds report trust in police at
+   1.92 vs 2.87 for 60+ (on a 4-point scale).
+
+6. **HK-Taiwan divergence** on democracy suitability, trust in police, electoral
+   fairness, and freedom to organize — opposite directions from the same W4
+   baseline.
+
+## Literature Gap
+
+Blenkitni (2023) analyzed the Umbrella Movement's impact using ABS W3–W4 and
+explicitly called for W5 analysis. No published cross-national study has used
+ABS W5 to examine HK's post-2019 democratic erosion in comparative context.

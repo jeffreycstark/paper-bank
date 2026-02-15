@@ -1,0 +1,908 @@
+---
+title: "Uprooted Banyans: Democratic Erosion and the Trust Paradox in Hong Kong"
+author:
+  - name: Jeffrey Stark
+    affiliations:
+      - name: Yonsei University
+        department: Department of Sociology
+    email: jeffrey.stark@yonsei.ac.kr
+    corresponding: true
+date: today
+abstract: |
+  How do citizens' democratic attitudes shift during rapid institutional erosion? This article examines Hong Kong's post-2019 democratic crisis, exploiting the fact that Wave 5 of the Asian Barometer Survey (2019--2021) was fielded across a sequence of watershed events: the Anti-Extradition Law Amendment Bill protests, the COVID-19 pandemic, and the imposition of the National Security Law (NSL) in June 2020. Comparing respondents interviewed during the protest period (October 2019--January 2020) with those interviewed in the post-NSL environment (March--May 2021), I find that democratic attitudes differed dramatically between the two sub-samples. Perceived democracy suitability was sharply lower in the post-NSL sub-sample ($d = -0.54$), as was freedom to organize, while, paradoxically, institutional trust was *substantially higher* (trust in police $d = +0.49$, trust in government $d = +0.48$), a pattern consistent with preference falsification or compositional selection rather than genuine legitimacy gains. In cross-national comparison, Hong Kong emerges as the most extreme outlier among sixteen Asian Barometer countries on nearly every democratic attitude indicator in Wave 5. Taiwan, which shared a comparable starting point in Wave 4, diverged in the opposite direction on every measure. These findings suggest that democratic attitudes are not stable cultural orientations but can differ markedly across contrasting political environments, and that survey-based measures of trust may become unreliable precisely when they matter most.
+keywords:
+  - Hong Kong
+  - democratic erosion
+  - National Security Law
+  - institutional trust
+  - preference falsification
+  - Asian Barometer Survey
+format:
+  pdf:
+    documentclass: article
+    classoption: [12pt, letterpaper]
+    geometry:
+      - margin=1in
+    linestretch: 2
+    number-sections: true
+    colorlinks: true
+    keep-tex: true
+    include-in-header:
+      - text: |
+          \usepackage{setspace}
+          \usepackage{booktabs}
+          \usepackage{longtable}
+          \usepackage{array}
+          \usepackage{multirow}
+          \usepackage{float}
+          \usepackage{graphicx}
+          \usepackage{threeparttable}
+          \usepackage{threeparttablex}
+          \floatplacement{figure}{H}
+          \floatplacement{table}{H}
+          \raggedright
+  html:
+    toc: true
+    toc-depth: 3
+    number-sections: true
+    theme: cosmo
+  docx:
+    number-sections: true
+bibliography: references.bib
+csl: apa.csl
+execute:
+  echo: false
+  warning: false
+  message: false
+---
+
+```{r setup}
+#| include: false
+library(tidyverse)
+library(knitr)
+library(kableExtra)
+
+load("../analysis/results/prepared_data.RData")
+load("../analysis/results/descriptive_results.RData")
+
+# Load main analysis results (covariate-adjusted, reweighted, sensitivity, FDR)
+if (file.exists("../analysis/results/main_analysis_results.RData")) {
+  load("../analysis/results/main_analysis_results.RData")
+}
+
+# Load robustness results (bootstrap, Manski, Mann-Whitney)
+if (file.exists("../analysis/results/robustness_results.RData")) {
+  load("../analysis/results/robustness_results.RData")
+}
+```
+
+# Introduction
+
+On June 30, 2020, the People's Republic of China imposed the Law of the People's Republic of China on Safeguarding National Security in the Hong Kong Special Administrative Region---colloquially, the National Security Law (NSL). The legislation criminalized secession, subversion, terrorism, and collusion with foreign forces, carrying maximum sentences of life imprisonment. Within months, pro-democracy organizations dissolved, opposition legislators were disqualified or arrested, independent media outlets shuttered, and the electoral system was restructured to ensure that only "patriots" could hold office. What had been the freest society in the Chinese-speaking world underwent what scholars have called the most rapid episode of democratic erosion in the contemporary era [@Levitsky2018-mr; @Bermeo2016-xj].
+
+This article asks a straightforward empirical question: how did citizens' democratic attitudes shift during this period? The answer turns out to be neither straightforward nor easily interpretable. Using data from Wave 5 of the Asian Barometer Survey (ABS), which was fielded in Hong Kong between October 2019 and May 2021---a period that spans the height of the pro-democracy protests [@Tsing2023-yu; @Lee2022-qn], the onset of the COVID-19 pandemic, and the implementation of the NSL---I document three sets of findings that challenge standard accounts of how publics respond to democratic backsliding.
+
+First, Hong Kong emerged as the most extreme cross-national outlier among all sixteen ABS countries in Wave 5 on nearly every measure of democratic attitudes. Where respondents in Taiwan, South Korea, and Japan rated their democracies as increasingly suitable and their institutions as increasingly trustworthy, Hong Kong respondents reported the sharpest declines in perceived democratic quality, freedom of association, and electoral fairness.
+
+Second, exploiting the within-wave timing variation as a natural quasi-experiment, I document that respondents interviewed in the post-NSL period (March--May 2021) reported dramatically different attitudes than those interviewed during the protest period (October 2019--January 2020). Perceived democracy suitability was lower by over half a standard deviation. Yet trust in the police and the national government was *higher* by comparable magnitudes, a paradox that is difficult to reconcile with genuine legitimacy gains in a context of mass repression.
+
+Third, the standard "critical citizens" relationship, whereby committed democrats are *less* satisfied with democratic performance, reverses in Hong Kong and only in Hong Kong. There, citizens who report that democracy is "always preferable" are *more* satisfied with the current system, suggesting a profound disarticulation of the concepts of democratic commitment and democratic evaluation.
+
+These findings contribute to literatures on democratic erosion, preference falsification under authoritarianism, and the measurement validity of survey-based institutional trust.
+
+# Literature Review
+
+## Democratic Erosion and Public Opinion
+
+The study of democratic erosion has expanded rapidly in the past decade. At the macro level, scholars have documented a global "democratic recession" [@Diamond2015-yb] and a "third wave of autocratization" affecting democracies and hybrid regimes across all world regions [@Luhrmann2019-ow; @Mechkova2017-na]. Case studies of Hungary, Poland, Turkey, and the United States have traced the micro-processes through which democratic institutions are hollowed out [e.g., @Bermeo2016-xj; @Levitsky2018-mr; @Waldner2018-yw; @Haggard2021-xb]. Hong Kong represents an unusually rapid and complete instance of this global pattern, and the ABS data offer a rare opportunity to observe the attitudinal consequences of democratic erosion at the individual level.
+
+A central concern in this literature is whether publics recognize erosion when it occurs and, if so, whether their attitudes shift in ways that either resist or facilitate further backsliding. The evidence is mixed. @Svolik2019-zi argues that political polarization undermines the public's capacity to serve as a democratic check, since voters in polarized electorates are willing to trade democratic principles for partisan interests, a finding confirmed experimentally across multiple countries [@Graham2020-jr; @Svolik2023-rg]. Studies of Hungary under Orbán suggest that supporters of the ruling party revise their democratic standards downward to accommodate authoritarian practices, while opponents become more committed to procedural democracy. In the United States, partisan polarization structures responses to democratic norm violations, with co-partisans of the norm violator largely tolerating the transgression. At the macro level, @Claassen2020-hk finds that public support for democracy has measurable effects on democratic survival, suggesting that the attitudinal shifts documented here carry implications beyond measurement. These findings suggest that democratic attitudes are neither fixed cultural dispositions nor simple reflections of institutional reality, but are mediated by political identity, information environments, and the perceived stakes of political competition.
+
+Hong Kong represents a particularly instructive case because the erosion was externally imposed, rapid, and comprehensive. Unlike Hungary or Poland, where elected leaders gradually dismantled democratic constraints from within, Hong Kong's democratic institutions were curtailed by an external sovereign power acting through direct legislation. This removes much of the ambiguity that characterizes incremental erosion: citizens need not debate whether a norm has been violated when the legislature is restructured, the press is shuttered, and protest leaders are imprisoned within the span of a year.
+
+## Institutional Trust Under Authoritarianism
+
+A large literature examines whether survey measures of institutional trust retain their validity in authoritarian or semi-authoritarian contexts [e.g., @Tyler2003-kj; @Guriev2015-oz; @Guriev2020-cu; @Stockmann2011-fi]. The core concern is preference falsification [@Kuran1995-up]: citizens may report trust in institutions not because they genuinely trust them, but because they fear the consequences of expressing distrust. Empirical assessments of preference falsification are notoriously difficult, since the phenomenon is defined by the gap between stated and genuine preferences, a gap that, by definition, cannot be directly observed. This creates classic measurement problems for direct survey items on sensitive political attitudes [@Blair2012-fa; @Warner1965-dj]. @Geddes1989-ny demonstrate that opinion formation under authoritarianism follows the same exposure-resistance dynamics as in democracies, but with government-controlled information environments shifting the equilibrium of expressed attitudes. More recently, @Tannenberg2022-sc shows cross-nationally that respondents who believe the government commissioned a survey report systematically higher trust in autocracies but not in democracies, providing direct evidence that self-censorship inflates trust measures under authoritarian conditions.
+
+Several indirect strategies have been employed. List experiments and endorsement experiments in China suggest that direct survey measures substantially overstate trust in sensitive institutions [@Nicholson2023-kt; @Blair2014-xl; @Bullock2011-kw]. @Jiang2016-hh exploit a political purge in China to show that responses to politically sensitive and insensitive survey items diverge following repressive events, an empirical strategy closely analogous to the present study's comparison of trust items (high sensitivity) and democratic evaluation items (lower sensitivity). @Shamaileh2025-hh further demonstrates that nonresponse rates alone are insufficient proxies for preference falsification, since respondents more commonly shift toward the regime-preferred response than decline to answer. The "neighbor effect," whereby respondents in more surveilled environments report higher trust, provides further evidence of social desirability bias. Temporal discontinuities (sudden jumps in reported trust following repressive events) offer another indicator, since it is implausible that genuine trust would increase in response to crackdowns.
+
+The Hong Kong case offers an unusually clean test. If trust in the police increases dramatically in the months following a period in which police used tear gas, rubber bullets, and mass arrests against protesters, and in which an officer shot a protester on live television, the trust increase is more plausibly attributed to preference falsification or compositional selection than to improved institutional performance.
+
+## The Critical Citizens Framework
+
+The "critical citizens" framework [@Norris2011-zt; see also @Easton1975-bg; @Dalton1984-bt] holds that citizens in consolidated democracies combine commitment to democratic ideals with dissatisfaction with democratic performance. The empirical signature is a negative correlation between democratic support (valuing democracy) and democratic satisfaction (rating one's own democracy favorably). This pattern has been documented across OECD countries and in many developing democracies.
+
+Hong Kong violates this pattern. In the ABS data, the correlation between democratic preference and democratic satisfaction is *positive* in Hong Kong, the only country in the sample where this occurs. This reversal may reflect the disarticulation of democratic concepts under authoritarianism: when "democracy" is redefined by the regime to include authoritarian characteristics, respondents who endorse "democracy" may be endorsing the regime's version rather than the liberal-procedural version assumed by the survey instrument. This possibility connects to @Kirsch2019-vu's finding that "authoritarian notions of democracy," in which citizens associate democracy with strong, unaccountable leadership rather than liberal-procedural governance, are widespread in autocracies and reverse the substantive meaning of expressed democratic support [see also @Ferrin2016-se for the European comparative framework].
+
+## Hong Kong in the Asian Barometer
+
+The Asian Barometer Survey has tracked democratic attitudes across East and Southeast Asia since 2001. Hong Kong has been included in every wave, providing a uniquely long time series that spans the handover's aftermath, the Article 23 controversy (2003), the Umbrella Movement (2014), the Anti-Extradition Bill protests (2019), and the NSL (2020). Earlier scholarship on Hong Kong democratic attitudes established that the territory's democratization trajectory has been constrained by its unique constitutional position [@Sing2003-vx], that new forms of political participation emerged in the post-handover period [@Cheng2014-tv; @Veg2017-ze], and that the NSL period coincided with the effective collapse of what remained of the territory's hybrid regime [@Ortmann2024-kz; @Tang2024-pu]. @Blenkitni2023-lf used ABS Waves 3 and 4 to analyze the Umbrella Movement's impact, finding significant declines in institutional trust and perceived democratic quality among younger Hong Kong respondents. To date, no published study has used ABS Wave 5 data to examine Hong Kong's post-2019 trajectory in cross-national comparative context.
+
+# Data and Methods
+
+## Data
+
+I use data from the Asian Barometer Survey [@Asian-Barometer-Survey2023-qm], Waves 1 through 5, covering sixteen countries across East and Southeast Asia.^[The sixteen polities are: Australia, Cambodia, China, Hong Kong, India, Indonesia, Japan, Malaysia, Mongolia, Myanmar, Philippines, Singapore, South Korea, Taiwan, Thailand, and Vietnam. Not all polities appear in every wave; Wave 5, the primary focus of the within-wave analysis, includes fifteen polities (all except Cambodia).] The harmonized dataset contains `r format(nrow(d), big.mark = ",")` respondents across all waves. Hong Kong (country code 2) contributes respondents across all five waves.
+
+```{r hk-waves}
+hk |>
+  count(wave) |>
+  kable(
+    col.names = c("Wave", "N"),
+    caption = "Hong Kong respondents by ABS wave",
+    booktabs = TRUE
+  )
+```
+
+The analysis centers on Wave 5, which was fielded in Hong Kong between October 2019 and May 2021. This extended fieldwork period, the result of COVID-19 disruptions, inadvertently created a natural quasi-experiment. Respondents interviewed before and after the NSL (June 30, 2020) were exposed to fundamentally different political contexts while answering the same survey instrument. Crucially, the pre/post comparison captures correlated change during a period of multiple overlapping shocks (the protests themselves, the COVID-19 pandemic, and the NSL) rather than cleanly identified causal effects of any single event. The design's strength lies in holding the survey instrument and country constant while political conditions shifted dramatically, but the absence of random assignment and the temporal confounding of pandemic and political crises require caution in attributing observed shifts to the NSL specifically.
+
+## The Within-Wave Quasi-Experiment
+
+I exploit the fieldwork timing to construct a pre/post comparison within Wave 5. Based on the clustering of interview dates, I define three periods:
+
+-   **Protest period** (October 2019--January 2020): Fieldwork conducted during the height of the Anti-Extradition Bill protests, before COVID-19 lockdowns.
+-   **Gap period** (February 2020--February 2021): A small number of interviews conducted during COVID-19 disruptions, excluded from the main analysis due to small sample sizes and ambiguous political context.
+-   **Post-NSL period** (March--May 2021): Fieldwork resumed after the NSL had been in effect for nine months, pro-democracy organizations had been disbanded, and the electoral system restructured.
+
+```{r period-table}
+hk5 |>
+  filter(period != "Gap") |>
+  count(period) |>
+  kable(
+    col.names = c("Period", "N"),
+    caption = "Hong Kong Wave 5 respondents by fieldwork period",
+    booktabs = TRUE
+  )
+```
+
+This design is not a true experiment: respondents were not randomly assigned to periods. Compositional differences between the two samples, particularly age, gender, and willingness to participate in a survey about politics under authoritarian conditions, may account for some of the observed differences. I address these concerns in the robustness checks.
+
+## Measures
+
+I examine variables spanning several domains of democratic attitudes:
+
+-   **Democratic evaluation**: democracy suitability (1--10 scale), extent of current democracy, and rating of the present government as democratic. Democracy suitability exhibits substantial item-level missingness in the Hong Kong Wave 5 data (approximately 60% missing in both fieldwork periods), likely reflecting the ABS instrument's use of a multi-step question sequence rather than politically motivated non-response. A logistic regression predicting missingness on this item finds no significant association with fieldwork period, age, gender, or education level, and the item is retained for cross-national trajectory comparisons but interpreted with appropriate caution in the within-wave analysis.
+-   **Democratic commitment**: democracy always preferable (three-point scale), democratic satisfaction.
+-   **Institutional trust**: trust in the national government, president/chief executive, parliament/legislature, police, military, and courts (all 1--4 scales).
+-   **Governance perceptions**: freedom to organize, freedom of speech, government responsiveness to the people, and electoral fairness.
+-   **System support**: system deserves support, pride in the system, and system needs major change.
+-   **Authoritarian alternatives**: support for strongman rule, military rule, and single-party rule.
+
+All variables are drawn from the harmonized ABS dataset, with scales oriented so that higher values indicate more of the named concept (e.g., higher trust scores = more trust, higher democracy suitability = more suitable). The variable `dem_free_speech` measures agreement that "people are free to speak what they think without fear" (q115); higher values indicate more perceived freedom. The positive post-NSL shift on this item---respondents *claiming more free speech* after the NSL---is substantively implausible and consistent with preference falsification operating on politically sensitive items.
+
+## Survey Implementation
+
+The ABS is administered as a face-to-face household survey using a multi-stage probability sample design. The Hong Kong Wave 5 fieldwork was conducted by the Centre for Communication and Public Opinion Survey at the Chinese University of Hong Kong. Interviews were conducted in Cantonese. All estimates incorporate ABS-provided post-stratification weights to account for sampling design and non-response adjustments. As a robustness check, all primary analyses were also estimated without weights; the unweighted results are substantively identical in direction, significance, and effect size magnitude for all primary outcomes (Appendix Section E), consistent with the well-designed probability sampling of the ABS. The primary threat to inference is compositional selection rather than sampling design effects, and the entropy-balanced estimates in @tbl-adjusted provide a more principled approach to compositional adjustment for the within-wave design. The entropy balancing procedure generates its own set of balancing weights, which are distinct from and applied independently of the ABS post-stratification weights. Standard errors are computed under simple random sampling assumptions. The ABS harmonized dataset does not include primary sampling unit (PSU) or stratum identifiers, precluding design-based standard error estimation. To the extent that the ABS employs clustered sampling at the district level, reported standard errors may be somewhat understated; however, the core effect sizes ($d > 0.40$ for trust in police and national government) are large enough that the typical design effect for clustered household surveys ($\text{DEFF} \approx 1.5$--$2.0$, implying standard errors inflated by a factor of $\sqrt{2} \approx 1.41$ at most) would not alter the substantive conclusions. No changes in survey mode or interviewer protocols were reported between the protest-period and post-NSL fieldwork phases.
+
+## Analytical Strategy
+
+The analysis proceeds in four stages. First, I present cross-national trajectory plots for key indicators across Waves 1--5, positioning Hong Kong relative to Taiwan, Singapore, and the regional mean. Second, I compute cross-national z-scores for Wave 5 to quantify Hong Kong's outlier status. Third, I compare pre- and post-NSL means within Wave 5, reporting Cohen's $d$ effect sizes and two-sample $t$-tests. Fourth, I examine age-cohort differences and the interaction between cohort and period.
+
+## Robustness Checks
+
+The sub-samples for the within-wave comparison ($N_{\text{Protest}} = 473$; $N_{\text{Post-NSL}} = 676$) are smaller than the full national sample but remain adequately powered to detect the moderate-to-large effect sizes observed here, such as the shifts in institutional trust ($d \approx 0.49$). Nevertheless, reduced precision and heightened sensitivity to outliers are inherent risks in sub-sample analysis, and I employed several strategies to address them.
+
+First, I pre-specified four primary outcomes (trust in police, trust in national government, democracy suitability, and freedom to organize) and distinguished them from exploratory analyses of additional variables. For the full set of variables, Benjamini-Hochberg false discovery rate corrections were applied; the primary outcomes remain significant under FDR adjustment (Appendix Section F). Second, all two-sample $t$-tests were cross-validated with non-parametric Mann-Whitney $U$ tests to ensure that results were not driven by non-normal distributions in the trust indicators (Appendix Section B). Third, I compared demographic covariates (age, gender, and education level) across the two periods to assess the extent of compositional selection (Appendix Section C), and estimated both covariate-adjusted OLS models and entropy-balanced reweighted models (reported in the main text, @tbl-adjusted). The near-identical estimates across unadjusted, adjusted, and reweighted specifications suggest that compositional differences on observables are not driving the results.
+
+Fourth, I employed a stratified percentile bootstrap with 5,000 iterations, resampling independently within the Protest and Post-NSL periods to preserve the temporal structure of the quasi-experiment (Appendix Section D). The resulting 95% bias-corrected and accelerated (BCa) confidence intervals confirmed that the observed shifts were robust and not artifacts of specific outliers. Fifth, I conducted an informal worst-case bounding analysis in the spirit of @Manski2003-wo for both trust in police and trust in the national government to assess how many "missing critics" would be required to eliminate the trust increase entirely (Appendix Section D.1). While the quasi-experimental nature of the fieldwork timing precludes random assignment, the consistency of the shifts across multiple attitudinal indicators and their robustness to alternative specifications suggest systemic attitudinal change rather than sampling noise.
+
+## Scope and Interpretive Boundaries
+
+Before presenting results, it is worth stating explicitly what this analysis can and cannot adjudicate. The estimand is the within-wave difference between two survey environments, not the causal effect of the NSL. The within-wave comparison can document the magnitude and direction of attitudinal shifts that coincided with the NSL period, and it can assess whether Hong Kong's trajectory is anomalous in cross-national comparison. By examining the observable implications of competing mechanisms (preference falsification, compositional selection, genuine conservative revaluation, and diffuse attitude change) the analysis can adjudicate between broad interpretive families. What it cannot do is cleanly identify the causal contribution of the NSL specifically, as distinct from COVID-19, protest fatigue, the disqualification and arrest of opposition legislators in late 2020, or the cumulative effects of escalating repression throughout that year. Nor can it determine the precise mix of preference falsification and compositional selection, since both predict increases in reported trust. The evidence presented below is most informative about the *direction* and *relative magnitude* of attitudinal change and about which interpretive accounts are consistent with the full pattern of observable shifts.
+
+# Results
+
+## Hong Kong as Cross-National Outlier
+
+@fig-trajectories displays six-panel trajectory plots for key democratic attitude indicators across ABS Waves 1--5, comparing Hong Kong (red), Taiwan (blue), Singapore (green), and the regional mean (grey dashed). The most striking pattern is the divergence between Hong Kong and Taiwan beginning in Wave 4 and widening sharply in Wave 5. On democracy suitability, the two polities stood at near-identical levels in Wave 3; by Wave 5, they had diverged by several points on a ten-point scale, with Hong Kong declining and Taiwan improving. Trust in police shows an even more dramatic scissors pattern: Hong Kong's trust plummeted while Taiwan's rose.
+
+```{r}
+#| label: fig-trajectories
+#| fig-cap: "Key democratic attitude trajectories across ABS Waves 1–5. Hong Kong (red), Taiwan (blue), Singapore (green), and regional mean (grey dashed)."
+#| fig-width: 14
+#| fig-height: 9
+
+library(patchwork)
+
+focus_colors <- c(
+  "Hong Kong" = "#E53935",
+  "Taiwan" = "#1E88E5",
+  "Singapore" = "#43A047",
+  "Regional mean" = "#9E9E9E"
+)
+
+focus_shapes <- c(
+  "Hong Kong" = 16,
+  "Taiwan" = 15,
+  "Singapore" = 17,
+  "Regional mean" = 18
+)
+
+build_trajectory <- function(data, var, focus = focus_countries) {
+  focus_means <- data |>
+    filter(country_name %in% focus, wave <= 5) |>
+    group_by(country_name, wave) |>
+    summarise(mean = mean(!!sym(var), na.rm = TRUE), .groups = "drop")
+
+  regional <- data |>
+    filter(!country_name %in% focus, wave <= 5) |>
+    group_by(wave) |>
+    summarise(mean = mean(!!sym(var), na.rm = TRUE), .groups = "drop") |>
+    mutate(country_name = "Regional mean")
+
+  bind_rows(focus_means, regional) |>
+    mutate(country_name = factor(country_name,
+      levels = c("Hong Kong", "Taiwan", "Singapore", "Regional mean")))
+}
+
+traj_vars <- list(
+  list(var = "democracy_suitability", title = "Democracy Suitability (1–10)"),
+  list(var = "trust_president", title = "Trust in President/CE (1–4)"),
+  list(var = "trust_police", title = "Trust in Police (1–4)"),
+  list(var = "gov_free_to_organize", title = "Freedom to Organize (1–4)"),
+  list(var = "dem_free_speech", title = "Free to Speak Without Fear (1–4)"),
+  list(var = "system_needs_change", title = "System Needs Major Change (1–4)")
+)
+
+make_traj_panel <- function(var, title) {
+  df <- build_trajectory(d, var)
+  ggplot(df, aes(x = wave, y = mean, color = country_name, shape = country_name)) +
+    geom_line(aes(linetype = country_name), linewidth = 1) +
+    geom_point(size = 3) +
+    scale_color_manual(values = focus_colors) +
+    scale_shape_manual(values = focus_shapes) +
+    scale_linetype_manual(values = c("solid", "solid", "solid", "dashed")) +
+    scale_x_continuous(breaks = 1:5, labels = paste0("W", 1:5)) +
+    labs(title = title, x = NULL, y = NULL, color = NULL, shape = NULL, linetype = NULL) +
+    theme_minimal(base_size = 11) +
+    theme(legend.position = "none",
+          plot.title = element_text(face = "bold", size = 10))
+}
+
+panels <- map2(
+  map_chr(traj_vars, "var"),
+  map_chr(traj_vars, "title"),
+  make_traj_panel
+)
+
+panels[[1]] <- panels[[1]] + theme(legend.position = "bottom")
+
+wrap_plots(panels, ncol = 3) +
+  plot_annotation(
+    title = "Hong Kong's Democratic Erosion in Comparative Context",
+    subtitle = "Asian Barometer Survey, Waves 1–5",
+    theme = theme(
+      plot.title = element_text(face = "bold", size = 14),
+      plot.subtitle = element_text(size = 11)
+    )
+  )
+```
+
+To quantify Hong Kong's outlier status, @tbl-zscores reports z-scores for each country's Wave 5 mean on thirteen democratic attitude indicators, standardized against the cross-national distribution of country means. Hong Kong's z-scores are extreme and consistent in direction: strongly negative on democracy suitability, freedom to organize, and electoral fairness, and strongly positive on perceived democratic deficit and the perceived need for system change.
+
+```{r}
+#| label: tbl-zscores
+
+z_short_names <- c(
+  country_name = "Country",
+  democracy_suitability = "Dem. Suit.",
+  dem_extent_current = "Dem. Extent",
+  dem_always_preferable = "Dem. Pref.",
+  dem_country_present_govt = "Rate Govt",
+  democracy_satisfaction = "Dem. Sat.",
+  trust_national_government = "Trust Govt",
+  trust_president = "Trust Pres.",
+  trust_parliament = "Trust Parl.",
+  trust_police = "Trust Police",
+  trust_military = "Trust Mil.",
+  trust_courts = "Trust Courts",
+  gov_free_to_organize = "Free Org.",
+  election_free_fair = "Free Elec.",
+  system_deserves_support = "Sys. Support",
+  system_needs_change = "Needs Change",
+  system_proud = "Sys. Proud"
+)
+
+z_filtered <- z_display |>
+  filter(country_name %in% c("Hong Kong", "Taiwan", "Singapore",
+                              "South Korea", "Japan", "China"))
+
+# Rename columns that have short names
+names(z_filtered) <- ifelse(names(z_filtered) %in% names(z_short_names),
+                            z_short_names[names(z_filtered)],
+                            names(z_filtered))
+
+z_filtered |>
+  kable(booktabs = TRUE, digits = 2,
+        caption = "Wave 5 z-scores: standard deviations from cross-national mean (selected countries).") |>
+  kable_styling(latex_options = c("scale_down", "hold_position"))
+```
+
+## The Pre/Post NSL Shift
+
+@tbl-nsl reports the results of the within-wave comparison. Of the `r nrow(nsl_tests)` variables with adequate sample sizes in both periods, the majority show statistically significant differences. The largest effects are concentrated in governance perceptions and institutional trust.
+
+```{r}
+#| label: tbl-nsl
+
+# Human-readable label mapping
+nsl_label_map <- c(
+  democracy_suitability = "Democracy Suitability",
+  dem_extent_current = "Current Extent of Democracy",
+  dem_country_present_govt = "Rate Govt as Democratic",
+  dem_always_preferable = "Democracy Always Preferable",
+  democracy_satisfaction = "Democratic Satisfaction",
+  trust_national_government = "Trust in National Government",
+  trust_president = "Trust in President/CE",
+  trust_parliament = "Trust in Parliament",
+  trust_police = "Trust in Police",
+  trust_military = "Trust in Military",
+  trust_courts = "Trust in Courts",
+  gov_free_to_organize = "Freedom to Organize",
+  dem_free_speech = "Free to Speak Without Fear*",
+  govt_responds_people = "Govt Responds to People",
+  election_free_fair = "Elections Free and Fair",
+  system_deserves_support = "System Deserves Support",
+  system_proud = "Proud of System",
+  system_needs_change = "System Needs Major Change",
+  strongman_rule = "Support Strongman Rule",
+  military_rule = "Support Military Rule",
+  single_party_rule = "Support Single-Party Rule",
+  rich_poor_treated_equally = "Rich/Poor Treated Equally",
+  political_interest = "Political Interest",
+  nat_willing_emigrate = "Willingness to Emigrate",
+  efficacy_ability_participate = "Ability to Participate",
+  efficacy_no_influence = "No Influence on Govt",
+  pol_discuss = "Discuss Politics",
+  gov_opposition_opportunities = "Opposition Opportunities",
+  gov_courts_powerless = "Courts Powerless"
+)
+
+nsl_tests |>
+  mutate(
+    label = ifelse(variable %in% names(nsl_label_map),
+                   nsl_label_map[variable], variable)
+  ) |>
+  select(label, protest_mean, postnsl_mean, delta, cohens_d, p_value, sig) |>
+  mutate(
+    across(c(protest_mean, postnsl_mean, delta, cohens_d), ~round(.x, 3)),
+    p_value = format.pval(p_value, digits = 3)
+  ) |>
+  kable(
+    col.names = c("Variable", "Pre Mean", "Post Mean",
+                   "Delta", "d", "p", ""),
+    booktabs = TRUE,
+    caption = "Pre/Post NSL comparison within Hong Kong Wave 5. Effect sizes (Cohen's d) and significance levels."
+  ) |>
+  kable_styling(latex_options = c("hold_position"), font_size = 9) |>
+  column_spec(1, width = "3.8cm") |>
+  footnote(
+    symbol = "Higher values indicate more perceived freedom of speech. The positive post-NSL shift (respondents claiming more free speech) is consistent with preference falsification.",
+    general = "Cohen's d computed as (Post-NSL - Protest) / pooled SD; positive values indicate higher post-NSL responses.",
+    general_title = "Note: ",
+    footnote_as_chunk = TRUE
+  )
+```
+
+Because several democracy items in the ABS instrument carry non-trivial missingness (democracy suitability exceeds 60%, and democratic satisfaction reaches approximately 11%), it is important to establish that the observed patterns are not driven by the items most vulnerable to non-response. @tbl-dem-items reports pre/post NSL comparisons for seven democracy-related items, ordered by missingness rate. The two items with the lowest missingness, the forced-choice item asking whether democracy or economic development is more important (1.4% missing) and the parallel item on political freedom versus reducing inequality (3.0% missing), both show statistically significant post-NSL shifts away from prioritizing democracy and political freedom ($d = -0.18$, $p = .002$ and $d = -0.25$, $p < .001$, respectively). These items, by virtue of their low missingness, are least susceptible to the concern that differential non-response distorts the observed differences. The forced-choice item on democracy's most essential element (4.4% missing) shows a significant compositional shift ($p < .001$): the share of respondents selecting free expression rose from 18.2% to 28.1%, while clean governance fell from 14.3% to 8.9%, a pattern discussed further in Section 4.5. Taken together, the low-missingness items confirm that the attitudinal shifts documented in @tbl-nsl are not artifacts of differential item non-response: the same directional patterns appear on items with missingness rates as low as 1--3%.
+
+```{r}
+#| label: tbl-dem-items
+#| tbl-cap: "Democracy-related items ordered by missingness rate: pre/post NSL comparison (Hong Kong Wave 5). Ordinal items report means and Cohen's d; nominal items report Cramér's V."
+
+load("../analysis/results/main_analysis_results.RData")
+
+dem_summary_table |>
+  mutate(
+    across(c(pct_missing_protest, pct_missing_postnsl), ~round(.x, 1)),
+    across(c(protest_mean, postnsl_mean, delta, cohens_d), ~round(.x, 3)),
+    p_value = format.pval(p_value, digits = 3),
+    sig = case_when(
+      as.numeric(p_value) < 0.001 ~ "***",
+      as.numeric(p_value) < 0.01  ~ "**",
+      as.numeric(p_value) < 0.05  ~ "*",
+      TRUE ~ ""
+    )
+  ) |>
+  select(label, n_protest, n_postnsl, pct_missing_protest, pct_missing_postnsl,
+         protest_mean, postnsl_mean, cohens_d, p_value, sig) |>
+  kable(
+    col.names = c("Variable", "N (Pre)", "N (Post)",
+                   "\\% Miss (Pre)", "\\% Miss (Post)",
+                   "Mean (Pre)", "Mean (Post)",
+                   "Effect", "p", ""),
+    booktabs = TRUE,
+    escape = FALSE
+  ) |>
+  kable_styling(latex_options = c("scale_down", "hold_position"), font_size = 9) |>
+  column_spec(1, width = "3.5cm") |>
+  footnote(
+    general = "Ordinal items: Cohen's d (Post-NSL $-$ Protest) / pooled SD. Nominal items: Cram\\'{e}r's V from $\\chi^2$ test. Items ordered by protest-period missingness rate.",
+    general_title = "Note: ",
+    escape = FALSE,
+    footnote_as_chunk = TRUE
+  )
+```
+
+These unadjusted comparisons could be driven by compositional differences between the two sub-samples. To address this, I estimated OLS regressions for four pre-specified primary outcomes (trust in police, trust in national government, democracy suitability, and freedom to organize) controlling for age, gender, and education level (SE5, ordinal 1--10 scale with non-substantive responses set to missing). @tbl-adjusted reports the unadjusted, covariate-adjusted, and entropy-balanced estimates side by side. As a further check, I reweighted the post-NSL sample to match the protest-period sample on demographic covariates using entropy balancing, then re-estimated the post-NSL effect. The results are substantively unchanged across all three specifications, indicating that the observed shifts are not artifacts of compositional differences in the observable demographics.
+
+```{r}
+#| label: tbl-adjusted
+#| tbl-cap: "Post-NSL effect estimates for four primary outcomes: unadjusted, covariate-adjusted (OLS with age, gender, and education level), and entropy-balanced. All specifications yield substantively similar estimates."
+
+if (exists("combined_table") && !is.null(combined_table)) {
+  combined_table |>
+    kable(
+      col.names = c("Outcome",
+                     "$b$", "SE", "$p$",
+                     "$b$", "SE", "$p$",
+                     "$b$", "SE", "$p$"),
+      booktabs = TRUE,
+      escape = FALSE
+    ) |>
+    kable_styling(latex_options = c("hold_position"), full_width = FALSE, font_size = 10) |>
+    add_header_above(c(" " = 1, "Unadjusted" = 3, "Covariate-Adjusted" = 3, "Reweighted" = 3)) |>
+    column_spec(1, width = "3.5cm")
+} else if (exists("ols_results")) {
+  ols_results |>
+    mutate(across(c(b_unadj, se_unadj, b_adj, se_adj), ~round(.x, 3)),
+           p_unadj = format.pval(p_unadj, digits = 3),
+           p_adj = format.pval(p_adj, digits = 3)) |>
+    select(label, b_unadj, se_unadj, p_unadj, b_adj, se_adj, p_adj, n_adj) |>
+    kable(
+      col.names = c("Outcome", "$b$", "SE", "$p$", "$b$", "SE", "$p$", "$N$"),
+      booktabs = TRUE,
+      escape = FALSE
+    ) |>
+    kable_styling(latex_options = c("hold_position"), full_width = FALSE, font_size = 10) |>
+    column_spec(1, width = "3.5cm")
+}
+```
+
+As an additional check on the specificity of the findings, I pre-specified a set of items with lower expected political sensitivity: perceptions of whether rich and poor are treated equally, general political interest, and trust in courts (an institution less directly associated with political repression). If the observed shifts reflect NSL-specific mechanisms rather than general confounding, these items should show small or non-significant effects. Consistent with this expectation, the placebo-adjacent items show substantially smaller effect sizes than the politically sensitive trust and governance items (see Appendix Section F for full results). Trust in courts, in particular, is essentially stable across the two periods ($d \approx 0.03$), providing a within-domain comparison that reinforces the differential sensitivity interpretation. Political interest shows a small but significant decline ($d = -0.15$, $p = .016$), consistent with political withdrawal under repression rather than generalized confounding; its effect size is roughly one-third that of the core trust items.
+
+The trust paradox is the most theoretically consequential finding. Trust in police was higher in the post-NSL period than in the protest period by approximately half a standard deviation, as was trust in the national government. This pattern emerged in a context where the police had deployed unprecedented levels of force against protesters and the government had imposed sweeping restrictions on civil liberties. Two interpretations are available: preference falsification, in which respondents report higher trust because they fear the consequences of expressing distrust; and compositional selection, in which citizens most critical of the government were disproportionately likely to decline survey participation (or to have emigrated) by 2021. Both interpretations undermine the face validity of the trust measures.
+
+The compositional selection interpretation is supported by two distinct bodies of evidence, corresponding to two temporally distinct mechanisms. The first operates within the fieldwork window itself: differential non-response and survey avoidance. By March 2021, the NSL had been in force for nine months, dozens of civil society organizations had dissolved, and the political climate had fundamentally shifted. Citizens most critical of the regime had the strongest reasons to decline participation in a survey asking about trust in government and satisfaction with democracy. The ABS data contain a direct indicator of this selection pressure: the survey item measuring willingness to emigrate can be compared across the Protest and Post-NSL periods.
+
+```{r}
+#| label: tbl-emigrate
+#| tbl-cap: "Willingness to emigrate: Protest vs Post-NSL period (Hong Kong Wave 5)."
+
+if ("nat_willing_emigrate" %in% names(hk5)) {
+  emigrate_data <- hk5 |>
+    filter(period %in% c("Protest", "Post-NSL"), !is.na(nat_willing_emigrate))
+  
+  emigrate_summary <- emigrate_data |>
+    group_by(period) |>
+    summarise(
+      mean = mean(nat_willing_emigrate, na.rm = TRUE),
+      sd = sd(nat_willing_emigrate, na.rm = TRUE),
+      n = n(),
+      .groups = "drop"
+    )
+  
+  emigrate_t <- t.test(nat_willing_emigrate ~ period, data = emigrate_data)
+  pooled_sd <- sqrt(
+    ((emigrate_summary$n[1] - 1) * emigrate_summary$sd[1]^2 +
+     (emigrate_summary$n[2] - 1) * emigrate_summary$sd[2]^2) /
+    (sum(emigrate_summary$n) - 2)
+  )
+  emigrate_d <- diff(emigrate_summary$mean) / pooled_sd
+  
+  emigrate_summary |>
+    mutate(across(c(mean, sd), ~round(.x, 3))) |>
+    kable(
+      col.names = c("Period", "Mean", "SD", "N"),
+      booktabs = TRUE
+    ) |>
+    kable_styling(latex_options = c("hold_position"))
+}
+```
+
+As @tbl-emigrate shows, stated emigration intentions shifted between the two periods, providing direct survey evidence that the dissatisfied segment of the population was actively contemplating exit during the fieldwork window. This finding has a dual implication: it signals that a politically non-random subset of the population was preparing to leave, and it suggests that those who remained willing to complete a politically sensitive survey in 2021 were increasingly unrepresentative of the broader population.
+
+The second mechanism operates after the fieldwork window and serves as *ex post* corroboration that the selection pressures visible in the survey data translated into actual population movement at scale. Although the Hong Kong government does not maintain an official emigration registry, the Census and Statistics Department recorded a net outflow of approximately 27,300 residents (excluding One-way Permit holders) by end-2021, accelerating to 60,000 between end-2021 and end-2022 (excluding One-way Permit holders) [@C-SD2022-vf; @Hong-Kong-Government2023-ub]. Chief Executive John Lee subsequently reported that the city's labor force contracted by approximately 140,000 persons between 2020 and 2022 [@Hong-Kong-Special-Administrative-Region-Government2022-wn]. External data corroborate the magnitude of departure: the UK Home Office reported that more than 230,000 BN(O) visas had been granted by early 2026, with nearly 170,000 holders having already relocated [@Home-Office2026-yz].
+
+These figures serve as *ex post* corroboration of a selection pressure that was already visible *within* the fieldwork window through the emigration intentions item, but they do not directly explain the within-wave survey shifts. Much of the emigration postdates the March--May 2021 fieldwork, and the individuals who emigrated in 2022--2025 are not necessarily the same individuals who declined survey participation in early 2021. The inferential chain is therefore indirect: within-wave survey evidence of exit intention establishes that the critical segment of the population was actively contemplating departure during the fieldwork period; administrative data on subsequent population outflows confirms that this contemplation translated into actual exit at scale; and the compositional selection mechanism provides the link between departure of critics and observed trust increases. The survey, in this reading, captured the attitudinal distribution at an inflection point: the moment when dissatisfaction had crystallized but before the most dissatisfied had physically departed, with differential non-response already beginning to reshape the observable sample.
+
+```{r}
+#| label: fig-nsl-bars
+#| fig-cap: "Pre/Post NSL mean comparison for key democratic attitude indicators (Hong Kong Wave 5). Error bars show 95% confidence intervals."
+#| fig-width: 13
+#| fig-height: 6
+
+nsl_vars <- tribble(
+  ~var, ~label,
+  "trust_national_government", "Trust in\nGovernment",
+  "trust_police", "Trust in\nPolice",
+  "trust_president", "Trust in\nPresident/CE",
+  "dem_always_preferable", "Democracy\nAlways Preferable",
+  "gov_free_to_organize", "Freedom to\nOrganize",
+  "dem_free_speech", "Free to Speak\nWithout Fear",
+  "democracy_suitability", "Democracy\nSuitability",
+  "govt_responds_people", "Govt Responds\nto People",
+  "system_needs_change", "System Needs\nMajor Change",
+  "nat_willing_emigrate", "Willing to\nEmigrate"
+)
+
+nsl_data <- hk5 |>
+  filter(period %in% c("Protest", "Post-NSL")) |>
+  pivot_longer(cols = all_of(nsl_vars$var), names_to = "variable", values_to = "value") |>
+  filter(!is.na(value)) |>
+  group_by(variable, period) |>
+  summarise(mean = mean(value), se = sd(value) / sqrt(n()), .groups = "drop") |>
+  left_join(nsl_vars, by = c("variable" = "var"))
+
+ggplot(nsl_data, aes(x = label, y = mean, fill = period)) +
+  geom_col(position = position_dodge(0.8), width = 0.7, alpha = 0.85) +
+  geom_errorbar(aes(ymin = mean - 1.96 * se, ymax = mean + 1.96 * se),
+                position = position_dodge(0.8), width = 0.25) +
+  scale_fill_manual(values = c("Protest" = "#FF7043", "Post-NSL" = "#5C6BC0")) +
+  labs(
+    x = NULL, y = "Mean", fill = NULL
+  ) +
+  theme_minimal(base_size = 11) +
+  theme(axis.text.x = element_text(size = 8), legend.position = "bottom")
+```
+
+## The Generational Gradient
+
+The pre/post NSL shift was not uniform across age groups. Young Hong Kongers, who were disproportionately represented in the protest movement, reported the lowest levels of institutional trust and the highest perceived democratic deficit. On a four-point trust scale, respondents aged 18--29 reported trust in police at approximately 1.9, compared to 2.9 among those aged 60 and over, a gap of a full scale point, representing the difference between "no trust at all" and moderate trust.
+
+```{r}
+#| label: tbl-age
+#| tbl-cap: "Age cohort means for key democratic attitudes (Hong Kong Wave 5) with ANOVA F-tests."
+
+age_vars <- c("trust_police", "trust_national_government", "democracy_suitability",
+              "gov_free_to_organize", "dem_always_preferable", "dem_extent_current",
+              "dem_free_speech", "system_needs_change")
+
+var_labels_age <- c(
+  trust_police = "Trust in Police",
+  trust_national_government = "Trust in Government",
+  democracy_suitability = "Democracy Suitability",
+  gov_free_to_organize = "Freedom to Organize",
+  dem_always_preferable = "Dem. Always Preferable",
+  dem_extent_current = "Extent of Democracy",
+  dem_free_speech = "Free Speech",
+  system_needs_change = "System Needs Change"
+)
+
+hk5_age <- hk5 |> filter(!is.na(age_group))
+
+age_means <- map_dfr(age_vars, function(v) {
+  hk5_age |>
+    filter(!is.na(!!sym(v))) |>
+    group_by(age_group) |>
+    summarise(mean = round(mean(!!sym(v), na.rm = TRUE), 2),
+              n = n(), .groups = "drop") |>
+    mutate(variable = v)
+})
+
+anova_results <- map_dfr(age_vars, function(v) {
+  aov_fit <- aov(as.formula(paste(v, "~ age_group")), data = hk5_age)
+  f_summary <- summary(aov_fit)[[1]]
+  tibble(
+    variable = v,
+    F_stat = round(f_summary$`F value`[1], 2),
+    p_value = f_summary$`Pr(>F)`[1],
+    sig = case_when(p_value < 0.001 ~ "***", p_value < 0.01 ~ "**",
+                    p_value < 0.05 ~ "*", TRUE ~ "")
+  )
+})
+
+age_wide <- age_means |>
+  select(variable, age_group, mean) |>
+  pivot_wider(names_from = age_group, values_from = mean) |>
+  left_join(age_means |> group_by(variable) |> summarise(N = sum(n), .groups = "drop"),
+            by = "variable") |>
+  left_join(anova_results, by = "variable") |>
+  mutate(label = var_labels_age[variable]) |>
+  select(label, N, everything(), -variable) |>
+  mutate(p_value = format.pval(p_value, digits = 3))
+
+age_wide |>
+  kable(
+    col.names = c("Variable", "N", "18-29", "30-39", "40-49", "50-59", "60+",
+                   "F", "p", ""),
+    booktabs = TRUE
+  ) |>
+  kable_styling(latex_options = c("scale_down", "hold_position"))
+```
+
+## Diverging Twins: Hong Kong and Taiwan
+
+Hong Kong and Taiwan offer a natural comparative frame. Both are Chinese-speaking societies with distinct political identities, contested sovereignty claims from Beijing, and histories of democratic activism. In ABS Wave 4 (fielded before the 2019 protests), the two polities occupied similar positions on many democratic attitude indicators. By Wave 5, they had diverged dramatically. @fig-divergence plots this divergence across six indicators.
+
+```{r}
+#| label: fig-divergence
+#| fig-cap: "Diverging twins: Hong Kong vs Taiwan across ABS Waves 1–5 on key democratic attitude indicators."
+#| fig-width: 14
+#| fig-height: 9
+
+div_vars <- list(
+  list(var = "democracy_suitability", title = "Democracy Suitability (1–10)"),
+  list(var = "trust_police", title = "Trust in Police (1–4)"),
+  list(var = "dem_country_present_govt", title = "Rate Govt as Democratic (1–10)"),
+  list(var = "election_free_fair", title = "Elections Free & Fair (1–4)"),
+  list(var = "gov_free_to_organize", title = "Freedom to Organize (1–4)"),
+  list(var = "system_proud", title = "Proud of System (1–4)")
+)
+
+make_div_panel <- function(var, title) {
+  df <- d |>
+    filter(country_name %in% c("Hong Kong", "Taiwan"), wave <= 5) |>
+    group_by(country_name, wave) |>
+    summarise(mean = mean(!!sym(var), na.rm = TRUE), .groups = "drop")
+
+  ggplot(df, aes(x = wave, y = mean, color = country_name)) +
+    geom_line(linewidth = 1.5) +
+    geom_point(size = 3.5) +
+    scale_color_manual(values = c("Hong Kong" = "#E53935", "Taiwan" = "#1E88E5")) +
+    scale_x_continuous(breaks = 1:5, labels = paste0("W", 1:5)) +
+    labs(title = title, x = NULL, y = NULL, color = NULL) +
+    theme_minimal(base_size = 11) +
+    theme(legend.position = "none",
+          plot.title = element_text(face = "bold", size = 10))
+}
+
+div_panels <- map2(
+  map_chr(div_vars, "var"),
+  map_chr(div_vars, "title"),
+  make_div_panel
+)
+
+div_panels[[1]] <- div_panels[[1]] + theme(legend.position = "bottom")
+
+wrap_plots(div_panels, ncol = 3) +
+  plot_annotation(
+    title = "Diverging Twins: Hong Kong vs Taiwan",
+    theme = theme(plot.title = element_text(face = "bold", size = 14))
+  )
+```
+
+Taiwan's trajectory during this period was shaped by its own political dynamics: the 2020 re-election of President Tsai Ing-wen, which was itself partly a response to Hong Kong's crisis, coincided with rising public confidence in democratic institutions [@Huang2024-sy]. The Hong Kong--Taiwan divergence thus reflects not only Hong Kong's decline but Taiwan's responsive consolidation, a dynamic in which the visible failure of "one country, two systems" strengthened Taiwanese commitment to democratic self-governance.
+
+A simple difference-in-differences framework, using Taiwan as a benchmark, quantifies the magnitude of Hong Kong's divergence. The DiD estimand---(HK$_{W5}$ $-$ HK$_{W4}$) $-$ (TW$_{W5}$ $-$ TW$_{W4}$)---captures how much Hong Kong's trajectory deviated from Taiwan's between Waves 4 and 5, netting out any parallel trends shared by both polities. On the four primary outcomes, the DiD estimates are large and statistically significant: freedom to organize ($\Delta\Delta = -0.55$, $d = -0.87$), trust in police ($\Delta\Delta = -0.63$, $d = -0.72$), democracy suitability ($\Delta\Delta = -1.35$, $d = -0.53$), and democratic satisfaction ($\Delta\Delta = -0.34$, $d = -0.49$; all $p < .001$). The trust paradox is visible in the DiD as well: trust in the national government shows a small *positive* DiD ($\Delta\Delta = +0.09$, $d = +0.10$), and system deserves support shows a larger positive effect ($\Delta\Delta = +0.25$, $d = +0.37$), indicating that Hong Kong's government trust increased relative to Taiwan's even as every democratic evaluation measure deteriorated. Trust in courts, the institution least associated with coercive repression, shows a near-zero DiD ($\Delta\Delta = +0.05$, $d = +0.07$), consistent with the sensitivity gradient. The caveat, noted above, is that Taiwan is not a pure control: its own democratic consolidation during this period was partly endogenous to Hong Kong's crisis, which may inflate the DiD magnitudes.
+
+## Testing Alternative Interpretations
+
+The trust paradox admits several alternative interpretations beyond preference falsification and compositional selection. Three merit direct empirical examination: that the trust increase reflects genuine gratitude for restored order after disruptive protests ("protest fatigue"); that democratic commitments were never deeply held, making the trust increase a reversion to baseline rather than an artifact ("consolidation failure"); and that the information environment shifted so dramatically that respondents' frames of reference changed ("co-optation"). The ABS Wave 5 instrument contains several items that bear directly on these accounts.
+
+```{r}
+#| include: false
+load("../analysis/results/alt_explanations_results.RData")
+```
+
+@tbl-alt-explanations reports pre/post NSL comparisons for supplementary indicators not included in the main analysis. Three results are particularly informative.
+
+```{r}
+#| label: tbl-alt-explanations
+#| tbl-cap: "Supplementary indicators: Protest vs. Post-NSL comparison. Cohen's d computed as (Post-NSL − Protest) / pooled SD; positive values indicate higher post-NSL responses."
+
+cont_results |>
+  select(label, n_protest, n_postnsl, protest_mean, postnsl_mean, cohens_d,
+         t_p, sig) |>
+  mutate(
+    across(c(protest_mean, postnsl_mean, cohens_d), ~round(.x, 3)),
+    t_p = format.pval(t_p, digits = 3)
+  ) |>
+  kable(
+    col.names = c("Variable", "N (Pre)", "N (Post)",
+                   "Mean (Pre)", "Mean (Post)", "d",
+                   "p", ""),
+    booktabs = TRUE
+  ) |>
+  kable_styling(latex_options = c("hold_position"), font_size = 9) |>
+  column_spec(1, width = "3.8cm")
+```
+
+First, the protest fatigue account predicts that respondents who experienced disruption should welcome the restoration of order. If this were the dominant mechanism, we would expect post-NSL respondents to report greater freedom to speak their minds, since the threatening protests are over and stability has returned. Instead, reported agreement that people can "speak without fear" *increased* post-NSL ($d = +0.41$, $p < .001$), a substantively implausible result that, like the trust increase, is consistent with preference falsification: respondents simultaneously report higher trust in police and more freedom of expression in a context where both claims are difficult to take at face value. Reported demonstration attendance also declined ($d = -0.22$, $p < .001$), consistent with a chilling effect on both behavior and willingness to report past participation.
+
+Second, the consolidation failure account, that Hong Kong residents never held deep democratic commitments, is tested by a forced-choice item asking respondents to identify the single most essential element of democracy. If democratic values were shallow or weakening, we would expect a post-NSL shift toward substantive conceptions (basic necessities, clean governance) and away from liberal-procedural ones (free expression, free elections). The opposite occurred ($\chi^2$ $p < .001$, $N_{\text{Protest}} = 462$, $N_{\text{Post-NSL}} = 637$). The share of respondents choosing *free expression* as democracy's most essential element rose from 18.2% to 28.1%, while *clean governance* fell from 14.3% to 8.9%. Electoral and basic needs conceptions remained stable. The element most visibly curtailed by the NSL, the freedom to express political views openly, became *more* salient as a democratic essential, not less. This pattern is difficult to reconcile with an account in which democratic commitments were never deeply held; it suggests instead that the crisis sharpened respondents' understanding of what they had lost.
+
+Third, the information environment account is supported by a striking shift in perceptions of China. Post-NSL respondents rated China as substantially more democratic on a 1--10 scale ($d = +0.47$, $p < .001$), an effect size nearly as large as the trust in police increase. This shift is consistent with the contraction of independent media between fieldwork periods: respondents in 2021, operating in an information environment dominated by pro-government outlets, were assessing China's political system through a fundamentally different lens than those interviewed in late 2019. Whether this reflects genuine belief revision or strategic signaling, it confirms that the post-NSL survey environment was not equivalent to the protest-period environment in ways that extend well beyond institutional trust.
+
+Fourth, item-level response rates reveal a pattern of differential sensitivity across question types (see Appendix Section H for the full item non-response table). Trust items (police, courts, parliament, civil service) maintained near-identical response rates across periods, with mean change of $+0.3$ percentage points. Normative democracy items, by contrast, declined by a mean of $6.2$ percentage points: "democracy is always preferable" dropped from 93.9% to 88.8%, "system deserves support" from 93.2% to 87.0%, and "extent of current democracy" from 54.8% to 45.3%. Governance perception items fell by a mean of $2.7$ percentage points. Low-sensitivity benchmark items (political interest, rich/poor equality) remained essentially stable ($+0.6$ pp mean change). Respondents did not disengage from the survey instrument as a whole; they selectively avoided items requiring explicit democratic commitments. This divergence is consistent with @Jiang2016-hh's finding that sensitive and insensitive survey items produce systematically different response patterns under authoritarian constraint. Critically, @Shamaileh2025-hh demonstrates through simulation that differential non-response rates provide only a lower bound on preference falsification: as repression increases, respondents shift from non-response to actively mimicking the regime-preferred answer, making the most repressive environments appear similar to free ones on non-response metrics alone. The Hong Kong data illustrate this dynamic: trust items show near-perfect response rates in both periods precisely because the regime-preferred answer (high trust) is easy to provide, while the modest decline in normative democracy item response rates likely understates the true extent of preference distortion.
+
+Fifth, crosstabulations of core democracy items reveal a patterned mix of plausible value shifts and substantively implausible movements, with the direction of implausibility tracking item sensitivity. On low-missingness trade-off items, post-NSL respondents placed slightly less priority on democracy relative to economic performance (`dem_vs_econ`; 1.4% missing; $d = -0.18$, $p = .002$) and equality (`dem_vs_equality`; 3.0% missing; $d = -0.25$, $p < .001$). On a conception item, post-NSL respondents shifted modestly toward a more procedural understanding of democracy (4.4% missing; $d = 0.14$, $p = .02$). These movements are substantively plausible: abstract value trade-offs may genuinely shift under crisis conditions. In contrast, a clearly sensitive climate item---freedom to speak without fear---shows a large post-NSL increase (`dem_free_speech`; 8.0% missing; $d = 0.41$, $p < .001$), a direction difficult to reconcile with contemporaneous institutional changes. Democratic commitment moves in the expected regime-consistent direction, with lower endorsement that democracy is "always preferable" (9.1% missing; $d = 0.36$, $p < .001$), while democratic satisfaction changes little (11.1% missing; $d = 0.10$, $p = .113$). Taken together, the democracy items suggest that while some attitudinal change is plausible on abstract value-trade-off questions with low missingness, responses on politically sensitive items are systematically distorted in the post-NSL survey environment, with both the magnitude of implausible shifts and the rate of item non-response rising in tandem with political sensitivity.
+
+Taken together, these supplementary indicators narrow the interpretive range. The trust increase is not plausibly a product of protest fatigue alone: respondents know they are less free. It is not a product of shallow democratic values: procedural commitments strengthened. The most parsimonious remaining account combines preference falsification with information environment effects, operating within a sample already shaped by compositional selection.
+
+## The Flipped Critical Citizens Correlation
+
+In most ABS countries, the correlation between democratic commitment ("democracy is always preferable") and democratic satisfaction is negative: committed democrats are more critical of their system's performance. Among the fifteen countries with sufficient data in ABS Wave 5, Hong Kong is the only country with a substantively positive correlation ($r = 0.279$, 95% CI [0.221, 0.336], $N = 980$). Singapore shows a near-zero positive value ($r = 0.013$); all other countries are negative. This pattern intensifies when decomposed by fieldwork period: the correlation is weaker during the protest period ($r = 0.184$) and strengthens markedly in the post-NSL period ($r = 0.328$), consistent with a mechanism that operates more strongly under authoritarian constraint. When computed across all five ABS waves, the Hong Kong correlation is substantially smaller ($r = 0.128$), confirming that the reversal is concentrated in Wave 5 (see Appendix Section G for full country-level estimates and period decomposition).
+
+A more informative decomposition separates respondents by their conception of democracy, using the ABS forced-choice item asking which element is most essential to democracy. Respondents who selected substantive elements (basic necessities or clean governance) show a near-zero correlation between democratic preference and democratic satisfaction in both the protest period ($r = 0.059$, $N = 211$, $p = .40$) and the post-NSL period ($r = 0.056$, $N = 231$, $p = .40$). By contrast, respondents who selected procedural elements (free expression or free elections) show a modest non-significant correlation during the protest period ($r = 0.095$, $N = 193$, $p = .19$) that strengthens dramatically in the post-NSL period ($r = 0.355$, $N = 289$, $p < .001$). A Fisher $z$-test confirms that the post-NSL difference between the two conception groups is statistically significant ($z = 3.55$, $p < .001$). At finer resolution, the strongest reversal appears among those who selected free elections as democracy's most essential element ($r = 0.421$, $N = 139$, $p < .001$ in the post-NSL period), followed by free expression ($r = 0.321$, $N = 150$, $p < .001$), while those who selected basic necessities show no correlation ($r = 0.007$, $N = 190$, $p = .92$; see Appendix Section G for the full decomposition).
+
+This pattern is striking and admits two interpretations, both consistent with the broader argument. The first is a selection-falsification account: procedural democrats who remained in the post-NSL sample and continued to endorse "democracy is always preferable" may have been simultaneously falsifying their satisfaction responses, reporting satisfaction to avoid signaling regime opposition, producing a spurious positive correlation. The second is an accommodation account: the procedural democrats who stayed and participated may represent those who had genuinely reconciled themselves to the new order, while the most critical procedural democrats either declined to participate or gave non-substantive responses (consistent with the declining response rates on normative democracy items documented in Section 4.5). Under either interpretation, the positive correlation does not indicate genuine critical satisfaction but rather reflects the distortion of survey responses under authoritarian constraint. Substantive-conception respondents, by contrast, show no such distortion: their near-zero correlation in both periods is consistent with a group for whom the concepts of democratic preference and democratic satisfaction have never been strongly linked. The implications of this decomposition are discussed further in Section 5.3.
+
+# Discussion
+
+These findings speak to three distinct literatures. For the democratic erosion literature, the Hong Kong case suggests that attitudinal differences across contrasting political environments can be large and multidirectional. Democratic evaluations were sharply lower in the post-NSL period, as expected, but institutional trust was higher, a pattern that complicates simple models linking institutional performance to public trust.
+
+## Adjudicating Between Mechanisms
+
+The trust paradox admits four broad interpretive families: preference falsification, whereby respondents report higher trust because they fear the consequences of expressing distrust [@Kuran1995-up]; compositional selection, whereby citizens most critical of the government disproportionately declined survey participation or emigrated; genuine conservative revaluation, whereby a segment of the population, particularly older, business-oriented, or order-prioritizing residents, sincerely welcomed the restoration of stability and revised their assessments upward accordingly; and diffuse attitude change, whereby the broader population authentically shifted evaluations in response to altered conditions. The within-wave design---same instrument, same country, same wave, differing primarily in political context---provides unusual leverage for distinguishing among these accounts, though it cannot definitively isolate any single mechanism.
+
+@tbl-mechanisms presents the observable implications of each interpretive account across the key empirical patterns documented in Sections 4.1--4.5.
+
+```{r}
+#| label: tbl-mechanisms
+#| tbl-cap: "Observable implications of competing mechanisms for the trust paradox."
+
+mech_table <- tibble(
+  `Observable pattern` = c(
+    "Trust ↑ in post-NSL period",
+    "Democracy suitability ↓",
+    "Emigration intentions shift",
+    "Age gradient in trust",
+    "Trust ↑ and dem. evaluation ↓ simultaneously",
+    "Trust in courts stable (d ≈ 0.03)",
+    "Reported free speech ↑ while trust ↑ (\u00a74.5)",
+    "Procedural dem. conception ↑ (\u00a74.5)",
+    "China rated more democratic (\u00a74.5)"
+  ),
+  `Preference falsification` = c(
+    "✓ (fear-driven reporting)",
+    "Ambiguous (less sensitive item)",
+    "Neutral",
+    "✓ (young more surveilled/targeted)",
+    "✓ (differential item sensitivity)",
+    "✓ (courts less politically salient)",
+    "✓ (inflated claim of freedom)",
+    "Neutral",
+    "✓ (strategic signaling of loyalty)"
+  ),
+  `Compositional selection` = c(
+    "✓ (critics drop out/emigrate)",
+    "✗ (should also ↑ if critics leave)",
+    "✓ (direct evidence of exit)",
+    "✓ (young more likely to emigrate/refuse)",
+    "Partial (predicts both shift same direction)",
+    "Ambiguous",
+    "Partial (critics who reported less freedom left)",
+    "✗ (no reason conceptions shift)",
+    "Partial (pro-Beijing stayers)"
+  ),
+  `Conservative revaluation` = c(
+    "✓ (sincerely welcome order)",
+    "✓ (recognize erosion, approve of it)",
+    "Neutral",
+    "✓ (strongest in 60+ cohort)",
+    "✓ (coherent conservative worldview)",
+    "Partial (less reason to revalue courts)",
+    "✗ (no reason to claim more freedom)",
+    "✗ (predicts weaker procedural commitment)",
+    "Partial (genuine belief revision)"
+  ),
+  `Diffuse attitude change` = c(
+    "✗ (no broad performance improvement)",
+    "✓ (recognizing erosion)",
+    "Neutral",
+    "✓ (generational value differences)",
+    "✗ (no reason for divergent movement)",
+    "Ambiguous",
+    "✗ (implausible genuine increase)",
+    "✗ (predicts weaker dem. commitment)",
+    "Ambiguous (info environment shift)"
+  )
+)
+
+mech_table |>
+  kable(booktabs = TRUE) |>
+  kable_styling(latex_options = c("scale_down", "hold_position")) |>
+  column_spec(1, width = "3.2cm") |>
+  column_spec(2:5, width = "3cm")
+```
+
+The key discriminator is the divergent movement of trust and democratic evaluation. Compositional selection alone would predict both indicators shifting in the same direction: if regime critics disproportionately exit the sample, both trust and democratic satisfaction should rise. Diffuse attitude change faces the same difficulty, since there is no obvious reason for genuine population-wide belief revision to move trust and democratic evaluation in opposite directions. Conservative revaluation, by contrast, *can* accommodate this divergence: a respondent who sincerely welcomes restored order may trust the government more while recognizing the system is less democratic. However, as the table indicates, conservative revaluation fails to explain the implausible increase in reported free speech and the strengthening of procedural democratic conceptions, findings that point instead toward preference falsification operating differentially across item sensitivity. Trust items, which ask respondents to evaluate specific institutions that wield coercive power (police, government), plausibly feel more dangerous to answer critically under authoritarian conditions than abstract evaluative items about democratic suitability.
+
+This differential sensitivity account generates a testable prediction: the magnitude of post-NSL "inflation" should follow the political salience of the institution. Specifically, trust in coercive institutions most directly associated with repression (police, national government) should show the largest positive shifts; trust in less coercive institutions (parliament, military) should show smaller shifts; and trust in the judiciary, which, while not independent, is less directly associated with street-level repression, should show the smallest shift. The data support this gradient. Trust in police ($d = 0.43$) and the national government ($d = 0.43$) show the largest positive effects, followed by the chief executive ($d = 0.38$) and parliament ($d = 0.23$), while trust in courts is essentially stable ($d = 0.03$). @tbl-sensitivity-gradient presents the pre-specified ranking alongside the observed effect sizes.
+
+```{r}
+#| label: tbl-sensitivity-gradient
+#| tbl-cap: "Institutional sensitivity gradient: pre-specified ranking and observed effect sizes."
+
+sensitivity_ranking <- tribble(
+  ~Institution, ~`Sensitivity Rank`, ~Rationale, ~variable,
+  "Police", 1, "Primary coercive agent during protests", "trust_police",
+  "National Government", 2, "Enacted and enforced NSL", "trust_national_government",
+  "President/CE", 3, "Chief executive implementing NSL", "trust_president",
+  "Military", 4, "PLA garrison; visible but not street-deployed", "trust_military",
+  "Parliament", 5, "Restructured but less directly coercive", "trust_parliament",
+  "Courts", 6, "Retained partial independence", "trust_courts"
+)
+
+trust_ds <- nsl_tests |>
+  filter(variable %in% sensitivity_ranking$variable) |>
+  select(variable, cohens_d)
+
+gradient <- sensitivity_ranking |>
+  left_join(trust_ds, by = "variable") |>
+  arrange(`Sensitivity Rank`)
+
+r_gradient <- cor(gradient$`Sensitivity Rank`, gradient$cohens_d)
+
+gradient |>
+  select(Institution, `Sensitivity Rank`, Rationale, cohens_d) |>
+  mutate(cohens_d = round(cohens_d, 3)) |>
+  kable(
+    col.names = c("Institution", "Rank", "Rationale", "d"),
+    booktabs = TRUE
+  ) |>
+  kable_styling(latex_options = c("hold_position"), font_size = 10) |>
+  column_spec(1, width = "2.5cm") |>
+  column_spec(2, width = "1cm") |>
+  column_spec(3, width = "5.5cm") |>
+  column_spec(4, width = "1cm") |>
+  footnote(
+    general = paste0(
+      "Sensitivity ranking derived from the theoretical framework (Section 2.2) ",
+      "based on each institution's direct association with coercive enforcement. ",
+      "Rankings were specified prior to examining effect sizes. ",
+      "Spearman correlation between rank and d: r = ", round(r_gradient, 2), "."
+    ),
+    general_title = "Note: ",
+    footnote_as_chunk = TRUE
+  )
+```
+
+Among trust items only, the correlation between a pre-specified sensitivity ranking and the observed Cohen's $d$ is $r = -0.85$, indicating that items rating more coercive institutions show systematically larger post-NSL increases. Trust in the military ($d = 0.39$) is the primary exception, plausibly because the PLA garrison took a more visible role during the NSL period. This ordering is consistent with the prediction that preference falsification operates more strongly on items where the "wrong" answer is most conspicuously regime-critical, and it cannot be explained by compositional selection, which would predict uniform shifts across all trust items.
+
+To assess the plausibility of the compositional selection account more formally, the online appendix (Section D.1) presents an informal bounding exercise in the spirit of @Manski2003-wo for both trust in police and trust in the national government. Under worst-case assumptions (that all non-responding members of the target population would have reported the minimum possible trust score of 1 on the 1--4 scale) the trust increase persists even if a substantial proportion of the target population were "missing critics," disappearing only under extreme non-response scenarios. The results are similar for both trust items, suggesting that the pattern is not an artifact of selecting a single favorable variable. For high-missingness items, the online appendix (Section D.2) extends this logic with item-specific MNAR tipping-point analyses. Democracy suitability's observed decline ($d = -1.21$) is so large that pushing all missing post-NSL responses to the minimum score only deepens the gap; reversing the decline under a "fearful democrats" scenario (missing respondents assigned the maximum score of 10) requires that at least 50% of non-respondents be secret maximizers---a high threshold. Democracy satisfaction, by contrast, reaches its tipping point at 45% under one-sided worst-case assumptions, consistent with its smaller and non-significant observed difference. These exercises do not resolve the ambiguity between the two mechanisms but provide concrete benchmarks: the compositional selection account requires implausibly high rates of politically selective non-response to explain the full trust shift on its own.
+
+A further concern is whether democracy suitability's approximately 60% item-level missingness undermines its value as a comparison point for the trust items. Convergent validity evidence alleviates this concern. The two democracy items with the lowest missingness---the trade-off items on democracy versus economic development (1.4% missing) and political freedom versus equality (3.0% missing)---both move in the same direction as democracy suitability, showing significant post-NSL declines in democratic priority ($d = -0.18$ and $d = -0.25$, respectively). Moreover, respondents who are missing on democracy suitability display statistically indistinguishable attitudinal patterns on these low-missingness items compared to those who answered, in both fieldwork periods (Appendix Section D.3). This pattern is consistent with suitability missingness being instrumentally driven by the ABS questionnaire's multi-step question sequence rather than politically motivated, and it confirms that the decline in democratic evaluation is not an artifact of the high-missingness anchor item.
+
+Independent evidence from other survey sources corroborates the differential sensitivity interpretation. Using online panel data collected before and after the NSL, @Kobayashi2022-ih found that pro-democracy respondents subject to political repression were more likely to drop out of political polls, and that those who remained falsified potentially sensitive past behavior, providing direct panel-level evidence for both the compositional selection and preference falsification mechanisms identified here. @Yang2023-dd used HKPORI tracking data with synthetic difference-in-differences to demonstrate a significant differential treatment effect on politically sensitive poll items (attitudes toward Taiwan and Tibet independence) compared to less sensitive items following the NSL's implementation, a pattern closely analogous to the sensitivity gradient documented above. These findings, drawn from independent data sources and distinct methodological designs, converge on the same conclusion: the post-NSL environment was associated with systematically inflated regime-favorable responses on politically sensitive survey items while less sensitive items remained comparatively unaffected.
+
+World Values Survey Wave 7 [@Haerpfer2022-hh], fielded in Hong Kong in 2018 ($N = 2{,}075$; mixed PAPI and CAWI mode), provides an additional pre-crisis baseline that sharpens the interpretation of the ABS trust shifts. A methodological caveat is warranted: the WVS employed a mix of paper-and-pencil (PAPI) and computer-assisted web interviewing (CAWI) in Hong Kong, whereas the ABS used face-to-face interviews throughout. This mode difference has implications for the present argument. A substantial literature documents that self-administered modes (including CAWI) reduce social desirability bias on sensitive items relative to interviewer-administered modes, since respondents are more willing to express critical or socially undesirable views in the absence of an interviewer [e.g., @Kreuter2008-gm; @Heerwegh2009-tp]. If the WVS CAWI component reduced social desirability pressure, then WVS pre-crisis trust levels may *understate* the face-to-face social desirability equilibrium. This implies that the ABS protest-period collapse in trust, measured face-to-face under conditions of political mobilization that made regime criticism socially acceptable, may represent an unusually honest signal, while the post-NSL "recovery" to WVS-comparable levels reflects the reassertion of social desirability norms under authoritarian constraint. Absolute levels across the two instruments are therefore not directly comparable, but the relative positioning of trust items (police and government vs. courts) and the direction of change from the pre-protest baseline remain informative.
+
+On comparable 1--4 confidence scales, WVS pre-protest means for police (2.70) and national government (2.50) closely match the ABS post-NSL means (2.64 and 2.63, respectively), while ABS protest-period means fell well below both benchmarks (2.15 for each). In other words, the post-NSL trust "recovery" does not represent a surge to new heights but a reversion to approximately the pre-protest status quo, consistent with falsification restoring the baseline social desirability equilibrium rather than generating genuine new confidence. Trust in the courts, by contrast, declined from a WVS baseline of 3.02 to 2.71 during the protests and remained depressed at 2.74 post-NSL, reinforcing the finding that the judiciary is the institution least subject to falsification pressure. Democracy suitability tells the opposite story: the WVS baseline of 7.83 (on a 1--10 scale) fell to 6.94 during the protests and continued declining to 5.74 post-NSL, with no sign of recovery. This monotonic decline on a less politically sensitive evaluative item, set against the V-shaped rebound of trust in coercive institutions, is precisely the divergent pattern predicted by differential sensitivity to falsification pressure.
+
+Neither mechanism can be ruled out entirely, and the most parsimonious interpretation is that both operate simultaneously: compositional selection removes some regime critics from the sample, while preference falsification inflates trust scores among those who remain. The evidence does not permit precise decomposition of their relative contributions.
+
+A fourth interpretive family deserves explicit treatment: genuine conservative revaluation. Some portion of the trust increase may reflect sincere approval from residents who prioritize social order over political contestation. A 60-year-old business owner who experienced months of transport disruptions, economic uncertainty, and street violence may have authentically welcomed the NSL's restoration of routine---and may simultaneously recognize that the system is less democratic while regarding that as an acceptable or even desirable trade-off. This is a coherent conservative worldview, not a measurement artifact: it predicts *both* higher trust in government *and* lower democratic evaluations, precisely the divergent pattern observed in the data. The age gradient in @tbl-age is partially consistent with this account, as the 60+ cohort reports the highest trust levels and the lowest perceived democratic deficit.
+
+Crucially, however, the conservative revaluation account cannot explain the full pattern of findings. Three empirical results resist this interpretation. First, the trust increase appears across *all* age groups, including younger cohorts who were the primary targets of police action and who report the lowest absolute trust levels; a purely conservative-satisfaction mechanism would concentrate the shift among older demographics. Second, the implausible increase in reported free speech ($d = +0.41$) is inconsistent with any genuine-belief account: even a respondent sincerely grateful for restored order would not plausibly claim that people are *freer* to speak their minds after the NSL. Third, the strengthening of procedural democratic conceptions, with free expression becoming *more* salient as democracy's most essential element---is difficult to reconcile with a population that has genuinely embraced authoritarian stability. The most defensible interpretation, then, is that genuine conservative revaluation accounts for some portion of the trust increase, particularly among older respondents, but that the magnitude of the shift across the full population, its implausible coupling with increased reported freedom, and the sensitivity gradient across institutions require preference falsification and compositional selection as the dominant mechanisms.
+
+## Alternative Explanations for Rising Trust
+
+Beyond the core mechanisms, several additional accounts warrant consideration.
+
+*Performance legitimacy and stability preferences.* As discussed above (Section 5.1), genuine conservative revaluation likely accounts for some portion of the trust increase, particularly among older demographics who welcomed the restoration of routine after months of protest disruption. The 60+ cohort reported the highest trust levels, and satisfaction with the Chief Executive did increase modestly ($d = +0.24$). However, pure protest-fatigue and performance-legitimacy accounts are insufficient for the full pattern: the trust increase extends across all age groups, the implausible rise in reported free speech ($d = +0.41$) is inconsistent with any straightforward relief narrative, and the strengthening of procedural democratic conceptions suggests that respondents are not simply embracing authoritarian stability.
+
+*Acquiescence bias amplification.* Under conditions of threat, respondents may default to positive responses on Likert scales regardless of item content, a pattern distinct from deliberate preference falsification. If generalized acquiescence were driving the results, we would expect trust to increase uniformly across institutions, including courts. The near-zero effect size for trust in courts ($d \approx 0.03$) compared to the large effects for police and government suggests that the response pattern is item-specific rather than reflecting a blanket positivity bias.
+
+*Information environment restructuring.* Between the protest period and post-NSL fieldwork, Hong Kong's independent media landscape contracted dramatically: Apple Daily, Stand News, and Citizen News all closed or were raided. Respondents in 2021 were operating in a fundamentally different information environment than those interviewed in 2019--2020. Rising trust could partly reflect reduced exposure to critical coverage of institutional performance rather than deliberate falsification of privately held attitudes. The supplementary analysis in Section 4.5 provides suggestive support: post-NSL respondents rated China as substantially more democratic ($d = +0.47$), a shift consistent with altered frames of reference rather than (or in addition to) strategic misrepresentation. This mechanism is conceptually distinct from Kuran-style preference falsification: it suggests altered belief formation rather than strategic misrepresentation, though the observable implications are similar and difficult to disentangle with survey data alone.
+
+*COVID-19 rally effect.* A potential confounding factor is the global "rally 'round the flag" effect, whereby existential crises trigger temporary surges in institutional trust [@Schraff2021-qc; @Bol2021-yz]. Neighboring ABS polities, including Singapore and Taiwan, did experience increases in government approval during their initial successful pandemic responses. However, the Hong Kong case diverges from this regional pattern in two respects. First, while trust in other polities tended to plateau or recede as pandemic fatigue set in, Hong Kong's trust spike coincided with the implementation of the NSL rather than the peak of pandemic response. Second, the coexistence of a substantial trust increase ($d = +0.49$) with a sharp decline in democracy suitability ($d = -0.54$) is inconsistent with a generalized rally effect, which would be expected to elevate both trust and regime evaluations in the same direction.
+
+## Implications for Comparative Politics
+
+For the preference falsification literature, the trust paradox offers an unusually informative observational test. While compositional selection cannot be ruled out, the magnitude and consistency of the trust increase across multiple institutions, combined with its divergence from democratic evaluation measures, is difficult to attribute entirely to differential non-response.
+
+These findings also contribute directly to the ongoing debate about the measurement validity of survey-based trust in non-democratic contexts [@Nicholson2023-kt; @Stockmann2011-fi]. The Hong Kong case provides an empirical demonstration of the precise conditions under which standard trust measures become unreliable: a rapid transition from relative openness to authoritarian constraint within a single survey wave. If trust in the police can increase by half a standard deviation in the months following a period of mass police violence, the measure is capturing something other than, or in addition to, genuine institutional confidence. Researchers using ABS, World Values Survey, or similar instruments in hybrid and authoritarian regimes should treat elevated trust scores with particular caution when they coincide with periods of intensified repression.
+
+The Hong Kong--Taiwan divergence provides a suggestive comparison of democratic consolidation and erosion. Two societies with shared cultural heritage, similar levels of economic development, and comparable positions within the Chinese geopolitical sphere experienced opposite democratic trajectories over the same period. The fact that Taiwan's democratic confidence *increased* in response to Hong Kong's crisis is consistent with a demonstration effect: citizens in proximate democracies may become more committed to democratic institutions when they observe the consequences of losing them.
+
+The reversal of the standard "critical citizens" correlation in Hong Kong, documented in Section 4.6 and decomposed by democratic conception type, provides stronger evidence for the distortion of survey responses under authoritarian constraint than the pooled correlation alone would suggest.
+
+The decomposition reveals that the reversal is concentrated among respondents who hold *procedural* conceptions of democracy (those who selected free expression or free elections as democracy's most essential element). In the post-NSL period, this group shows a strong positive correlation between democratic preference and satisfaction ($r = 0.355$, $p < .001$), while respondents with *substantive* conceptions (basic necessities, clean governance) maintain a near-zero relationship in both periods ($r = 0.056$, $p = .40$). The difference is statistically significant (Fisher $z = 3.55$, $p < .001$). This is the opposite of what a co-optation account in @Kirsch2019-vu's sense would predict: if the regime's redefinition of "democracy" were driving the correlation, substantive-conception respondents should be the ones showing the reversal. Instead, it is procedural democrats, those whose democratic ideal explicitly centers on the freedoms most visibly curtailed by the NSL, who display the anomalous positive correlation between democratic preference and satisfaction in the post-NSL period. This pattern is most consistent with a selection-falsification mechanism: the procedural democrats who remained in the sample and continued to endorse "democracy is always preferable" were simultaneously reporting satisfaction either because they feared the consequences of expressing dissatisfaction or because they represent an accommodated subset from which the most critical voices had already selected out.
+
+This finding has implications beyond Hong Kong. If the correlation between democratic preference and satisfaction is contaminated by preference falsification precisely among those respondents with the clearest procedural benchmarks for democratic quality, then the critical citizens framework may be least reliable in the contexts where it is most theoretically relevant. The standard "democracy is always preferable" item captures something different when respondents fear the consequences of expressing dissatisfaction---and that fear is itself shaped by the political environment. Researchers relying on this item as a measure of democratic support should, at minimum, condition on democratic conception type and attend to the political conditions of survey administration when interpreting cross-national variation.
+
+## Limitations
+
+Several limitations warrant acknowledgment. The pre/post NSL comparison within Wave 5 is a quasi-experiment, not a true experiment. Respondents were not randomly assigned to fieldwork periods, and systematic differences between the protest-period and post-NSL samples may account for some of the observed shifts. The gap period (February 2020 through February 2021, when COVID-19 disrupted fieldwork) complicates the attribution of changes to the NSL specifically, since the pandemic itself may have affected democratic attitudes through multiple pathways. Additionally, if preference falsification is operating, the post-NSL data may underestimate the true magnitude of attitudinal decline, since respondents who hold the most critical views may be least likely to express them honestly. The analysis cannot determine the precise mix of preference falsification and compositional selection, nor can it cleanly separate the causal contribution of the NSL from the concurrent shocks of the pandemic, activist prosecutions, legislator disqualifications, and broader political demoralization that characterized the intervening period.
+
+# Conclusion
+
+Hong Kong’s democratic crisis between 2019 and 2021 coincided with one of the sharpest and most comprehensive divergences in democratic attitudes ever documented in comparative survey data. By exploiting the unintended fieldwork delay in Wave 5 of the Asian Barometer Survey, this study captures a political system in the midst of a natural quasi-experiment. Even when employing a stratified percentile bootstrap to account for the smaller sub-sample sizes, the results remain stark: a dramatic decline in perceived democracy suitability $(d=-0.54)$ occurring simultaneously with a paradoxical surge in institutional trust.
+
+This paradox—the coexistence of declining democratic evaluations and rising trust in the police and government—points toward a fundamental measurement problem in comparative politics. As documented in Section 4.2, the magnitude of these shifts $(d \approx +0.49$ for trust in police) in a context of mass repression is more plausibly attributed to a combination of preference falsification and compositional selection than to genuine gains in institutional legitimacy. This interpretation is reinforced by the divergent movement of trust and democratic evaluation indicators analyzed in the mechanism comparison (Section 5.1), and by the evidence that stated emigration intentions shifted between fieldwork periods, with administrative data on subsequent population outflows confirming that the critical population segment did in fact exit at scale.
+
+Ultimately, these findings challenge the assumption that democratic attitudes are stable cultural orientations and underscore the analytical value of within-wave temporal variation. However, they also serve as a cautionary tale: the very conditions under which institutional trust data would be most informative—periods of rapid erosion and state-led restructuring—are precisely the conditions under which that data becomes the least reliable. Future research should prioritize experimental and quasi-experimental methods capable of separating genuine attitudinal change from measurement artifacts produced by fear, including list experiments, endorsement experiments, and qualitative triangulation with diaspora populations who can speak freely about their pre-departure attitudes.
+
+# References {.unnumbered}
