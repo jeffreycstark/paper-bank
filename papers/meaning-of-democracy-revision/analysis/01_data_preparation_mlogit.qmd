@@ -34,8 +34,9 @@ here::i_am("papers/meaning-of-democracy-revision/analysis/01_data_preparation_ml
 output_dir <- here("papers", "meaning-of-democracy-revision", "analysis", "revised", "data")
 if (!dir.exists(output_dir)) dir.create(output_dir, recursive = TRUE)
 
-# Master dataset
-master_file <- here("data", "processed", "abs_econdev_authpref.rds")
+# Master dataset (from survey-data-prep repo)
+source(here("_data_config.R"))
+master_file <- abs_harmonized_path
 ```
 
 # Item Labels

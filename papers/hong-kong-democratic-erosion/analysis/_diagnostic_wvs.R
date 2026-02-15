@@ -2,7 +2,8 @@ library(arrow)
 library(tidyverse)
 
 # Load harmonized WVS data
-wvs_path <- "/Users/jeffreystark/Development/Research/survey-data-prep/data/processed/wvs_harmonized.parquet"
+source("../../../_data_config.R")
+wvs_path <- wvs_harmonized_path
 
 stopifnot("Harmonized WVS parquet not found" = file.exists(wvs_path))
 

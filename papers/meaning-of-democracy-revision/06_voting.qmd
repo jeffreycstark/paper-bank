@@ -29,8 +29,9 @@ library(here)
 
 here::i_am("papers/meaning-of-democracy/06_voting.qmd")
 
-# Master dataset location
-master_file <- here("data", "processed", "abs_econdev_authpref.rds")
+# Master dataset (from survey-data-prep repo)
+source(here("_data_config.R"))
+master_file <- abs_harmonized_path
 ```
 
 # Load Data

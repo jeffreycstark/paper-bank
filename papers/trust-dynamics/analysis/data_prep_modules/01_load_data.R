@@ -14,11 +14,12 @@ library(haven)
 # Load the combined ABS dataset (all 6 waves, 330+ variables)
 # ==============================================================================
 
-data_path <- here("outputs", "abs_econdev_authpref.rds")
+source(here("_data_config.R"))
+data_path <- abs_harmonized_path
 
 if (!file.exists(data_path)) {
   stop("Combined dataset not found at: ", data_path,
-       "\nRun the main harmonization pipeline first.")
+       "\nEnsure survey-data-prep repo has generated abs_harmonized.rds")
 }
 
 sausage_raw <- readRDS(data_path)

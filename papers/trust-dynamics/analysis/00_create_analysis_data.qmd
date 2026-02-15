@@ -22,7 +22,7 @@ execute:
 
 This script creates analysis-ready datasets for examining trust dynamics and democratic resilience across Asia using Asian Barometer Survey data (Waves 1-6, 2001-2022).
 
-**Source**: `abs_econdev_authpref.rds` — the fully harmonized dataset with haven labels already stripped.
+**Source**: `abs_harmonized.rds` from survey-data-prep — the fully harmonized dataset with haven labels already stripped.
 
 **Outputs**:
 
@@ -42,10 +42,11 @@ set.seed(2025)
 # Load Source Data
 
 ```{r load-source}
-# Use abs_econdev_authpref.rds - has all variables with labels already zapped
-abs_source <- readRDS(file.path(project_root, "data/processed/abs_econdev_authpref.rds"))
+# Load from survey-data-prep repo
+source(file.path(project_root, "_data_config.R"))
+abs_source <- readRDS(abs_harmonized_path)
 
-cat("Source: abs_econdev_authpref.rds\n")
+cat("Source: abs_harmonized.rds (from survey-data-prep)\n")
 cat("Rows:", format(nrow(abs_source), big.mark = ","), "\n")
 cat("Columns:", ncol(abs_source), "\n")
 cat("Waves:", paste(sort(unique(abs_source$wave)), collapse = ", "), "\n")

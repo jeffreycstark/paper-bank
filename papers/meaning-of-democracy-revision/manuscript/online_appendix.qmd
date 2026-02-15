@@ -387,7 +387,8 @@ The main analysis restricts attention to respondents who reported voting in the 
 #| tbl-cap: "Non-Voter Rates by Country and Wave"
 
 # Load master data
-abs <- readRDS(here("data", "processed", "abs_econdev_authpref.rds"))
+source(here("_data_config.R"))
+abs <- readRDS(abs_harmonized_path)
 
 # Country name mapping (11 analysis countries)
 country_names <- c(

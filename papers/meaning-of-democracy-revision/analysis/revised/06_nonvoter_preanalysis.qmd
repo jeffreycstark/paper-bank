@@ -26,8 +26,9 @@ here::i_am("papers/meaning-of-democracy-revision/analysis/revised/06_nonvoter_pr
 output_dir <- here("papers", "meaning-of-democracy-revision", "analysis", "revised",
                    "results", "nonvoter_preanalysis")
 
-# Load master data
-abs <- readRDS(here("data", "processed", "abs_econdev_authpref.rds"))
+# Load master data (from survey-data-prep repo)
+source(here("_data_config.R"))
+abs <- readRDS(abs_harmonized_path)
 
 # Country name mapping (11 analysis countries)
 country_names <- c(

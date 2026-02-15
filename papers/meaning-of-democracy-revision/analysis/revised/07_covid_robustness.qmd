@@ -26,8 +26,9 @@ results_dir <- here("papers", "meaning-of-democracy-revision", "analysis", "revi
 w346 <- readRDS(file.path(data_dir, "w346_main.rds"))
 item_meta <- readRDS(file.path(data_dir, "item_metadata.rds"))
 
-# Load master data for COVID variables
-abs_master <- readRDS(here("data", "processed", "abs_econdev_authpref.rds"))
+# Load master data for COVID variables (from survey-data-prep repo)
+source(here("_data_config.R"))
+abs_master <- readRDS(abs_harmonized_path)
 ```
 
 # Merge COVID variables into W6 analysis data

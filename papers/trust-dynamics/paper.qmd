@@ -39,8 +39,9 @@ library(tidyverse)
 library(knitr)
 library(kableExtra)
 
-# Load data
-df <- readRDS(here::here("data/processed/abs_econdev_authpref.rds"))
+# Load data (from survey-data-prep repo)
+source(here::here("_data_config.R"))
+df <- readRDS(abs_harmonized_path)
 
 # Create regime classification
 regime_map <- c(
