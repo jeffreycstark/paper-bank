@@ -51,7 +51,7 @@ papers/sausage-paper/
 ## Data Flow
 
 ```
-Combined Dataset (outputs/abs_econdev_authpref.rds)
+Harmonized Dataset (survey-data-prep/data/processed/abs_harmonized.rds)
     ↓
 01_data_preparation.qmd (via data_prep_modules/)
     ↓

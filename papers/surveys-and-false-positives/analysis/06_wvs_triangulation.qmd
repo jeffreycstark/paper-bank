@@ -21,9 +21,9 @@ execute:
 #   → "Statistical Data Files" → "WVS Cross-National Wave 7" (Stata .dta)
 #   → Free registration required
 #
-# Place the downloaded file at:
-#   ../../../data/raw/wvs_wave7/WVS_Cross-National_Wave_7_stata_v6_0.dta
-#   (adjust filename to match whatever version you download)
+# Raw WVS .dta is in survey-data-prep repo.
+# This script now uses the harmonized WVS parquet instead where possible.
+# For raw WVS access, see survey-data-prep/data/wvs/raw/
 
 ```{r setup}
 library(tidyverse)
@@ -35,12 +35,14 @@ library(knitr)
 
 ```{r load-wvs}
 # Adjust path/filename to match your download
-wvs_path <- "../../../data/raw/wvs_wave7/WVS_Cross-National_Wave_7_stata_v6_0.dta"
+source("../../../_data_config.R")
+wvs_raw_dir <- file.path(survey_data_prep, "data/wvs/raw/wave7")
+wvs_path <- file.path(wvs_raw_dir, "WVS_Cross-National_Wave_7_stata_v6_0.dta")
 
 if (!file.exists(wvs_path)) {
   # Try alternate naming conventions
   alt_paths <- list.files(
-    "../../../data/raw/wvs_wave7/",
+    wvs_raw_dir,
     pattern = "\\.dta$",
     full.names = TRUE
   )
@@ -51,7 +53,7 @@ if (!file.exists(wvs_path)) {
     stop(
       "WVS W7 data file not found.\n",
       "Download from: https://www.worldvaluessurvey.org/WVSDocumentationWV7.jsp\n",
-      "Place .dta file in: data/raw/wvs_wave7/"
+      "Place .dta file in survey-data-prep: data/wvs/raw/wave7/"
     )
   }
 }
