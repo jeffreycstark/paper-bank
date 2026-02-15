@@ -52,8 +52,7 @@ econdev-authpref/
 └── papers/
     ├── meaning-of-democracy-revision/   # Loser effects on democratic conceptions
     ├── hong-kong-democratic-erosion/     # HK democratic attitudes + sensitivity gradient
-    ├── trust-dynamics/                  # Trust dynamics across Asian democracies
-    └── surveys-and-false-positives/     # Survey response quality
+    └── trust-dynamics/                  # Trust dynamics across Asian democracies
 ```
 
 ---
@@ -74,11 +73,6 @@ econdev-authpref/
 **Topic**: Institutional trust dynamics across Asian democracies.
 **Data**: ABS (all waves).
 **Key files**: `analysis/00_create_analysis_data.qmd`, `paper.qmd`.
-
-### surveys-and-false-positives
-**Topic**: Survey response quality and false positive rates.
-**Data**: ABS, WVS for triangulation.
-**Key files**: `analysis/00_data_preparation.qmd`.
 
 ---
 
