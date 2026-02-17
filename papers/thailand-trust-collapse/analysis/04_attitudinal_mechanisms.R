@@ -1,0 +1,412 @@
+# 04_attitudinal_mechanisms.R
+# Thailand Trust Collapse — Attitudinal Mechanism Tests (H4, H5, Satisfaction)
+#
+# H4: Democratic expectation updating — rejection of authoritarian rule
+# H5: Political engagement moderates trust erosion
+# Satisfaction with democracy differential associations
+#
+# Depends on: 00_data_preparation.R (thailand_panel.rds)
+# Also loads political_interest and pol_discuss from ABS harmonized data
+#
+# Usage: Rscript papers/thailand-trust-collapse/analysis/04_attitudinal_mechanisms.R
+
+library(tidyverse)
+library(lme4)
+library(lmerTest)
+library(broom)
+library(broom.mixed)
+
+# ── Setup ─────────────────────────────────────────────────────────────────────
+
+project_root <- "/Users/jeffreystark/Development/Research/econdev-authpref"
+analysis_dir <- file.path(project_root, "papers/thailand-trust-collapse/analysis")
+results_dir <- file.path(analysis_dir, "results")
+
+dir.create(results_dir, showWarnings = FALSE, recursive = TRUE)
+set.seed(2025)
+
+# Load panel data
+d <- readRDS(file.path(analysis_dir, "thailand_panel.rds"))
+
+# ── Add political engagement variables from ABS source ────────────────────────
+
+source(file.path(project_root, "_data_config.R"))
+abs_source <- readRDS(abs_harmonized_path)
+
+# Merge political_interest and pol_discuss
+engagement_vars <- abs_source %>%
+  filter(country %in% c(6, 7, 8)) %>%
+  select(country, wave, idnumber, political_interest, pol_discuss)
+
+d <- d %>%
+  left_join(engagement_vars, by = c("country", "wave", "idnumber"))
+
+cat("Added political_interest:", sum(!is.na(d$political_interest)), "valid obs\n")
+cat("Added pol_discuss:", sum(!is.na(d$pol_discuss)), "valid obs\n")
+
+# ── Create rejection-of-authoritarian-rule variables ──────────────────────────
+# Original scale: 1 = strongly disapprove ... 4 = strongly approve
+# Reverse so higher = more rejection
+
+d <- d %>%
+  mutate(
+    reject_military = 5 - military_rule,
+    reject_strongman = 5 - strongman_rule,
+    reject_single_party = 5 - single_party_rule,
+    # Composite: mean of all three rejection measures
+    reject_authoritarian = rowMeans(
+      cbind(reject_military, reject_strongman, reject_single_party),
+      na.rm = TRUE
+    ),
+    reject_authoritarian = if_else(is.nan(reject_authoritarian), NA_real_, reject_authoritarian)
+  )
+
+controls <- "age_centered + female + education_z + is_urban"
+
+# =============================================================================
+# H4: Democratic Expectation Updating
+# Rejection of authoritarian rule increases in Thailand over time
+# =============================================================================
+
+cat("\n=== H4: DEMOCRATIC EXPECTATION UPDATING ===\n")
+
+# ── H4a: Descriptive means by country × wave ────────────────────────────────
+
+h4_means <- d %>%
+  group_by(country_name, wave_num) %>%
+  summarise(
+    n = n(),
+    reject_military_mean = mean(reject_military, na.rm = TRUE),
+    reject_military_sd = sd(reject_military, na.rm = TRUE),
+    reject_strongman_mean = mean(reject_strongman, na.rm = TRUE),
+    reject_single_party_mean = mean(reject_single_party, na.rm = TRUE),
+    reject_authoritarian_mean = mean(reject_authoritarian, na.rm = TRUE),
+    reject_authoritarian_sd = sd(reject_authoritarian, na.rm = TRUE),
+    n_valid_military = sum(!is.na(reject_military)),
+    .groups = "drop"
+  )
+
+cat("\nRejection of military rule by country × wave:\n")
+h4_means %>%
+  select(country_name, wave_num, n_valid_military, reject_military_mean) %>%
+  pivot_wider(names_from = country_name, values_from = c(n_valid_military, reject_military_mean)) %>%
+  print()
+
+cat("\nRejection of authoritarian rule (composite) by country × wave:\n")
+h4_means %>%
+  select(country_name, wave_num, reject_authoritarian_mean) %>%
+  pivot_wider(names_from = country_name, values_from = reject_authoritarian_mean) %>%
+  print()
+
+# ── H4b: Regression — rejection of military rule × country × wave ───────────
+
+h4_reject_mil <- lm(
+  reject_military ~ wave_num * country_name +
+    age_centered + female + education_z + is_urban,
+  data = d
+)
+
+h4_reject_mil_tidy <- tidy(h4_reject_mil, conf.int = TRUE)
+cat("\nRejection of military rule regression:\n")
+print(h4_reject_mil_tidy %>%
+        filter(str_detect(term, "wave_num|country")) %>%
+        mutate(across(where(is.numeric), ~round(., 4))))
+
+# ── H4c: Regression — composite rejection × country × wave ──────────────────
+
+h4_reject_composite <- lm(
+  reject_authoritarian ~ wave_num * country_name +
+    age_centered + female + education_z + is_urban,
+  data = d
+)
+
+h4_reject_composite_tidy <- tidy(h4_reject_composite, conf.int = TRUE)
+cat("\nComposite rejection of authoritarian rule regression:\n")
+print(h4_reject_composite_tidy %>%
+        filter(str_detect(term, "wave_num|country")) %>%
+        mutate(across(where(is.numeric), ~round(., 4))))
+
+# ── H4d: Thailand-only piecewise (pre/post coup) ────────────────────────────
+
+d <- d %>%
+  mutate(
+    period = case_when(
+      wave_num %in% 1:2 ~ "pre_coup",
+      wave_num %in% 3:4 ~ "coup_era",
+      wave_num %in% 5:6 ~ "protest_era"
+    ),
+    period = factor(period, levels = c("pre_coup", "coup_era", "protest_era"))
+  )
+
+h4_thai_piecewise <- lm(
+  reject_military ~ period + age_centered + female + education_z + is_urban,
+  data = d %>% filter(country_name == "Thailand")
+)
+
+h4_thai_pw_tidy <- tidy(h4_thai_piecewise, conf.int = TRUE)
+cat("\nThailand piecewise rejection of military rule:\n")
+print(h4_thai_pw_tidy %>% mutate(across(where(is.numeric), ~round(., 4))))
+
+# Save H4 results
+saveRDS(list(
+  means = h4_means,
+  reject_mil_model = list(
+    model = h4_reject_mil, tidy = h4_reject_mil_tidy,
+    glance = glance(h4_reject_mil)
+  ),
+  reject_composite_model = list(
+    model = h4_reject_composite, tidy = h4_reject_composite_tidy,
+    glance = glance(h4_reject_composite)
+  ),
+  thai_piecewise = list(
+    model = h4_thai_piecewise, tidy = h4_thai_pw_tidy,
+    glance = glance(h4_thai_piecewise)
+  )
+), file.path(results_dir, "h4_democratic_expectations.rds"))
+
+cat("H4 results saved.\n\n")
+
+# =============================================================================
+# H5: Political Engagement Moderates Trust Erosion
+# Higher political interest → steeper trust decline, esp. in Thailand
+# =============================================================================
+
+cat("=== H5: POLITICAL ENGAGEMENT AND TRUST EROSION ===\n")
+
+# ── H5a: Descriptive means ──────────────────────────────────────────────────
+
+h5_means <- d %>%
+  group_by(country_name, wave_num) %>%
+  summarise(
+    pol_interest_mean = mean(political_interest, na.rm = TRUE),
+    pol_interest_sd = sd(political_interest, na.rm = TRUE),
+    pol_discuss_mean = mean(pol_discuss, na.rm = TRUE),
+    n_interest = sum(!is.na(political_interest)),
+    n_discuss = sum(!is.na(pol_discuss)),
+    .groups = "drop"
+  )
+
+cat("\nPolitical interest by country × wave:\n")
+h5_means %>%
+  select(country_name, wave_num, pol_interest_mean) %>%
+  pivot_wider(names_from = country_name, values_from = pol_interest_mean) %>%
+  print()
+
+# ── H5b: political_interest × wave × country on government trust ────────────
+
+# Center political_interest for interaction interpretation
+d <- d %>%
+  mutate(pol_interest_c = political_interest - mean(political_interest, na.rm = TRUE))
+
+h5_govt <- lm(
+  trust_national_government ~ wave_num * pol_interest_c * country_name +
+    age_centered + female + education_z + is_urban,
+  data = d
+)
+
+h5_govt_tidy <- tidy(h5_govt, conf.int = TRUE)
+cat("\nH5 Government trust (interest × wave × country):\n")
+print(h5_govt_tidy %>%
+        filter(str_detect(term, "wave_num|pol_interest|country")) %>%
+        mutate(across(where(is.numeric), ~round(., 4))))
+
+# ── H5c: political_interest × wave × country on military trust ──────────────
+
+h5_mil <- lm(
+  trust_military ~ wave_num * pol_interest_c * country_name +
+    age_centered + female + education_z + is_urban,
+  data = d
+)
+
+h5_mil_tidy <- tidy(h5_mil, conf.int = TRUE)
+cat("\nH5 Military trust (interest × wave × country):\n")
+print(h5_mil_tidy %>%
+        filter(str_detect(term, "wave_num|pol_interest|country")) %>%
+        mutate(across(where(is.numeric), ~round(., 4))))
+
+# ── H5d: Same models with pol_discuss ───────────────────────────────────────
+
+d <- d %>%
+  mutate(pol_discuss_c = pol_discuss - mean(pol_discuss, na.rm = TRUE))
+
+h5_discuss_govt <- lm(
+  trust_national_government ~ wave_num * pol_discuss_c * country_name +
+    age_centered + female + education_z + is_urban,
+  data = d
+)
+
+h5_discuss_mil <- lm(
+  trust_military ~ wave_num * pol_discuss_c * country_name +
+    age_centered + female + education_z + is_urban,
+  data = d
+)
+
+h5_discuss_govt_tidy <- tidy(h5_discuss_govt, conf.int = TRUE)
+h5_discuss_mil_tidy <- tidy(h5_discuss_mil, conf.int = TRUE)
+
+cat("\nH5 Government trust (discuss × wave × country):\n")
+print(h5_discuss_govt_tidy %>%
+        filter(str_detect(term, "wave_num|pol_discuss|country")) %>%
+        mutate(across(where(is.numeric), ~round(., 4))))
+
+cat("\nH5 Military trust (discuss × wave × country):\n")
+print(h5_discuss_mil_tidy %>%
+        filter(str_detect(term, "wave_num|pol_discuss|country")) %>%
+        mutate(across(where(is.numeric), ~round(., 4))))
+
+# ── H5e: Thailand-only models for cleaner interpretation ────────────────────
+
+thai <- d %>% filter(country_name == "Thailand")
+
+h5_thai_govt <- lm(
+  trust_national_government ~ wave_num * pol_interest_c +
+    age_centered + female + education_z + is_urban,
+  data = thai
+)
+
+h5_thai_mil <- lm(
+  trust_military ~ wave_num * pol_interest_c +
+    age_centered + female + education_z + is_urban,
+  data = thai
+)
+
+h5_thai_govt_tidy <- tidy(h5_thai_govt, conf.int = TRUE)
+h5_thai_mil_tidy <- tidy(h5_thai_mil, conf.int = TRUE)
+
+cat("\nThailand-only: Government trust (interest × wave):\n")
+print(h5_thai_govt_tidy %>% mutate(across(where(is.numeric), ~round(., 4))))
+cat("\nThailand-only: Military trust (interest × wave):\n")
+print(h5_thai_mil_tidy %>% mutate(across(where(is.numeric), ~round(., 4))))
+
+# Save H5 results
+saveRDS(list(
+  means = h5_means,
+  interest_govt = list(model = h5_govt, tidy = h5_govt_tidy, glance = glance(h5_govt)),
+  interest_mil = list(model = h5_mil, tidy = h5_mil_tidy, glance = glance(h5_mil)),
+  discuss_govt = list(model = h5_discuss_govt, tidy = h5_discuss_govt_tidy, glance = glance(h5_discuss_govt)),
+  discuss_mil = list(model = h5_discuss_mil, tidy = h5_discuss_mil_tidy, glance = glance(h5_discuss_mil)),
+  thai_interest_govt = list(model = h5_thai_govt, tidy = h5_thai_govt_tidy, glance = glance(h5_thai_govt)),
+  thai_interest_mil = list(model = h5_thai_mil, tidy = h5_thai_mil_tidy, glance = glance(h5_thai_mil))
+), file.path(results_dir, "h5_political_engagement.rds"))
+
+cat("H5 results saved.\n\n")
+
+# =============================================================================
+# Satisfaction with Democracy — Differential Associations
+# =============================================================================
+
+cat("=== SATISFACTION WITH DEMOCRACY ===\n")
+
+# ── Descriptive means ───────────────────────────────────────────────────────
+
+sat_means <- d %>%
+  group_by(country_name, wave_num) %>%
+  summarise(
+    dem_sat_mean = mean(democracy_satisfaction, na.rm = TRUE),
+    dem_sat_sd = sd(democracy_satisfaction, na.rm = TRUE),
+    n_valid = sum(!is.na(democracy_satisfaction)),
+    .groups = "drop"
+  )
+
+cat("\nDemocracy satisfaction by country × wave:\n")
+sat_means %>%
+  select(country_name, wave_num, dem_sat_mean) %>%
+  pivot_wider(names_from = country_name, values_from = dem_sat_mean) %>%
+  print()
+
+# ── Differential association: dem_satisfaction → govt vs military trust ──────
+
+# Stack govt and military trust for Thailand
+thai_long <- d %>%
+  filter(country_name == "Thailand") %>%
+  mutate(respondent_id = row_number()) %>%
+  pivot_longer(
+    cols = c(trust_national_government, trust_military),
+    names_to = "institution",
+    values_to = "trust"
+  ) %>%
+  mutate(is_military = if_else(institution == "trust_military", 1L, 0L)) %>%
+  filter(!is.na(trust), !is.na(democracy_satisfaction))
+
+sat_diff <- lm(
+  trust ~ democracy_satisfaction * is_military + wave_num +
+    age_centered + female + education_z + is_urban,
+  data = thai_long
+)
+
+sat_diff_tidy <- tidy(sat_diff, conf.int = TRUE)
+cat("\nDifferential association (Thailand):\n")
+print(sat_diff_tidy %>% mutate(across(where(is.numeric), ~round(., 4))))
+
+# ── Same for full sample with country interactions ──────────────────────────
+
+all_long <- d %>%
+  mutate(respondent_id = row_number()) %>%
+  pivot_longer(
+    cols = c(trust_national_government, trust_military),
+    names_to = "institution",
+    values_to = "trust"
+  ) %>%
+  mutate(is_military = if_else(institution == "trust_military", 1L, 0L)) %>%
+  filter(!is.na(trust), !is.na(democracy_satisfaction))
+
+sat_full <- lm(
+  trust ~ democracy_satisfaction * is_military * country_name + wave_num +
+    age_centered + female + education_z + is_urban,
+  data = all_long
+)
+
+sat_full_tidy <- tidy(sat_full, conf.int = TRUE)
+cat("\nFull-sample differential association:\n")
+print(sat_full_tidy %>%
+        filter(str_detect(term, "democracy|military|country")) %>%
+        mutate(across(where(is.numeric), ~round(., 4))))
+
+# ── Thailand dem_satisfaction trend regression ──────────────────────────────
+
+sat_trend <- lm(
+  democracy_satisfaction ~ wave_num * country_name +
+    age_centered + female + education_z + is_urban,
+  data = d
+)
+
+sat_trend_tidy <- tidy(sat_trend, conf.int = TRUE)
+cat("\nDemocracy satisfaction trend (country × wave):\n")
+print(sat_trend_tidy %>%
+        filter(str_detect(term, "wave|country")) %>%
+        mutate(across(where(is.numeric), ~round(., 4))))
+
+# Save satisfaction results
+saveRDS(list(
+  means = sat_means,
+  thai_differential = list(model = sat_diff, tidy = sat_diff_tidy, glance = glance(sat_diff)),
+  full_differential = list(model = sat_full, tidy = sat_full_tidy, glance = glance(sat_full)),
+  trend = list(model = sat_trend, tidy = sat_trend_tidy, glance = glance(sat_trend))
+), file.path(results_dir, "sat_democracy.rds"))
+
+cat("Satisfaction results saved.\n\n")
+
+# =============================================================================
+# Philippines H3 descriptive values (for manuscript inline)
+# =============================================================================
+
+cat("=== PHILIPPINES H3 DESCRIPTIVE VALUES ===\n")
+
+phil_means <- d %>%
+  filter(country_name == "Philippines") %>%
+  group_by(wave_num) %>%
+  summarise(
+    trust_mil = mean(trust_military, na.rm = TRUE),
+    trust_police = mean(trust_police, na.rm = TRUE),
+    trust_govt = mean(trust_national_government, na.rm = TRUE),
+    .groups = "drop"
+  )
+
+cat("\nPhilippines trust means by wave:\n")
+print(phil_means %>% mutate(across(where(is.numeric), ~round(., 2))))
+
+saveRDS(phil_means, file.path(results_dir, "h3_philippines_means.rds"))
+
+cat("\n=== ALL ATTITUDINAL MECHANISM RESULTS SAVED ===\n")
+cat("Files:\n")
+cat(paste(" ", list.files(results_dir, pattern = "h[345]_|sat_"), collapse = "\n"), "\n")
