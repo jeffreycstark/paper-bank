@@ -21,7 +21,8 @@ library(tidyverse)
 
 # ─── 1. Load data ────────────────────────────────────────────────────────────
 
-source("../../../_data_config.R")
+project_root <- "/Users/jeffreystark/Development/Research/econdev-authpref"
+source(file.path(project_root, "_data_config.R"))
 lbs_path <- lbs_harmonized_path
 
 stopifnot("Harmonized LBS RDS not found" = file.exists(lbs_path))

@@ -22,7 +22,8 @@ library(kableExtra)
 
 # ─── 1. Load data ────────────────────────────────────────────────────────────
 
-source("../../../_data_config.R")
+project_root <- "/Users/jeffreystark/Development/Research/econdev-authpref"
+source(file.path(project_root, "_data_config.R"))
 wvs_path <- wvs_harmonized_path
 
 stopifnot("Harmonized WVS parquet not found" = file.exists(wvs_path))
