@@ -109,7 +109,7 @@ pw_key <- bind_rows(
   mutate(across(where(is.numeric), ~round(., 3)))
 
 pw_key %>%
-  kbl(caption = "Table A1: Piecewise period models. Reference period: pre-coup (Waves 1--2); reference country: Thailand.",
+  kbl(caption = "Table A1: Piecewise period models. Reference period: pre-coup (Waves 1--2); reference country: Thailand. Weighted OLS with survey weights; SEs are heteroskedasticity-consistent. N = 21,036 (government), 21,049 (military).",
       col.names = c("Outcome", "Term", "Estimate", "SE", "p"),
       booktabs = TRUE) %>%
   kable_styling(latex_options = c("hold_position", "scale_down")) %>%
@@ -140,7 +140,7 @@ q_key <- bind_rows(
   mutate(across(where(is.numeric), ~round(., 3)))
 
 q_key %>%
-  kbl(caption = "Table A1b: Quadratic time specification with country interactions.",
+  kbl(caption = "Table A1b: Quadratic time specification with country interactions. Weighted OLS with survey weights; SEs are heteroskedasticity-consistent. N = 21,036 (government), 21,049 (military).",
       col.names = c("Outcome", "Term", "Estimate", "SE", "p"),
       booktabs = TRUE) %>%
   kable_styling(latex_options = c("hold_position", "scale_down")) %>%
@@ -167,7 +167,7 @@ sub_summary <- h6_subgroups$summary %>%
   arrange(group, institution)
 
 sub_summary %>%
-  kbl(caption = "Table A2: Thailand's per-wave trust slope by demographic subgroup. All models include country × wave interactions; the reported slope is Thailand's (reference category).",
+  kbl(caption = "Table A2: Thailand's per-wave trust slope by demographic subgroup. All models include country × wave interactions; the reported slope is Thailand's (reference category). Weighted OLS with survey weights; SEs are heteroskedasticity-consistent. N ranges from 7,411 to 13,124 depending on subgroup.",
       col.names = c("Subgroup", "Institution", "N", "Slope", "SE", "p"),
       booktabs = TRUE) %>%
   kable_styling(latex_options = c("hold_position")) %>%
@@ -203,7 +203,7 @@ phil_key <- bind_rows(
   mutate(across(where(is.numeric), ~round(., 3)))
 
 phil_key %>%
-  kbl(caption = "Table A3: Philippines trust trends during the Duterte period (Waves 4--6 only). Wave coefficient captures per-wave change.",
+  kbl(caption = "Table A3: Philippines trust trends during the Duterte period (Waves 4--6 only). Wave coefficient captures per-wave change. Weighted OLS with survey weights; SEs are heteroskedasticity-consistent. N = 3,517--3,571 depending on institution.",
       col.names = c("Institution", "Wave slope", "SE", "p"),
       booktabs = TRUE) %>%
   kable_styling(latex_options = c("hold_position"))
@@ -229,7 +229,7 @@ tw_key <- h5_taiwan$tidy %>%
   mutate(across(where(is.numeric), ~round(., 3)))
 
 tw_key %>%
-  kbl(caption = paste0("Table A4: Taiwan military trust model (all waves). F-test for wave coefficient = 0: p = ", round(h5_taiwan$ftest[["Pr(>F)"]][2], 3), "."),
+  kbl(caption = paste0("Table A4: Taiwan military trust model (all waves). Weighted OLS with survey weights; SEs are heteroskedasticity-consistent. N = 7,930. F-test for wave coefficient = 0: p = ", round(h5_taiwan$ftest[["Pr(>F)"]][2], 3), "."),
       col.names = c("Term", "Estimate", "SE", "p"),
       booktabs = TRUE) %>%
   kable_styling(latex_options = c("hold_position"))
@@ -259,7 +259,7 @@ sec_full <- map_dfr(h6_secondary$models, function(mod) {
   mutate(across(where(is.numeric), ~round(., 3)))
 
 sec_full %>%
-  kbl(caption = "Table A5: Country × Wave interaction models for secondary trust measures (courts, police, parliament, political parties). Thailand is the reference category.",
+  kbl(caption = "Table A5: Country × Wave interaction models for secondary trust measures (courts, police, parliament, political parties). Thailand is the reference category. Weighted OLS with survey weights; SEs are heteroskedasticity-consistent. N ranges from 20,630 (courts) to 21,465 (police).",
       col.names = c("Institution", "Term", "Estimate", "SE", "p"),
       booktabs = TRUE) %>%
   kable_styling(latex_options = c("hold_position", "scale_down")) %>%
@@ -323,7 +323,7 @@ dc_table <- bind_rows(mod1, mod1b, mod2, mod3, mod4) %>%
   mutate(across(c(estimate, std.error), ~round(., 3)))
 
 dc_table %>%
-  kbl(caption = "Table A6: Democratic commitment and institutional trust decline. Democratic commitment is a composite index (0--1) of democratic preference, democratic priority over economic development, and rejection of authoritarian alternatives, centered at the sample mean for interaction models (Models 1, 1b, 2, 4).",
+  kbl(caption = "Table A6: Democratic commitment and institutional trust decline. Democratic commitment is a composite index (0--1) of democratic preference, democratic priority over economic development, and rejection of authoritarian alternatives, centered at the sample mean for interaction models (Models 1, 1b, 2, 4). All models are weighted OLS with survey weights; SEs are heteroskedasticity-consistent except Model 2 (respondent-clustered SEs). N: Model 1 = 5,947; Model 1b = 5,889; Model 2 = 11,836 (stacked); Model 3 = 1,082; Model 4 = 21,261.",
       col.names = c("Model", "Dependent Variable", "Key Coefficient", "b", "SE", "p"),
       booktabs = TRUE) %>%
   kable_styling(latex_options = c("hold_position", "scale_down")) %>%

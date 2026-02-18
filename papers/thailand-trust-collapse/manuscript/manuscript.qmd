@@ -337,7 +337,7 @@ h1_key <- bind_rows(
   mutate(across(where(is.numeric), ~round(., 3)))
 
 h1_key %>%
-  kbl(caption = "Country x Wave interaction models for government and military trust (H1). Thailand is the reference category; interaction terms capture deviations from Thailand's trajectory.",
+  kbl(caption = "Country x Wave interaction models for government and military trust (H1). Thailand is the reference category; interaction terms capture deviations from Thailand's trajectory. Weighted OLS with survey weights; SEs are heteroskedasticity-consistent. N = 21,036 (government), 21,049 (military).",
       col.names = c("Outcome", "Term", "Estimate", "SE", "p"),
       booktabs = TRUE) %>%
   kable_styling(latex_options = c("hold_position", "scale_down"))
@@ -356,7 +356,7 @@ re_combined <- bind_rows(h1_rs_govt$random_effects, h1_rs_mil$random_effects) %>
   )
 
 re_combined %>%
-  kbl(caption = "Country-specific random slope deviations from the average wave trend, estimated from multilevel models with random slopes.",
+  kbl(caption = "Country-specific random slope deviations from the average wave trend. Multilevel models with random intercepts and slopes by country; maximum likelihood estimation with survey weights. N = 21,036 (government), 21,049 (military).",
       col.names = c("Country", "Government", "Military", "Difference"),
       booktabs = TRUE) %>%
   kable_styling(latex_options = c("hold_position"))
@@ -380,7 +380,7 @@ h2_key <- h2_threeway$tidy %>%
   mutate(across(where(is.numeric), ~round(., 3)))
 
 h2_key %>%
-  kbl(caption = "Three-way interaction model testing institutional differentiation (H2). The dependent variable is trust (government and military stacked); Thailand is the reference country.",
+  kbl(caption = "Three-way interaction model testing institutional differentiation (H2). The dependent variable is trust (government and military stacked); Thailand is the reference country. Weighted OLS with respondent-clustered SEs. N = 42,085 (two observations per respondent).",
       col.names = c("Term", "Estimate", "SE", "p"),
       booktabs = TRUE) %>%
   kable_styling(latex_options = c("hold_position", "scale_down"))
@@ -414,7 +414,7 @@ h6a_key <- bind_rows(
   mutate(across(where(is.numeric), ~round(., 3)))
 
 h6a_key %>%
-  kbl(caption = paste0("Models with performance controls: economic satisfaction and democracy satisfaction added to baseline specification. N = ", format(h6_perf$n_obs, big.mark = ","), "."),
+  kbl(caption = paste0("Models with performance controls: economic satisfaction and democracy satisfaction added to baseline specification. Weighted OLS with survey weights; SEs are heteroskedasticity-consistent. N = ", format(h6_perf$n_obs, big.mark = ","), "."),
       col.names = c("Outcome", "Term", "Estimate", "SE", "p"),
       escape = FALSE,
       booktabs = TRUE) %>%
@@ -448,7 +448,7 @@ pretrend_key <- bind_rows(
   mutate(across(where(is.numeric), ~round(., 3)))
 
 pretrend_key %>%
-  kbl(caption = paste0("Pre-trend check: differential trends in Waves 1--4 (pre-COVID). N = ", format(h6_pretrend$n_obs, big.mark = ","), "."),
+  kbl(caption = paste0("Pre-trend check: differential trends in Waves 1--4 (pre-COVID). Weighted OLS with survey weights; SEs are heteroskedasticity-consistent. N = ", format(h6_pretrend$n_obs, big.mark = ","), "."),
       col.names = c("Outcome", "Term", "Estimate", "SE", "p"),
       escape = FALSE,
       booktabs = TRUE) %>%
@@ -477,7 +477,7 @@ secondary <- h6_secondary$summary %>%
   arrange(thailand_slope)
 
 secondary %>%
-  kbl(caption = "Thailand's per-wave trust slope across all six institutions, from the country x wave interaction model.",
+  kbl(caption = "Thailand's per-wave trust slope across all six institutions, from the country x wave interaction model. Weighted OLS with survey weights; SEs are heteroskedasticity-consistent. N ranges from 20,630 (courts) to 21,465 (police).",
       col.names = c("Institution", "Slope", "SE", "p"),
       booktabs = TRUE) %>%
   kable_styling(latex_options = c("hold_position"))
@@ -504,7 +504,7 @@ ologit_key <- bind_rows(
   mutate(across(where(is.numeric), ~round(., 3)))
 
 ologit_key %>%
-  kbl(caption = "Ordered logistic regression (proportional odds) for government and military trust. Coefficients are log-odds.",
+  kbl(caption = "Ordered logistic regression (proportional odds) for government and military trust. Coefficients are log-odds; SEs are model-based. N = 20,446.",
       col.names = c("Outcome", "Term", "Estimate", "SE", "p"),
       booktabs = TRUE) %>%
   kable_styling(latex_options = c("hold_position", "scale_down"))
@@ -565,7 +565,7 @@ reg_table <- reg_means %>%
   mutate(across(where(is.numeric), ~round(., 2)))
 
 reg_table %>%
-  kbl(caption = "Military trust by region, Waves 4--6. Scale: 1 (none at all) to 4 (a great deal).",
+  kbl(caption = "Military trust by region, Waves 4--6. Scale: 1 (none at all) to 4 (a great deal). Descriptive means (unweighted). N = 3,301 (Thailand, Waves 4--6 with non-missing region).",
       col.names = c("Region", "W4", "W5", "W6", "Change W4\\textrightarrow W6", "Change W5\\textrightarrow W6"),
       booktabs = TRUE, escape = FALSE) %>%
   kable_styling(latex_options = c("hold_position")) %>%
