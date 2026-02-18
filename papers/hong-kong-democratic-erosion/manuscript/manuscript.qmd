@@ -265,56 +265,72 @@ The sensitivity gradient framework generates a clear prediction for the within-w
 ```{r}
 #| label: tbl-nsl
 
-nsl_label_map <- c(
-  democracy_suitability = "Democracy Suitability",
-  dem_extent_current = "Current Extent of Democracy",
-  dem_country_present_govt = "Rate Govt as Democratic",
-  dem_always_preferable = "Democracy Always Preferable",
-  democracy_satisfaction = "Democratic Satisfaction",
-  trust_national_government = "Trust in National Government",
-  trust_president = "Trust in President/CE",
-  trust_parliament = "Trust in Parliament",
-  trust_police = "Trust in Police",
-  trust_military = "Trust in Military",
-  trust_courts = "Trust in Courts",
-  gov_free_to_organize = "Freedom to Organize",
-  dem_free_speech = "Free to Speak Without Fear*",
-  govt_responds_people = "Govt Responds to People",
-  election_free_fair = "Elections Free and Fair",
-  system_deserves_support = "System Deserves Support",
-  system_proud = "Proud of System",
-  system_needs_change = "System Needs Major Change",
-  strongman_rule = "Support Strongman Rule",
-  military_rule = "Support Military Rule",
-  single_party_rule = "Support Single-Party Rule",
-  rich_poor_treated_equally = "Rich/Poor Treated Equally",
-  political_interest = "Political Interest",
-  nat_willing_emigrate = "Willingness to Emigrate",
-  efficacy_ability_participate = "Ability to Participate",
-  efficacy_no_influence = "No Influence on Govt",
-  pol_discuss = "Discuss Politics",
-  gov_opposition_opportunities = "Opposition Opportunities",
-  gov_courts_powerless = "Courts Powerless"
+# Define sensitivity groupings
+nsl_groups <- tribble(
+  ~variable, ~label, ~group, ~group_order,
+  "trust_police",              "Trust in Police",              "High sensitivity: trust in coercive institutions", 1,
+  "trust_national_government", "Trust in National Government", "High sensitivity: trust in coercive institutions", 1,
+  "trust_president",           "Trust in President/CE",        "High sensitivity: trust in coercive institutions", 1,
+  "trust_military",            "Trust in Military",            "High sensitivity: trust in coercive institutions", 1,
+  "trust_parliament",          "Trust in Parliament",          "High sensitivity: trust in coercive institutions", 1,
+  "trust_courts",              "Trust in Courts",              "High sensitivity: trust in coercive institutions", 1,
+  "gov_free_to_organize",      "Freedom to Organize",          "Moderate sensitivity: governance perceptions", 2,
+  "dem_free_speech",           "Free to Speak Without Fear*",  "Moderate sensitivity: governance perceptions", 2,
+  "govt_responds_people",      "Govt Responds to People",      "Moderate sensitivity: governance perceptions", 2,
+  "election_free_fair",        "Elections Free and Fair",       "Moderate sensitivity: governance perceptions", 2,
+  "system_deserves_support",   "System Deserves Support",      "Moderate sensitivity: governance perceptions", 2,
+  "system_proud",              "Proud of System",              "Moderate sensitivity: governance perceptions", 2,
+  "system_needs_change",       "System Needs Major Change",    "Moderate sensitivity: governance perceptions", 2,
+  "gov_opposition_opportunities", "Opposition Opportunities",  "Moderate sensitivity: governance perceptions", 2,
+  "gov_courts_powerless",      "Courts Powerless",             "Moderate sensitivity: governance perceptions", 2,
+  "democracy_suitability",     "Democracy Suitability",        "Lower sensitivity: democratic evaluations", 3,
+  "dem_extent_current",        "Current Extent of Democracy",  "Lower sensitivity: democratic evaluations", 3,
+  "dem_country_present_govt",  "Rate Govt as Democratic",      "Lower sensitivity: democratic evaluations", 3,
+  "dem_always_preferable",     "Democracy Always Preferable",  "Lower sensitivity: democratic evaluations", 3,
+  "democracy_satisfaction",    "Democratic Satisfaction",       "Lower sensitivity: democratic evaluations", 3,
+  "strongman_rule",            "Support Strongman Rule",        "Authoritarian alternatives", 4,
+  "military_rule",             "Support Military Rule",         "Authoritarian alternatives", 4,
+  "single_party_rule",         "Support Single-Party Rule",     "Authoritarian alternatives", 4,
+  "rich_poor_treated_equally", "Rich/Poor Treated Equally",     "Benchmark / control items", 5,
+  "political_interest",        "Political Interest",            "Benchmark / control items", 5,
+  "nat_willing_emigrate",      "Willingness to Emigrate",       "Benchmark / control items", 5,
+  "efficacy_ability_participate", "Ability to Participate",     "Benchmark / control items", 5,
+  "efficacy_no_influence",     "No Influence on Govt",          "Benchmark / control items", 5,
+  "pol_discuss",               "Discuss Politics",              "Benchmark / control items", 5
 )
 
-nsl_tests |>
-  mutate(
-    label = ifelse(variable %in% names(nsl_label_map),
-                   nsl_label_map[variable], variable)
-  ) |>
+tbl_data <- nsl_groups |>
+  left_join(nsl_tests, by = "variable") |>
+  arrange(group_order) |>
   select(label, protest_mean, postnsl_mean, delta, cohens_d, p_value, sig) |>
   mutate(
     across(c(protest_mean, postnsl_mean, delta, cohens_d), ~round(.x, 3)),
     p_value = format.pval(p_value, digits = 3)
-  ) |>
+  )
+
+# Compute group row counts for pack_rows
+grp_counts <- nsl_groups |> arrange(group_order) |> count(group, sort = FALSE)
+
+tbl_out <- tbl_data |>
   kable(
     col.names = c("Variable", "Pre Mean", "Post Mean",
                    "Delta", "d", "p", ""),
     booktabs = TRUE,
-    caption = "Pre/Post NSL comparison within Hong Kong Wave 5. Effect sizes (Cohen's d) and significance levels."
+    caption = "Pre/Post NSL comparison within Hong Kong Wave 5, grouped by pre-specified sensitivity category. Effect sizes (Cohen's d) and significance levels."
   ) |>
   kable_styling(latex_options = c("hold_position", "scale_down"), font_size = 9) |>
-  column_spec(1, width = "3.8cm") |>
+  column_spec(1, width = "3.8cm")
+
+# Apply pack_rows for each group
+row_start <- 1
+for (i in seq_len(nrow(grp_counts))) {
+  tbl_out <- tbl_out |>
+    pack_rows(grp_counts$group[i], row_start, row_start + grp_counts$n[i] - 1,
+              bold = TRUE, italic = TRUE, hline_after = TRUE)
+  row_start <- row_start + grp_counts$n[i]
+}
+
+tbl_out |>
   footnote(
     symbol = "Higher values indicate more perceived freedom of speech.",
     general = c(
