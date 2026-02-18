@@ -6,7 +6,7 @@ author:
       - name: Yonsei University
         department: Department of Sociology
     email: jeffrey.stark@yonsei.ac.kr
-date: today
+date: "`r format(Sys.time(), '%B %d, %Y — %H:%M')`"
 format:
   pdf:
     documentclass: article
