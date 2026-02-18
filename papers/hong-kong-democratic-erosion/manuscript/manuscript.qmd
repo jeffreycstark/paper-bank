@@ -678,6 +678,8 @@ if (file.exists("../analysis/results/turkey_gradient.RData")) {
 
 @tbl-turkey-gradient and @fig-turkey-gradient present the results. The pattern closely mirrors Hong Kong. Confidence in coercive institutions uniformly increased between 2011 and 2018: police ($d = +0.21$), government ($d = +0.23$), and armed forces ($d = +0.24$) all show statistically significant regime-favorable shifts. Meanwhile, the importance of democracy---the most abstract evaluative item---declined sharply ($d = -0.36$), and approval of a democratic political system fell significantly ($d = -0.24$). The gradient correlation across all items ($r = -0.70$) is consistent with the prediction that the magnitude and direction of observed shifts track pre-specified sensitivity rankings, paralleling the Hong Kong pattern ($r = -0.85$).
 
+The critical citizens diagnostic also flags Turkey. Using the closest available WVS item pair (importance of democracy $\times$ perceived level of democracy), the correlation shifted from $r = 0.006$ (Wave 6, 2011) to $r = 0.146$ (Wave 7, 2018, $p < .001$)---a move from near-zero to positive that parallels the Hong Kong reversal, though less dramatic in magnitude. Russia shows a similar pattern, with the correlation strengthening from $r = 0.131$ (Wave 6) to $r = 0.239$ (Wave 7, $p < .001$).
+
 The Turkey case also suggests instructive variation. Confidence in political parties shows an anomalously large positive shift ($d = +0.36$), likely reflecting the AKP's genuine consolidation of partisan support alongside measurement distortion---a reminder that the sensitivity gradient identifies the *pattern* of distortion rather than claiming all measured change is artificial. Control items (happiness, life satisfaction) moved in the opposite direction from trust ($d = -0.15$ and $d = -0.33$, respectively), weighing against a generalized positivity bias and strengthening the inference that trust increases are domain-specific. The cross-national replication, using a different survey instrument (WVS rather than ABS), different item wordings, and a distinct form of autocratization (post-coup executive consolidation rather than externally imposed security legislation), substantially strengthens the case that the sensitivity gradient constitutes a generalizable diagnostic rather than a Hong Kong-specific artifact. Full item-level results with non-response analysis are reported in Online Appendix J.
 
 The sensitivity gradient is not a universal feature of democratic erosion. Preliminary application of the same framework to Venezuela (bracketing the 2017 constituent assembly crisis) and Nicaragua (bracketing the 2018 April crackdown) using Latinobarómetro data reveals broad-based institutional trust collapse without the differential item pattern characteristic of preference falsification. In both cases, trust in coercive institutions declined alongside democratic evaluations, consistent with genuine disillusionment rather than strategic compliance. These null cases provide discriminant validity: the gradient framework identifies a specific distortion signature rather than flagging all survey change as suspicious, and its absence in Venezuela and Nicaragua is consistent with contexts where repression was less targeted at survey-accessible populations or where exit options were more constrained.
@@ -831,14 +833,14 @@ toolkit <- tibble(
   TR = c(
     "\\checkmark",
     "\\checkmark",
-    "?",
+    "\\checkmark",
     "\\texttildelow",
     "--"
   ),
   RU = c(
     "\\texttildelow",
     "\\texttildelow",
-    "?",
+    "\\checkmark",
     "\\texttildelow",
     "--"
   )
