@@ -104,6 +104,54 @@ thai_sat_w6 <- sat_dem$means %>% filter(country_name == "Thailand", wave_num == 
   pull(dem_sat_mean)
 sat_trend_wave <- sat_dem$trend$tidy %>% filter(term == "wave_num")
 
+# Democratic commitment / ideological alignment results
+dem_commit <- readRDS(file.path(results_dir, "democratic_commitment.rds"))
+dc_mod1_tidy <- dem_commit$mod1_mil$tidy
+dc_mod1b_tidy <- dem_commit$mod1b_govt$tidy
+dc_mod2_tidy <- dem_commit$mod2_stacked$tidy
+dc_mod3_tidy <- dem_commit$mod3_w6_xsec$tidy
+dc_mod4_tidy <- dem_commit$mod4_threecountry$tidy
+
+# Pre-compute key coefficients for inline use
+dc_mil_main <- dc_mod1_tidy %>% filter(term == "dem_commit_c")
+dc_mil_interact <- dc_mod1_tidy %>% filter(term == "wave_num:dem_commit_c")
+dc_govt_main <- dc_mod1b_tidy %>% filter(term == "dem_commit_c")
+dc_govt_interact <- dc_mod1b_tidy %>% filter(term == "wave_num:dem_commit_c")
+dc_stacked_threeway <- dc_mod2_tidy %>% filter(term == "wave_num:dem_commit_c:is_military")
+dc_stacked_wave_mil <- dc_mod2_tidy %>% filter(term == "wave_num:is_military")
+dc_w6_commit <- dc_mod3_tidy %>% filter(term == "democratic_commitment")
+dc_phil_interact <- dc_mod4_tidy %>% filter(term == "wave_num:dem_commit_c:country_namePhilippines")
+dc_taiwan_interact <- dc_mod4_tidy %>% filter(term == "wave_num:dem_commit_c:country_nameTaiwan")
+
+# Regional analysis results (W4-W6 Thailand only)
+reg_res <- readRDS(file.path(results_dir, "regional_analysis.rds"))
+reg_means <- reg_res$means %>% filter(!is.na(region))
+reg_bkk_mil_tidy <- reg_res$bkk_mil$tidy
+reg_bkk_govt_tidy <- reg_res$bkk_govt$tidy
+reg_full_mil_tidy <- reg_res$full_region_mil$tidy
+
+# Pre-compute regional inline values
+reg_bkk_mil_interact <- reg_bkk_mil_tidy %>% filter(term == "wave_num:is_bangkok")
+reg_bkk_govt_interact <- reg_bkk_govt_tidy %>% filter(term == "wave_num:is_bangkok")
+
+# Full region model (South = reference) interactions
+reg_bkk_vs_south <- reg_full_mil_tidy %>% filter(term == "wave_num:region_factorBangkok")
+reg_ne_vs_south <- reg_full_mil_tidy %>% filter(term == "wave_num:region_factorNortheast")
+reg_central_vs_south <- reg_full_mil_tidy %>% filter(term == "wave_num:region_factorCentral")
+reg_north_vs_south <- reg_full_mil_tidy %>% filter(term == "wave_num:region_factorNorth")
+
+# Descriptive means for inline use
+reg_bkk_w4 <- reg_means %>% filter(region == "Bangkok", wave_num == 4) %>% pull(trust_mil)
+reg_bkk_w5 <- reg_means %>% filter(region == "Bangkok", wave_num == 5) %>% pull(trust_mil)
+reg_bkk_w6 <- reg_means %>% filter(region == "Bangkok", wave_num == 6) %>% pull(trust_mil)
+reg_south_w4 <- reg_means %>% filter(region == "South", wave_num == 4) %>% pull(trust_mil)
+reg_south_w6 <- reg_means %>% filter(region == "South", wave_num == 6) %>% pull(trust_mil)
+reg_ne_w4 <- reg_means %>% filter(region == "Northeast", wave_num == 4) %>% pull(trust_mil)
+reg_ne_w5 <- reg_means %>% filter(region == "Northeast", wave_num == 5) %>% pull(trust_mil)
+reg_ne_w6 <- reg_means %>% filter(region == "Northeast", wave_num == 6) %>% pull(trust_mil)
+reg_north_w5 <- reg_means %>% filter(region == "North", wave_num == 5) %>% pull(trust_mil)
+reg_n_mil <- reg_res$bkk_mil$glance$nobs
+
 # Helper: clean R model term names for LaTeX tables
 clean_terms <- function(x) {
   x %>%
@@ -558,6 +606,30 @@ In the three-country model, the Thailand-specific pattern diverges significantly
 ### Satisfaction with Democracy
 
 Satisfaction with democracy provides additional discriminating evidence. In Thailand, satisfaction declined from `r round(thai_sat_w1, 2)` in Wave 1 to `r round(thai_sat_w6, 2)` in Wave 6, a trajectory that parallels institutional trust erosion ($b$ = `r round(sat_trend_wave$estimate, 3)` per wave, *p* < .001). However, the relationship between satisfaction and trust is not symmetrical across institutions. In a stacked model predicting government and military trust jointly, democracy satisfaction is positively associated with both outcomes ($b$ = `r round(sat_main$estimate, 3)`, *p* < .001 for government trust), but the interaction between satisfaction and the military trust indicator is also significant and positive ($b$ = `r round(sat_interaction$estimate, 3)`, *p* < .001). This indicates that satisfaction with democracy is, if anything, *more* strongly associated with military trust than government trust in the Thai context, a pattern consistent with the politicization of the armed forces: when the military assumes a governing role, citizens evaluate it through the same democratic performance lens they apply to elected institutions.
+
+### Democratic Commitment and Trust Erosion
+
+To address potential ecological inference concerns, we examine whether military trust erosion concentrates among respondents whose attitudes align with protest movement ideology. While the ABS lacks attitudinal measures of protest support, we can test whether trust decline is steepest among those holding democratic values consistent with the movement's demands.
+
+In Thailand, democratic commitment is strongly associated with lower military trust across all waves ($b$ = `r round(dc_mil_main$estimate, 3)`, *p* < .001), indicating that respondents who prioritize democracy and reject authoritarian alternatives consistently evaluate the military more critically. However, the interaction between wave and democratic commitment is positive rather than negative ($b$ = `r round(dc_mil_interact$estimate, 3)`, *p* = `r round(dc_mil_interact$p.value, 3)`), meaning the trust gap between democratic believers and skeptics narrowed over time rather than widened.
+
+This pattern initially appears inconsistent with the hypothesis that democratic true believers drove the trust collapse. However, closer examination reveals a more nuanced dynamic consistent with diffusion of democratic learning. Democratic believers began the period with already-low military trust (reflecting principled opposition to military political involvement), while less ideologically committed citizens extended relatively high diffuse trust. Over two decades, the latter group caught up to the former as repeated military interventions made the costs of military governance increasingly apparent even to initially deferential citizens. By Wave 6, democratic commitment remains the single strongest predictor of military trust ($b$ = `r round(dc_w6_commit$estimate, 3)`, *p* < .001), but the effect operates against a universally lower baseline.
+
+Crucially, this pattern differs from government trust. While democratic commitment also predicts lower government trust ($b$ = `r round(dc_govt_main$estimate, 3)`, *p* = `r round(dc_govt_main$p.value, 3)`), and the convergence pattern is even stronger for government (interaction $b$ = `r round(dc_govt_interact$estimate, 3)`, *p* < .001), the three-way interaction testing whether democratic commitment operates differently for military versus government trust is not significant ($b$ = `r round(dc_stacked_threeway$estimate, 3)`, *p* = `r round(dc_stacked_threeway$p.value, 3)`). This suggests that democratic believers apply consistently critical standards across institutions rather than specifically targeting the military, though both groups experienced steeper military than government trust declines (wave $\times$ military $b$ = `r round(dc_stacked_wave_mil$estimate, 3)`, *p* < .001).
+
+Cross-national comparison reveals that this convergence pattern is specific to Thailand. In the Philippines, the interaction is negative ($b$ = `r round(dc_phil_interact$estimate, 3)`, *p* < .001), indicating that democratic believers' military trust gap widened over time relative to democratic skeptics, the opposite of Thailand's pattern. This divergence is consistent with the preference alignment mechanism: under Duterte, Filipinos who valued democracy became increasingly alienated from coercive institutions even as those willing to trade democratic principles for order maintained or increased trust. Taiwan shows no significant difference from Thailand ($b$ = `r round(dc_taiwan_interact$estimate, 3)`, *p* = `r round(dc_taiwan_interact$p.value, 3)`), consistent with stable military depoliticization that neither widens nor narrows ideological trust gaps.
+
+These findings carry two implications for our theoretical framework. First, they confirm that democratic values shape institutional trust evaluations, but the relationship is conditioned by regime trajectory: in contexts of democratic backsliding (Thailand, the Philippines), democratic believers consistently distrust politicized militaries, while in stable democracies (Taiwan), ideology matters less for coercive institutional trust. Second, the convergence pattern in Thailand supports a diffusion interpretation of democratic expectation updating. The 2020--2021 protests were led by democratic true believers who had long been skeptical of military governance, but the protests' broader impact was to extend this skepticism to previously deferential citizens. The aggregate trust collapse thus reflects not only the intensification of existing opposition but its successful transmission to wider publics.
+
+### Regional Variation and Political Geography
+
+Region identifiers available in Waves 4 through 6 allow us to test whether trust erosion concentrated in areas most affected by protest activity and Thaksin-era mobilization. Bangkok and the Northeast, the protest movement's urban epicenter and the Red Shirt movement's rural heartland, respectively, experienced virtually identical declines of approximately `r round((reg_bkk_w4 - reg_bkk_w6 + reg_ne_w4 - reg_ne_w6) / 2, 2)` points from Wave 4 to Wave 6. The South, historically a Democrat Party stronghold with lower protest participation, showed the smallest decline at `r round(reg_south_w4 - reg_south_w6, 2)` points, less than half the magnitude of Bangkok and the Northeast.
+
+The temporal pattern is particularly revealing. In Wave 5 (2018--2020, immediately following the 2014 coup and military government period), Bangkok, Northeast, and North regions all showed rising military trust relative to Wave 4, consistent with short-term rally effects following the coup. The collapse occurred between Waves 5 and 6 (2020--2022), coinciding precisely with the 2020--2021 protest period. Bangkok dropped `r round(reg_bkk_w5 - reg_bkk_w6, 2)` points from Wave 5 to Wave 6, while the Northeast dropped `r round(reg_ne_w5 - reg_ne_w6, 2)` points, the steepest declines in the survey.
+
+This geographic pattern carries theoretical significance. The convergence of Bangkok (urban, educated, protest movement base) and Northeast (rural, Thaksin loyalist, Red Shirt base) demonstrates that the trust collapse transcended the traditional Red Shirt--Yellow Shirt divide that structured Thai politics from 2006 to 2014. The 2020--2021 protests united constituencies that had previously opposed each other, creating a broader coalition against military governance that encompassed both the pro-democracy youth movement and the rural populist base alienated by repeated coups against elected Thaksin-aligned governments. The South's resilience, by contrast, suggests that regions with weaker histories of anti-military mobilization and stronger conservative-royalist orientation maintained relatively higher (though still declining) trust.
+
+Regression analysis confirms these descriptive patterns. With the South as reference category, both Bangkok ($b$ = `r round(reg_bkk_vs_south$estimate, 3)`, *p* < .001) and the Northeast ($b$ = `r round(reg_ne_vs_south$estimate, 3)`, *p* < .001) show significantly steeper trust declines per wave, while the Central ($b$ = `r round(reg_central_vs_south$estimate, 3)`, *p* < .001) and North ($b$ = `r round(reg_north_vs_south$estimate, 3)`, *p* < .001) regions show intermediate patterns. The geographic concentration of trust erosion in precisely the regions most affected by two decades of political struggle, Bangkok as the site of street confrontations and the Northeast as the electoral base repeatedly disenfranchised by military intervention, strengthens the political crisis interpretation over pandemic performance accounts, which would predict more uniform geographic patterns.
 
 # Discussion
 

@@ -172,6 +172,50 @@ h4_thai_pw_tidy <- tidy(h4_thai_piecewise, conf.int = TRUE)
 cat("\nThailand piecewise rejection of military rule:\n")
 print(h4_thai_pw_tidy %>% mutate(across(where(is.numeric), ~round(., 4))))
 
+# ── H4e: Democratic values interaction with trust decline ───────────────────
+# Does trust decline concentrate among democratic true believers?
+
+cat("\n--- H4e: Democratic commitment × trust decline ---\n")
+
+# Center democratic_commitment for interaction interpretation
+d <- d %>%
+  mutate(dem_commit_c = democratic_commitment - mean(democratic_commitment, na.rm = TRUE))
+
+# Thailand-only: military trust
+h4_commit_thai_mil <- lm(
+  trust_military ~ wave_num * dem_commit_c +
+    age_centered + female + education_z + is_urban,
+  data = d %>% filter(country_name == "Thailand")
+)
+
+h4_commit_thai_mil_tidy <- tidy(h4_commit_thai_mil, conf.int = TRUE)
+cat("\nThailand: Military trust ~ wave × democratic commitment:\n")
+print(h4_commit_thai_mil_tidy %>% mutate(across(where(is.numeric), ~round(., 4))))
+
+# Thailand-only: government trust
+h4_commit_thai_govt <- lm(
+  trust_national_government ~ wave_num * dem_commit_c +
+    age_centered + female + education_z + is_urban,
+  data = d %>% filter(country_name == "Thailand")
+)
+
+h4_commit_thai_govt_tidy <- tidy(h4_commit_thai_govt, conf.int = TRUE)
+cat("\nThailand: Government trust ~ wave × democratic commitment:\n")
+print(h4_commit_thai_govt_tidy %>% mutate(across(where(is.numeric), ~round(., 4))))
+
+# Full three-country model for comparison
+h4_commit_full_mil <- lm(
+  trust_military ~ wave_num * dem_commit_c * country_name +
+    age_centered + female + education_z + is_urban,
+  data = d
+)
+
+h4_commit_full_mil_tidy <- tidy(h4_commit_full_mil, conf.int = TRUE)
+cat("\nFull sample: Military trust ~ wave × commitment × country:\n")
+print(h4_commit_full_mil_tidy %>%
+        filter(str_detect(term, "wave|commit|country")) %>%
+        mutate(across(where(is.numeric), ~round(., 4))))
+
 # Save H4 results
 saveRDS(list(
   means = h4_means,
@@ -186,6 +230,18 @@ saveRDS(list(
   thai_piecewise = list(
     model = h4_thai_piecewise, tidy = h4_thai_pw_tidy,
     glance = glance(h4_thai_piecewise)
+  ),
+  commit_thai_mil = list(
+    model = h4_commit_thai_mil, tidy = h4_commit_thai_mil_tidy,
+    glance = glance(h4_commit_thai_mil)
+  ),
+  commit_thai_govt = list(
+    model = h4_commit_thai_govt, tidy = h4_commit_thai_govt_tidy,
+    glance = glance(h4_commit_thai_govt)
+  ),
+  commit_full_mil = list(
+    model = h4_commit_full_mil, tidy = h4_commit_full_mil_tidy,
+    glance = glance(h4_commit_full_mil)
   )
 ), file.path(results_dir, "h4_democratic_expectations.rds"))
 
@@ -490,15 +546,236 @@ print(commit_trend_tidy %>%
         filter(str_detect(term, "wave|country")) %>%
         mutate(across(where(is.numeric), ~round(., 4))))
 
-# ── Save commitment results ─────────────────────────────────────────────────
+# =============================================================================
+# Ideological Alignment and Trust Erosion (Section 4.X)
+# =============================================================================
+
+cat("\n=== IDEOLOGICAL ALIGNMENT AND TRUST EROSION ===\n")
+
+# Center democratic commitment for interaction interpretation
+d <- d %>%
+  mutate(dem_commit_c = democratic_commitment - mean(democratic_commitment, na.rm = TRUE))
+
+# Create stacked (long) trust data for military vs government comparison
+d_stacked <- d %>%
+  filter(country_name == "Thailand") %>%
+  select(wave_num, trust_military, trust_national_government,
+         democratic_commitment, dem_commit_c, political_interest,
+         age_centered, female, education_z, is_urban) %>%
+  pivot_longer(
+    cols = c(trust_military, trust_national_government),
+    names_to = "trust_type",
+    values_to = "trust"
+  ) %>%
+  mutate(is_military = as.integer(trust_type == "trust_military"))
+
+# ── Model 1: Does democratic commitment predict steeper military trust decline?
+cat("\n--- Model 1: Military trust ~ wave * democratic_commitment (Thailand) ---\n")
+mod1_ideo <- lm(
+  trust_military ~ wave_num * dem_commit_c +
+    age_centered + female + education_z + is_urban,
+  data = d %>% filter(country_name == "Thailand")
+)
+mod1_ideo_tidy <- tidy(mod1_ideo, conf.int = TRUE)
+print(mod1_ideo_tidy %>% mutate(across(where(is.numeric), ~round(., 4))))
+cat("N =", nobs(mod1_ideo), " R² =", round(summary(mod1_ideo)$r.squared, 4), "\n")
+
+# ── Model 2: Is this specific to military trust? (stacked comparison)
+cat("\n--- Model 2: Trust ~ wave * democratic_commitment * is_military (Thailand, stacked) ---\n")
+mod2_ideo <- lm(
+  trust ~ wave_num * dem_commit_c * is_military +
+    age_centered + female + education_z + is_urban,
+  data = d_stacked
+)
+mod2_ideo_tidy <- tidy(mod2_ideo, conf.int = TRUE)
+print(mod2_ideo_tidy %>% mutate(across(where(is.numeric), ~round(., 4))))
+cat("N =", nobs(mod2_ideo), " R² =", round(summary(mod2_ideo)$r.squared, 4), "\n")
+
+# ── Model 3: Wave 6 cross-section — who distrusts military most?
+cat("\n--- Model 3: Wave 6 cross-section — military trust ~ democratic_commitment + political_interest ---\n")
+mod3_ideo <- lm(
+  trust_military ~ democratic_commitment + political_interest +
+    age_centered + female + education_z + is_urban,
+  data = d %>% filter(country_name == "Thailand", wave == 6)
+)
+mod3_ideo_tidy <- tidy(mod3_ideo, conf.int = TRUE)
+print(mod3_ideo_tidy %>% mutate(across(where(is.numeric), ~round(., 4))))
+cat("N =", nobs(mod3_ideo), " R² =", round(summary(mod3_ideo)$r.squared, 4), "\n")
+
+# ── Model 1b: Government trust version for comparison
+cat("\n--- Model 1b: Government trust ~ wave * democratic_commitment (Thailand) ---\n")
+mod1b_ideo <- lm(
+  trust_national_government ~ wave_num * dem_commit_c +
+    age_centered + female + education_z + is_urban,
+  data = d %>% filter(country_name == "Thailand")
+)
+mod1b_ideo_tidy <- tidy(mod1b_ideo, conf.int = TRUE)
+print(mod1b_ideo_tidy %>% mutate(across(where(is.numeric), ~round(., 4))))
+cat("N =", nobs(mod1b_ideo), " R² =", round(summary(mod1b_ideo)$r.squared, 4), "\n")
+
+# ── Three-country comparison
+cat("\n--- Model 4: Three-country military trust ~ wave * democratic_commitment * country ---\n")
+mod4_ideo <- lm(
+  trust_military ~ wave_num * dem_commit_c * country_name +
+    age_centered + female + education_z + is_urban,
+  data = d
+)
+mod4_ideo_tidy <- tidy(mod4_ideo, conf.int = TRUE)
+cat("Key interaction terms:\n")
+print(mod4_ideo_tidy %>%
+        filter(str_detect(term, "dem_commit|wave.*commit|commit.*country")) %>%
+        mutate(across(where(is.numeric), ~round(., 4))))
+cat("N =", nobs(mod4_ideo), " R² =", round(summary(mod4_ideo)$r.squared, 4), "\n")
+
+# ── Save all ideological alignment results ────────────────────────────────────
 
 saveRDS(list(
   means = commitment_means,
-  trend = list(model = commit_trend, tidy = commit_trend_tidy, glance = glance(commit_trend))
+  trend = list(model = commit_trend, tidy = commit_trend_tidy, glance = glance(commit_trend)),
+  mod1_mil = list(model = mod1_ideo, tidy = mod1_ideo_tidy, glance = glance(mod1_ideo)),
+  mod1b_govt = list(model = mod1b_ideo, tidy = mod1b_ideo_tidy, glance = glance(mod1b_ideo)),
+  mod2_stacked = list(model = mod2_ideo, tidy = mod2_ideo_tidy, glance = glance(mod2_ideo)),
+  mod3_w6_xsec = list(model = mod3_ideo, tidy = mod3_ideo_tidy, glance = glance(mod3_ideo)),
+  mod4_threecountry = list(model = mod4_ideo, tidy = mod4_ideo_tidy, glance = glance(mod4_ideo))
 ), file.path(results_dir, "democratic_commitment.rds"))
 
-cat("Democratic commitment results saved.\n")
+cat("\nDemocratic commitment + ideological alignment results saved.\n")
+
+# =============================================================================
+# Regional Analysis: Bangkok vs Provinces (W4-W6 only)
+# =============================================================================
+
+cat("\n=== REGIONAL ANALYSIS: BANGKOK VS PROVINCES ===\n")
+
+# ── Load region from raw .sav files (W4-W6 only) ─────────────────────────────
+
+library(haven)
+
+# W4 (merged file, Thailand = country 8)
+raw_w4 <- read_sav("/Users/jeffreystark/Development/Research/survey-data-prep/data/abs/raw/wave4/W4_v15_merged20250609_release.sav")
+region_w4 <- raw_w4 %>%
+  filter(country == 8) %>%
+  transmute(wave = 4L, idnumber = as.integer(idnumber),
+            region = as.character(as_factor(region)))
+
+# W5 (merged file)
+raw_w5 <- read_sav("/Users/jeffreystark/Development/Research/survey-data-prep/data/abs/raw/wave5/20230505_W5_merge_15.sav")
+region_w5 <- raw_w5 %>%
+  filter(COUNTRY == 8) %>%
+  transmute(wave = 5L, idnumber = as.integer(IDnumber),
+            region = as.character(as_factor(Region)))
+
+# W6 (Thailand-only file)
+raw_w6 <- read_sav("/Users/jeffreystark/Development/Research/survey-data-prep/data/abs/raw/wave6/W6_8_Thailand_Release_20250108.sav")
+region_w6 <- raw_w6 %>%
+  transmute(wave = 6L, idnumber = as.integer(IDNUMBER),
+            region = as.character(as_factor(REGION)))
+
+region_all <- bind_rows(region_w4, region_w5, region_w6)
+cat("Region data loaded:", nrow(region_all), "obs\n")
+cat("Region distribution:\n")
+print(table(region_all$region, region_all$wave))
+
+# ── Merge into panel and create Bangkok indicator ─────────────────────────────
+
+d_regional <- d %>%
+  filter(country_name == "Thailand", wave_num >= 4) %>%
+  left_join(region_all, by = c("wave" = "wave", "idnumber" = "idnumber")) %>%
+  mutate(
+    is_bangkok = as.integer(region == "Bangkok"),
+    region_factor = factor(region, levels = c("South", "Bangkok", "Central", "North", "Northeast"))
+  )
+
+cat("\nMerge result:\n")
+cat("Total Thai W4-W6:", nrow(d_regional), "\n")
+cat("Region matched:", sum(!is.na(d_regional$region)), "\n")
+cat("Bangkok:", sum(d_regional$is_bangkok == 1, na.rm = TRUE), "\n")
+
+# ── Descriptive means by region × wave ────────────────────────────────────────
+
+region_means <- d_regional %>%
+  group_by(region, wave_num) %>%
+  summarise(
+    trust_mil = mean(trust_military, na.rm = TRUE),
+    trust_govt = mean(trust_national_government, na.rm = TRUE),
+    n = n(),
+    .groups = "drop"
+  )
+
+cat("\nMilitary trust by region × wave:\n")
+region_means %>%
+  select(region, wave_num, trust_mil) %>%
+  pivot_wider(names_from = wave_num, values_from = trust_mil, names_prefix = "W") %>%
+  mutate(across(where(is.numeric), ~round(., 2))) %>%
+  print()
+
+cat("\nGovernment trust by region × wave:\n")
+region_means %>%
+  select(region, wave_num, trust_govt) %>%
+  pivot_wider(names_from = wave_num, values_from = trust_govt, names_prefix = "W") %>%
+  mutate(across(where(is.numeric), ~round(., 2))) %>%
+  print()
+
+# ── Model: Bangkok interaction with wave ──────────────────────────────────────
+
+cat("\n--- Military trust ~ wave * is_bangkok ---\n")
+reg_mil_bkk <- lm(
+  trust_military ~ wave_num * is_bangkok +
+    age_centered + female + education_z,
+  data = d_regional
+)
+reg_mil_bkk_tidy <- tidy(reg_mil_bkk, conf.int = TRUE)
+print(reg_mil_bkk_tidy %>% mutate(across(where(is.numeric), ~round(., 4))))
+cat("N =", nobs(reg_mil_bkk), " R² =", round(summary(reg_mil_bkk)$r.squared, 4), "\n")
+
+cat("\n--- Government trust ~ wave * is_bangkok ---\n")
+reg_govt_bkk <- lm(
+  trust_national_government ~ wave_num * is_bangkok +
+    age_centered + female + education_z,
+  data = d_regional
+)
+reg_govt_bkk_tidy <- tidy(reg_govt_bkk, conf.int = TRUE)
+print(reg_govt_bkk_tidy %>% mutate(across(where(is.numeric), ~round(., 4))))
+cat("N =", nobs(reg_govt_bkk), " R² =", round(summary(reg_govt_bkk)$r.squared, 4), "\n")
+
+# ── Model: Full region interaction ────────────────────────────────────────────
+
+cat("\n--- Military trust ~ wave * region_factor (South = reference) ---\n")
+reg_mil_full <- lm(
+  trust_military ~ wave_num * region_factor +
+    age_centered + female + education_z,
+  data = d_regional
+)
+reg_mil_full_tidy <- tidy(reg_mil_full, conf.int = TRUE)
+print(reg_mil_full_tidy %>%
+        filter(str_detect(term, "wave|region")) %>%
+        mutate(across(where(is.numeric), ~round(., 4))))
+cat("N =", nobs(reg_mil_full), " R² =", round(summary(reg_mil_full)$r.squared, 4), "\n")
+
+cat("\n--- Government trust ~ wave * region_factor (South = reference) ---\n")
+reg_govt_full <- lm(
+  trust_national_government ~ wave_num * region_factor +
+    age_centered + female + education_z,
+  data = d_regional
+)
+reg_govt_full_tidy <- tidy(reg_govt_full, conf.int = TRUE)
+print(reg_govt_full_tidy %>%
+        filter(str_detect(term, "wave|region")) %>%
+        mutate(across(where(is.numeric), ~round(., 4))))
+cat("N =", nobs(reg_govt_full), " R² =", round(summary(reg_govt_full)$r.squared, 4), "\n")
+
+# ── Save regional results ─────────────────────────────────────────────────────
+
+saveRDS(list(
+  means = region_means,
+  bkk_mil = list(model = reg_mil_bkk, tidy = reg_mil_bkk_tidy, glance = glance(reg_mil_bkk)),
+  bkk_govt = list(model = reg_govt_bkk, tidy = reg_govt_bkk_tidy, glance = glance(reg_govt_bkk)),
+  full_region_mil = list(model = reg_mil_full, tidy = reg_mil_full_tidy, glance = glance(reg_mil_full)),
+  full_region_govt = list(model = reg_govt_full, tidy = reg_govt_full_tidy, glance = glance(reg_govt_full))
+), file.path(results_dir, "regional_analysis.rds"))
+
+cat("\nRegional analysis results saved.\n")
 
 cat("\n=== ALL ATTITUDINAL MECHANISM RESULTS SAVED ===\n")
 cat("Files:\n")
-cat(paste(" ", list.files(results_dir, pattern = "h[345]_|sat_|dem"), collapse = "\n"), "\n")
+cat(paste(" ", list.files(results_dir, pattern = "h[345]_|sat_|dem|region"), collapse = "\n"), "\n")
