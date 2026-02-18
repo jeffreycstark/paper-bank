@@ -123,6 +123,19 @@ dc_w6_commit <- dc_mod3_tidy %>% filter(term == "democratic_commitment")
 dc_phil_interact <- dc_mod4_tidy %>% filter(term == "wave_num:dem_commit_c:country_namePhilippines")
 dc_taiwan_interact <- dc_mod4_tidy %>% filter(term == "wave_num:dem_commit_c:country_nameTaiwan")
 
+# Bottom-box distribution trends
+bb <- readRDS(file.path(results_dir, "bottom_box_trends.rds"))
+bb_th_mil <- bb %>% filter(country_name == "Thailand", institution == "Military")
+bb_th_govt <- bb %>% filter(country_name == "Thailand", institution == "Government")
+bb_th_mil_w1 <- bb_th_mil %>% filter(wave == 1) %>% pull(pct)
+bb_th_mil_w4 <- bb_th_mil %>% filter(wave == 4) %>% pull(pct)
+bb_th_mil_w5 <- bb_th_mil %>% filter(wave == 5) %>% pull(pct)
+bb_th_mil_w6 <- bb_th_mil %>% filter(wave == 6) %>% pull(pct)
+bb_th_govt_w1 <- bb_th_govt %>% filter(wave == 1) %>% pull(pct)
+bb_th_govt_w6 <- bb_th_govt %>% filter(wave == 6) %>% pull(pct)
+bb_phil_mil_w6 <- bb %>% filter(country_name == "Philippines", institution == "Military", wave == 6) %>% pull(pct)
+bb_taiwan_mil_w6 <- bb %>% filter(country_name == "Taiwan", institution == "Military", wave == 6) %>% pull(pct)
+
 # Regional analysis results (W4-W6 Thailand only)
 reg_res <- readRDS(file.path(results_dir, "regional_analysis.rds"))
 reg_means <- reg_res$means %>% filter(!is.na(region))
@@ -300,6 +313,12 @@ knitr::include_graphics(file.path(fig_dir, "fig3_combined_trajectories.png"))
 ```
 
 Figure 1 displays the twenty-year trust trajectories for government and military trust. Thailand's trajectory is striking: government trust declined from `r round(thai_govt_w1, 2)` in Wave 1 to `r round(thai_govt_w6, 2)` in Wave 6, a drop of `r round(abs(thai_govt_w6 - thai_govt_w1), 2)` points on a four-point scale. Military trust declined even more dramatically, from `r round(thai_mil_w1, 2)` to `r round(thai_mil_w6, 2)`, a drop of `r round(abs(thai_mil_w6 - thai_mil_w1), 2)` points. By contrast, the Philippines and Taiwan show comparatively stable trajectories with modest fluctuations.
+
+```{r fig-bottom-box, fig.cap='Share of respondents reporting "no trust at all" in military (A) and government (B) institutions across three countries, Waves 1--6.', out.width="100%"}
+knitr::include_graphics(file.path(fig_dir, "fig4_bottom_box_trends.png"))
+```
+
+The distributional evidence in Figure 2 underscores the severity of the collapse. The share of Thai respondents reporting "no trust at all" in the military hovered between `r round(bb_th_mil_w1, 0)`% and `r round(bb_th_mil_w5, 0)`% across Waves 1 through 5 before surging to `r round(bb_th_mil_w6, 0)`% in Wave 6, a nearly tenfold increase. Government trust followed a similar, if less extreme, trajectory: the bottom-box share rose from `r round(bb_th_govt_w1, 0)`% in Wave 1 to `r round(bb_th_govt_w6, 0)`% in Wave 6. In the same period, the share expressing no military trust at all fell to just `r round(bb_phil_mil_w6, 0)`% in the Philippines and `r round(bb_taiwan_mil_w6, 0)`% in Taiwan, confirming that the Thai pattern is not an artifact of regional trends or measurement drift. The concentration of the shift in Wave 6 (fielded 2019--2022, during and after the 2020--2021 protest wave) points to a discrete political shock rather than gradual erosion.
 
 ## Thailand Exceptionalism (H1)
 

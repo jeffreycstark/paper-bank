@@ -113,6 +113,82 @@ p_combined <- p_govt + p_mil +
 ggsave(file.path(fig_dir, "fig3_combined_trajectories.png"),
        p_combined, width = 14, height = 6, dpi = 300)
 
+# ── Figure 4: Bottom-box trends ("none at all") ─────────────────────────────
+# Shows % responding "1 = none at all" by wave and country for military and
+# government trust. Visualises the distributional collapse in Wave 6.
+
+wave_labels_lookup <- d %>%
+  distinct(wave, wave_label) %>%
+  arrange(wave)
+
+bottom_box <- d %>%
+  filter(!is.na(trust_military) | !is.na(trust_national_government)) %>%
+  group_by(country_name, wave) %>%
+  summarise(
+    none_mil  = mean(trust_military == 1, na.rm = TRUE) * 100,
+    none_govt = mean(trust_national_government == 1, na.rm = TRUE) * 100,
+    .groups = "drop"
+  ) %>%
+  left_join(wave_labels_lookup, by = "wave") %>%
+  pivot_longer(cols = c(none_mil, none_govt),
+               names_to = "institution", values_to = "pct") %>%
+  mutate(institution = ifelse(institution == "none_mil", "Military", "Government"))
+
+p_bottom_mil <- ggplot(bottom_box %>% filter(institution == "Military"),
+       aes(x = wave_label, y = pct,
+           color = country_name, group = country_name)) +
+  geom_line(linewidth = 1.2) +
+  geom_point(size = 3) +
+  scale_color_manual(values = country_colors) +
+  scale_y_continuous(limits = c(0, 65), breaks = seq(0, 60, 10),
+                     labels = function(x) paste0(x, "%")) +
+  labs(
+    title = 'A. Military Trust: % "None at All"',
+    x = NULL,
+    y = NULL,
+    color = "Country"
+  ) +
+  theme(
+    legend.position = "right",
+    plot.title = element_text(face = "bold", size = 13),
+    axis.text.x = element_text(size = 8)
+  )
+
+p_bottom_govt <- ggplot(bottom_box %>% filter(institution == "Government"),
+       aes(x = wave_label, y = pct,
+           color = country_name, group = country_name)) +
+  geom_line(linewidth = 1.2) +
+  geom_point(size = 3) +
+  scale_color_manual(values = country_colors) +
+  scale_y_continuous(limits = c(0, 65), breaks = seq(0, 60, 10),
+                     labels = function(x) paste0(x, "%")) +
+  labs(
+    title = 'B. Government Trust: % "None at All"',
+    x = NULL,
+    y = NULL,
+    color = "Country"
+  ) +
+  theme(
+    legend.position = "right",
+    plot.title = element_text(face = "bold", size = 13),
+    axis.text.x = element_text(size = 8)
+  )
+
+p_bottom_combined <- p_bottom_mil + p_bottom_govt +
+  plot_layout(guides = "collect") +
+  plot_annotation(
+    title = 'Share of Respondents Reporting "No Trust at All" in Institutions',
+    subtitle = "Thailand's bottom-box share surges in Wave 6 while comparator countries remain stable"
+  )
+
+ggsave(file.path(fig_dir, "fig4_bottom_box_trends.png"),
+       p_bottom_combined, width = 14, height = 6, dpi = 300)
+
+# Save bottom-box data for inline manuscript use
+saveRDS(bottom_box, file.path(analysis_dir, "results/bottom_box_trends.rds"))
+
+cat("\nFigure 4 (bottom-box trends) saved.\n")
+
 # ── Table 1: Wave-to-wave changes ───────────────────────────────────────────
 
 trust_changes <- trust_means %>%
