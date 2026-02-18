@@ -12,6 +12,8 @@ library(lmerTest)
 library(broom)
 library(broom.mixed)
 library(MASS)
+library(sandwich)
+library(lmtest)
 
 # ── Setup ─────────────────────────────────────────────────────────────────────
 
@@ -29,6 +31,21 @@ cat("Loaded:", format(nrow(d), big.mark = ","), "obs across",
 
 controls <- "age_centered + female + education_z + is_urban"
 
+# ── Helper: clustered SEs for stacked models ─────────────────────────────────
+# Stacked models have 2 rows per respondent (military + government trust).
+# Use sandwich::vcovCL to cluster SEs by respondent_id.
+tidy_clustered <- function(model, cluster_var) {
+  vcov_cl <- vcovCL(model, cluster = cluster_var)
+  ct <- coeftest(model, vcov. = vcov_cl)
+  tibble(
+    term = rownames(ct),
+    estimate = ct[, "Estimate"],
+    std.error = ct[, "Std. Error"],
+    statistic = ct[, "t value"],
+    p.value = ct[, "Pr(>|t|)"]
+  )
+}
+
 # =============================================================================
 # H1: Thailand Exceptionalism
 # Thailand has steeper trust decline than Philippines/Taiwan, net of demographics
@@ -40,7 +57,7 @@ cat("=== H1: THAILAND EXCEPTIONALISM ===\n")
 h1_govt <- lm(
   trust_national_government ~ wave_num * country_name +
     age_centered + female + education_z + is_urban,
-  data = d
+  data = d, weights = weight
 )
 
 cat("H1 Government trust interaction model:\n")
@@ -53,7 +70,7 @@ print(h1_govt_tidy %>%
 h1_mil <- lm(
   trust_military ~ wave_num * country_name +
     age_centered + female + education_z + is_urban,
-  data = d
+  data = d, weights = weight
 )
 
 cat("\nH1 Military trust interaction model:\n")
@@ -67,7 +84,7 @@ h1_rs_govt <- lmer(
   trust_national_government ~ wave_num +
     age_centered + female + education_z + is_urban +
     (1 + wave_num | country_name),
-  data = d, REML = FALSE,
+  data = d, weights = weight, REML = FALSE,
   control = lmerControl(optimizer = "bobyqa", optCtrl = list(maxfun = 100000))
 )
 
@@ -76,7 +93,7 @@ h1_rs_mil <- lmer(
   trust_military ~ wave_num +
     age_centered + female + education_z + is_urban +
     (1 + wave_num | country_name),
-  data = d, REML = FALSE,
+  data = d, weights = weight, REML = FALSE,
   control = lmerControl(optimizer = "bobyqa", optCtrl = list(maxfun = 100000))
 )
 
@@ -148,15 +165,15 @@ d_long <- d %>%
 
 cat("Long-format data:", format(nrow(d_long), big.mark = ","), "obs\n")
 
-# OLS with clustered SEs (no true panel, so avoid random respondent intercept)
+# OLS with survey weights and respondent-clustered SEs
 h2_threeway <- lm(
   trust ~ wave_num * is_military * country_name +
     age_centered + female + education_z + is_urban,
-  data = d_long
+  data = d_long, weights = weight
 )
 
-h2_threeway_tidy <- tidy(h2_threeway, conf.int = TRUE)
-cat("\nThree-way interaction results (key terms):\n")
+h2_threeway_tidy <- tidy_clustered(h2_threeway, d_long$respondent_id)
+cat("\nThree-way interaction results (clustered SEs, key terms):\n")
 print(h2_threeway_tidy %>%
         filter(str_detect(term, "is_military|wave_num:")) %>%
         mutate(across(where(is.numeric), ~round(., 4))))
@@ -173,11 +190,11 @@ h2_w5w6 <- lm(
   trust ~ wave_num + is_w5w6 * is_military * is_thailand +
     age_centered + female + education_z + is_urban +
     country_name,
-  data = d_long
+  data = d_long, weights = weight
 )
 
-h2_w5w6_tidy <- tidy(h2_w5w6, conf.int = TRUE)
-cat("\nW5-W6 acceleration test (key terms):\n")
+h2_w5w6_tidy <- tidy_clustered(h2_w5w6, d_long$respondent_id)
+cat("\nW5-W6 acceleration test (clustered SEs, key terms):\n")
 print(h2_w5w6_tidy %>%
         filter(str_detect(term, "is_w5w6|is_military|is_thailand")) %>%
         mutate(across(where(is.numeric), ~round(., 4))))
@@ -218,13 +235,13 @@ d <- d %>%
 h3_piecewise_govt <- lm(
   trust_national_government ~ period * country_name +
     age_centered + female + education_z + is_urban,
-  data = d
+  data = d, weights = weight
 )
 
 h3_piecewise_mil <- lm(
   trust_military ~ period * country_name +
     age_centered + female + education_z + is_urban,
-  data = d
+  data = d, weights = weight
 )
 
 h3_pw_govt_tidy <- tidy(h3_piecewise_govt, conf.int = TRUE)
@@ -246,7 +263,7 @@ h3_quad_govt <- lm(
     wave_num:country_name + I(wave_num^2):country_name +
     country_name +
     age_centered + female + education_z + is_urban,
-  data = d
+  data = d, weights = weight
 )
 
 h3_quad_mil <- lm(
@@ -254,7 +271,7 @@ h3_quad_mil <- lm(
     wave_num:country_name + I(wave_num^2):country_name +
     country_name +
     age_centered + female + education_z + is_urban,
-  data = d
+  data = d, weights = weight
 )
 
 h3_q_govt_tidy <- tidy(h3_quad_govt, conf.int = TRUE)
@@ -295,17 +312,17 @@ cat("Philippines W4-W6 sample:", nrow(phil_w456), "obs\n")
 
 h4_mil <- lm(
   trust_military ~ wave_num + age_centered + female + education_z + is_urban,
-  data = phil_w456
+  data = phil_w456, weights = weight
 )
 
 h4_police <- lm(
   trust_police ~ wave_num + age_centered + female + education_z + is_urban,
-  data = phil_w456
+  data = phil_w456, weights = weight
 )
 
 h4_govt <- lm(
   trust_national_government ~ wave_num + age_centered + female + education_z + is_urban,
-  data = phil_w456
+  data = phil_w456, weights = weight
 )
 
 h4_mil_tidy <- tidy(h4_mil, conf.int = TRUE)
@@ -323,13 +340,15 @@ print(h4_govt_tidy %>% mutate(across(where(is.numeric), ~round(., 4))))
 h4_contrast_mil <- lm(
   trust_military ~ wave_num * country_name +
     age_centered + female + education_z + is_urban,
-  data = d %>% filter(country_name %in% c("Thailand", "Philippines"))
+  data = d %>% filter(country_name %in% c("Thailand", "Philippines")),
+  weights = weight
 )
 
 h4_contrast_police <- lm(
   trust_police ~ wave_num * country_name +
     age_centered + female + education_z + is_urban,
-  data = d %>% filter(country_name %in% c("Thailand", "Philippines"))
+  data = d %>% filter(country_name %in% c("Thailand", "Philippines")),
+  weights = weight
 )
 
 # Save H4 results
@@ -355,7 +374,7 @@ cat("Taiwan sample:", nrow(taiwan), "obs\n")
 
 h5_mil <- lm(
   trust_military ~ wave_num + age_centered + female + education_z + is_urban,
-  data = taiwan
+  data = taiwan, weights = weight
 )
 
 h5_mil_tidy <- tidy(h5_mil, conf.int = TRUE)
@@ -365,7 +384,7 @@ print(h5_mil_tidy %>% mutate(across(where(is.numeric), ~round(., 4))))
 # F-test: is the wave coefficient = 0?
 h5_null <- lm(
   trust_military ~ age_centered + female + education_z + is_urban,
-  data = taiwan
+  data = taiwan, weights = weight
 )
 h5_ftest <- anova(h5_null, h5_mil)
 cat("\nF-test (wave = 0):\n")
@@ -399,14 +418,14 @@ h6a_govt <- lm(
   trust_national_government ~ wave_num * country_name +
     age_centered + female + education_z + is_urban +
     econ_national_now + democracy_satisfaction,
-  data = d_perf
+  data = d_perf, weights = weight
 )
 
 h6a_mil <- lm(
   trust_military ~ wave_num * country_name +
     age_centered + female + education_z + is_urban +
     econ_national_now + democracy_satisfaction,
-  data = d_perf
+  data = d_perf, weights = weight
 )
 
 h6a_govt_tidy <- tidy(h6a_govt, conf.int = TRUE)
@@ -438,13 +457,13 @@ cat("Pre-COVID sample:", nrow(pre_data), "obs\n")
 h6b_govt <- lm(
   trust_national_government ~ wave_num * country_name +
     age_centered + female + education_z + is_urban,
-  data = pre_data
+  data = pre_data, weights = weight
 )
 
 h6b_mil <- lm(
   trust_military ~ wave_num * country_name +
     age_centered + female + education_z + is_urban,
-  data = pre_data
+  data = pre_data, weights = weight
 )
 
 h6b_govt_tidy <- tidy(h6b_govt, conf.int = TRUE)
@@ -529,7 +548,7 @@ run_subgroup <- function(data, subgroup_var, subgroup_val, dv) {
   mod <- lm(
     as.formula(paste(dv, "~ wave_num * country_name +",
                      "age_centered + female + education_z + is_urban")),
-    data = sub
+    data = sub, weights = weight
   )
   list(
     tidy = tidy(mod, conf.int = TRUE),

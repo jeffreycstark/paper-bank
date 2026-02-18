@@ -300,6 +300,8 @@ To test H2 (institutional differentiation), we estimate pooled models with three
 
 Pre-COVID trend analysis restricts to Waves 1--4, comparing coefficients between pre-COVID and full samples to distinguish discrete shocks from secular trends. Robustness checks include non-linear specifications, ordered logit, and subgroup analyses (Online Appendix).
 
+All models incorporate ABS-provided survey weights (available for Waves 3--6; Waves 1--2 are treated as self-weighting). Models that stack government and military trust for the same respondents use cluster-robust standard errors at the respondent level to account for within-person correlation. PSU identifiers are not available in the public-use ABS files, so we cannot adjust for survey design effects at the primary sampling unit level; this limitation is unlikely to affect our core findings, which concern country-level contrasts rather than population-level prevalence estimates.
+
 ## Limitations
 
 Repeated cross-sections prevent individual-level causal inference but suit our aggregate focus. Response rates remain stable (60--70%), minimizing selection concerns. Trust questions use identical wording across waves/countries. We infer individual mechanisms from country-level heterogeneity, supplementing with subgroup comparisons where possible. Our three-country comparison limits generalizability but provides theoretically meaningful contrasts.

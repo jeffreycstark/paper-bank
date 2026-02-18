@@ -15,6 +15,8 @@ library(lme4)
 library(lmerTest)
 library(broom)
 library(broom.mixed)
+library(sandwich)
+library(lmtest)
 
 # ── Setup ─────────────────────────────────────────────────────────────────────
 
@@ -24,6 +26,19 @@ results_dir <- file.path(analysis_dir, "results")
 
 dir.create(results_dir, showWarnings = FALSE, recursive = TRUE)
 set.seed(2025)
+
+# ── Helper: clustered SEs for stacked models ─────────────────────────────────
+tidy_clustered <- function(model, cluster_var) {
+  vcov_cl <- vcovCL(model, cluster = cluster_var)
+  ct <- coeftest(model, vcov. = vcov_cl)
+  tibble(
+    term = rownames(ct),
+    estimate = ct[, "Estimate"],
+    std.error = ct[, "Std. Error"],
+    statistic = ct[, "t value"],
+    p.value = ct[, "Pr(>|t|)"]
+  )
+}
 
 # Load panel data
 d <- readRDS(file.path(analysis_dir, "thailand_panel.rds"))
@@ -128,7 +143,7 @@ h4_means %>%
 h4_reject_mil <- lm(
   reject_military ~ wave_num * country_name +
     age_centered + female + education_z + is_urban,
-  data = d
+  data = d, weights = weight
 )
 
 h4_reject_mil_tidy <- tidy(h4_reject_mil, conf.int = TRUE)
@@ -142,7 +157,7 @@ print(h4_reject_mil_tidy %>%
 h4_reject_composite <- lm(
   reject_authoritarian ~ wave_num * country_name +
     age_centered + female + education_z + is_urban,
-  data = d
+  data = d, weights = weight
 )
 
 h4_reject_composite_tidy <- tidy(h4_reject_composite, conf.int = TRUE)
@@ -165,7 +180,8 @@ d <- d %>%
 
 h4_thai_piecewise <- lm(
   reject_military ~ period + age_centered + female + education_z + is_urban,
-  data = d %>% filter(country_name == "Thailand")
+  data = d %>% filter(country_name == "Thailand"),
+  weights = weight
 )
 
 h4_thai_pw_tidy <- tidy(h4_thai_piecewise, conf.int = TRUE)
@@ -185,7 +201,8 @@ d <- d %>%
 h4_commit_thai_mil <- lm(
   trust_military ~ wave_num * dem_commit_c +
     age_centered + female + education_z + is_urban,
-  data = d %>% filter(country_name == "Thailand")
+  data = d %>% filter(country_name == "Thailand"),
+  weights = weight
 )
 
 h4_commit_thai_mil_tidy <- tidy(h4_commit_thai_mil, conf.int = TRUE)
@@ -196,7 +213,8 @@ print(h4_commit_thai_mil_tidy %>% mutate(across(where(is.numeric), ~round(., 4))
 h4_commit_thai_govt <- lm(
   trust_national_government ~ wave_num * dem_commit_c +
     age_centered + female + education_z + is_urban,
-  data = d %>% filter(country_name == "Thailand")
+  data = d %>% filter(country_name == "Thailand"),
+  weights = weight
 )
 
 h4_commit_thai_govt_tidy <- tidy(h4_commit_thai_govt, conf.int = TRUE)
@@ -207,7 +225,7 @@ print(h4_commit_thai_govt_tidy %>% mutate(across(where(is.numeric), ~round(., 4)
 h4_commit_full_mil <- lm(
   trust_military ~ wave_num * dem_commit_c * country_name +
     age_centered + female + education_z + is_urban,
-  data = d
+  data = d, weights = weight
 )
 
 h4_commit_full_mil_tidy <- tidy(h4_commit_full_mil, conf.int = TRUE)
@@ -282,7 +300,7 @@ d <- d %>%
 h5_govt <- lm(
   trust_national_government ~ wave_num * pol_interest_c * country_name +
     age_centered + female + education_z + is_urban,
-  data = d
+  data = d, weights = weight
 )
 
 h5_govt_tidy <- tidy(h5_govt, conf.int = TRUE)
@@ -296,7 +314,7 @@ print(h5_govt_tidy %>%
 h5_mil <- lm(
   trust_military ~ wave_num * pol_interest_c * country_name +
     age_centered + female + education_z + is_urban,
-  data = d
+  data = d, weights = weight
 )
 
 h5_mil_tidy <- tidy(h5_mil, conf.int = TRUE)
@@ -313,13 +331,13 @@ d <- d %>%
 h5_discuss_govt <- lm(
   trust_national_government ~ wave_num * pol_discuss_c * country_name +
     age_centered + female + education_z + is_urban,
-  data = d
+  data = d, weights = weight
 )
 
 h5_discuss_mil <- lm(
   trust_military ~ wave_num * pol_discuss_c * country_name +
     age_centered + female + education_z + is_urban,
-  data = d
+  data = d, weights = weight
 )
 
 h5_discuss_govt_tidy <- tidy(h5_discuss_govt, conf.int = TRUE)
@@ -342,13 +360,13 @@ thai <- d %>% filter(country_name == "Thailand")
 h5_thai_govt <- lm(
   trust_national_government ~ wave_num * pol_interest_c +
     age_centered + female + education_z + is_urban,
-  data = thai
+  data = thai, weights = weight
 )
 
 h5_thai_mil <- lm(
   trust_military ~ wave_num * pol_interest_c +
     age_centered + female + education_z + is_urban,
-  data = thai
+  data = thai, weights = weight
 )
 
 h5_thai_govt_tidy <- tidy(h5_thai_govt, conf.int = TRUE)
@@ -412,10 +430,10 @@ thai_long <- d %>%
 sat_diff <- lm(
   trust ~ democracy_satisfaction * is_military + wave_num +
     age_centered + female + education_z + is_urban,
-  data = thai_long
+  data = thai_long, weights = weight
 )
 
-sat_diff_tidy <- tidy(sat_diff, conf.int = TRUE)
+sat_diff_tidy <- tidy_clustered(sat_diff, thai_long$respondent_id)
 cat("\nDifferential association (Thailand):\n")
 print(sat_diff_tidy %>% mutate(across(where(is.numeric), ~round(., 4))))
 
@@ -434,10 +452,10 @@ all_long <- d %>%
 sat_full <- lm(
   trust ~ democracy_satisfaction * is_military * country_name + wave_num +
     age_centered + female + education_z + is_urban,
-  data = all_long
+  data = all_long, weights = weight
 )
 
-sat_full_tidy <- tidy(sat_full, conf.int = TRUE)
+sat_full_tidy <- tidy_clustered(sat_full, all_long$respondent_id)
 cat("\nFull-sample differential association:\n")
 print(sat_full_tidy %>%
         filter(str_detect(term, "democracy|military|country")) %>%
@@ -448,7 +466,7 @@ print(sat_full_tidy %>%
 sat_trend <- lm(
   democracy_satisfaction ~ wave_num * country_name +
     age_centered + female + education_z + is_urban,
-  data = d
+  data = d, weights = weight
 )
 
 sat_trend_tidy <- tidy(sat_trend, conf.int = TRUE)
@@ -537,7 +555,7 @@ commitment_means %>%
 commit_trend <- lm(
   democratic_commitment ~ wave_num * country_name +
     age_centered + female + education_z + is_urban,
-  data = d
+  data = d, weights = weight
 )
 
 commit_trend_tidy <- tidy(commit_trend, conf.int = TRUE)
@@ -559,9 +577,10 @@ d <- d %>%
 # Create stacked (long) trust data for military vs government comparison
 d_stacked <- d %>%
   filter(country_name == "Thailand") %>%
-  select(wave_num, trust_military, trust_national_government,
+  mutate(respondent_id = row_number()) %>%
+  select(respondent_id, wave_num, trust_military, trust_national_government,
          democratic_commitment, dem_commit_c, political_interest,
-         age_centered, female, education_z, is_urban) %>%
+         age_centered, female, education_z, is_urban, weight) %>%
   pivot_longer(
     cols = c(trust_military, trust_national_government),
     names_to = "trust_type",
@@ -574,7 +593,8 @@ cat("\n--- Model 1: Military trust ~ wave * democratic_commitment (Thailand) ---
 mod1_ideo <- lm(
   trust_military ~ wave_num * dem_commit_c +
     age_centered + female + education_z + is_urban,
-  data = d %>% filter(country_name == "Thailand")
+  data = d %>% filter(country_name == "Thailand"),
+  weights = weight
 )
 mod1_ideo_tidy <- tidy(mod1_ideo, conf.int = TRUE)
 print(mod1_ideo_tidy %>% mutate(across(where(is.numeric), ~round(., 4))))
@@ -585,9 +605,9 @@ cat("\n--- Model 2: Trust ~ wave * democratic_commitment * is_military (Thailand
 mod2_ideo <- lm(
   trust ~ wave_num * dem_commit_c * is_military +
     age_centered + female + education_z + is_urban,
-  data = d_stacked
+  data = d_stacked, weights = weight
 )
-mod2_ideo_tidy <- tidy(mod2_ideo, conf.int = TRUE)
+mod2_ideo_tidy <- tidy_clustered(mod2_ideo, d_stacked$respondent_id)
 print(mod2_ideo_tidy %>% mutate(across(where(is.numeric), ~round(., 4))))
 cat("N =", nobs(mod2_ideo), " R² =", round(summary(mod2_ideo)$r.squared, 4), "\n")
 
@@ -596,7 +616,8 @@ cat("\n--- Model 3: Wave 6 cross-section — military trust ~ democratic_commitm
 mod3_ideo <- lm(
   trust_military ~ democratic_commitment + political_interest +
     age_centered + female + education_z + is_urban,
-  data = d %>% filter(country_name == "Thailand", wave == 6)
+  data = d %>% filter(country_name == "Thailand", wave == 6),
+  weights = weight
 )
 mod3_ideo_tidy <- tidy(mod3_ideo, conf.int = TRUE)
 print(mod3_ideo_tidy %>% mutate(across(where(is.numeric), ~round(., 4))))
@@ -607,7 +628,8 @@ cat("\n--- Model 1b: Government trust ~ wave * democratic_commitment (Thailand) 
 mod1b_ideo <- lm(
   trust_national_government ~ wave_num * dem_commit_c +
     age_centered + female + education_z + is_urban,
-  data = d %>% filter(country_name == "Thailand")
+  data = d %>% filter(country_name == "Thailand"),
+  weights = weight
 )
 mod1b_ideo_tidy <- tidy(mod1b_ideo, conf.int = TRUE)
 print(mod1b_ideo_tidy %>% mutate(across(where(is.numeric), ~round(., 4))))
@@ -618,7 +640,7 @@ cat("\n--- Model 4: Three-country military trust ~ wave * democratic_commitment 
 mod4_ideo <- lm(
   trust_military ~ wave_num * dem_commit_c * country_name +
     age_centered + female + education_z + is_urban,
-  data = d
+  data = d, weights = weight
 )
 mod4_ideo_tidy <- tidy(mod4_ideo, conf.int = TRUE)
 cat("Key interaction terms:\n")
@@ -722,7 +744,7 @@ cat("\n--- Military trust ~ wave * is_bangkok ---\n")
 reg_mil_bkk <- lm(
   trust_military ~ wave_num * is_bangkok +
     age_centered + female + education_z,
-  data = d_regional
+  data = d_regional, weights = weight
 )
 reg_mil_bkk_tidy <- tidy(reg_mil_bkk, conf.int = TRUE)
 print(reg_mil_bkk_tidy %>% mutate(across(where(is.numeric), ~round(., 4))))
@@ -732,7 +754,7 @@ cat("\n--- Government trust ~ wave * is_bangkok ---\n")
 reg_govt_bkk <- lm(
   trust_national_government ~ wave_num * is_bangkok +
     age_centered + female + education_z,
-  data = d_regional
+  data = d_regional, weights = weight
 )
 reg_govt_bkk_tidy <- tidy(reg_govt_bkk, conf.int = TRUE)
 print(reg_govt_bkk_tidy %>% mutate(across(where(is.numeric), ~round(., 4))))
@@ -744,7 +766,7 @@ cat("\n--- Military trust ~ wave * region_factor (South = reference) ---\n")
 reg_mil_full <- lm(
   trust_military ~ wave_num * region_factor +
     age_centered + female + education_z,
-  data = d_regional
+  data = d_regional, weights = weight
 )
 reg_mil_full_tidy <- tidy(reg_mil_full, conf.int = TRUE)
 print(reg_mil_full_tidy %>%
@@ -756,7 +778,7 @@ cat("\n--- Government trust ~ wave * region_factor (South = reference) ---\n")
 reg_govt_full <- lm(
   trust_national_government ~ wave_num * region_factor +
     age_centered + female + education_z,
-  data = d_regional
+  data = d_regional, weights = weight
 )
 reg_govt_full_tidy <- tidy(reg_govt_full, conf.int = TRUE)
 print(reg_govt_full_tidy %>%

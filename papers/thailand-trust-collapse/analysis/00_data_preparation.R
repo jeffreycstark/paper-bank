@@ -59,7 +59,10 @@ vars_to_select <- c(
   "econ_national_now", "econ_outlook_1yr",
 
   # Controls
-  "age", "gender", "education_years", "urban_rural"
+  "age", "gender", "education_years", "urban_rural",
+
+  # Survey weights
+  "weight"
 )
 
 available <- intersect(vars_to_select, names(d))
@@ -103,6 +106,21 @@ d <- d %>%
                  "W4\n(2014-16)", "W5\n(2018-20)", "W6\n(2020-22)")
     )
   )
+
+# ── Survey weights ───────────────────────────────────────────────────────────
+# Weights available W3-W6; set to 1 (unweighted) for W1-W2
+
+d <- d %>%
+  mutate(weight = if_else(is.na(weight), 1, weight))
+
+cat("\nWeight coverage:\n")
+d %>%
+  group_by(wave) %>%
+  summarise(pct_wt1 = round(mean(weight == 1) * 100, 1),
+            mean_wt = round(mean(weight), 3),
+            sd_wt = round(sd(weight), 3),
+            .groups = "drop") %>%
+  print()
 
 # ── Trust composites ─────────────────────────────────────────────────────────
 
