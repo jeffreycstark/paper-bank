@@ -149,33 +149,7 @@ q_key %>%
 
 The quadratic specifications (Table A1b) confirm that Thailand's trust trajectory is not purely linear. For both government and military trust, the quadratic term and its country interactions suggest accelerating decline in later waves. However, the quadratic specification does not capture the period-specific dynamics as cleanly as the piecewise model, likely because the 2020--2021 disruption represents a discrete shock rather than a smooth acceleration.
 
-# A3. Ordered Logistic Regression
-
-The main models treat the four-point trust scale as continuous. To verify that results are not sensitive to this assumption, we re-estimate the core H1 specification using ordered logistic regression (proportional odds model).
-
-```{r tab-a2-ologit}
-ologit_key <- bind_rows(
-  h6_ologit$govt$tidy %>%
-    filter(str_detect(term, "wave_num|country"), coef.type == "coefficient") %>%
-    mutate(outcome = "Government Trust"),
-  h6_ologit$mil$tidy %>%
-    filter(str_detect(term, "wave_num|country"), coef.type == "coefficient") %>%
-    mutate(outcome = "Military Trust")
-) %>%
-  mutate(p.value = 2 * pnorm(abs(statistic), lower.tail = FALSE)) %>%
-  select(outcome, term, estimate, std.error, p.value) %>%
-  mutate(across(where(is.numeric), ~round(., 3)))
-
-ologit_key %>%
-  kbl(caption = "Table A2: Ordered logistic regression (proportional odds) for government and military trust. Coefficients are log-odds.",
-      col.names = c("Outcome", "Term", "Estimate", "SE", "p"),
-      booktabs = TRUE) %>%
-  kable_styling(latex_options = c("hold_position", "scale_down"))
-```
-
-The ordered logit results (Table A2) are substantively identical to the OLS models. Thailand's per-wave decline is steeper for military trust than government trust, and the interaction terms for the Philippines and Taiwan are positive and significant, confirming that Thailand's decline is exceptional regardless of functional form assumptions.
-
-# A4. Subgroup Analyses
+# A3. Subgroup Analyses
 
 To rule out the possibility that the aggregate patterns are driven by compositional shifts across waves—for example, if later waves disproportionately sampled younger, more urban, or more educated respondents who tend to report lower trust—we estimate the baseline model separately for demographic subgroups.
 
@@ -193,7 +167,7 @@ sub_summary <- h6_subgroups$summary %>%
   arrange(group, institution)
 
 sub_summary %>%
-  kbl(caption = "Table A3: Thailand's per-wave trust slope by demographic subgroup. All models include country × wave interactions; the reported slope is Thailand's (reference category).",
+  kbl(caption = "Table A2: Thailand's per-wave trust slope by demographic subgroup. All models include country × wave interactions; the reported slope is Thailand's (reference category).",
       col.names = c("Subgroup", "Institution", "N", "Slope", "SE", "p"),
       booktabs = TRUE) %>%
   kable_styling(latex_options = c("hold_position")) %>%
@@ -206,7 +180,7 @@ edu_high_mil_slope <- sub_summary$thailand_wave_slope[
 ]
 ```
 
-Table A3 confirms that the military-government differential holds across all demographic subgroups. In every subgroup, the military trust slope is more negative than the government trust slope. Several patterns merit note:
+Table A2 confirms that the military-government differential holds across all demographic subgroups. In every subgroup, the military trust slope is more negative than the government trust slope. Several patterns merit note:
 
 - *Age*: Younger respondents show the steepest declines for both institutions, but the military-government gap is present across all age terciles.
 - *Urbanization*: Urban respondents decline more steeply than rural respondents, consistent with the urban character of the 2020--2021 protests. However, rural respondents also show significant declines.
@@ -214,7 +188,7 @@ Table A3 confirms that the military-government differential holds across all dem
 
 The consistency of the pattern across subgroups rules out compositional explanations and strengthens the inference that the military-government differential reflects a genuine shift in public attitudes.
 
-# A5. Philippines: Coercive Trust Under Duterte
+# A4. Philippines: Coercive Trust Under Duterte
 
 The Philippines provides a useful contrast case. Under Rodrigo Duterte (2016--2022), the government pursued a highly visible drug war that relied heavily on police and military enforcement. If citizens who support a coercive policy agenda maintain trust in the institutions that implement it, we should observe stable or rising coercive trust during the Duterte period.
 
@@ -229,7 +203,7 @@ phil_key <- bind_rows(
   mutate(across(where(is.numeric), ~round(., 3)))
 
 phil_key %>%
-  kbl(caption = "Table A4: Philippines trust trends during the Duterte period (Waves 4--6 only). Wave coefficient captures per-wave change.",
+  kbl(caption = "Table A3: Philippines trust trends during the Duterte period (Waves 4--6 only). Wave coefficient captures per-wave change.",
       col.names = c("Institution", "Wave slope", "SE", "p"),
       booktabs = TRUE) %>%
   kable_styling(latex_options = c("hold_position"))
@@ -245,7 +219,7 @@ Table A4 shows that during the Duterte period, Philippine military trust trends 
 
 The contrast with Thailand is instructive. In Thailand, the military's political role generated mass opposition and targeted trust erosion. In the Philippines, the coercive institutions operated with at least partial popular support for their core mission (anti-drug enforcement), insulating them from the kind of backlash observed in Thailand.
 
-# A6. Taiwan: Military Depoliticization
+# A5. Taiwan: Military Depoliticization
 
 Taiwan presents the opposite theoretical case: a successfully depoliticized military. Following democratization in the 1990s, the Taiwanese military transitioned from a party-state instrument to a professional defense force under firm civilian control. If depoliticization insulates military trust from political volatility, we should observe a flat trajectory.
 
@@ -255,7 +229,7 @@ tw_key <- h5_taiwan$tidy %>%
   mutate(across(where(is.numeric), ~round(., 3)))
 
 tw_key %>%
-  kbl(caption = paste0("Table A5: Taiwan military trust model (all waves). F-test for wave coefficient = 0: p = ", round(h5_taiwan$ftest[["Pr(>F)"]][2], 3), "."),
+  kbl(caption = paste0("Table A4: Taiwan military trust model (all waves). F-test for wave coefficient = 0: p = ", round(h5_taiwan$ftest[["Pr(>F)"]][2], 3), "."),
       col.names = c("Term", "Estimate", "SE", "p"),
       booktabs = TRUE) %>%
   kable_styling(latex_options = c("hold_position"))
@@ -270,7 +244,7 @@ Table A5 confirms the depoliticization prediction. The wave coefficient for Taiw
 
 This stability contrasts sharply with Thailand and supports the theoretical claim that the military's *political role*, rather than general political instability, drives targeted trust erosion. Where the military remains above the political fray, its institutional trust is insulated from the partisan dynamics that corrode trust in elected institutions.
 
-# A7. Full Secondary Institution Results
+# A6. Full Secondary Institution Results
 
 ```{r tab-a6-secondary-full}
 # Full interaction model results for all institutions
@@ -285,7 +259,7 @@ sec_full <- map_dfr(h6_secondary$models, function(mod) {
   mutate(across(where(is.numeric), ~round(., 3)))
 
 sec_full %>%
-  kbl(caption = "Table A6: Country × Wave interaction models for secondary trust measures (courts, police, parliament, political parties). Thailand is the reference category.",
+  kbl(caption = "Table A5: Country × Wave interaction models for secondary trust measures (courts, police, parliament, political parties). Thailand is the reference category.",
       col.names = c("Institution", "Term", "Estimate", "SE", "p"),
       booktabs = TRUE) %>%
   kable_styling(latex_options = c("hold_position", "scale_down")) %>%
@@ -294,7 +268,7 @@ sec_full %>%
 
 Table A6 reports the full interaction models for the four secondary trust measures. Several patterns are worth noting. First, Thailand's decline is significant for all four institutions, but the magnitudes are substantially smaller than for military trust (main text, Table 7). Second, the Philippines and Taiwan interaction terms are generally positive, confirming Thailand's exceptionalism extends beyond the two primary institutions. Third, political parties and parliament show the smallest declines, possibly because these institutions already had lower baseline trust levels, leaving less room for erosion.
 
-# A8. Democratic Commitment and Military Trust Decline
+# A7. Democratic Commitment and Military Trust Decline
 
 Table A7 presents models testing whether democratic commitment moderates trust erosion. Models 1 and 1b examine the interaction between wave and democratic commitment (centered) for military and government trust in Thailand. Model 2 uses a stacked outcome (military and government trust) to test whether the commitment effect differs across institution type. Model 3 reports a Wave 6 cross-sectional model predicting military trust from democratic commitment and political interest. Model 4 tests the three-country interaction.
 
@@ -349,7 +323,7 @@ dc_table <- bind_rows(mod1, mod1b, mod2, mod3, mod4) %>%
   mutate(across(c(estimate, std.error), ~round(., 3)))
 
 dc_table %>%
-  kbl(caption = "Table A7: Democratic commitment and institutional trust decline. Democratic commitment is a composite index (0--1) of democratic preference, democratic priority over economic development, and rejection of authoritarian alternatives, centered at the sample mean for interaction models (Models 1, 1b, 2, 4).",
+  kbl(caption = "Table A6: Democratic commitment and institutional trust decline. Democratic commitment is a composite index (0--1) of democratic preference, democratic priority over economic development, and rejection of authoritarian alternatives, centered at the sample mean for interaction models (Models 1, 1b, 2, 4).",
       col.names = c("Model", "Dependent Variable", "Key Coefficient", "b", "SE", "p"),
       booktabs = TRUE) %>%
   kable_styling(latex_options = c("hold_position", "scale_down")) %>%

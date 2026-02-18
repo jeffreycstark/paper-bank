@@ -395,7 +395,7 @@ h6a_key <- bind_rows(
   mutate(across(where(is.numeric), ~round(., 3)))
 
 h6a_key %>%
-  kbl(caption = paste0("Models with performance controls: economic satisfaction and democracy satisfaction added to baseline specification (H3). N = ", format(h6_perf$n_obs, big.mark = ","), "."),
+  kbl(caption = paste0("Models with performance controls: economic satisfaction and democracy satisfaction added to baseline specification. N = ", format(h6_perf$n_obs, big.mark = ","), "."),
       col.names = c("Outcome", "Term", "Estimate", "SE", "p"),
       escape = FALSE,
       booktabs = TRUE) %>%
@@ -411,7 +411,7 @@ h6a_demsat_govt <- h6_perf$govt$tidy %>% filter(term == "democracy_satisfaction"
 
 If the trust collapse were driven by declining economic conditions or dissatisfaction with democratic governance, controlling for these performance proxies should substantially attenuate the wave × country interactions. Table 5 adds economic satisfaction and democracy satisfaction to the baseline H1 specification. Both performance variables are significant and positively associated with trust, as expected: respondents who evaluate the economy more favorably report higher government trust ($b$ = `r round(h6a_econ_govt$estimate, 3)`, *p* < .001), as do those more satisfied with democracy ($b$ = `r round(h6a_demsat_govt$estimate, 3)`, *p* < .001).
 
-Crucially, however, the country × wave interaction pattern survives largely intact. Thailand's per-wave decline remains steep for both government trust ($b$ = `r round(h6a_govt_wave$estimate, 3)`) and military trust ($b$ = `r round(h6a_mil_wave$estimate, 3)`), and the interaction terms for the Philippines and Taiwan remain positive and significant. This indicates that Thailand's trust erosion cannot be explained away by declining perceptions of economic or democratic performance, supporting H3.
+Crucially, however, the country × wave interaction pattern survives largely intact. Thailand's per-wave decline remains steep for both government trust ($b$ = `r round(h6a_govt_wave$estimate, 3)`) and military trust ($b$ = `r round(h6a_mil_wave$estimate, 3)`), and the interaction terms for the Philippines and Taiwan remain positive and significant. This indicates that Thailand's trust erosion cannot be explained away by declining perceptions of economic or democratic performance, supporting the political crisis interpretation over performance-based accounts.
 
 ## Pre-Trend Analysis
 
@@ -466,11 +466,34 @@ secondary %>%
 
 *Secondary institutions.* Table 7 reports Thailand's per-wave slopes for all six trust measures. The military exhibits by far the steepest decline (`r round(secondary$thailand_slope[1], 3)`), followed by national government (`r round(secondary$thailand_slope[2], 3)`). Courts, police, parliament, and political parties all decline, but at roughly half the rate or less. This gradient, with the military as the clear outlier, is consistent with a political crisis mechanism that specifically targeted the military's role rather than generalized institutional malaise.
 
-*Ordered logit models.* Treating trust as ordinal rather than continuous produces substantively identical patterns: Thailand's military trust decline is steeper than government trust, and both are steeper than comparator countries (Online Appendix, Table A3).
+*Ordered logit models.* Ordered logistic regression treating trust as ordinal categories produces substantively identical patterns (Table 8), confirming results are not artifacts of treating the scale as continuous.
 
-*Subgroup analyses.* The military-government differential holds across all demographic subgroups (young and old, urban and rural, low and high education), ruling out the possibility that aggregate patterns are driven by compositional change (Online Appendix, Table A4). Notably, younger and more educated respondents show the steepest military trust declines, consistent with the youth-driven character of the 2020--2021 protests.
+```{r tab-ologit}
+ologit_key <- bind_rows(
+  h6_ologit$govt$tidy %>%
+    filter(str_detect(term, "wave_num|country"), coef.type == "coefficient") %>%
+    mutate(outcome = "Government Trust"),
+  h6_ologit$mil$tidy %>%
+    filter(str_detect(term, "wave_num|country"), coef.type == "coefficient") %>%
+    mutate(outcome = "Military Trust")
+) %>%
+  mutate(
+    term = clean_terms(term),
+    p.value = 2 * pnorm(abs(statistic), lower.tail = FALSE)
+  ) %>%
+  select(outcome, term, estimate, std.error, p.value) %>%
+  mutate(across(where(is.numeric), ~round(., 3)))
 
-*Comparator country dynamics.* Country-specific models for the Philippines and Taiwan provide useful contrasts. In the Philippines, military and police trust remain stable or rise slightly during the Duterte period (Waves 4--6), consistent with preference alignment under a leader who endorsed coercive institutions. In Taiwan, military trust shows no significant trend ($b$ = `r round(res$h5$taiwan_mil_slope$estimate, 3)`, *p* = `r round(res$h5$ftest_pvalue, 3)`), consistent with successful depoliticization of the armed forces following democratization. These patterns are detailed in the Online Appendix (Tables A5--A6).
+ologit_key %>%
+  kbl(caption = "Ordered logistic regression (proportional odds) for government and military trust. Coefficients are log-odds.",
+      col.names = c("Outcome", "Term", "Estimate", "SE", "p"),
+      booktabs = TRUE) %>%
+  kable_styling(latex_options = c("hold_position", "scale_down"))
+```
+
+*Subgroup analyses.* The military-government differential holds across all demographic subgroups (young and old, urban and rural, low and high education), ruling out the possibility that aggregate patterns are driven by compositional change (Online Appendix, Table A2). Notably, younger and more educated respondents show the steepest military trust declines, consistent with the youth-driven character of the 2020--2021 protests.
+
+*Comparator country dynamics.* Country-specific models for the Philippines and Taiwan provide useful contrasts. In the Philippines, military and police trust remain stable or rise slightly during the Duterte period (Waves 4--6), consistent with preference alignment under a leader who endorsed coercive institutions. In Taiwan, military trust shows no significant trend ($b$ = `r round(res$h5$taiwan_mil_slope$estimate, 3)`, *p* = `r round(res$h5$ftest_pvalue, 3)`), consistent with successful depoliticization of the armed forces following democratization. These patterns are detailed in the Online Appendix (Tables A3--A4).
 
 ## Philippines: Coercive Legitimacy Alignment (H3)
 
