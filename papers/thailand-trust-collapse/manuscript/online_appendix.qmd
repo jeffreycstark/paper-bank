@@ -34,6 +34,7 @@ h5_taiwan <- readRDS(file.path(results_dir, "h5_taiwan_military_stability.rds"))
 h6_ologit <- readRDS(file.path(results_dir, "h6_ordered_logit.rds"))
 h6_subgroups <- readRDS(file.path(results_dir, "h6_subgroups.rds"))
 h6_secondary <- readRDS(file.path(results_dir, "h6_secondary_institutions.rds"))
+dem_commit <- readRDS(file.path(results_dir, "democratic_commitment.rds"))
 ```
 
 This appendix presents supplementary analyses referenced in the main text. All models control for age (centered), gender, education (standardized), and urban residence unless otherwise noted.
@@ -292,3 +293,65 @@ sec_full %>%
 ```
 
 Table A6 reports the full interaction models for the four secondary trust measures. Several patterns are worth noting. First, Thailand's decline is significant for all four institutions, but the magnitudes are substantially smaller than for military trust (main text, Table 7). Second, the Philippines and Taiwan interaction terms are generally positive, confirming Thailand's exceptionalism extends beyond the two primary institutions. Third, political parties and parliament show the smallest declines, possibly because these institutions already had lower baseline trust levels, leaving less room for erosion.
+
+# A8. Democratic Commitment and Military Trust Decline
+
+Table A7 presents models testing whether democratic commitment moderates trust erosion. Models 1 and 1b examine the interaction between wave and democratic commitment (centered) for military and government trust in Thailand. Model 2 uses a stacked outcome (military and government trust) to test whether the commitment effect differs across institution type. Model 3 reports a Wave 6 cross-sectional model predicting military trust from democratic commitment and political interest. Model 4 tests the three-country interaction.
+
+```{r tab-a7-dem-commitment}
+# Build table from saved model tidy results
+mod1 <- dem_commit$mod1_mil$tidy %>%
+  filter(term %in% c("dem_commit_c", "wave_num:dem_commit_c")) %>%
+  mutate(Model = "1", DV = "Military trust (Thailand)",
+         Term = case_when(
+           term == "dem_commit_c" ~ "Democratic commitment",
+           term == "wave_num:dem_commit_c" ~ "Wave × Commitment"
+         ))
+
+mod1b <- dem_commit$mod1b_govt$tidy %>%
+  filter(term %in% c("dem_commit_c", "wave_num:dem_commit_c")) %>%
+  mutate(Model = "1b", DV = "Government trust (Thailand)",
+         Term = case_when(
+           term == "dem_commit_c" ~ "Democratic commitment",
+           term == "wave_num:dem_commit_c" ~ "Wave × Commitment"
+         ))
+
+mod2 <- dem_commit$mod2_stacked$tidy %>%
+  filter(term == "wave_num:dem_commit_c:is_military") %>%
+  mutate(Model = "2", DV = "Stacked trust (Thailand)",
+         Term = "Wave × Commitment × Military")
+
+mod3 <- dem_commit$mod3_w6_xsec$tidy %>%
+  filter(term %in% c("democratic_commitment", "political_interest")) %>%
+  mutate(Model = "3", DV = "Military trust, W6 (Thailand)",
+         Term = case_when(
+           term == "democratic_commitment" ~ "Democratic commitment",
+           term == "political_interest" ~ "Political interest"
+         ))
+
+mod4 <- dem_commit$mod4_threecountry$tidy %>%
+  filter(term %in% c("wave_num:dem_commit_c:country_namePhilippines",
+                      "wave_num:dem_commit_c:country_nameTaiwan")) %>%
+  mutate(Model = "4", DV = "Military trust (three-country)",
+         Term = case_when(
+           str_detect(term, "Philippines") ~ "Wave × Commitment × Philippines",
+           str_detect(term, "Taiwan") ~ "Wave × Commitment × Taiwan"
+         ))
+
+dc_table <- bind_rows(mod1, mod1b, mod2, mod3, mod4) %>%
+  mutate(
+    p_display = case_when(
+      p.value < .001 ~ "< .001",
+      TRUE ~ as.character(round(p.value, 3))
+    )
+  ) %>%
+  select(Model, DV, Term, estimate, std.error, p_display) %>%
+  mutate(across(c(estimate, std.error), ~round(., 3)))
+
+dc_table %>%
+  kbl(caption = "Table A7: Democratic commitment and institutional trust decline. Democratic commitment is a composite index (0--1) of democratic preference, democratic priority over economic development, and rejection of authoritarian alternatives, centered at the sample mean for interaction models (Models 1, 1b, 2, 4).",
+      col.names = c("Model", "Dependent Variable", "Key Coefficient", "b", "SE", "p"),
+      booktabs = TRUE) %>%
+  kable_styling(latex_options = c("hold_position", "scale_down")) %>%
+  kable_styling(font_size = 8)
+```

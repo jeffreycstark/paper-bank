@@ -623,7 +623,27 @@ These findings carry two implications for our theoretical framework. First, they
 
 ### Regional Variation and Political Geography
 
-Region identifiers available in Waves 4 through 6 allow us to test whether trust erosion concentrated in areas most affected by protest activity and Thaksin-era mobilization. Bangkok and the Northeast, the protest movement's urban epicenter and the Red Shirt movement's rural heartland, respectively, experienced virtually identical declines of approximately `r round((reg_bkk_w4 - reg_bkk_w6 + reg_ne_w4 - reg_ne_w6) / 2, 2)` points from Wave 4 to Wave 6. The South, historically a Democrat Party stronghold with lower protest participation, showed the smallest decline at `r round(reg_south_w4 - reg_south_w6, 2)` points, less than half the magnitude of Bangkok and the Northeast.
+Region identifiers available in Waves 4 through 6 allow us to test whether trust erosion concentrated in areas most affected by protest activity and Thaksin-era mobilization. Table 8 displays mean military trust by region across the three waves. Bangkok and the Northeast, the protest movement's urban epicenter and the Red Shirt movement's rural heartland, respectively, experienced virtually identical declines of approximately `r round((reg_bkk_w4 - reg_bkk_w6 + reg_ne_w4 - reg_ne_w6) / 2, 2)` points from Wave 4 to Wave 6. The South, historically a Democrat Party stronghold with lower protest participation, showed the smallest decline at `r round(reg_south_w4 - reg_south_w6, 2)` points, less than half the magnitude of Bangkok and the Northeast.
+
+```{r tab-regional-means}
+reg_table <- reg_means %>%
+  select(region, wave_num, trust_mil) %>%
+  pivot_wider(names_from = wave_num, values_from = trust_mil,
+              names_prefix = "W") %>%
+  mutate(
+    `Change W4-W6` = W6 - W4,
+    `Change W5-W6` = W6 - W5
+  ) %>%
+  arrange(match(region, c("Bangkok", "Northeast", "Central", "North", "South"))) %>%
+  mutate(across(where(is.numeric), ~round(., 2)))
+
+reg_table %>%
+  kbl(caption = "Military trust by region, Waves 4--6. Scale: 1 (none at all) to 4 (a great deal).",
+      col.names = c("Region", "W4", "W5", "W6", "Change W4\\textrightarrow W6", "Change W5\\textrightarrow W6"),
+      booktabs = TRUE, escape = FALSE) %>%
+  kable_styling(latex_options = c("hold_position")) %>%
+  kable_styling(font_size = 9)
+```
 
 The temporal pattern is particularly revealing. In Wave 5 (2018--2020, immediately following the 2014 coup and military government period), Bangkok, Northeast, and North regions all showed rising military trust relative to Wave 4, consistent with short-term rally effects following the coup. The collapse occurred between Waves 5 and 6 (2020--2022), coinciding precisely with the 2020--2021 protest period. Bangkok dropped `r round(reg_bkk_w5 - reg_bkk_w6, 2)` points from Wave 5 to Wave 6, while the Northeast dropped `r round(reg_ne_w5 - reg_ne_w6, 2)` points, the steepest declines in the survey.
 
