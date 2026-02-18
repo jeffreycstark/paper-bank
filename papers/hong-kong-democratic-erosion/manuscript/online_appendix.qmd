@@ -714,9 +714,6 @@ The main text reports that Hong Kong is the only country among the sixteen ABS W
 #| label: tbl-critical-citizens-ci
 #| tbl-cap: "Critical citizens correlation (democratic preference × democratic satisfaction): overall and by fieldwork period, with 95% confidence intervals."
 
-# TODO: This code should be run once the data objects are confirmed.
-# The structure below is correct for the ABS data.
-
 if (exists("hk5")) {
   hk5_cc <- hk5 |>
     filter(!is.na(dem_always_preferable), !is.na(democracy_satisfaction))
