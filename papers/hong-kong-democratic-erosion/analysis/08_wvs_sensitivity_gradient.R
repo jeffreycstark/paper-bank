@@ -63,6 +63,18 @@ countries <- c(Turkey = "TUR", Russia = "RUS")
 
 # ─── 4. Compute non-response rates and means ────────────────────────────────
 
+weighted_mean <- function(x, w) {
+  valid <- !is.na(x) & !is.na(w)
+  sum(x[valid] * w[valid]) / sum(w[valid])
+}
+
+weighted_sd <- function(x, w) {
+  valid <- !is.na(x) & !is.na(w)
+  xv <- x[valid]; wv <- w[valid]
+  mu <- sum(xv * wv) / sum(wv)
+  sqrt(sum(wv * (xv - mu)^2) / (sum(wv) - 1))
+}
+
 compute_stats <- function(w6_data, w7_data, country_name) {
   results <- item_map |>
     rowwise() |>
@@ -71,14 +83,25 @@ compute_stats <- function(w6_data, w7_data, country_name) {
       # W6 stats (missing coded as NA in harmonized data)
       w6_n = sum(!is.na(w6_data[[var]]), na.rm = TRUE),
       w6_nr = (sum(is.na(w6_data[[var]])) / nrow(w6_data)) * 100,
-      w6_mean = mean(w6_data[[var]], na.rm = TRUE),
+      w6_mean = weighted_mean(w6_data[[var]], w6_data$weight),
+      w6_sd = weighted_sd(w6_data[[var]], w6_data$weight),
       # W7 stats
       w7_n = sum(!is.na(w7_data[[var]]), na.rm = TRUE),
       w7_nr = (sum(is.na(w7_data[[var]])) / nrow(w7_data)) * 100,
-      w7_mean = mean(w7_data[[var]], na.rm = TRUE),
+      w7_mean = weighted_mean(w7_data[[var]], w7_data$weight),
+      w7_sd = weighted_sd(w7_data[[var]], w7_data$weight),
       # Changes
       nr_change = w7_nr - w6_nr,
-      mean_change = w7_mean - w6_mean
+      mean_change = w7_mean - w6_mean,
+      # Effect size: Cohen's d using pooled SD
+      pooled_sd = sqrt(((w6_n - 1) * w6_sd^2 + (w7_n - 1) * w7_sd^2) /
+                         (w6_n + w7_n - 2)),
+      cohens_d = if_else(pooled_sd > 0, mean_change / pooled_sd, NA_real_),
+      # p-value from two-sample t-test (unweighted, for significance)
+      p_value = tryCatch(
+        t.test(w7_data[[var]], w6_data[[var]])$p.value,
+        error = function(e) NA_real_
+      )
     ) |>
     ungroup()
 
@@ -405,3 +428,54 @@ for (cty in c("Turkey", "Russia")) {
   dem_eval <- cty_data |> filter(label == "Dem. evaluation")
   cat(sprintf("  Dem. evaluation change: %+.2f\n", dem_eval$mean_change))
 }
+
+# ─── 11. Turkey gradient for manuscript (turkey_gradient.RData) ──────────────
+
+# Build the turkey_gradient_results data frame expected by manuscript.qmd
+turkey_data <- all_results |>
+  filter(country == "Turkey") |>
+  mutate(
+    sensitivity_rank = row_number(),
+    category = case_when(
+      sensitivity == "Trust" ~ "High",
+      sensitivity == "Democracy" ~ "Low",
+      sensitivity == "Control" ~ "Low"
+    ),
+    delta = mean_change
+  ) |>
+  select(label, var, sensitivity_rank, category,
+         w6_mean, w7_mean, delta, cohens_d, w6_n, w7_n, p_value)
+
+# Reorder: trust items first by police/govt/armed/parl/parties/courts, then dem, then control
+turkey_rank <- c(
+  "Conf. police", "Conf. government", "Conf. armed forces",
+  "Conf. parliament", "Conf. pol. parties", "Conf. courts", "Conf. press",
+  "Dem. importance", "Dem. evaluation", "Democratic system",
+  "Strong leader", "Experts decide"
+)
+turkey_data <- turkey_data |>
+  mutate(
+    sensitivity_rank = match(label, turkey_rank),
+    category = case_when(
+      label %in% c("Conf. police", "Conf. government", "Conf. armed forces") ~ "High",
+      label %in% c("Conf. parliament", "Conf. pol. parties", "Conf. courts", "Conf. press") ~ "Medium",
+      TRUE ~ "Low"
+    )
+  ) |>
+  arrange(sensitivity_rank)
+
+turkey_gradient_results <- turkey_data
+turkey_gradient_r_all <- cor(turkey_data$sensitivity_rank, turkey_data$cohens_d,
+                             use = "complete.obs")
+turkey_gradient_r_trust <- cor(
+  turkey_data$sensitivity_rank[turkey_data$category %in% c("High", "Medium")],
+  turkey_data$cohens_d[turkey_data$category %in% c("High", "Medium")],
+  use = "complete.obs"
+)
+
+save(turkey_gradient_results, turkey_gradient_r_all, turkey_gradient_r_trust,
+     file = "results/turkey_gradient.RData")
+
+cat(sprintf("\n=== Turkey gradient: r_all = %.3f, r_trust = %.3f ===\n",
+            turkey_gradient_r_all, turkey_gradient_r_trust))
+cat("\u2713 Turkey gradient saved to results/turkey_gradient.RData\n")
