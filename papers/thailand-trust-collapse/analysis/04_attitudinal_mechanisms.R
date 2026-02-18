@@ -58,7 +58,32 @@ d <- d %>%
       cbind(reject_military, reject_strongman, reject_single_party),
       na.rm = TRUE
     ),
-    reject_authoritarian = if_else(is.nan(reject_authoritarian), NA_real_, reject_authoritarian)
+    reject_authoritarian = if_else(is.nan(reject_authoritarian), NA_real_, reject_authoritarian),
+    # Democratic commitment (0-1 scale from dem_always_preferable)
+    # 1 = always prefer democracy, 0.5 = sometimes OK with authoritarian, 0 = doesn't matter
+    dem_commitment_01 = case_when(
+      dem_always_preferable == 1 ~ 1.0,
+      dem_always_preferable == 2 ~ 0.5,
+      dem_always_preferable == 3 ~ 0.0
+    ),
+    # Democracy priority (0-1 scale from dem_vs_econ)
+    # Original: 1=econ definitely, 2=econ somewhat, 3=dem somewhat, 4=dem definitely, 5=both equally
+    # Rescaled: 0=economy priority, 0.5=both equally, 1=democracy priority
+    dem_priority_01 = case_when(
+      dem_vs_econ == 1 ~ 0.0,
+      dem_vs_econ == 2 ~ 0.25,
+      dem_vs_econ == 5 ~ 0.5,
+      dem_vs_econ == 3 ~ 0.75,
+      dem_vs_econ == 4 ~ 1.0
+    ),
+    # Rescale reject_authoritarian to 0-1 for composite
+    reject_authoritarian_01 = (reject_authoritarian - 1) / 3,
+    # Democratic commitment composite (0-1): mean of all three 0-1 components
+    democratic_commitment = rowMeans(
+      cbind(dem_commitment_01, dem_priority_01, reject_authoritarian_01),
+      na.rm = TRUE
+    ),
+    democratic_commitment = if_else(is.nan(democratic_commitment), NA_real_, democratic_commitment)
   )
 
 controls <- "age_centered + female + education_z + is_urban"
@@ -407,6 +432,73 @@ print(phil_means %>% mutate(across(where(is.numeric), ~round(., 2))))
 
 saveRDS(phil_means, file.path(results_dir, "h3_philippines_means.rds"))
 
+# =============================================================================
+# Democratic Commitment vs Satisfaction Divergence (Expectation Updating)
+# =============================================================================
+
+cat("\n=== DEMOCRATIC COMMITMENT VS SATISFACTION DIVERGENCE ===\n")
+
+# ── Descriptive means by country × wave ─────────────────────────────────────
+
+commitment_means <- d %>%
+  group_by(country_name, wave_num) %>%
+  summarise(
+    dem_commitment = mean(democratic_commitment, na.rm = TRUE),
+    dem_commitment_sd = sd(democratic_commitment, na.rm = TRUE),
+    dem_satisfaction = mean(democracy_satisfaction, na.rm = TRUE),
+    dem_satisfaction_sd = sd(democracy_satisfaction, na.rm = TRUE),
+    dem_commitment_01 = mean(dem_commitment_01, na.rm = TRUE),
+    dem_priority_01 = mean(dem_priority_01, na.rm = TRUE),
+    reject_auth_01 = mean(reject_authoritarian_01, na.rm = TRUE),
+    n_commitment = sum(!is.na(democratic_commitment)),
+    n_satisfaction = sum(!is.na(democracy_satisfaction)),
+    .groups = "drop"
+  )
+
+cat("\nDemocratic commitment (composite 0-1) by country × wave:\n")
+commitment_means %>%
+  select(country_name, wave_num, dem_commitment) %>%
+  pivot_wider(names_from = country_name, values_from = dem_commitment) %>%
+  mutate(across(where(is.numeric), ~round(., 3))) %>%
+  print()
+
+cat("\nDemocracy satisfaction by country × wave:\n")
+commitment_means %>%
+  select(country_name, wave_num, dem_satisfaction) %>%
+  pivot_wider(names_from = country_name, values_from = dem_satisfaction) %>%
+  mutate(across(where(is.numeric), ~round(., 3))) %>%
+  print()
+
+cat("\nComponent means for Thailand:\n")
+commitment_means %>%
+  filter(country_name == "Thailand") %>%
+  select(wave_num, dem_commitment_01, dem_priority_01, reject_auth_01, dem_commitment) %>%
+  mutate(across(where(is.numeric), ~round(., 3))) %>%
+  print()
+
+# ── Regression: democratic commitment trend ─────────────────────────────────
+
+commit_trend <- lm(
+  democratic_commitment ~ wave_num * country_name +
+    age_centered + female + education_z + is_urban,
+  data = d
+)
+
+commit_trend_tidy <- tidy(commit_trend, conf.int = TRUE)
+cat("\nDemocratic commitment trend (country × wave):\n")
+print(commit_trend_tidy %>%
+        filter(str_detect(term, "wave|country")) %>%
+        mutate(across(where(is.numeric), ~round(., 4))))
+
+# ── Save commitment results ─────────────────────────────────────────────────
+
+saveRDS(list(
+  means = commitment_means,
+  trend = list(model = commit_trend, tidy = commit_trend_tidy, glance = glance(commit_trend))
+), file.path(results_dir, "democratic_commitment.rds"))
+
+cat("Democratic commitment results saved.\n")
+
 cat("\n=== ALL ATTITUDINAL MECHANISM RESULTS SAVED ===\n")
 cat("Files:\n")
-cat(paste(" ", list.files(results_dir, pattern = "h[345]_|sat_"), collapse = "\n"), "\n")
+cat(paste(" ", list.files(results_dir, pattern = "h[345]_|sat_|dem"), collapse = "\n"), "\n")

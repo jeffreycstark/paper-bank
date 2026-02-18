@@ -38,7 +38,56 @@ h6_secondary <- readRDS(file.path(results_dir, "h6_secondary_institutions.rds"))
 
 This appendix presents supplementary analyses referenced in the main text. All models control for age (centered), gender, education (standardized), and urban residence unless otherwise noted.
 
-# A1. Non-Linear Time Specifications
+# A1. Variable Descriptions
+
+Table A1 describes the key variables used in the analysis, their original scales, and any transformations applied.
+
+```{r tab-a1-variables}
+var_table <- tribble(
+  ~Variable, ~Source, ~`Original Scale`, ~Transformation, ~`Analysis Scale`,
+  "trust_national_government", "ABS Q7", "1--4 (none -- a great deal)", "None", "1--4 (higher = more trust)",
+  "trust_military", "ABS Q7", "1--4", "None", "1--4 (higher = more trust)",
+  "trust_police", "ABS Q7", "1--4", "None", "1--4 (higher = more trust)",
+  "trust_parliament", "ABS Q7", "1--4", "None", "1--4 (higher = more trust)",
+  "trust_courts", "ABS Q7", "1--4", "None", "1--4 (higher = more trust)",
+  "trust_political_parties", "ABS Q7", "1--4", "None", "1--4 (higher = more trust)",
+  "trust_political (composite)", "Derived", "---", "Mean of govt, parliament, parties", "1--4",
+  "trust_nonpolitical (composite)", "Derived", "---", "Mean of courts, military, police", "1--4",
+  "military_rule", "ABS Q130", "1--4 (strongly disapprove -- strongly approve)", "None", "1--4",
+  "reject_military", "Derived", "---", "5 -- military_rule", "1--4 (higher = more rejection)",
+  "strongman_rule", "ABS Q131", "1--4", "None", "1--4",
+  "reject_strongman", "Derived", "---", "5 -- strongman_rule", "1--4 (higher = more rejection)",
+  "single_party_rule", "ABS Q132", "1--4", "None", "1--4",
+  "reject_single_party", "Derived", "---", "5 -- single_party_rule", "1--4 (higher = more rejection)",
+  "reject_authoritarian (composite)", "Derived", "---", "Mean of reject_military, reject_strongman, reject_single_party", "1--4 (higher = more rejection)",
+  "dem_always_preferable", "ABS Q98", "1--3 (1 = democracy always preferable, 2 = authoritarian sometimes OK, 3 = doesn't matter)", "None", "1--3",
+  "dem_commitment_01", "Derived", "---", "Rescaled from dem_always_preferable: 1 = always prefer democracy, 0.5 = sometimes OK with authoritarian, 0 = doesn't matter", "0--1 (higher = stronger democratic commitment)",
+  "dem_vs_econ", "ABS Q119/Q126", "1--5 (1 = economy definitely more important, 2 = economy somewhat, 3 = democracy somewhat, 4 = democracy definitely, 5 = both equally)", "None", "1--5 (non-ordinal; 5 = midpoint)",
+  "dem_priority_01", "Derived", "---", "Rescaled from dem_vs_econ: 0 = economy definitely, 0.25 = economy somewhat, 0.5 = both equally, 0.75 = democracy somewhat, 1 = democracy definitely", "0--1 (higher = stronger democracy priority)",
+  "democracy_satisfaction", "ABS Q1", "1--4 (not at all -- very satisfied)", "None", "1--4 (higher = more satisfied)",
+  "political_interest", "ABS Q22", "1--4 (not at all -- very interested)", "None; centered for interactions", "1--4 (higher = more interested)",
+  "pol_discuss", "ABS Q24", "1--4 (never -- frequently)", "None; centered for interactions", "1--4 (higher = more frequent)",
+  "econ_national_now", "ABS Q3", "1--5 (very bad -- very good)", "None", "1--5 (higher = better evaluation)",
+  "age_centered", "ABS", "Years", "Centered at sample mean", "Continuous",
+  "female", "ABS", "1 = male, 2 = female", "Recoded: 1 = female, 0 = male", "Binary",
+  "education_z", "ABS", "Years of education", "Standardized (z-score)", "Continuous",
+  "is_urban", "ABS", "1 = urban, 2 = rural", "Recoded: 1 = urban, 0 = rural", "Binary"
+)
+
+kbl(var_table,
+    caption = "Variable descriptions and transformations",
+    booktabs = TRUE, longtable = TRUE,
+    label = "tab-a1-variables") %>%
+  kable_styling(latex_options = c("repeat_header"),
+                font_size = 8) %>%
+  column_spec(1, width = "3.5cm") %>%
+  column_spec(2, width = "1.2cm") %>%
+  column_spec(3, width = "3cm") %>%
+  column_spec(4, width = "4cm") %>%
+  column_spec(5, width = "3cm")
+```
+
+# A2. Non-Linear Time Specifications
 
 The main text models trust as a linear function of wave. Here we test whether non-linear specifications better capture Thailand's trajectory, using two approaches: piecewise period dummies aligned with Thailand's political timeline, and quadratic time trends.
 
@@ -99,7 +148,7 @@ q_key %>%
 
 The quadratic specifications (Table A1b) confirm that Thailand's trust trajectory is not purely linear. For both government and military trust, the quadratic term and its country interactions suggest accelerating decline in later waves. However, the quadratic specification does not capture the period-specific dynamics as cleanly as the piecewise model, likely because the 2020--2021 disruption represents a discrete shock rather than a smooth acceleration.
 
-# A2. Ordered Logistic Regression
+# A3. Ordered Logistic Regression
 
 The main models treat the four-point trust scale as continuous. To verify that results are not sensitive to this assumption, we re-estimate the core H1 specification using ordered logistic regression (proportional odds model).
 
@@ -125,7 +174,7 @@ ologit_key %>%
 
 The ordered logit results (Table A2) are substantively identical to the OLS models. Thailand's per-wave decline is steeper for military trust than government trust, and the interaction terms for the Philippines and Taiwan are positive and significant, confirming that Thailand's decline is exceptional regardless of functional form assumptions.
 
-# A3. Subgroup Analyses
+# A4. Subgroup Analyses
 
 To rule out the possibility that the aggregate patterns are driven by compositional shifts across waves—for example, if later waves disproportionately sampled younger, more urban, or more educated respondents who tend to report lower trust—we estimate the baseline model separately for demographic subgroups.
 
@@ -164,7 +213,7 @@ Table A3 confirms that the military-government differential holds across all dem
 
 The consistency of the pattern across subgroups rules out compositional explanations and strengthens the inference that the military-government differential reflects a genuine shift in public attitudes.
 
-# A4. Philippines: Coercive Trust Under Duterte
+# A5. Philippines: Coercive Trust Under Duterte
 
 The Philippines provides a useful contrast case. Under Rodrigo Duterte (2016--2022), the government pursued a highly visible drug war that relied heavily on police and military enforcement. If citizens who support a coercive policy agenda maintain trust in the institutions that implement it, we should observe stable or rising coercive trust during the Duterte period.
 
@@ -195,7 +244,7 @@ Table A4 shows that during the Duterte period, Philippine military trust trends 
 
 The contrast with Thailand is instructive. In Thailand, the military's political role generated mass opposition and targeted trust erosion. In the Philippines, the coercive institutions operated with at least partial popular support for their core mission (anti-drug enforcement), insulating them from the kind of backlash observed in Thailand.
 
-# A5. Taiwan: Military Depoliticization
+# A6. Taiwan: Military Depoliticization
 
 Taiwan presents the opposite theoretical case: a successfully depoliticized military. Following democratization in the 1990s, the Taiwanese military transitioned from a party-state instrument to a professional defense force under firm civilian control. If depoliticization insulates military trust from political volatility, we should observe a flat trajectory.
 
@@ -220,7 +269,7 @@ Table A5 confirms the depoliticization prediction. The wave coefficient for Taiw
 
 This stability contrasts sharply with Thailand and supports the theoretical claim that the military's *political role*, rather than general political instability, drives targeted trust erosion. Where the military remains above the political fray, its institutional trust is insulated from the partisan dynamics that corrode trust in elected institutions.
 
-# A6. Full Secondary Institution Results
+# A7. Full Secondary Institution Results
 
 ```{r tab-a6-secondary-full}
 # Full interaction model results for all institutions

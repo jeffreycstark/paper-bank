@@ -270,7 +270,7 @@ This comparison provides theoretical and empirical leverage for three reasons. F
 
 We also examine police and court trust as secondary outcomes to assess whether trust erosion is specific to the military or extends to other coercive institutions. If the mechanism is anti-militarism rather than generalized anti-state sentiment, police and court trust should show different patterns than military trust.
 
-The four-point scale is treated as continuous in our models, following standard practice in institutional trust research [@Marien2011-ms; @Meer2010-bv]. Robustness checks using ordered logistic regression produce substantively identical results (Online Appendix, Table A2).
+The four-point scale is treated as continuous in our models, following standard practice in institutional trust research [@Marien2011-ms; @Meer2010-bv]. Robustness checks using ordered logistic regression produce substantively identical results (Online Appendix, Table A3).
 
 ## Independent Variables and Controls
 
@@ -533,11 +533,11 @@ secondary %>%
 
 *Secondary institutions.* Table 7 reports Thailand's per-wave slopes for all six trust measures. The military exhibits by far the steepest decline (`r round(secondary$thailand_slope[1], 3)`), followed by national government (`r round(secondary$thailand_slope[2], 3)`). Courts, police, parliament, and political parties all decline, but at roughly half the rate or less. This gradient, with the military as the clear outlier, is consistent with a political crisis mechanism that specifically targeted the military's role rather than generalized institutional malaise.
 
-*Ordered logit models.* Treating trust as ordinal rather than continuous produces substantively identical patterns: Thailand's military trust decline is steeper than government trust, and both are steeper than comparator countries (Online Appendix, Table A2).
+*Ordered logit models.* Treating trust as ordinal rather than continuous produces substantively identical patterns: Thailand's military trust decline is steeper than government trust, and both are steeper than comparator countries (Online Appendix, Table A3).
 
-*Subgroup analyses.* The military-government differential holds across all demographic subgroups (young and old, urban and rural, low and high education), ruling out the possibility that aggregate patterns are driven by compositional change (Online Appendix, Table A3). Notably, younger and more educated respondents show the steepest military trust declines, consistent with the youth-driven character of the 2020--2021 protests.
+*Subgroup analyses.* The military-government differential holds across all demographic subgroups (young and old, urban and rural, low and high education), ruling out the possibility that aggregate patterns are driven by compositional change (Online Appendix, Table A4). Notably, younger and more educated respondents show the steepest military trust declines, consistent with the youth-driven character of the 2020--2021 protests.
 
-*Comparator country dynamics.* Country-specific models for the Philippines and Taiwan provide useful contrasts. In the Philippines, military and police trust remain stable or rise slightly during the Duterte period (Waves 4--6), consistent with preference alignment under a leader who endorsed coercive institutions. In Taiwan, military trust shows no significant trend ($b$ = `r round(res$h5$taiwan_mil_slope$estimate, 3)`, *p* = `r round(res$h5$ftest_pvalue, 3)`), consistent with successful depoliticization of the armed forces following democratization. These patterns are detailed in the Online Appendix (Tables A4--A5).
+*Comparator country dynamics.* Country-specific models for the Philippines and Taiwan provide useful contrasts. In the Philippines, military and police trust remain stable or rise slightly during the Duterte period (Waves 4--6), consistent with preference alignment under a leader who endorsed coercive institutions. In Taiwan, military trust shows no significant trend ($b$ = `r round(res$h5$taiwan_mil_slope$estimate, 3)`, *p* = `r round(res$h5$ftest_pvalue, 3)`), consistent with successful depoliticization of the armed forces following democratization. These patterns are detailed in the Online Appendix (Tables A5--A6).
 
 ## Philippines: Coercive Legitimacy Alignment (H3)
 
