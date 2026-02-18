@@ -1203,3 +1203,39 @@ if (exists("wvs_gradient_results")) {
 ```
 
 These findings demonstrate that the sensitivity gradient is not idiosyncratic to the Hong Kong context or the Asian Barometer Survey instrument. The same pattern---systematic differential non-response scaling with item political sensitivity---emerges independently in WVS data from two additional autocratizing contexts with distinct political histories, repressive mechanisms, and survey implementations. This cross-national replication strengthens the case that the sensitivity gradient constitutes a generalizable diagnostic for survey validity under political pressure.
+
+# Trust vs. Confidence Wording and Cross-Instrument Validation {#sec-trust-confidence}
+
+## The Trust/Confidence Distinction {#sec-trust-confidence-distinction}
+
+The primary analysis uses ABS items asking how much respondents "trust" each institution (1--4 scale), while the Turkey replication uses WVS items asking how much "confidence" respondents have in each institution (1--4 scale). A potential concern is that these constructs differ---"trust" may tap relational or interpersonal judgments, while "confidence" implies assessments of institutional competence [@Newton2000-ce; @Zmerli2011-ag].
+
+Three considerations mitigate this concern. First, the sensitivity gradient is computed within each instrument: ABS trust items are compared to ABS democratic evaluation items in Hong Kong, and WVS confidence items are compared to WVS democratic evaluation items in Turkey. The trust/confidence distinction therefore does not confound the core within-instrument test---it matters only for the cross-case comparison of gradient magnitudes ($r = -0.85$ in Hong Kong vs. $r = -0.68$ in Turkey).
+
+Second, the measurement invariance literature provides reassurance. Factor-analytic studies consistently find that trust and confidence items load on the same latent factor in cross-national comparisons [@Marien2011-ms; @Zmerli2011-ag]. Item response theory analyses similarly show that the trust/confidence distinction does not generate meaningful differential item functioning across survey programs [@Ariely2011-ht].
+
+Third, the direction of any bias is conservative for the cross-case comparison. If "confidence" taps a more cognitive, competence-based dimension, it should be *less* susceptible to preference falsification than the more affectively loaded "trust" items---respondents might strategically report trust in a feared institution without genuinely believing it is competent. This would attenuate the WVS gradient relative to the ABS gradient, meaning the observed Turkey gradient ($r = -0.68$) represents a lower bound.
+
+## Same-Country, Same-Period Cross-Instrument Comparison {#sec-cross-instrument}
+
+To directly assess cross-instrument equivalence, we can exploit the temporal overlap between ABS Wave 5 and WVS Wave 7 fieldwork in several Asian countries. The strongest candidate comparisons are:
+
+| Country | ABS W5 Fieldwork | WVS W7 Fieldwork | Temporal Gap |
+|:--------|:-----------------|:-----------------|:-------------|
+| Thailand | 2019 | 2018 | ~1 year |
+| Malaysia | Apr--May 2019 | 2018 | ~1 year |
+| Philippines | 2019 | 2019 | ~0 years |
+| Myanmar | Sep--Oct 2019 | 2018--2020 | overlapping |
+| Hong Kong | 2019--2021 (split) | 2018 | varies |
+
+: Temporal overlap between ABS Wave 5 and WVS Wave 7 fieldwork in Asian countries. {#tbl-fieldwork-overlap}
+
+**Proposed analysis.** For Thailand (or the Philippines), where both surveys were fielded in stable political conditions during approximately the same period:
+
+1. *Mean-level comparison.* Compare mean trust/confidence scores for police, government, parliament, and courts across the two instruments. If the constructs are equivalent, mean levels should be similar after accounting for scale differences.
+
+2. *Rank-order comparison.* More importantly for the sensitivity gradient, compare the rank ordering of institutions by mean trust/confidence. If respondents rank police trust higher than parliament trust on both instruments, the within-instrument gradient logic holds regardless of mean-level differences.
+
+3. *Gradient baseline in non-autocratizing context.* Compute a "null gradient" for Thailand or the Philippines---the correlation between institutional coercive salience and observed trust levels---in the absence of an autocratization shock. This provides a baseline against which the Hong Kong and Turkey gradients can be compared. We would expect the null gradient to be near zero or weakly positive (more coercive institutions are not systematically more trusted absent falsification pressure).
+
+**Expected outcome.** If rank orderings are similar across ABS and WVS for the same country and period, this establishes that the trust/confidence distinction does not alter the institutional hierarchy that drives the gradient test. The cross-case gradient magnitude comparison (Hong Kong $r = -0.85$ vs. Turkey $r = -0.68$) can then be interpreted with greater confidence, since any attenuation in Turkey is unlikely to be an artifact of item wording.
