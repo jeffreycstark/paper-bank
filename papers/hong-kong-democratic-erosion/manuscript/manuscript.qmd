@@ -124,6 +124,20 @@ Methodologists have developed several tools for detecting preference falsificati
 
 The sensitivity gradient approach complements these tools by exploiting within-instrument variation in item sensitivity. It requires no experimental design, works with standard cross-national survey batteries, and can be applied retrospectively to any survey fielded during a period of political change. The approach generates two portable diagnostics: first, the sensitivity gradient itself (whether observed shifts correlate with pre-specified item sensitivity rankings), and second, the correlation diagnostic (whether the standard critical citizens relationship reverses). Both can be computed from data already available in the ABS, World Values Survey, Afrobarometer, and Latinobarómetro archives, making the framework immediately applicable beyond the present case.
 
+## Hypotheses
+
+The theoretical framework generates five testable predictions, organized from core observable implications to mechanism-discriminating tests.
+
+*H1 (Sensitivity Gradient).* Under rapid autocratization, the magnitude of regime-favorable shifts in survey items will correlate negatively with pre-specified sensitivity rankings: items evaluating coercive institutions (high sensitivity) will show the largest increases, while abstract democratic evaluations (low sensitivity) will remain stable or decline.
+
+*H2 (Trust--Democracy Divergence).* Institutional trust and democratic evaluations will move in opposite directions following an autocratization shock, producing simultaneous trust inflation and democratic evaluation decline within the same survey instrument.
+
+*H3 (Critical Citizens Reversal).* The canonical negative correlation between democratic commitment and democratic satisfaction will weaken or reverse under authoritarian consolidation, driven by the asymmetric cost structure of honest response on regime-evaluative items.
+
+*H3a (Procedural Democrat Concentration).* The correlation reversal will be concentrated among respondents holding procedural conceptions of democracy (free expression, free elections) rather than substantive conceptions (basic necessities, clean governance), consistent with a falsification-selection mechanism rather than conceptual co-optation.
+
+*H4 (Age Gradient).* If preference falsification rather than conservative revaluation drives trust increases, the largest effects will appear among younger cohorts facing highest surveillance exposure, not among older cohorts with stronger conservative predispositions.
+
 # Research Design: A Natural Quasi-Experiment
 
 ## The ABS Wave 5 Disruption as Identification Strategy
