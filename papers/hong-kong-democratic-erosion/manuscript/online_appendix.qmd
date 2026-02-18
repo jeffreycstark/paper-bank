@@ -1208,34 +1208,158 @@ These findings demonstrate that the sensitivity gradient is not idiosyncratic to
 
 ## The Trust/Confidence Distinction {#sec-trust-confidence-distinction}
 
-The primary analysis uses ABS items asking how much respondents "trust" each institution (1--4 scale), while the Turkey replication uses WVS items asking how much "confidence" respondents have in each institution (1--4 scale). A potential concern is that these constructs differ---"trust" may tap relational or interpersonal judgments, while "confidence" implies assessments of institutional competence [@Newton2000-ce; @Zmerli2011-ag].
+The primary analysis uses ABS items asking how much respondents "trust" each institution (1--4 scale), while the Turkey replication uses WVS items asking how much "confidence" respondents have in each institution (1--4 scale). A potential concern is that these constructs differ---"trust" may tap relational or interpersonal judgments, while "confidence" implies assessments of institutional competence [@Newton2000-ce; @Zmerli2011-ji].
 
 Three considerations mitigate this concern. First, the sensitivity gradient is computed within each instrument: ABS trust items are compared to ABS democratic evaluation items in Hong Kong, and WVS confidence items are compared to WVS democratic evaluation items in Turkey. The trust/confidence distinction therefore does not confound the core within-instrument test---it matters only for the cross-case comparison of gradient magnitudes ($r = -0.85$ in Hong Kong vs. $r = -0.68$ in Turkey).
 
-Second, the measurement invariance literature provides reassurance. Factor-analytic studies consistently find that trust and confidence items load on the same latent factor in cross-national comparisons [@Marien2011-ms; @Zmerli2011-ag]. Item response theory analyses similarly show that the trust/confidence distinction does not generate meaningful differential item functioning across survey programs [@Ariely2011-ht].
+Second, the measurement invariance literature provides reassurance. Factor-analytic studies consistently find that trust and confidence items load on the same latent factor in cross-national comparisons [@Marien2011-ms; @Zmerli2011-ji]. Item response theory analyses similarly show that the trust/confidence distinction does not generate meaningful differential item functioning across survey programs [@Ariely2011-ht].
 
 Third, the direction of any bias is conservative for the cross-case comparison. If "confidence" taps a more cognitive, competence-based dimension, it should be *less* susceptible to preference falsification than the more affectively loaded "trust" items---respondents might strategically report trust in a feared institution without genuinely believing it is competent. This would attenuate the WVS gradient relative to the ABS gradient, meaning the observed Turkey gradient ($r = -0.68$) represents a lower bound.
 
 ## Same-Country, Same-Period Cross-Instrument Comparison {#sec-cross-instrument}
 
-To directly assess cross-instrument equivalence, we can exploit the temporal overlap between ABS Wave 5 and WVS Wave 7 fieldwork in several Asian countries. The strongest candidate comparisons are:
+To directly assess cross-instrument equivalence, we exploit the temporal overlap between ABS Wave 5 and WVS Wave 7 fieldwork. We focus on Thailand (ABS W5: 2019, WVS W7: 2018; ~1 year gap) and the Philippines (ABS W5: 2019, WVS W7: 2019; ~0 years gap), computing weighted means for the five institutions present in both instruments: police, military/armed forces, government, courts, and parliament.
 
-| Country | ABS W5 Fieldwork | WVS W7 Fieldwork | Temporal Gap |
-|:--------|:-----------------|:-----------------|:-------------|
-| Thailand | 2019 | 2018 | ~1 year |
-| Malaysia | Apr--May 2019 | 2018 | ~1 year |
-| Philippines | 2019 | 2019 | ~0 years |
-| Myanmar | Sep--Oct 2019 | 2018--2020 | overlapping |
-| Hong Kong | 2019--2021 (split) | 2018 | varies |
+```{r}
+#| label: tbl-cross-instrument
+#| tbl-cap: "Cross-instrument comparison of institutional trust (ABS) and confidence (WVS) means. All items scored 1--4, higher = more trust/confidence. Weighted estimates. Rank = descending order by mean within each instrument (1 = highest)."
+#| echo: false
+#| warning: false
 
-: Temporal overlap between ABS Wave 5 and WVS Wave 7 fieldwork in Asian countries. {#tbl-fieldwork-overlap}
+load("../analysis/results/cross_instrument_validation.RData")
 
-**Proposed analysis.** For Thailand (or the Philippines), where both surveys were fielded in stable political conditions during approximately the same period:
+cross_instrument_results$means |>
+  select(Country = country, Institution = institution,
+         `ABS Mean` = abs_mean, `ABS Rank` = abs_rank,
+         `WVS Mean` = wvs_mean, `WVS Rank` = wvs_rank,
+         `Diff (WVS−ABS)` = mean_diff) |>
+  mutate(across(where(is.numeric) & !contains("Rank"),
+                ~ sprintf("%.2f", .x)),
+         across(contains("Rank"), as.integer)) |>
+  kableExtra::kbl(align = c("l", "l", "r", "r", "r", "r", "r")) |>
+  kableExtra::kable_styling(
+    bootstrap_options = c("condensed"),
+    latex_options = c("hold_position"),
+    font_size = 9, full_width = FALSE
+  ) |>
+  kableExtra::pack_rows("Thailand", 1, 5) |>
+  kableExtra::pack_rows("Philippines", 6, 10)
+```
 
-1. *Mean-level comparison.* Compare mean trust/confidence scores for police, government, parliament, and courts across the two instruments. If the constructs are equivalent, mean levels should be similar after accounting for scale differences.
+Three patterns emerge from @tbl-cross-instrument. First, *mean levels differ systematically* between instruments: ABS trust means in Thailand are 0.25--0.61 points higher than WVS confidence means for the same institutions, consistent with known scale calibration differences between survey programs. This mean-level gap is expected and does not threaten the gradient methodology, which relies on *within-instrument* rank orderings rather than cross-instrument level comparisons.
 
-2. *Rank-order comparison.* More importantly for the sensitivity gradient, compare the rank ordering of institutions by mean trust/confidence. If respondents rank police trust higher than parliament trust on both instruments, the within-instrument gradient logic holds regardless of mean-level differences.
+```{r}
+#| echo: false
 
-3. *Gradient baseline in non-autocratizing context.* Compute a "null gradient" for Thailand or the Philippines---the correlation between institutional coercive salience and observed trust levels---in the absence of an autocratization shock. This provides a baseline against which the Hong Kong and Turkey gradients can be compared. We would expect the null gradient to be near zero or weakly positive (more coercive institutions are not systematically more trusted absent falsification pressure).
+rc <- cross_instrument_results$rank_correlations
+tha_r <- rc |> filter(country == "Thailand")
+phl_r <- rc |> filter(country == "Philippines")
+```
 
-**Expected outcome.** If rank orderings are similar across ABS and WVS for the same country and period, this establishes that the trust/confidence distinction does not alter the institutional hierarchy that drives the gradient test. The cross-case gradient magnitude comparison (Hong Kong $r = -0.85$ vs. Turkey $r = -0.68$) can then be interpreted with greater confidence, since any attenuation in Turkey is unlikely to be an artifact of item wording.
+Second, *institutional rank orderings are broadly preserved across instruments*. In Thailand, the Spearman rank correlation between ABS and WVS institutional means is $\rho$ = `r sprintf("%.2f", tha_r$spearman_r)`. Both instruments identify military and courts as the most trusted institutions and parliament as the least trusted, with police and government occupying intermediate positions. The Philippine rank-order correlation is weaker ($\rho$ = `r sprintf("%.2f", phl_r$spearman_r)`), though both instruments agree that military ranks highest and parliament lowest---the key anchors for gradient inference.
+
+```{r}
+#| echo: false
+
+ng <- cross_instrument_results$null_gradients
+tha_ng <- ng |> filter(country == "Thailand")
+phl_ng <- ng |> filter(country == "Philippines")
+```
+
+Third, we compute *null sensitivity gradients*---the correlation between institutional coercive salience (police = most coercive, parliament = least) and mean trust/confidence levels---for these non-autocratizing contexts.^[Thailand under Prayuth and the Philippines under Duterte experienced democratic erosion during this period, complicating the "null" interpretation. The gradients should therefore be interpreted cautiously as comparative baselines rather than clean nulls.] In Thailand, the ABS null gradient is $r$ = `r sprintf("%.2f", tha_ng$abs_gradient_r)` and the WVS null gradient is $r$ = `r sprintf("%.2f", tha_ng$wvs_gradient_r)` (neither statistically significant, $n = 5$ institutions). Critically, both instruments produce *similar gradient magnitudes within the same country*, suggesting that the trust/confidence wording distinction does not systematically bias the gradient test. The cross-case gradient magnitude comparison (Hong Kong $r = -0.85$ vs. Turkey $r = -0.68$) can therefore be interpreted with greater confidence, since the attenuation in Turkey is unlikely to be an artifact of item wording.
+
+# Extending the Sensitivity Gradient to Africa: Burkina Faso {#sec-burkina-faso}
+
+```{r}
+#| echo: false
+#| warning: false
+
+load("../analysis/results/afro_sensitivity_gradient.RData")
+res <- afro_gradient_results
+items <- res$item_results
+```
+
+## The Burkina Faso Natural Experiment {#sec-bfa-experiment}
+
+On September 30, 2022, Captain Ibrahim Traoré led Burkina Faso's second coup of the year, deposing the military government of Lieutenant Colonel Paul-Henri Sandaogo Damiba that had itself seized power in January 2022. The September coup dissolved the national government, suspended the Constitution, sealed state borders, and imposed a strict curfew [@Brailey2024-mi]. Critically, Afrobarometer Round 9 fieldwork in Burkina Faso was underway during the coup, enabling a within-wave pre/post comparison analogous to the Hong Kong NSL split.
+
+Following @Brailey2024-mi, we drop the transition period (September 30--October 2) and compare respondents interviewed before the coup ($n$ = `r res$n_pre`, September 20--29) with those interviewed after ($n$ = `r res$n_post`, October 4--12). This design exploits the same identification strategy as the Hong Kong analysis---survey fieldwork that happened to straddle a discrete autocratization shock---but in a different continent, using a different survey program (Afrobarometer rather than ABS or WVS), and with a different type of shock (military coup rather than legislative crackdown or executive consolidation).
+
+The available item battery includes six institutional trust items (army, president, police, courts, electoral commission, churches; all 1--4 scales) and three democratic evaluation items (satisfaction with democracy, perceived extent of democracy, and preference for democracy).^[Afrobarometer did not field the parliament, ruling party, or opposition party trust items in Burkina Faso Round 9, reducing the available battery relative to Hong Kong and Turkey. The core coercive/political institutions (army, president, police, courts) remain available.] We assign sensitivity rankings following the same logic: army and president (now the coup leader) are most coercive (ranks 1--2), police rank 3, courts and elections are medium-sensitivity political institutions (ranks 4--5), churches serve as a non-political benchmark (rank 6), and democratic evaluations are lowest sensitivity (ranks 7--9).
+
+## Results {#sec-bfa-results}
+
+```{r}
+#| label: tbl-bfa-gradient
+#| tbl-cap: "Burkina Faso pre/post coup comparison. Weighted means on original scales (trust items: 1--4, higher = more trust; dem. satisfaction and how democratic: 1--4; dem. preferable: 1--3). Cohen's d computed from pooled standard deviations. Positive d indicates post-coup increase."
+#| echo: false
+#| warning: false
+
+items |>
+  select(Item = label, Category = sensitivity,
+         `Pre mean` = pre_mean, `Post mean` = post_mean,
+         `d` = cohens_d, `p` = p_value) |>
+  mutate(
+    across(c(`Pre mean`, `Post mean`), ~ sprintf("%.2f", .x)),
+    d = sprintf("%+.3f", d),
+    p = ifelse(p < 0.001, "< .001",
+        ifelse(p < 0.01, sprintf("%.3f", p),
+        ifelse(p < 0.05, sprintf("%.3f", p),
+               sprintf("%.3f", p))))
+  ) |>
+  kableExtra::kbl(align = c("l", "l", "r", "r", "r", "r")) |>
+  kableExtra::kable_styling(
+    bootstrap_options = c("condensed"),
+    latex_options = c("hold_position"),
+    font_size = 9, full_width = FALSE
+  ) |>
+  kableExtra::pack_rows("High sensitivity (coercive)", 1, 3) |>
+  kableExtra::pack_rows("Medium sensitivity (political)", 4, 6) |>
+  kableExtra::pack_rows("Low sensitivity (democratic evaluations)", 7, 9)
+```
+
+@tbl-bfa-gradient presents the item-level results. The pattern is notably weaker and more mixed than in Hong Kong or Turkey, consistent with the theoretical complications outlined below.
+
+**Trust--democracy divergence.** The core divergence signature is present but attenuated. Institutional trust items show a small average post-coup increase (mean $d$ = `r sprintf("%+.3f", res$trust_avg_d)`), while democratic evaluation items decline (mean $d$ = `r sprintf("%+.3f", res$dem_avg_d)`), producing a trust--democracy divergence of `r sprintf("%.3f", res$trust_avg_d - res$dem_avg_d)`. The largest single effect is the decline in satisfaction with democracy ($d$ = `r sprintf("%+.3f", items$cohens_d[items$label == "Dem. satisfaction"])`, $p$ = `r sprintf("%.3f", items$p_value[items$label == "Dem. satisfaction"])`). Among trust items, the president---now coup leader Traoré---shows the largest increase ($d$ = `r sprintf("%+.3f", items$cohens_d[items$label == "Trust president"])`, $p$ = `r sprintf("%.3f", items$p_value[items$label == "Trust president"])`).
+
+**Sensitivity gradient.** The gradient correlation across all nine items is $r$ = `r sprintf("%.2f", res$gradient_pearson$estimate)` ($p$ = `r sprintf("%.2f", res$gradient_pearson$p.value)`), in the predicted negative direction but far from statistical significance with only nine items. Within trust items alone, the gradient reverses ($r$ = `r sprintf("%.2f", cor(items$sensitivity_rank[items$sensitivity == "Trust"], items$cohens_d[items$sensitivity == "Trust"]))`), driven by the large church trust increase and the near-zero army shift.
+
+**Critical citizens correlation.** The correlation between democratic preference and democratic satisfaction is near zero in both periods (pre-coup: $r$ = `r sprintf("%.3f", res$cc_pre$estimate)`; post-coup: $r$ = `r sprintf("%.3f", res$cc_post$estimate)`), providing no evidence of the coherence disruption observed in Hong Kong.
+
+**Non-response.** Unlike Hong Kong and Turkey, post-coup non-response rates do not differ between trust and democracy items (OR = 1.00, $\chi^2$ < 0.1, $p$ = 1.00). The absence of differential non-response suggests that respondents were not selectively avoiding politically sensitive questions.
+
+## Interpretation: An Informative Intermediate Case {#sec-bfa-interpretation}
+
+The Burkina Faso results occupy a theoretically informative position between the strong gradient cases (Hong Kong, Turkey) and the null cases (Venezuela, Nicaragua). The trust--democracy divergence is present---trust edges up while democratic satisfaction declines---but the full sensitivity gradient does not emerge, and the diagnostic signatures of preference falsification (differential non-response, critical citizens disruption) are absent.
+
+Several features of the Burkina Faso context likely explain this attenuation. First, the September 2022 coup had substantial popular support, driven by frustration with the previous military government's failure to address jihadist violence. @Brailey2024-mi report that 66% of Burkinabè supported military intervention "when leaders abuse power." Genuine increases in trust in the coup leader are therefore expected alongside any falsification-driven increases, and these two mechanisms cannot be separated in the data. Second, trust in the army was already near ceiling before the coup (mean = `r sprintf("%.2f", items$pre_mean[items$label == "Trust army"])` on a 1--4 scale), leaving little room for a post-coup increase regardless of mechanism. Third, the repressive environment following the coup---border closures and curfews rather than targeted surveillance of political expression---may generate qualitatively different pressures on survey responses than the targeted repression in Hong Kong (arrests of activists and journalists) or Turkey (purges of specific sectors).
+
+These complications are analytically productive. The sensitivity gradient framework identifies a *specific* distortion signature associated with targeted political repression of dissent---not a universal feature of all political shocks. The Burkina Faso case, alongside the Venezuela and Nicaragua null results, helps establish the boundary conditions: the gradient emerges most clearly when (a) repression specifically targets political expression, (b) institutions differ meaningfully in coercive salience, and (c) there is not a concurrent genuine rally effect that overwhelms the falsification signal. Military coups with broad popular support---where genuine attitude change and strategic misrepresentation point in the same direction---represent a harder test for the framework, and the attenuated results are consistent with this theoretical expectation.
+
+```{r}
+#| label: fig-bfa-gradient
+#| fig-cap: "Burkina Faso sensitivity gradient. Each point represents one survey item, plotted by sensitivity rank (1 = most coercive) and Cohen's d (pre→post coup mean shift). Dashed line shows the OLS fit. The gradient is in the predicted negative direction but weak and non-significant, consistent with the theoretical complications discussed in the text."
+#| echo: false
+#| warning: false
+#| fig-width: 7
+#| fig-height: 5
+
+ggplot(items, aes(x = sensitivity_rank, y = cohens_d,
+                  color = sensitivity)) +
+  geom_hline(yintercept = 0, color = "grey80") +
+  geom_smooth(method = "lm", se = TRUE, color = "grey40",
+              linetype = "dashed", linewidth = 0.5) +
+  geom_point(size = 3) +
+  ggrepel::geom_text_repel(aes(label = label), size = 3,
+                           show.legend = FALSE, max.overlaps = 15) +
+  scale_color_manual(
+    values = c(Trust = "#0077BB", Democracy = "#CC3311"),
+    name = "Category"
+  ) +
+  labs(
+    x = "Sensitivity rank (1 = most coercive)",
+    y = expression(paste("Cohen's ", italic(d), " (pre ", symbol('\256'), " post coup)"))
+  ) +
+  theme_minimal(base_size = 11) +
+  theme(legend.position = "top")
+```
