@@ -216,7 +216,7 @@ phil_police_b <- h4_phil$phil_police$tidy %>% filter(term == "wave_num")
 phil_govt_b <- h4_phil$phil_govt$tidy %>% filter(term == "wave_num")
 ```
 
-Table A4 shows that during the Duterte period, Philippine military trust trends slightly positive ($b$ = `r round(phil_mil_b$estimate, 3)`, *p* = `r round(phil_mil_b$p.value, 3)`), and police trust shows a similar direction ($b$ = `r round(phil_police_b$estimate, 3)`, *p* = `r round(phil_police_b$p.value, 3)`). This pattern is consistent with a preference-alignment mechanism: when the political leadership endorses coercive institutions and a substantial portion of the public supports the associated policy agenda, trust in those institutions can remain stable even during periods of democratic backsliding.
+Table A3 shows that during the Duterte period, Philippine military trust trends slightly positive ($b$ = `r round(phil_mil_b$estimate, 3)`, *p* = `r round(phil_mil_b$p.value, 3)`), and police trust shows a similar direction ($b$ = `r round(phil_police_b$estimate, 3)`, *p* = `r round(phil_police_b$p.value, 3)`). This pattern is consistent with a preference-alignment mechanism: when the political leadership endorses coercive institutions and a substantial portion of the public supports the associated policy agenda, trust in those institutions can remain stable even during periods of democratic backsliding.
 
 The contrast with Thailand is instructive. In Thailand, the military's political role generated mass opposition and targeted trust erosion. In the Philippines, the coercive institutions operated with at least partial popular support for their core mission (anti-drug enforcement), insulating them from the kind of backlash observed in Thailand.
 
@@ -241,7 +241,7 @@ tw_wave <- h5_taiwan$tidy %>% filter(term == "wave_num")
 tw_ftest_p <- h5_taiwan$ftest[["Pr(>F)"]][2]
 ```
 
-Table A5 confirms the depoliticization prediction. The wave coefficient for Taiwan's military trust is near zero ($b$ = `r round(tw_wave$estimate, 3)`) and not statistically significant (*p* = `r round(tw_wave$p.value, 3)`). An F-test fails to reject the null hypothesis that the wave effect equals zero (*p* = `r round(tw_ftest_p, 3)`). Taiwan's military trust is essentially flat across two decades, despite substantial political turbulence (cross-strait tensions, party alternation, pandemic governance debates).
+Table A4 confirms the depoliticization prediction. The wave coefficient for Taiwan's military trust is near zero ($b$ = `r round(tw_wave$estimate, 3)`) and not statistically significant (*p* = `r round(tw_wave$p.value, 3)`). An F-test fails to reject the null hypothesis that the wave effect equals zero (*p* = `r round(tw_ftest_p, 3)`). Taiwan's military trust is essentially flat across two decades, despite substantial political turbulence (cross-strait tensions, party alternation, pandemic governance debates).
 
 This stability contrasts sharply with Thailand and supports the theoretical claim that the military's *political role*, rather than general political instability, drives targeted trust erosion. Where the military remains above the political fray, its institutional trust is insulated from the partisan dynamics that corrode trust in elected institutions.
 
@@ -267,9 +267,34 @@ sec_full %>%
   kable_styling(font_size = 8)
 ```
 
-Table A6 reports the full interaction models for the four secondary trust measures. Several patterns are worth noting. First, Thailand's decline is significant for all four institutions, but the magnitudes are substantially smaller than for military trust (main text, Table 7). Second, the Philippines and Taiwan interaction terms are generally positive, confirming Thailand's exceptionalism extends beyond the two primary institutions. Third, political parties and parliament show the smallest declines, possibly because these institutions already had lower baseline trust levels, leaving less room for erosion.
+Table A5 reports the full interaction models for the four secondary trust measures. Several patterns are worth noting. First, Thailand's decline is significant for all four institutions, but the magnitudes are substantially smaller than for military trust (main text, Table 7). Second, the Philippines and Taiwan interaction terms are generally positive, confirming Thailand's exceptionalism extends beyond the two primary institutions. Third, political parties and parliament show the smallest declines, possibly because these institutions already had lower baseline trust levels, leaving less room for erosion.
 
-# A7. Democratic Commitment and Military Trust Decline
+# A7. Institutional Breadth: NGOs, Local Government, National Government, and Military
+
+To evaluate whether preference falsification inflates Philippine trust during the Duterte era, or whether Thailand's trust collapse is targeted at specific institutions rather than systemic, we compare trust in four institutional categories across all six waves.
+
+```{r tab-a7-breadth}
+ib <- readRDS(file.path(results_dir, "institutional_breadth.rds"))
+
+ib_table <- ib %>%
+  mutate(across(c(trust_ngo, trust_local_govt, trust_natl_govt, trust_military),
+                ~round(., 2))) %>%
+  select(country_name, wave, trust_ngo, trust_local_govt, trust_natl_govt, trust_military, n_total) %>%
+  arrange(country_name, wave)
+
+ib_table %>%
+  kbl(caption = "Table A6: Mean trust in NGOs, local government, national government, and military by country and wave. Scale: 1 (none at all) to 4 (a great deal). Descriptive means (unweighted). N is the total number of respondents per country-wave cell; item-level missingness varies slightly across institutions.",
+      col.names = c("Country", "Wave", "NGOs", "Local Govt", "Nat'l Govt", "Military", "N"),
+      booktabs = TRUE) %>%
+  kable_styling(latex_options = c("hold_position")) %>%
+  kable_styling(font_size = 9) %>%
+  pack_rows("Philippines", 1, 6) %>%
+  pack_rows("Thailand", 7, 12)
+```
+
+Table A6 shows that in the Philippines, the Wave 5 trust surge is uniform across all four institutional categories, including NGOs and local government, which are not politically sensitive in the same manner as the national government and military. This uniformity is inconsistent with a preference falsification account, which would predict selective inflation of sensitive measures only. In Thailand, Wave 6 trust erosion is similarly broad-based: NGOs and local government decline alongside national government and military trust, indicating systemic rather than institution-specific disillusionment.
+
+# A8. Democratic Commitment and Military Trust Decline
 
 Table A7 presents models testing whether democratic commitment moderates trust erosion. Models 1 and 1b examine the interaction between wave and democratic commitment (centered) for military and government trust in Thailand. Model 2 uses a stacked outcome (military and government trust) to test whether the commitment effect differs across institution type. Model 3 reports a Wave 6 cross-sectional model predicting military trust from democratic commitment and political interest. Model 4 tests the three-country interaction.
 
@@ -324,7 +349,7 @@ dc_table <- bind_rows(mod1, mod1b, mod2, mod3, mod4) %>%
   mutate(across(c(estimate, std.error), ~round(., 3)))
 
 dc_table %>%
-  kbl(caption = "Table A6: Democratic commitment and institutional trust decline. Democratic commitment is a composite index (0--1) of democratic preference, democratic priority over economic development, and rejection of authoritarian alternatives, centered at the sample mean for interaction models (Models 1, 1b, 2, 4). All models are weighted OLS with survey weights; SEs are heteroskedasticity-consistent except Model 2 (respondent-clustered SEs). N: Model 1 = 5,947; Model 1b = 5,889; Model 2 = 11,836 (stacked); Model 3 = 1,082; Model 4 = 21,261.",
+  kbl(caption = "Table A7: Democratic commitment and institutional trust decline. Democratic commitment is a composite index (0--1) of democratic preference, democratic priority over economic development, and rejection of authoritarian alternatives, centered at the sample mean for interaction models (Models 1, 1b, 2, 4). All models are weighted OLS with survey weights; SEs are heteroskedasticity-consistent except Model 2 (respondent-clustered SEs). N: Model 1 = 5,947; Model 1b = 5,889; Model 2 = 11,836 (stacked); Model 3 = 1,082; Model 4 = 21,261.",
       col.names = c("Model", "Dependent Variable", "Key Coefficient", "b", "SE", "p"),
       booktabs = TRUE) %>%
   kable_styling(latex_options = c("hold_position", "scale_down")) %>%
