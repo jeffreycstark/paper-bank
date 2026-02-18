@@ -4,7 +4,8 @@ subtitle: "Thailand's Two-Decade Institutional Erosion, 2001--2022"
 author:
   - name: Jeffrey Stark
     affiliation: Yonsei University, Seoul, South Korea
-date: today
+date: now
+date-format: "MMMM D, YYYY [at] h:mm A"
 format:
   pdf:
     keep-tex: true
