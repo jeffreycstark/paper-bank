@@ -104,6 +104,13 @@ econdev-authpref/
 
 ---
 
+## Bibliography Rules
+
+**Never add BibTeX entries to any `references.bib` file unless explicitly asked.**
+When replacing hard-coded citations, use existing keys from the bib file (search first) or insert placeholder keys (e.g., `@Author2019-MISSING`) and report what is missing. Do not write new `@BOOK`, `@ARTICLE`, or other entries without an explicit request.
+
+---
+
 ## Environment
 
 **R**: Managed via `renv`. Restore with `Rscript -e "renv::restore()"`.
