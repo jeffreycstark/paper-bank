@@ -560,9 +560,13 @@ if (file.exists("../analysis/results/mechanism_tests.RData")) {
 
 Taken together, these tests suggest that no single mechanism fully accounts for the observed pattern. Conservative revaluation likely contributes, particularly among older respondents, but the age gradient contradicts it as the dominant driver. Information environment restructuring is a plausible concurrent mechanism, but the strength of the China-trust association ($r = 0.69$) may itself partly reflect falsification---respondents who inflate trust in police may also strategically inflate their assessment of China's democratic credentials. A COVID rally effect receives little support from the divergent pattern. The most parsimonious interpretation remains a combination of preference falsification and compositional selection, with information effects and conservative revaluation as secondary contributors whose relative magnitude the present design cannot precisely decompose.
 
-## Cross-National Evidence: Turkey
+## Cross-National Evidence
 
-A natural question is whether the sensitivity gradient is specific to Hong Kong's particular context or whether it captures a more general pattern of survey distortion under autocratization. To assess this, I apply the same framework to Turkey using World Values Survey data spanning the 2016 failed coup attempt---one of the most dramatic autocratization episodes in recent comparative politics. Following the coup attempt, the Erdoğan government declared a state of emergency lasting two years, purged over 150,000 civil servants, detained more than 50,000 individuals, shuttered over 150 media outlets, and enacted constitutional changes consolidating executive power [@Esen2016-iq; @Somer2016-tj]. Turkey's V-Dem liberal democracy index fell from 0.35 in 2013 to 0.11 by 2019, among the steepest declines recorded globally. WVS Wave 6 (fielded in Turkey in 2011) and Wave 7 (fielded in 2018) thus bracket this period of rapid autocratization, providing a direct analogue to the Hong Kong pre/post NSL comparison. All WVS estimates incorporate survey weights from the harmonized dataset.
+A natural question is whether the sensitivity gradient is specific to Hong Kong's particular context or whether it captures a more general pattern of survey distortion under autocratization. This section applies the framework to four additional cases drawn from three survey programs, spanning Asia, Europe, Latin America, and Africa. The cases vary in autocratization pathway (legislative crackdown, post-coup executive consolidation, economic-populist collapse, military coup), repressive mechanism, and survey instrument. Together they allow assessment of both where the gradient appears and where it does not—the latter being equally important for establishing the framework's discriminant validity.
+
+### Turkey
+
+I first apply the same framework to Turkey using World Values Survey data spanning the 2016 failed coup attempt---one of the most dramatic autocratization episodes in recent comparative politics. Following the coup attempt, the Erdoğan government declared a state of emergency lasting two years, purged over 150,000 civil servants, detained more than 50,000 individuals, shuttered over 150 media outlets, and enacted constitutional changes consolidating executive power [@Esen2016-iq; @Somer2016-tj]. Turkey's V-Dem liberal democracy index fell from 0.35 in 2013 to 0.11 by 2019, among the steepest declines recorded globally. WVS Wave 6 (fielded in Turkey in 2011) and Wave 7 (fielded in 2018) thus bracket this period of rapid autocratization, providing a direct analogue to the Hong Kong pre/post NSL comparison. All WVS estimates incorporate survey weights from the harmonized dataset.
 
 ```{r}
 #| label: tbl-turkey-gradient
@@ -635,72 +639,40 @@ if (file.exists("../analysis/results/turkey_gradient.RData")) {
 ```
 
 ```{r}
-#| label: fig-turkey-gradient
-#| fig-cap: "Sensitivity gradient in Turkey: Cohen's *d* (WVS Wave 7 $-$ Wave 6) by item, ordered by pre-specified sensitivity to preference falsification. Institutional confidence items (red) shift regime-favorable; democratic evaluation items (blue) shift regime-unfavorable or remain stable. Dashed line: OLS fit."
-#| fig-width: 6.5
-#| fig-height: 4.5
+#| label: fig-gradient-hk-turkey
+#| fig-cap: "Sensitivity gradient in Hong Kong and Turkey. Left panel: Cohen's *d* (Post-NSL minus Protest period) for ABS Wave 5 items. Right panel: Cohen's *d* (WVS Wave 7 minus Wave 6) for Turkey. Red = high-sensitivity (coercive) institutions; orange = medium-sensitivity (political) institutions; blue = low-sensitivity (democratic evaluation) items. Dashed line: OLS fit. Error bars: 95% CIs. Both panels show the same gradient signature: coercive institutions inflate while democratic evaluations decline."
+#| fig-width: 12
+#| fig-height: 5.5
+#| out-width: "100%"
 
-if (file.exists("../analysis/results/turkey_gradient.RData")) {
-  load("../analysis/results/turkey_gradient.RData")
-
-  plot_data <- turkey_gradient_results |>
-    filter(label != "Army rule") |>
-    mutate(
-      plot_label = case_when(
-        label == "Conf. police" ~ "Conf. Police",
-        label == "Conf. government" ~ "Conf. Government",
-        label == "Conf. armed forces" ~ "Conf. Armed Forces",
-        label == "Conf. parliament" ~ "Conf. Parliament",
-        label == "Conf. pol. parties" ~ "Conf. Pol. Parties",
-        label == "Conf. courts" ~ "Conf. Courts",
-        label == "Conf. press" ~ "Conf. Press",
-        label == "Dem. importance" ~ "Dem. Importance (1-10)",
-        label == "Dem. evaluation" ~ "Dem. Evaluation (1-10)",
-        label == "Democratic system" ~ "Dem. System Good",
-        label == "Strong leader" ~ "Strong Leader",
-        label == "Experts decide" ~ "Experts Decide",
-        TRUE ~ label
-      ),
-      category = factor(category, levels = c("High", "Medium", "Low")),
-      se_d = sqrt(1/w6_n + 1/w7_n + cohens_d^2 / (2*(w6_n + w7_n))),
-      ci_lo = cohens_d - 1.96 * se_d,
-      ci_hi = cohens_d + 1.96 * se_d,
-      plot_label = factor(plot_label, levels = rev(plot_label[order(sensitivity_rank)]))
-    )
-
-  fit <- lm(cohens_d ~ sensitivity_rank, data = plot_data)
-  plot_data$fitted <- predict(fit)
-
-  cat_colors <- c(High = "#C62828", Medium = "#F57C00", Low = "#1565C0")
-  cat_shapes <- c(High = 16, Medium = 15, Low = 17)
-
-  ggplot(plot_data, aes(x = cohens_d, y = plot_label)) +
-    geom_vline(xintercept = 0, linetype = "solid", color = "grey70", linewidth = 0.4) +
-    geom_line(aes(x = fitted, y = plot_label, group = 1),
-              linetype = "dashed", color = "grey50", linewidth = 0.5) +
-    geom_errorbarh(aes(xmin = ci_lo, xmax = ci_hi, color = category),
-                   height = 0.2, linewidth = 0.4) +
-    geom_point(aes(color = category, shape = category), size = 2.5) +
-    scale_color_manual(values = cat_colors, name = "Sensitivity") +
-    scale_shape_manual(values = cat_shapes, name = "Sensitivity") +
-    labs(x = "Cohen's *d* (Wave 7 minus Wave 6)", y = NULL) +
-    theme_minimal(base_size = 11) +
-    theme(
-      axis.title.x = ggtext::element_markdown(),
-      legend.position = "bottom",
-      panel.grid.major.y = element_blank(),
-      panel.grid.minor = element_blank()
-    )
-}
+knitr::include_graphics("../analysis/figures/fig_gradient_hk_turkey.pdf")
 ```
 
-@tbl-turkey-gradient and @fig-turkey-gradient present the results. The pattern closely mirrors Hong Kong. Confidence in coercive institutions uniformly increased between 2011 and 2018: police ($d = +0.17$), government ($d = +0.17$), and armed forces ($d = +0.21$) all show regime-favorable shifts. Meanwhile, the importance of democracy---the most abstract evaluative item---declined sharply ($d = -0.36$), and approval of a democratic political system fell significantly ($d = -0.23$). The gradient correlation across all items ($r = -0.68$) is consistent with the prediction that the magnitude and direction of observed shifts track pre-specified sensitivity rankings, paralleling the Hong Kong pattern ($r = -0.85$).
+@tbl-turkey-gradient and @fig-gradient-hk-turkey present the results. The pattern closely mirrors Hong Kong. Confidence in coercive institutions uniformly increased between 2011 and 2018: police ($d = +0.17$), government ($d = +0.17$), and armed forces ($d = +0.21$) all show regime-favorable shifts. Meanwhile, the importance of democracy---the most abstract evaluative item---declined sharply ($d = -0.36$), and approval of a democratic political system fell significantly ($d = -0.23$). The gradient correlation across all items ($r = -0.68$) is consistent with the prediction that the magnitude and direction of observed shifts track pre-specified sensitivity rankings, paralleling the Hong Kong pattern ($r = -0.85$).
 
 The critical citizens diagnostic also flags Turkey. Using the closest available WVS item pair (importance of democracy $\times$ perceived level of democracy), the correlation shifted from $r = 0.006$ (Wave 6, 2011) to $r = 0.146$ (Wave 7, 2018, $p < .001$)---a move from near-zero to positive that parallels the Hong Kong reversal, though less dramatic in magnitude. Russia shows a similar pattern, with the correlation strengthening from $r = 0.131$ (Wave 6) to $r = 0.239$ (Wave 7, $p < .001$).
 
 The Turkey case also suggests instructive variation. Confidence in political parties shows an anomalously large positive shift ($d = +0.33$), likely reflecting the AKP's genuine consolidation of partisan support alongside measurement distortion---a reminder that the sensitivity gradient identifies the *pattern* of distortion rather than claiming all measured change is artificial. Control items (happiness, life satisfaction) moved in the opposite direction from trust ($d = -0.17$ and $d = -0.37$, respectively), weighing against a generalized positivity bias and strengthening the inference that trust increases are domain-specific. The cross-national replication, using a different survey instrument (WVS rather than ABS), different item wordings, and a distinct form of autocratization (post-coup executive consolidation rather than externally imposed security legislation), substantially strengthens the case that the sensitivity gradient constitutes a generalizable diagnostic rather than a Hong Kong-specific artifact. Full item-level results with non-response analysis are reported in Online Appendix J.
 
-The sensitivity gradient is not a universal feature of democratic erosion. Preliminary application of the same framework to Venezuela (bracketing the 2017 constituent assembly crisis) and Nicaragua (bracketing the 2018 April crackdown) using Latinobarómetro data reveals broad-based institutional trust collapse without the differential item pattern characteristic of preference falsification. In both cases, trust in coercive institutions declined alongside democratic evaluations, consistent with genuine disillusionment rather than strategic compliance. These null cases provide discriminant validity: the gradient framework identifies a specific distortion signature rather than flagging all survey change as suspicious, and its absence in Venezuela and Nicaragua is consistent with contexts where repression was less targeted at survey-accessible populations or where exit options were more constrained.
+The cross-national replication, using a different survey instrument (WVS rather than ABS), different item wordings, and a distinct form of autocratization (post-coup executive consolidation rather than externally imposed security legislation), substantially strengthens the case that the sensitivity gradient constitutes a generalizable diagnostic. The Appendix K cross-instrument validation---comparing ABS trust means to WVS confidence means for Thailand and the Philippines across near-simultaneous fieldwork---shows that institutional rank orderings are broadly preserved across instruments (Thailand Spearman $\rho = 0.60$; Philippines $\rho = 0.10$), suggesting that the modest attenuation of the gradient in Turkey relative to Hong Kong ($r = -0.68$ vs. $r = -0.85$) is unlikely to be an artifact of item wording.
+
+### Boundary Conditions: Latin America and Africa
+
+The sensitivity gradient is not a universal feature of democratic erosion. Applying the same framework to additional cases using Latinobar\'{o}metro and Afrobarometer data reveals where and why the gradient fails to emerge---evidence that is as theoretically important as the positive cases.
+
+*Venezuela and Nicaragua.* Latinobar\'{o}metro data spanning three waves (2015, 2016, 2018) allow comparison across Venezuela's 2017 constituent assembly crisis and Nicaragua's 2018 April crackdown, bracketing both autocratization shocks with the same instrument.^[Preregistration for this extension is available at OSF. Full item-level results are available in Online Appendix M.] The results diverge sharply from the Hong Kong and Turkey pattern. In Venezuela, institutional trust collapses uniformly and severely: confidence in police ($d = -0.14$), government ($d = -0.32$), armed forces ($d = -0.41$), courts ($d = -0.23$), and elections ($d = -0.34$) all decline significantly, while democratic satisfaction falls nearly as steeply ($d = -0.48$). The gradient correlation across all items is $r = -0.08$---essentially flat. Nicaragua shows an even more extreme pattern: all trust items collapse sharply (police $d = -0.59$, government $d = -0.70$, armed forces $d = -0.69$), and the gradient correlation is *positive* ($r = +0.53$), meaning the most coercive institutions saw the steepest declines. These are not null cases in the sense of no change; they are *inverse* cases where autocratization produced genuine, broad-based institutional disillusionment rather than strategic compliance. The theory predicts this: when repression is economically catastrophic and visibly incompetent---as in Venezuela's hyperinflationary collapse and Nicaragua's live-fire crackdown on protesters---the survival costs of honest expression may be outweighed by the inability of the regime to plausibly claim legitimacy even among strategic compliers. Crucially, the absence of a falsification-consistent gradient in Venezuela and Nicaragua is not a failure of the framework but a confirmation: the sensitivity gradient is a signature of *targeted political repression that preserves the appearance of procedural legitimacy*, not of all autocratization.
+
+```{r}
+#| label: fig-gradient-ven-nic
+#| fig-cap: "Discriminant validity: sensitivity gradient in Venezuela and Nicaragua. Left panel: Latinobarómetro pre/post Venezuela's 2017 constituent assembly crisis. Right panel: pre/post Nicaragua's April 2018 crackdown. Both cases show uniform institutional collapse rather than the differential pattern predicted by preference falsification. The gradient is near-zero in Venezuela ($r = -0.08$) and inverted in Nicaragua ($r = +0.53$), where coercive institutions fell *more* than democratic evaluations. Red = high-sensitivity; orange = medium; blue = low-sensitivity items. Error bars: 95% CIs."
+#| fig-width: 12
+#| fig-height: 5.5
+#| out-width: "100%"
+
+knitr::include_graphics("../analysis/figures/fig_gradient_ven_nic.pdf")
+```
+
+*Burkina Faso.* A within-wave natural experiment analogous to Hong Kong's ABS split is available in Afrobarometer Round 9 fieldwork, which straddled Captain Ibrahim Traoré's September 30, 2022 coup. Comparing respondents interviewed before ($n = 656$, September 20--29) and after ($n = 464$, October 4--12) the coup reveals an intermediate pattern consistent with theoretical expectations. The trust--democracy divergence is present but attenuated: institutional trust items show a small average post-coup increase (mean $d = +0.07$) while democratic evaluation items decline (mean $d = -0.11$), and the largest single effect is falling democratic satisfaction ($d = -0.26$, $p = .037$). However, the full gradient does not emerge ($r = -0.30$, $p = .43$), the critical citizens correlation remains near zero in both periods (pre: $r = 0.022$; post: $r = -0.039$), and differential non-response is entirely absent (OR = 1.00, $p = 1.00$). Three features of the Burkina Faso context explain the attenuation. First, the coup had substantial popular support---driven by frustration with the previous military government's failure against jihadist insurgency---making genuine increases in trust in the coup leader theoretically expected alongside any falsification-driven component. Second, trust in the army was near ceiling before the coup (mean = 3.25/4), leaving little room for an upward shift regardless of mechanism. Third, the repressive environment---border closures and curfews rather than targeted surveillance of political expression---generates qualitatively different pressures than the targeted activist and journalist arrests in Hong Kong or Turkey's sectoral purges. These complications are analytically productive: they specify the conditions under which targeted versus diffuse repression should produce different gradient signatures.
 
 # Discussion
 
@@ -718,10 +690,10 @@ mech_table <- tibble(
     "Democracy suitability down",
     "Emigration intentions shift",
     "Age gradient in trust",
-    "Trust up and dem. evaluation down simultaneously",
+    "Trust up and dem.\ evaluation down simultaneously",
     "Trust in courts stable (d = 0.03)",
     "Reported free speech up while trust up",
-    "Procedural dem. conception up",
+    "Procedural dem.\ conception up",
     "China rated more democratic"
   ),
   `Preference falsification` = c(
@@ -813,11 +785,21 @@ The Hong Kong case offers identification leverage unavailable in standard cross-
 
 ## A Practical Diagnostic Toolkit
 
+```{r}
+#| label: fig-five-case-summary
+#| fig-cap: "The sensitivity gradient across five cases. Each point plots the gradient correlation ($r$) between pre-specified item sensitivity rank and observed Cohen's $d$. Cases to the left show the predicted falsification signature (coercive institutions inflate most). Cases near zero or to the right show null or inverted gradients, consistent with genuine collapse or popular support for the regime change. Color and shape indicate the type of autocratization shock."
+#| fig-width: 10
+#| fig-height: 4.5
+#| out-width: "90%"
+
+knitr::include_graphics("../analysis/figures/fig_five_case_summary.pdf")
+```
+
 @tbl-toolkit operationalizes the sensitivity gradient framework as a diagnostic checklist. Researchers analyzing survey data from autocratizing contexts should check for these patterns before interpreting trust increases as genuine legitimacy gains. No single signal is definitive, but multiple converging signals---as in Hong Kong, where all five diagnostics flag distortion---provide strong evidence of measurement distortion. The checklist can be applied with varying data structures: ideal within-wave splits (as in the ABS Hong Kong case) offer the strongest identification, but standard cross-wave comparisons (as in the Turkey WVS case) can still yield informative gradient patterns when the intervening period includes a clear autocratization shock.
 
 ```{r}
 #| label: tbl-toolkit
-#| tbl-cap: "Diagnostic checklist for survey distortion in autocratizing contexts. HK = Hong Kong (ABS W5), TR = Turkey (WVS W6--W7), RU = Russia (WVS W6--W7)."
+#| tbl-cap: "Diagnostic checklist for survey distortion in autocratizing contexts. HK = Hong Kong (ABS W5), TR = Turkey (WVS W6--W7), RU = Russia (WVS W6--W7), VEN = Venezuela (LBS 2015--2018), NIC = Nicaragua (LBS 2015--2018), BFA = Burkina Faso (Afrobarometer R9)."
 
 toolkit <- tibble(
   `Diagnostic signal` = c(
@@ -861,6 +843,27 @@ toolkit <- tibble(
     "\\checkmark",
     "\\texttildelow",
     "--"
+  ),
+  VEN = c(
+    "\\texttimes",
+    "\\texttimes",
+    "--",
+    "--",
+    "--"
+  ),
+  NIC = c(
+    "\\texttimes",
+    "\\texttimes",
+    "--",
+    "--",
+    "--"
+  ),
+  BFA = c(
+    "\\texttildelow",
+    "\\texttildelow",
+    "\\texttimes",
+    "\\texttimes",
+    "--"
   )
 )
 
@@ -868,16 +871,17 @@ toolkit |>
   kable(
     booktabs = TRUE,
     escape = FALSE,
-    align = c("l", "l", "l", "c", "c", "c")
+    align = c("l", "l", "l", "c", "c", "c", "c", "c", "c")
   ) |>
   kable_styling(latex_options = c("hold_position", "scale_down"), font_size = 9) |>
   column_spec(1, width = "2.5cm") |>
-  column_spec(2, width = "4.5cm") |>
-  column_spec(3, width = "3cm") |>
-  column_spec(4:6, width = "0.8cm") |>
+  column_spec(2, width = "4cm") |>
+  column_spec(3, width = "2.5cm") |>
+  column_spec(4:9, width = "0.7cm") |>
+  add_header_above(c(" " = 3, "Positive cases" = 3, "Inverse/null cases" = 3)) |>
   footnote(
     symbol = c(
-      "\\\\checkmark = strong evidence; \\\\texttildelow = suggestive; ? = data limitations; -- = not tested."
+      "\\\\checkmark = signal present; \\\\texttildelow = suggestive/partial; \\\\texttimes = signal absent; -- = untestable with available data."
     ),
     general = c(
       "Multiple converging signals provide stronger evidence than any single diagnostic.",
