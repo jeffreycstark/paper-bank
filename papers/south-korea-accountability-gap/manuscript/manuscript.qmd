@@ -1,5 +1,5 @@
 ---
-title: "The Accountability Gap: [TITLE TBD]"
+title: "The Accountability Gap: Mass Perceptions of Democratic Backsliding in South Korea"
 author:
   - name: Jeffrey Stark
     affiliations:
