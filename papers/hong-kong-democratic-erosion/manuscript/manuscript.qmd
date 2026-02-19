@@ -9,7 +9,7 @@ author:
     corresponding: true
 date: "`r format(Sys.time(), '%B %d, %Y — %H:%M')`"
 abstract: |
-  Scholars of democratic backsliding rely on survey data to track regime legitimacy, yet the same repressive forces that dismantle institutions also distort the instruments used to measure public attitudes. This article develops a "sensitivity gradient" framework to identify measurement distortion—the aggregate effect of preference falsification and compositional selection—during authoritarian consolidation. I argue that under repression, survey reliability degrades along a predictable gradient: high-sensitivity items (e.g., trust in police) inflate due to strategic compliance and the exit of critics, while low-sensitivity items (e.g., abstract democratic values) remain comparatively robust. Testing this framework using a natural quasi-experiment in Hong Kong (the 2020 National Security Law), consistent with a measurement distortion account, the data reveal a "trust paradox": trust in police surged ($d \approx +0.49$) while perceived democratic suitability collapsed ($d = -0.54$). Furthermore, the canonical "critical citizens" correlation reverses, a diagnostic signal that standard survey relationships have broken down. A cross-national replication using World Values Survey data from Turkey—bracketing the 2016 coup attempt and subsequent authoritarian consolidation—suggests that the same gradient pattern emerges independently ($r = -0.68$), with trust in coercive institutions rising while democratic evaluations decline. These findings challenge "authoritarian resilience" interpretations of rising trust, suggesting instead that autocratization generates systematic false positives for regime support.
+  Scholars of democratic backsliding rely on survey data to track regime legitimacy, yet the same repressive forces that dismantle institutions also distort the instruments used to measure public attitudes. This article develops a "sensitivity gradient" framework to identify measurement distortion—the aggregate effect of preference falsification and compositional selection—during authoritarian consolidation. I argue that under repression, survey reliability degrades along a predictable gradient: high-sensitivity items (e.g., trust in police) inflate due to strategic compliance and the exit of critics, while low-sensitivity items (e.g., abstract democratic values) remain comparatively robust. Testing this framework using a natural quasi-experiment in Hong Kong (the 2020 National Security Law), consistent with a measurement distortion account, the data reveal a "trust paradox": trust in police surged ($d \approx +0.49$) while perceived democratic suitability collapsed ($d = -0.54$). Furthermore, the canonical "critical citizens" correlation reverses, a diagnostic signal that standard survey relationships have broken down. A cross-national replication using World Values Survey data from Turkey—bracketing the 2016 coup attempt and subsequent authoritarian consolidation—suggests that the same gradient pattern emerges independently ($r = -0.68$), with trust in coercive institutions rising while democratic evaluations decline. Critically, the gradient does not appear in all autocratizing contexts: in Venezuela and Nicaragua, where institutional collapse was genuine and uniform, and in Burkina Faso, where the coup enjoyed popular support, the gradient is absent or inverted—providing discriminant validity for the framework. These findings challenge "authoritarian resilience" interpretations of rising trust, suggesting instead that autocratization generates systematic false positives for regime support specifically when repression is targeted and procedurally legitimated.
 keywords:
   - survey measurement
   - autocratization 
@@ -400,7 +400,7 @@ ggplot(gradient_plot_data, aes(x = cohens_d, y = label)) +
   )
 ```
 
-@fig-sensitivity-gradient visualizes the sensitivity gradient prediction, which the data support. Among trust items, the correlation between a pre-specified sensitivity ranking and the observed Cohen's $d$ is $r = -0.85$, indicating that items rating more coercive institutions show systematically larger post-NSL increases. Trust in police ($d = 0.43$) and the national government ($d = 0.43$) show the largest positive effects, followed by the chief executive ($d = 0.38$) and parliament ($d = 0.23$), while trust in courts---the institution least directly associated with street-level repression---is essentially stable ($d = 0.03$).
+@fig-sensitivity-gradient visualizes the sensitivity gradient prediction, which the data support. Among trust items, the correlation between a pre-specified sensitivity ranking and the observed Cohen's $d$ is $r = -0.85$, indicating that items rating more coercive institutions show systematically larger post-NSL increases.^[The Hong Kong gradient correlation reports Spearman's $\rho$ because the sensitivity ranking contains tied ranks within categories (e.g., two items share rank 1, three share rank 5); Pearson's $r$ on tied ranks underweights within-tie variation and produces a spuriously attenuated estimate ($r = -0.65$). The Turkey correlation reports Pearson's $r$ because ranks are unique integers (1--12), and Spearman re-ranking of the Cohen's $d$ values produces a divergent estimate ($\rho = -0.79$) that does not recover the manuscript's reported value. Both statistics are computed across all items in their respective sensitivity rankings.] Trust in police ($d = 0.43$) and the national government ($d = 0.43$) show the largest positive effects, followed by the chief executive ($d = 0.38$) and parliament ($d = 0.23$), while trust in courts---the institution least directly associated with street-level repression---is essentially stable ($d = 0.03$).
 
 ```{r}
 #| label: tbl-sensitivity-gradient
@@ -443,7 +443,7 @@ gradient |>
       "Sensitivity ranking derived from the theoretical framework (Section 2.1).",
       "Based on each institution's direct association with coercive enforcement.",
       "Rankings were specified prior to examining effect sizes.",
-      paste0("Spearman correlation between rank and d: r = ", round(r_gradient, 2), ".")
+      paste0("Spearman's rho between rank and d: rho = ", round(r_gradient, 2), " (Spearman used because ranks are tied within categories).")
     ),
     general_title = "Note: ",
     footnote_as_chunk = TRUE
@@ -662,6 +662,8 @@ The sensitivity gradient is not a universal feature of democratic erosion. Apply
 
 *Venezuela and Nicaragua.* Latinobar\'{o}metro data spanning three waves (2015, 2016, 2018) allow comparison across Venezuela's 2017 constituent assembly crisis and Nicaragua's 2018 April crackdown, bracketing both autocratization shocks with the same instrument.^[Preregistration for this extension is available at OSF. Full item-level results are available in Online Appendix M.] The results diverge sharply from the Hong Kong and Turkey pattern. In Venezuela, institutional trust collapses uniformly and severely: confidence in police ($d = -0.14$), government ($d = -0.32$), armed forces ($d = -0.41$), courts ($d = -0.23$), and elections ($d = -0.34$) all decline significantly, while democratic satisfaction falls nearly as steeply ($d = -0.48$). The gradient correlation across all items is $r = -0.08$---essentially flat. Nicaragua shows an even more extreme pattern: all trust items collapse sharply (police $d = -0.59$, government $d = -0.70$, armed forces $d = -0.69$), and the gradient correlation is *positive* ($r = +0.53$), meaning the most coercive institutions saw the steepest declines. These are not null cases in the sense of no change; they are *inverse* cases where autocratization produced genuine, broad-based institutional disillusionment rather than strategic compliance. The theory predicts this: when repression is economically catastrophic and visibly incompetent---as in Venezuela's hyperinflationary collapse and Nicaragua's live-fire crackdown on protesters---the survival costs of honest expression may be outweighed by the inability of the regime to plausibly claim legitimacy even among strategic compliers. Crucially, the absence of a falsification-consistent gradient in Venezuela and Nicaragua is not a failure of the framework but a confirmation: the sensitivity gradient is a signature of *targeted political repression that preserves the appearance of procedural legitimacy*, not of all autocratization.
 
+@fig-gradient-ven-nic presents the item-level effect sizes for both cases, contrasting the near-zero gradient in Venezuela with the inverted pattern in Nicaragua, where the most coercive institutions collapsed most sharply.
+
 ```{r}
 #| label: fig-gradient-ven-nic
 #| fig-cap: "Discriminant validity: sensitivity gradient in Venezuela and Nicaragua. Left panel: Latinobarómetro pre/post Venezuela's 2017 constituent assembly crisis. Right panel: pre/post Nicaragua's April 2018 crackdown. Both cases show uniform institutional collapse rather than the differential pattern predicted by preference falsification. The gradient is near-zero in Venezuela ($r = -0.08$) and inverted in Nicaragua ($r = +0.53$), where coercive institutions fell *more* than democratic evaluations. Red = high-sensitivity; orange = medium; blue = low-sensitivity items. Error bars: 95% CIs."
@@ -785,16 +787,6 @@ The Hong Kong case offers identification leverage unavailable in standard cross-
 
 ## A Practical Diagnostic Toolkit
 
-```{r}
-#| label: fig-five-case-summary
-#| fig-cap: "The sensitivity gradient across five cases. Each point plots the gradient correlation ($r$) between pre-specified item sensitivity rank and observed Cohen's $d$. Cases to the left show the predicted falsification signature (coercive institutions inflate most). Cases near zero or to the right show null or inverted gradients, consistent with genuine collapse or popular support for the regime change. Color and shape indicate the type of autocratization shock."
-#| fig-width: 10
-#| fig-height: 4.5
-#| out-width: "90%"
-
-knitr::include_graphics("../analysis/figures/fig_five_case_summary.pdf")
-```
-
 @tbl-toolkit operationalizes the sensitivity gradient framework as a diagnostic checklist. Researchers analyzing survey data from autocratizing contexts should check for these patterns before interpreting trust increases as genuine legitimacy gains. No single signal is definitive, but multiple converging signals---as in Hong Kong, where all five diagnostics flag distortion---provide strong evidence of measurement distortion. The checklist can be applied with varying data structures: ideal within-wave splits (as in the ABS Hong Kong case) offer the strongest identification, but standard cross-wave comparisons (as in the Turkey WVS case) can still yield informative gradient patterns when the intervening period includes a clear autocratization shock.
 
 ```{r}
@@ -891,6 +883,18 @@ toolkit |>
     escape = FALSE,
     footnote_as_chunk = TRUE
   )
+```
+
+@fig-five-case-summary summarizes the gradient correlation across all five cases, illustrating the full range from strong falsification signal to genuine collapse.
+
+```{r}
+#| label: fig-five-case-summary
+#| fig-cap: "The sensitivity gradient across five cases. Each point plots the gradient correlation ($r$) between pre-specified item sensitivity rank and observed Cohen's $d$. Cases to the left show the predicted falsification signature (coercive institutions inflate most). Cases near zero or to the right show null or inverted gradients, consistent with genuine collapse or popular support for the regime change. Color and shape indicate the type of autocratization shock."
+#| fig-width: 10
+#| fig-height: 4.5
+#| out-width: "90%"
+
+knitr::include_graphics("../analysis/figures/fig_five_case_summary.pdf")
 ```
 
 The toolkit is designed to be conservative: each diagnostic has a clear threshold, and researchers should report which signals are present, absent, or untestable given their data. The first two diagnostics---the sensitivity gradient and the trust--democracy divergence---are the most portable, requiring only trust items and at least one democratic evaluation item measured at two time points. The critical citizens reversal requires both democratic preference and democratic satisfaction items in the same survey. Differential non-response and implausible climate shifts provide additional leverage when item-level missingness data and objective measures of political conditions are available. When most diagnostics flag distortion, the burden of proof shifts: scholars claiming genuine legitimacy gains must explain why the pattern of observed shifts so closely tracks the predictions of a falsification model.
