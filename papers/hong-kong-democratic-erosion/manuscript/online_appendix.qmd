@@ -6,7 +6,7 @@ author:
       - name: Yonsei University
         department: Department of Sociology
     email: jeffrey.stark@yonsei.ac.kr
-date: "`r format(Sys.time(), '%B %d, %Y — %H:%M')`"
+date: "`r format(Sys.time(), '%B %d, %Y, %H:%M')`"
 format:
   pdf:
     documentclass: article
@@ -1422,7 +1422,7 @@ ven_gradient_results |>
 
 The null gradient is theoretically informative. Venezuela's combination of targeted political repression and catastrophic economic failure produced disillusionment so severe and evenly distributed that genuine attitude change overwhelmed any strategic compliance signal. The massive emigration removed critics from the survey frame, but those who remained were not falsifying regime support: they too had lost faith in all institutions. This confirms a boundary condition of the framework: the sensitivity gradient requires that strategic compliance remain a viable respondent strategy, which presupposes that the regime retains sufficient coercive authority and apparent legitimacy to make strategic response rational. When regime failure is too total and visible, this condition fails.
 
-The gradient figure for Venezuela is presented in @fig-gradient-ven-nic in the main text.
+The gradient figure for Venezuela is presented in the main text.
 
 ## Nicaragua: Inverted Gradient Under Overt Repression {#sec-nicaragua}
 
@@ -1472,7 +1472,7 @@ The inverted gradient has a theoretically coherent interpretation. When repressi
 
 The inverted gradient does not indicate that Nicaragua is "beyond" measurement distortion in a technical sense. It indicates that the conditions generating the falsification-consistent gradient were absent: targeted differential cost of honest response requires that respondents believe expressing dissatisfaction is more costly than expressing loyalty, a belief that becomes difficult to sustain when the regime is conducting mass killings in full public view.
 
-The gradient figure for Nicaragua is presented alongside Venezuela in @fig-gradient-ven-nic in the main text.
+The gradient figure for Nicaragua is presented alongside Venezuela in the main text.
 
 ## Comparison: Venezuela, Nicaragua, and the Positive Cases {#sec-latam-comparison}
 
