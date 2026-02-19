@@ -37,6 +37,8 @@ format:
           \usepackage{graphicx}
           \usepackage{threeparttable}
           \usepackage{threeparttablex}
+          \usepackage{colortbl}
+          \usepackage{xcolor}
           \captionsetup{width=\textwidth}
           \setlength\LTcapwidth{\textwidth}
           \floatplacement{figure}{H}
@@ -75,9 +77,15 @@ results_dir  <- file.path(analysis_dir, "results")
 
 ```{r load-results}
 load(file.path(results_dir, "table1_pub.RData"))        # wave_stats, diff_stats
+load(file.path(results_dir, "table2_pub.RData"))        # kamos_trust_stats, kamos_ttests, tab2_wide
 load(file.path(results_dir, "kamos_trust_means.RData")) # kamos_change, pol_sat
 load(file.path(results_dir, "table3_pub.RData"))        # ideo_cors, tab3
 slopes_inline <- readRDS(file.path(results_dir, "slopes_inline.rds"))
+cross_slopes  <- readRDS(file.path(results_dir, "cross_national_slopes.rds"))
+
+wave_years <- c("1"=2003,"2"=2006,"3"=2011,"4"=2015,"5"=2019,"6"=2022)
+n_2016 <- kamos_trust_stats |> dplyr::filter(variable=="trust_central_govt", wave_year==2016) |> dplyr::pull(n)
+n_2019 <- kamos_trust_stats |> dplyr::filter(variable=="trust_central_govt", wave_year==2019) |> dplyr::pull(n)
 
 abs_mn <- function(var, wv) round(wave_stats$mean[wave_stats$variable == var & wave_stats$wave == wv], 3)
 transp_w2      <- abs_mn("govt_withholds_info", 2)
@@ -171,6 +179,83 @@ The second pattern is more theoretically consequential. Perceptions of personall
 
 Against this backdrop, the institutional corruption assessment series is strikingly stable. Mean scores on both the corrupt_national_govt and corrupt_local_govt items fluctuate within a narrow range of approximately `r cng_range_diff` points across all six waves, with no directional trend and no pronounced response to the 2016–2018 accountability shock. This stability is not consistent with a generic cynicism account, under which rising perceptions of corruption in everyday life would be accompanied by rising assessments of governmental corruption. The divergence between the experiential and institutional series—a rise of `r cw_w4_to_w5` points in corrupt_witnessed across the critical interval against effectively flat institutional assessments—provides direct empirical support for the reclassification hypothesis. Citizens became more likely to report personal encounters with corruption precisely in the interval when the Kim Young-ran Act redrew the legal boundary of corrupt practice, while their abstract assessments of governmental corruption remained anchored. The pattern is consistent with perceptual reclassification of ambient social practices rather than a behavioral increase in corrupt acts or a generalized withdrawal of political trust.
 
+```{r table1-prep, include=FALSE}
+var_labels <- c(
+  govt_withholds_info   = "Government withholds information",
+  corrupt_witnessed     = "Personally witnessed/experienced corruption",
+  corrupt_national_govt = "Corruption in national government",
+  corrupt_local_govt    = "Corruption in local government"
+)
+scale_labels <- c(
+  govt_withholds_info   = "1\u20134",
+  corrupt_witnessed     = "1\u20132",
+  corrupt_national_govt = "1\u20134",
+  corrupt_local_govt    = "1\u20134"
+)
+abs_vars        <- names(var_labels)
+all_waves       <- 1:6
+all_wave_labels <- paste0("W", all_waves, "\n(~", wave_years[as.character(all_waves)], ")")
+all_intervals   <- c("W1\u2192W2","W2\u2192W3","W3\u2192W4","W4\u2192W5","W5\u2192W6")
+
+build_upper_row <- function(var) {
+  row_cells <- purrr::map_chr(all_waves, function(wv) {
+    d <- wave_stats |> dplyr::filter(variable == var, wave == wv)
+    if (nrow(d) == 0) return("---")
+    sprintf("%.3f\n(%.3f)\n[%s]", d$mean, d$se, formatC(d$n, format="d", big.mark=","))
+  })
+  c(var_labels[var], scale_labels[var], row_cells)
+}
+build_lower_row <- function(var) {
+  row_cells <- purrr::map_chr(all_intervals, function(intv) {
+    d <- diff_stats |> dplyr::filter(variable == var, interval == intv)
+    if (nrow(d) == 0) return("---")
+    sprintf("%+.3f\n(%.3f)", d$diff, d$se_diff)
+  })
+  c(var_labels[var], "", row_cells)
+}
+
+upper_df <- as.data.frame(do.call(rbind, purrr::map(abs_vars, build_upper_row)), stringsAsFactors=FALSE)
+colnames(upper_df) <- c("Variable", "Scale", all_wave_labels)
+lower_df <- as.data.frame(do.call(rbind, purrr::map(abs_vars, build_lower_row)), stringsAsFactors=FALSE)
+colnames(lower_df) <- c("Variable", "Scale", all_intervals)
+```
+
+```{r table1-upper}
+kableExtra::kbl(
+  upper_df,
+  caption  = "ABS Korea Wave Means (Upper Panel). Cell entries: mean (SE) [n]. Waves 1--2 use unweighted means (survey weights unavailable).",
+  booktabs = TRUE, escape = FALSE,
+  align    = c("l","c", rep("c",6))
+) |>
+  kableExtra::kable_styling(latex_options=c("hold_position","scale_down"), font_size=9, full_width=FALSE) |>
+  kableExtra::column_spec(1, width="8em") |>
+  kableExtra::column_spec(3:8, width="5em") |>
+  kableExtra::footnote(
+    general="W4 (2015) and W5 (2019) columns span the accountability shock interval. govt\\_withholds\\_info not administered in Wave 1.",
+    general_title="Note.", threeparttable=TRUE
+  )
+```
+
+```{r table1-lower}
+kableExtra::kbl(
+  lower_df,
+  caption  = "ABS Korea Inter-Wave Differences (Lower Panel). Cell entries: difference (SE of difference). W4--W5 spans the accountability shock interval.",
+  booktabs = TRUE, escape = FALSE,
+  align    = c("l","c", rep("c",5))
+) |>
+  kableExtra::kable_styling(latex_options=c("hold_position","scale_down"), font_size=9, full_width=FALSE) |>
+  kableExtra::column_spec(1, width="8em") |>
+  kableExtra::column_spec(3:7, width="5em") |>
+  kableExtra::footnote(
+    general="--- indicates variable not available in that wave. W4--W5 column spans the accountability shock interval.",
+    general_title="Note.", threeparttable=TRUE
+  )
+```
+
+```{r fig1, fig.cap="ABS Longitudinal Trends: Transparency Erosion and Corruption Perceptions, South Korea 2003\\textendash 2022. Shaded corridor = accountability shock interval (Kim Young-ran Act, September 2016 to Park conviction, April 2018). Weighted means shown; Waves 1\\textendash 2 unweighted.", out.width="\\textwidth"}
+knitr::include_graphics(file.path(fig_dir, "fig1_pub_abs_trends.pdf"))
+```
+
 ## Institutional Trust in the KAMOS Data
 
 The KAMOS data provide independent corroboration of these patterns from a domestic survey instrument administered at closely overlapping timepoints. Comparing Wave 1 (2016) and Wave 4 (2019) means across the institutional trust battery reveals a broad decline in trust, but one that is strikingly differentiated by institutional category in ways that align closely with the theoretical expectations derived from the accountability gap framework (Table 2).
@@ -179,11 +264,137 @@ Trust in the central government declined only marginally between 2016 and 2019, 
 Trust in local government registered a similarly modest decline of `r lgov_chg` points. By contrast, trust in the intermediary accountability infrastructure collapsed across the same interval. Trust in the National Assembly fell by `r nassem_chg` points, trust in the legislature by `r leg_chg` points, trust in media and press by `r media_chg` points, and trust in civil society organizations by `r ngo_chg` points, the largest single decline in the battery. These are not trivial movements: a decline of more than half a point on a ten-point scale, concentrated in the institutions specifically responsible for holding executive power accountable, represents a substantial reorganization of the citizen-institution relationship.
 This pattern of selective trust decline is inconsistent with a generalized withdrawal of political support. If citizens were simply becoming more cynical about politics broadly, one would expect roughly uniform trust declines across institutional categories. The observed pattern—near-stability in executive branch trust alongside sharp declines in legislative, media, and civil society trust—suggests instead that citizens distinguished between the institutions of government and the institutions of accountability, losing confidence specifically in the latter. This is precisely the configuration that the accountability gap framework predicts: a backsliding episode that weakens the mechanisms of horizontal accountability should register in mass opinion as a collapse of trust in accountability institutions rather than in government per se.
 
+```{r table2}
+kableExtra::kbl(
+  tab2_wide |> dplyr::select(Institution = label, `2016 Mean (SD)`, `2019 Mean (SD)`, Change, t),
+  caption  = sprintf(
+    "KAMOS Institutional Trust, Wave 1 (2016, n = %s) and Wave 4 (2019, n = %s). Trust on 0\\textendash 10 scale. Change = 2019 minus 2016 mean. t = Welch two-sample t-statistic.",
+    formatC(n_2016, format="d", big.mark=","),
+    formatC(n_2019, format="d", big.mark=",")),
+  booktabs = TRUE, escape = FALSE,
+  align    = c("l","c","c","c","r")
+) |>
+  kableExtra::kable_styling(latex_options=c("hold_position"), font_size=11, full_width=FALSE) |>
+  kableExtra::column_spec(1, width="12em") |>
+  kableExtra::pack_rows("Block A: Executive Institutions",       1, 2, bold=TRUE, latex_align="l") |>
+  kableExtra::pack_rows("Block B: Accountability Intermediaries", 3, 6, bold=TRUE, latex_align="l") |>
+  kableExtra::pack_rows("Secondary (for completeness)",           7, 8, bold=FALSE, latex_align="l") |>
+  kableExtra::footnote(
+    general="\u2020 p < .10. * p < .05. ** p < .01. *** p < .001. Stars in Change column. Independent cross-sections; Welch t-test.",
+    general_title="Note.", threeparttable=TRUE, escape=FALSE
+  )
+```
+
+```{r fig2, fig.cap="KAMOS Institutional Trust Decline by Category, 2016\\textendash 2019. Blue = executive institutions; red = accountability intermediaries.", out.width="80%", fig.align="center"}
+knitr::include_graphics(file.path(fig_dir, "fig2_pub_kamos_trust_decline.pdf"))
+```
+
 ## Partisan Sorting and the Trust Collapse
 
 A potential alternative explanation for the observed trust decline is partisan realignment: if the 2019 KAMOS wave was administered under a left-liberal Moon government whose supporters were more trusting of institutions than the conservative Park government's supporters had been in 2016, the aggregate trust decline might reflect compositional change in the electorate rather than a structural shift in accountability perceptions. The data do not support this interpretation. Correlations between ideological self-placement and trust across all five key institutional variables are near-zero in both waves, ranging from `r ideo_cor_min` to `r ideo_cor_max`, indicating that ideology explains a negligible share of trust variance at either timepoint. Furthermore, while co-partisan trust effects are evident in central government trust—Minjoo supporters report higher central government trust in 2019, just as Saenuri supporters did in 2016—no such co-partisan premium is evident for media trust, civil society trust, or legislative trust. The collapse of intermediary institution trust is cross-partisan, affecting supporters of both major parties and unaffiliated respondents in roughly equal measure. This cross-partisan character is the strongest evidence that the trust decline reflects a structural feature of the accountability environment rather than an artifact of electoral turnover.
 
 A further observation reinforces this interpretation. Political satisfaction, measured on a four-point scale in both KAMOS waves, changed by only `r polsat_chg` points between 2016 and 2019, effectively flat despite the most dramatic political upheaval in Korea's recent democratic history. Citizens did not become meaningfully more or less satisfied with Korean politics in aggregate following the impeachment and change of government. The combination of flat political satisfaction with sharply declining intermediary institution trust suggests that the accountability shock reorganized citizens' perceptions of the institutional landscape without producing a corresponding shift in their overall political affect. This dissociation is itself theoretically informative: the accountability gap syndrome does not manifest as generalized political disillusionment but as a specific reconfiguration of the trust architecture, concentrated in the institutions whose function is to render power accountable.
+
+```{r table3}
+kableExtra::kbl(
+  tab3,
+  caption  = "Pearson Correlations between Ideological Self-Placement and Institutional Trust, KAMOS Korea 2016 and 2019. Ideology: 1 = extremely liberal to 5 = extremely conservative.",
+  booktabs = TRUE, escape = FALSE,
+  align    = c("l","c","c","l")
+) |>
+  kableExtra::kable_styling(latex_options=c("hold_position"), font_size=11, full_width=FALSE) |>
+  kableExtra::column_spec(1, width="12em") |>
+  kableExtra::footnote(
+    general="Near-zero correlations (|r| < .10) indicate the trust decline is not an artifact of ideological composition shifts. No significance stars reported; the finding is the absence of meaningful association.",
+    general_title="Note.", threeparttable=TRUE
+  )
+```
+
+## Korea in Comparative Context
+
+Figure 3 situates Korea's longitudinal trends within the broader ABS sample by plotting the Korean series against the unweighted regional average across all ABS countries with available data. Korea tracks above the regional mean on both variables across the full period, with the gap on the experiential corruption measure widening sharply following the accountability shock. Table 4 formalizes this comparative position, reporting weighted OLS slope estimates for all ABS countries with at least three survey waves. Korea ranks first among `r slopes_inline$gwi_n_cty` countries on the rate of increase in government information withholding (slope = `r slopes_inline$gwi_slope`, z = `r slopes_inline$gwi_z`) and first among `r slopes_inline$cw_n_cty` countries on the rate of increase in experiential corruption perceptions (slope = `r slopes_inline$cw_slope`, z = `r slopes_inline$cw_z`). This cross-national positioning suggests that the dynamics documented in this paper are not merely a generic pattern of declining institutional confidence common across Asia but reflect a specifically Korean trajectory of perceptual change.
+
+```{r fig3, fig.cap="Korea vs. ABS Regional Average: Government Information Withholding and Experiential Corruption Perceptions, 2003\\textendash 2022. Solid line = Korea; dashed = unweighted regional average across all available ABS countries.", out.width="\\textwidth"}
+knitr::include_graphics(file.path(fig_dir, "fig3_pub_korea_vs_regional.pdf"))
+```
+
+```{r table4-prep, include=FALSE}
+format_slope_panel <- function(var_name) {
+  slopes_sub <- cross_slopes |> dplyr::filter(variable == var_name)
+  summary_row <- slopes_sub |>
+    dplyr::summarise(
+      Country       = "Cross-national mean (SD)",
+      `Slope (sig)` = sprintf("%.4f (%.4f)", dplyr::first(mean_slope), dplyr::first(sd_slope)),
+      SE            = "---",
+      `z-score`     = "---",
+      Waves         = NA_integer_
+    )
+  slopes_sub |>
+    dplyr::arrange(dplyr::desc(slope)) |>
+    dplyr::mutate(
+      sig = dplyr::case_when(
+        p_value < 0.001 ~ "***", p_value < 0.01 ~ "**",
+        p_value < 0.05  ~ "*",  p_value < 0.10  ~ "\u2020", TRUE ~ ""
+      ),
+      Country       = country_name,
+      `Slope (sig)` = paste0(sprintf("%.4f", slope), sig),
+      SE            = sprintf("%.4f", se),
+      `z-score`     = sprintf("%.2f",  z_score),
+      Waves         = as.integer(n_waves)
+    ) |>
+    dplyr::select(Country, `Slope (sig)`, SE, `z-score`, Waves) |>
+    dplyr::bind_rows(summary_row)
+}
+
+tab4_gwi      <- format_slope_panel("govt_withholds_info")
+tab4_cw       <- format_slope_panel("corrupt_witnessed")
+korea_row_gwi <- which(tab4_gwi$Country == "Korea")
+korea_row_cw  <- which(tab4_cw$Country  == "Korea")
+summary_row_gwi <- nrow(tab4_gwi)
+summary_row_cw  <- nrow(tab4_cw)
+```
+
+```{r table4a}
+kableExtra::kbl(
+  tab4_gwi,
+  caption  = sprintf(
+    "Cross-National ABS Slopes: Government Withholds Information. Korea slope = %.4f (SE = %.4f), z = %.2f, rank %d of %d countries. Countries ranked by slope, descending.",
+    slopes_inline$gwi_slope, slopes_inline$gwi_se,
+    slopes_inline$gwi_z, slopes_inline$gwi_rank, slopes_inline$gwi_n_cty),
+  booktabs = TRUE, escape = FALSE,
+  align    = c("l","r","r","r","r")
+) |>
+  kableExtra::kable_styling(latex_options=c("hold_position"), font_size=11, full_width=FALSE) |>
+  kableExtra::column_spec(1, width="10em") |>
+  kableExtra::row_spec(korea_row_gwi,   bold=TRUE, background="#FFF9C4") |>
+  kableExtra::row_spec(summary_row_gwi, italic=TRUE) |>
+  kableExtra::footnote(
+    general=paste0("\u2020 p < .10. * p < .05. ** p < .01. *** p < .001 (slope estimate). ",
+      "Slope = coefficient on wave number, weighted OLS. z-score standardised within variable across ABS sample. ",
+      "Countries with <3 waves excluded. Yellow shading = Korea."),
+    general_title="Note.", threeparttable=TRUE, escape=FALSE
+  )
+```
+
+```{r table4b}
+kableExtra::kbl(
+  tab4_cw,
+  caption  = sprintf(
+    "Cross-National ABS Slopes: Personally Witnessed/Experienced Corruption. Korea slope = %.4f (SE = %.4f), z = %.2f, rank %d of %d countries.",
+    slopes_inline$cw_slope, slopes_inline$cw_se,
+    slopes_inline$cw_z, slopes_inline$cw_rank, slopes_inline$cw_n_cty),
+  booktabs = TRUE, escape = FALSE,
+  align    = c("l","r","r","r","r")
+) |>
+  kableExtra::kable_styling(latex_options=c("hold_position"), font_size=11, full_width=FALSE) |>
+  kableExtra::column_spec(1, width="10em") |>
+  kableExtra::row_spec(korea_row_cw,   bold=TRUE, background="#FFF9C4") |>
+  kableExtra::row_spec(summary_row_cw, italic=TRUE) |>
+  kableExtra::footnote(
+    general="Same methodological caveats as Panel A. Yellow shading = Korea.",
+    general_title="Note.", threeparttable=TRUE, escape=FALSE
+  )
+```
 
 # Discussion {#sec-discussion}
 
