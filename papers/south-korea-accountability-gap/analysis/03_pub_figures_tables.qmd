@@ -113,6 +113,25 @@ wt_stats <- function(x, wt) {
 }
 ```
 
+```{r data-description-stats}
+# ── Data description statistics for manuscript prose ──────────────────────────
+# ABS Korea: total respondents and wave-size range
+n_abs_total    <- nrow(kor)
+abs_wave_ns    <- kor |> count(wave) |> pull(n)
+abs_wave_n_min <- min(abs_wave_ns)
+abs_wave_n_max <- max(abs_wave_ns)
+
+# KAMOS: total respondents and substantive variable count
+# (raw file has 43 cols; exclude admin cols wave/weight/country/year = 39 substantive vars)
+n_kamos_total    <- nrow(kamos)
+kamos_admin_cols <- c("wave", "weight", "country", "year")
+kamos_raw_names  <- names(readRDS(kamos_harmonized_path))
+n_kamos_vars     <- sum(!kamos_raw_names %in% kamos_admin_cols)
+
+save(n_abs_total, abs_wave_n_min, abs_wave_n_max, n_kamos_total, n_kamos_vars,
+     file = file.path(results_dir, "data_description_stats.RData"))
+```
+
 ---
 
 # Table 1: ABS Wave Means and Inter-Wave Changes {#sec-t1}
@@ -811,7 +830,9 @@ fig2 <- ggplot(change_stats,
     y       = NULL,
     title   = "Figure 2. KAMOS Institutional Trust Decline by Category, 2016\u20132019",
     caption = paste0(
-      "Source: KAMOS Korea, Wave 1 (2016, n = 2,000) and Wave 4 (2019, n = 1,500). ",
+      sprintf("Source: KAMOS Korea, Wave 1 (2016, n = %s) and Wave 4 (2019, n = %s). ",
+              formatC(n_2016, format = "d", big.mark = ","),
+              formatC(n_2019, format = "d", big.mark = ",")),
       "Trust measured on 0\u201310 scale. ",
       "Points show 2019 \u2212 2016 change in weighted means; horizontal bars = 95% CI. ",
       "Items ordered by magnitude of decline (largest at top). ",
