@@ -34,9 +34,9 @@ abstract: |
   be trusted to mean what they appear to say.
 keywords:
   - survey measurement
-  - autocratization 
-  - preference falsification 
-  - democratic backsliding 
+  - autocratization
+  - preference falsification
+  - democratic backsliding
   - Hong Kong
   - Turkey
   - comparative methodology
