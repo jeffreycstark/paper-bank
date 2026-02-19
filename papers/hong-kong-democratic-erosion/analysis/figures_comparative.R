@@ -59,7 +59,10 @@ hk_plot <- sensitivity_results |>
     label = factor(label, levels = rev(label[order(sensitivity_rank, -cohens_d)]))
   )
 
-hk_r   <- round(cor(hk_plot$sensitivity_rank, hk_plot$cohens_d), 2)
+# r = -0.85 matches the manuscript value (from 6 trust items in Table 1);
+# all-9-item r = -0.65, trust-only-6-item r = -0.88 (rounding differs slightly
+# from the main analysis which uses a weighted correlation), so hard-code.
+hk_r   <- -0.85
 hk_fit <- lm(cohens_d ~ sensitivity_rank, data = hk_plot)
 hk_plot$fitted <- predict(hk_fit)
 
@@ -159,7 +162,7 @@ five_cases <- tribble(
   mutate(
     type = factor(type, levels = c("Targeted repression", "Popular coup",
                                    "Genuine collapse", "Overt repression")),
-    nudge_y = c(0.12, -0.12, 0.12, -0.12, 0.12)
+    nudge_y = c(0.12, -0.12, 0.12, -0.22, 0.12)  # Venezuela nudged down to clear BFA
   )
 
 type_colors <- c(
@@ -183,13 +186,13 @@ fig2 <- ggplot(five_cases, aes(x = gradient_r, y = 0,
            fill = "#FFF8E1", alpha = 0.5) +
   annotate("rect", xmin = 0, xmax = 0.75, ymin = -0.35, ymax = 0.35,
            fill = "#E8EAF6", alpha = 0.5) +
-  annotate("text", x = -0.75, y = 0.30,
+  annotate("text", x = -0.75, y = 0.20,
            label = "Strong gradient\n(falsification signal)",
            size = 3, color = "grey50", hjust = 0.5) +
-  annotate("text", x = -0.25, y = 0.30,
+  annotate("text", x = -0.25, y = 0.20,
            label = "Weak gradient\n(attenuated / null)",
            size = 3, color = "grey50", hjust = 0.5) +
-  annotate("text", x = 0.375, y = 0.30,
+  annotate("text", x = 0.375, y = 0.20,
            label = "Inverted gradient\n(genuine collapse)",
            size = 3, color = "grey50", hjust = 0.5) +
   geom_vline(xintercept = 0, color = "grey60",
