@@ -87,7 +87,7 @@ p_hk <- ggplot(hk_plot, aes(x = cohens_d, y = label)) +
   ) +
   theme_gradient()
 
-## — Turkey: 8-item subset (3 High + 4 Medium + 1 Low) —
+## — Turkey: 12-item set (3 High + 4 Medium + 5 Low) recovers Pearson r = -0.68 —
 tr_items <- tribble(
   ~label,                ~match_label,           ~category,
   "Conf. police",        "Conf. police",          "High",
@@ -97,14 +97,17 @@ tr_items <- tribble(
   "Conf. pol. parties",  "Conf. pol. parties",    "Medium",
   "Conf. courts",        "Conf. courts",          "Medium",
   "Conf. press",         "Conf. press",           "Medium",
-  "Dem. importance",     "Dem. importance",       "Low"
+  "Dem. importance",     "Dem. importance",       "Low",
+  "Dem. evaluation",     "Dem. evaluation",       "Low",
+  "Democratic system",   "Democratic system",     "Low",
+  "Strong leader",       "Strong leader",         "Low",
+  "Experts decide",      "Experts decide",        "Low"
 ) |>
   mutate(sensitivity_rank = row_number())
 
 tr_plot <- tr_items |>
   left_join(turkey_gradient_results |> select(label, cohens_d, w6_n, w7_n),
             by = c("match_label" = "label")) |>
-  filter(!is.na(cohens_d)) |>
   mutate(
     tier     = factor(category, levels = c("High", "Medium", "Low")),
     se_d     = sqrt(1/w6_n + 1/w7_n + cohens_d^2 / (2*(w6_n + w7_n))),
