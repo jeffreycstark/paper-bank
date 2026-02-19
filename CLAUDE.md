@@ -75,7 +75,14 @@ econdev-authpref/
 ### thailand-trust-collapse
 **Topic**: Thailand's 20-year institutional trust erosion (2001-2022), KCI journal target.
 **Data**: ABS (W1-W6, Thailand + Philippines + Taiwan comparators).
-**Key files**: `analysis/00_data_preparation.R`, `analysis/01_descriptive_analysis.R`, `analysis/02_models.R`, `manuscript/manuscript.qmd`.
+**Analysis pipeline** (run scripts 00–05 in order to regenerate all results):
+1. `analysis/00_data_preparation.R` — filter ABS, build panel, save `thailand_panel.rds`
+2. `analysis/01_descriptive_analysis.R` — trust trajectories, bottom-box trends, institutional breadth figures
+3. `analysis/02_models.R` — H1/H2 interaction models, random slopes, performance controls, pre-trend
+4. `analysis/03_hypothesis_tests.R` — formal hypothesis tests, piecewise/quadratic specs, subgroup models
+5. `analysis/04_attitudinal_mechanisms.R` — H3–H5 attitudinal models (democratic expectations, engagement, satisfaction)
+6. `analysis/05_new_analyses.R` — DiD, Philippines H3 formal test, ordered logit predicted probs, weighted comparison, IB sensitivity-gradient, scale reliability
+**Manuscript**: `manuscript/tt-manuscript.qmd`, `manuscript/tt-online-appendix.qmd`
 
 ### trust-dynamics
 **Topic**: Institutional trust dynamics across Asian democracies.
