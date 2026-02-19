@@ -65,7 +65,9 @@ fig_dir      <- file.path(analysis_dir, "figures")
 table_dir    <- file.path(analysis_dir, "tables")
 results_dir  <- file.path(analysis_dir, "results")
 
-source(file.path(project_root, "_data_config.R"))
+# ABS (Asian Barometer, Korea subset) and KAMOS (Korean domestic panel)
+# kor_abs   <- readRDS(file.path(analysis_dir, "kor_abs.rds"))
+# kor_kamos <- readRDS(file.path(analysis_dir, "kor_kamos.rds"))
 ```
 
 # Introduction {#sec-introduction}

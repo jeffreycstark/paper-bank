@@ -83,7 +83,8 @@ econdev-authpref/
 
 ### south-korea-accountability-gap
 **Topic**: [TBD] South Korea accountability gap.
-**Data**: ABS (country_num == 3, Korea, all waves).
+**Data**: ABS (country_num == 3, Korea, all waves) + KAMOS (Korean domestic panel survey).
+**Note**: KAMOS harmonization pipeline TBD in `survey-data-prep`; path will be `kamos_harmonized_path` in `_data_config.R`.
 **Key files**: `analysis/00_data_preparation.R`, `analysis/01_descriptive_analysis.R`, `analysis/02_models.R`, `manuscript/manuscript.qmd`.
 
 ---
