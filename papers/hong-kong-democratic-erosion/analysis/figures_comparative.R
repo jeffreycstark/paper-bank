@@ -87,20 +87,31 @@ p_hk <- ggplot(hk_plot, aes(x = cohens_d, y = label)) +
   ) +
   theme_gradient()
 
-## — Turkey —
-tr_plot <- turkey_gradient_results |>
+## — Turkey: 8-item subset (3 High + 4 Medium + 1 Low) —
+tr_items <- tribble(
+  ~label,                ~match_label,           ~category,
+  "Conf. police",        "Conf. police",          "High",
+  "Conf. government",    "Conf. government",      "High",
+  "Conf. armed forces",  "Conf. armed forces",    "High",
+  "Conf. parliament",    "Conf. parliament",      "Medium",
+  "Conf. pol. parties",  "Conf. pol. parties",    "Medium",
+  "Conf. courts",        "Conf. courts",          "Medium",
+  "Conf. press",         "Conf. press",           "Medium",
+  "Dem. importance",     "Dem. importance",       "Low"
+) |>
+  mutate(sensitivity_rank = row_number())
+
+tr_plot <- tr_items |>
+  left_join(turkey_gradient_results |> select(label, cohens_d, w6_n, w7_n),
+            by = c("match_label" = "label")) |>
+  filter(!is.na(cohens_d)) |>
   mutate(
-    tier = case_when(
-      category == "High" ~ "High",
-      category == "Low"  ~ "Low",
-      TRUE               ~ "Medium"
-    ),
-    tier = factor(tier, levels = c("High", "Medium", "Low")),
-    se_d  = sqrt(1/w6_n + 1/w7_n +
-                   cohens_d^2 / (2 * (w6_n + w7_n))),
-    ci_lo = cohens_d - 1.96 * se_d,
-    ci_hi = cohens_d + 1.96 * se_d,
-    label = factor(label, levels = rev(label[order(sensitivity_rank, -cohens_d)]))
+    tier     = factor(category, levels = c("High", "Medium", "Low")),
+    se_d     = sqrt(1/w6_n + 1/w7_n + cohens_d^2 / (2*(w6_n + w7_n))),
+    ci_lo    = cohens_d - 1.96 * se_d,
+    ci_hi    = cohens_d + 1.96 * se_d,
+    label    = factor(label, levels = rev(label)),
+    category = factor(category, levels = c("High", "Medium", "Low"))
   )
 
 tr_r   <- round(cor(tr_plot$sensitivity_rank, tr_plot$cohens_d, use = "complete.obs"), 2)
@@ -161,7 +172,13 @@ five_cases <- tribble(
   mutate(
     type = factor(type, levels = c("Targeted repression", "Popular coup",
                                    "Genuine collapse", "Overt repression")),
-    nudge_y = c(0.12, -0.12, 0.12, -0.22, 0.12)  # Venezuela nudged down to clear BFA
+    nudge_y = case_when(
+      case == "Hong Kong"    ~  0.14,
+      case == "Turkey"       ~ -0.14,
+      case == "Burkina Faso" ~  0.14,
+      case == "Venezuela"    ~ -0.17,
+      case == "Nicaragua"    ~  0.14
+    )
   )
 
 type_colors <- c(
@@ -185,13 +202,13 @@ fig2 <- ggplot(five_cases, aes(x = gradient_r, y = 0,
            fill = "#FFF8E1", alpha = 0.5) +
   annotate("rect", xmin = 0, xmax = 0.75, ymin = -0.35, ymax = 0.35,
            fill = "#E8EAF6", alpha = 0.5) +
-  annotate("text", x = -0.75, y = 0.20,
+  annotate("text", x = -0.75, y = 0.22,
            label = "Strong gradient\n(falsification signal)",
            size = 3, color = "grey50", hjust = 0.5) +
-  annotate("text", x = -0.25, y = 0.20,
+  annotate("text", x = -0.25, y = 0.22,
            label = "Weak gradient\n(attenuated / null)",
            size = 3, color = "grey50", hjust = 0.5) +
-  annotate("text", x = 0.375, y = 0.20,
+  annotate("text", x = 0.25, y = 0.22,
            label = "Inverted gradient\n(genuine collapse)",
            size = 3, color = "grey50", hjust = 0.5) +
   geom_vline(xintercept = 0, color = "grey60",
