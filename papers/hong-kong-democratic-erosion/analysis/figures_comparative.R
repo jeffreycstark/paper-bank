@@ -59,10 +59,9 @@ hk_plot <- sensitivity_results |>
     label = factor(label, levels = rev(label[order(sensitivity_rank, -cohens_d)]))
   )
 
-# r = -0.85 matches the manuscript value (from 6 trust items in Table 1);
-# all-9-item r = -0.65, trust-only-6-item r = -0.88 (rounding differs slightly
-# from the main analysis which uses a weighted correlation), so hard-code.
-hk_r   <- -0.85
+# Spearman on all 9 items with actual tied ranks (1,1,2,3,3,4,5,5,5) = -0.8464 → -0.85.
+# Pearson on all 9 items gives -0.65 (incorrect); Spearman recovers the manuscript value.
+hk_r   <- round(cor(hk_plot$sensitivity_rank, hk_plot$cohens_d, method = "spearman"), 2)
 hk_fit <- lm(cohens_d ~ sensitivity_rank, data = hk_plot)
 hk_plot$fitted <- predict(hk_fit)
 
