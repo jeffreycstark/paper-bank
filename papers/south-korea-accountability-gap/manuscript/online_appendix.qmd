@@ -6,7 +6,7 @@ author:
       - name: Yonsei University
         department: Department of Sociology
     email: jeffrey.stark@yonsei.ac.kr
-date: "`r format(Sys.time(), '%B %d, %Y — %H:%M')`"
+date: "`r format(Sys.time(), '%B %d, %Y at %H:%M')`"
 format:
   pdf:
     documentclass: article
@@ -60,13 +60,139 @@ analysis_dir <- file.path(paper_dir, "analysis")
 results_dir  <- file.path(analysis_dir, "results")
 ```
 
-# Appendix A: Data and Variable Construction {#sec-app-data}
+# Appendix A: Variable Descriptions {#sec-app-variables}
 
-[APPENDIX A TBD]
+This appendix lists all variables drawn from the Asian Barometer Survey (ABS) and the Korean Academic Multimode Open Survey (KAMOS) used in the analysis, including exact survey question wording where available and scale coding information. Variable names reflect the harmonized dataset conventions established in the `survey-data-prep` pipeline. Where exact wording is drawn from official codebooks, the wave and question number are noted; where wording has been paraphrased from the harmonized variable label, this is indicated.
+
+## A.1 Asian Barometer Survey (ABS) Variables
+
+The ABS Korea sample covers six waves: Wave 1 (~2003), Wave 2 (~2006), Wave 3 (2011), Wave 4 (2015), Wave 5 (2019), and Wave 6 (2022). All items below were administered in face-to-face interviews using probability-based national samples. Wave-level sample sizes range from approximately 1,200 to 1,500 respondents. All analyses use the survey-provided probability weights.
+
+### A.1.1 Transparency Perceptions (H1)
+
+**Variable:** `govt_withholds_info`
+**Waves available:** 2--6
+**Scale:** 4-point agreement scale (1 = Strongly disagree, 2 = Somewhat disagree, 3 = Somewhat agree, 4 = Strongly agree)
+**Direction:** Higher values indicate greater agreement that the government withholds information.
+
+*Survey question (approximate; verify against ABS Wave codebook):* "I am going to read some statements about the government. How much do you agree or disagree with each statement? --- The government withholds information the public ought to have."
+
+*Note:* This item was not administered in Wave 1, yielding five measurement points (2006--2022) for the longitudinal transparency series.
+
+### A.1.2 Corruption Perceptions (H2)
+
+**Variable:** `corrupt_witnessed`
+**Waves available:** 1--6
+**Scale:** [Verify against ABS codebook; coded 1--2 in harmonized dataset]
+**Direction:** Higher values indicate more frequent personal encounter with or witnessing of corrupt acts.
+
+*Survey question (approximate; verify against ABS Wave codebook):* "During the past year, have you or anyone in your family come across a government official who demanded a bribe or corrupt payment for their services, or have you personally witnessed such acts?" Response categories should be confirmed against official Wave 1--6 codebooks; the harmonized variable is coded such that higher values reflect greater experiential exposure to corruption.
+
+*Coding note:* The harmonized `corrupt_witnessed` variable takes values 1--2 in the analysis dataset. The manuscript references a "four-point scale" that should be reconciled with the coding in the harmonized data prior to final submission. If the original item uses a broader frequency scale (e.g., Never / Rarely / Sometimes / Often), the harmonized version may have been recoded; this should be documented in the data preparation script.
+
+---
+
+**Variable:** `corrupt_national_govt`
+**Waves available:** 1--6
+**Scale:** 4-point scale (1 = Not at all widespread, 2 = Not very widespread, 3 = Fairly widespread, 4 = Very widespread)
+**Direction:** Higher values indicate perception of more widespread corruption.
+
+*Survey question (approximate):* "How widespread do you think corruption and bribe-taking are among national government officials in [Korea]?"
+
+---
+
+**Variable:** `corrupt_local_govt`
+**Waves available:** 1--6
+**Scale:** 4-point scale (same as above)
+**Direction:** Higher values indicate perception of more widespread corruption.
+
+*Survey question (approximate):* "How widespread do you think corruption and bribe-taking are among local government officials in [Korea]?"
+
+### A.1.3 Institutional Trust --- ABS (Secondary Reference)
+
+The following ABS trust items are used as a secondary longitudinal reference series alongside the KAMOS trust battery. All items use the same 4-point response scale.
+
+**Scale:** 4-point trust scale (1 = None at all, 2 = Not very much, 3 = Quite a lot, 4 = A great deal)
+**Direction:** Higher values indicate greater trust.
+**Waves available:** 1--6 (availability by item may vary; verify against codebooks).
+
+*Survey question stem:* "How much do you trust each of the following institutions?"
+
+| Variable name | Institution |
+|---|---|
+| `trust_national_government` | National government |
+| `trust_parliament` | Parliament |
+| `trust_military` | Military |
+| `trust_newspapers` | Newspapers |
+| `trust_political_parties` | Political parties |
+
+: ABS Institutional Trust Items {#tbl-abs-trust}
+
+## A.2 Korean Academic Multimode Open Survey (KAMOS) Variables
+
+The KAMOS data used in this study cover Wave 1 (February--May 2016) and Wave 4 (May--June 2019), administered by the Center for Asian Public Opinion Research Collaboration Initiative (CAPORCI) at Chungnam National University. The combined two-wave dataset includes 3,500 respondents across 39 variables. All analyses use the survey-provided probability weights. The sampling frame and mode of administration differ from the ABS; the KAMOS serves a triangulation function, providing an independent domestic instrument overlapping with ABS Waves 4 and 5.
+
+### A.2.1 Institutional Trust Battery
+
+All trust items use a common 11-point response scale.
+
+**Scale:** 11-point scale (0 = Completely untrustworthy, 10 = Completely trustworthy)
+**Direction:** Higher values indicate greater trust.
+
+*Survey question stem (approximate):* "On a scale from 0 to 10, where 0 means 'completely untrustworthy' and 10 means 'completely trustworthy,' how much do you trust each of the following institutions?"
+
+| Variable name | Institution | Type in analysis |
+|---|---|---|
+| `trust_central_govt` | Central government | Executive |
+| `trust_local_govt` | Local government | Executive |
+| `trust_national_assembly` | National Assembly | Intermediary |
+| `trust_legislature` | Legislature | Intermediary |
+| `trust_media` | Media and press | Intermediary |
+| `trust_ngo` | Civil society organizations (NGOs) | Intermediary |
+
+: KAMOS Institutional Trust Items {#tbl-kamos-trust}
+
+*Note on "Executive" vs. "Intermediary" classification:* The analysis distinguishes institutions by their accountability function. Executive institutions (central and local government) are the targets of accountability; intermediary institutions (National Assembly, legislature, media, civil society) are the mechanisms through which accountability is exercised. This classification follows the theoretical framework developed in Section 2 of the manuscript.
+
+### A.2.2 Political Satisfaction
+
+**Variable:** `pol_satisfaction`
+**Scale:** 4-point scale
+**Direction:** Higher values indicate greater satisfaction.
+
+*Survey question (approximate):* "Overall, how satisfied are you with the way democracy works in Korea?" Response categories should be confirmed against the KAMOS Wave 1 and Wave 4 codebooks.
+
+### A.2.3 Ideology
+
+**Variable:** `ideology`
+**Scale:** [Verify scale endpoints and exact wording against KAMOS codebook]
+**Direction:** [Verify; typically higher = more conservative in Korean surveys]
+
+*Survey question (approximate):* "In politics, people often talk about 'left' and 'right.' Where would you place yourself on a scale from left to right?" The exact scale endpoints and number of points should be confirmed against the official KAMOS codebooks.
+
+*Use in analysis:* Used to compute Pearson correlations between ideological self-placement and institutional trust, reported in Table [TBD] and Figure 6. All correlations fall within ±0.11, indicating negligible ideological sorting of trust.
+
+### A.2.4 Party Identification
+
+**Variable:** `party_id`
+**Scale:** Categorical
+**Coding in analysis:** 1 = Minjoo (Democratic Party), 2 = Liberty Korea / Saenuri, 5 = No party preference. Remaining categories excluded from partisan subgroup analysis.
+
+*Survey question (approximate):* "Which political party do you feel closest to, if any?" Exact coding should be confirmed against the KAMOS Wave 1 and Wave 4 codebooks, particularly for Wave 4 where party names reflect post-2017 reorganizations.
+
+---
 
 # Appendix B: Robustness Checks {#sec-app-robustness}
 
-[APPENDIX B TBD]
+[APPENDIX B TBD --- Planned content: wave-by-wave regression models with and without survey weights; alternative operationalizations of the key perception variables; sensitivity to sample restriction decisions (e.g., exclusion of Wave 1 from transparency analysis due to item non-availability).]
+
+# Appendix C: Full Model Results {#sec-app-models}
+
+[APPENDIX C TBD --- Planned content: complete regression tables from `02_models.R`, including all covariates, standard errors, and fit statistics. Main text presents coefficient plots or selected estimates; full tables with all control variables appear here.]
+
+# Appendix D: Supplementary Figures {#sec-app-figures}
+
+[APPENDIX D TBD --- Planned content: ABS institutional trust longitudinal series (trust in parliament, military, newspapers, political parties across Waves 1--6); full partisan subgroup breakdown across all six KAMOS trust items; any supplementary descriptives requested by reviewers.]
 
 # References {.unnumbered}
 

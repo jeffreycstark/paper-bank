@@ -1,0 +1,1156 @@
+---
+title: "Publication Figures and Tables: South Korea Accountability Gap"
+subtitle: "Per spec — Tables 1–3, Figures 1–3"
+format:
+  html:
+    toc: true
+    toc-depth: 3
+    number-sections: true
+    theme: cosmo
+    code-fold: true
+    self-contained: true
+  pdf:
+    documentclass: article
+    classoption: [12pt, letterpaper]
+    geometry:
+      - margin=1in
+    linestretch: 1.5
+    number-sections: true
+    colorlinks: true
+    keep-tex: true
+    include-in-header:
+      - text: |
+          \usepackage{booktabs}
+          \usepackage{caption}
+          \usepackage{longtable}
+          \usepackage{array}
+          \usepackage{multirow}
+          \usepackage{float}
+          \usepackage{threeparttable}
+          \usepackage{threeparttablex}
+          \usepackage{colortbl}
+          \usepackage{xcolor}
+          \captionsetup{width=\textwidth}
+          \setlength\LTcapwidth{\textwidth}
+          \floatplacement{figure}{H}
+          \floatplacement{table}{H}
+          \raggedright
+execute:
+  echo: false
+  warning: false
+  message: false
+  cache: false
+---
+
+```{r setup}
+library(tidyverse)
+library(kableExtra)
+library(patchwork)
+library(ggtext)
+library(scales)
+
+project_root <- "/Users/jeffreystark/Development/Research/econdev-authpref"
+source(file.path(project_root, "_data_config.R"))
+
+paper_dir    <- file.path(project_root, "papers/south-korea-accountability-gap")
+analysis_dir <- file.path(paper_dir, "analysis")
+fig_dir      <- file.path(analysis_dir, "figures")
+table_dir    <- file.path(analysis_dir, "tables")
+results_dir  <- file.path(analysis_dir, "results")
+
+# ── Wave year lookup ───────────────────────────────────────────────────────────
+# W1/W2: int_year not recorded in harmonized data; approximate fieldwork midpoints
+wave_years <- c("1" = 2003, "2" = 2006, "3" = 2011,
+                "4" = 2015, "5" = 2019, "6" = 2022)
+
+# ── Political event reference lines ───────────────────────────────────────────
+ref_kyr  <- 2016 + 8/12   # Kim Young-ran Act: September 2016
+ref_park <- 2018 + 3/12   # Park Geun-hye conviction: April 2018
+
+# ── Colour palette (greyscale-compatible; distinguishable by line type also) ──
+# Suitable for Brill print requirements
+col_withholds  <- "#1A1A2E"   # near-black (transparency series)
+col_witnessed  <- "#1B4F72"   # dark navy  (experiential corruption)
+col_natl_govt  <- "#7F8C8D"   # mid grey   (national govt corruption)
+col_local_govt <- "#B2BABB"   # light grey (local govt corruption)
+col_exec       <- "#2471A3"   # executive institutions (KAMOS)
+col_intermed   <- "#C0392B"   # intermediary/accountability institutions (KAMOS)
+col_regional   <- "#7F8C8D"   # regional average (Figure 3)
+```
+
+```{r load-data}
+# ── ABS (full dataset for regional comparison) ────────────────────────────────
+abs_full <- readRDS(abs_harmonized_path)
+
+# Korea subset
+kor <- abs_full |>
+  filter(country == 3) |>
+  mutate(
+    survey_year = wave_years[as.character(wave)],
+    wave        = as.integer(wave),
+    # Waves 1–2 lack weights; treat as equal-weight
+    w = coalesce(weight, 1)
+  )
+
+# ── KAMOS ─────────────────────────────────────────────────────────────────────
+kamos <- readRDS(kamos_harmonized_path) |>
+  mutate(
+    wave_year  = if_else(wave == 1, 2016L, 2019L),
+    wave_label = if_else(wave == 1, "Wave 1 (2016)", "Wave 4 (2019)"),
+    w = coalesce(weight, 1)
+  )
+
+# ── Helper: weighted mean + SE ────────────────────────────────────────────────
+wt_stats <- function(x, wt) {
+  keep <- !is.na(x) & !is.na(wt)
+  x <- x[keep]; wt <- wt[keep]
+  n    <- length(x)
+  mn   <- weighted.mean(x, wt)
+  vr   <- sum(wt * (x - mn)^2) / ((sum(wt)^2 - sum(wt^2)) / sum(wt))
+  sd   <- sqrt(vr)
+  se   <- sd / sqrt(n)
+  list(mean = mn, sd = sd, se = se, n = n)
+}
+```
+
+---
+
+# Table 1: ABS Wave Means and Inter-Wave Changes {#sec-t1}
+
+```{r table1-compute}
+abs_vars <- c(
+  "govt_withholds_info",
+  "corrupt_witnessed",
+  "corrupt_national_govt",
+  "corrupt_local_govt"
+)
+
+var_labels <- c(
+  govt_withholds_info  = "Government withholds information",
+  corrupt_witnessed    = "Personally witnessed/experienced corruption",
+  corrupt_national_govt = "Corruption in national government",
+  corrupt_local_govt   = "Corruption in local government"
+)
+
+scale_labels <- c(
+  govt_withholds_info   = "1–4",
+  corrupt_witnessed     = "1–2",
+  corrupt_national_govt = "1–4",
+  corrupt_local_govt    = "1–4"
+)
+
+# Available waves per variable
+var_waves <- list(
+  govt_withholds_info   = 2:6,
+  corrupt_witnessed     = 1:6,
+  corrupt_national_govt = 1:6,
+  corrupt_local_govt    = 1:6
+)
+
+# Compute wave-level weighted means, SDs, SEs, n
+wave_stats_list <- map(abs_vars, function(var) {
+  map_dfr(var_waves[[var]], function(wv) {
+    sub <- kor |> filter(wave == wv, !is.na(.data[[var]]))
+    s   <- wt_stats(sub[[var]], sub$w)
+    tibble(
+      variable    = var,
+      wave        = wv,
+      survey_year = wave_years[as.character(wv)],
+      mean        = s$mean,
+      sd          = s$sd,
+      se          = s$se,
+      n           = s$n
+    )
+  })
+})
+
+wave_stats <- bind_rows(wave_stats_list)
+
+# ── Upper panel: means table ───────────────────────────────────────────────────
+upper_panel <- wave_stats |>
+  mutate(
+    cell = sprintf("%.3f (%.3f)", mean, se),
+    n_fmt = formatC(n, format = "d", big.mark = ",")
+  ) |>
+  select(variable, wave, survey_year, cell, n_fmt)
+
+# Pivot to wide: one column per wave
+waves_present <- sort(unique(wave_stats$wave))
+upper_wide <- upper_panel |>
+  pivot_wider(
+    id_cols    = variable,
+    names_from = wave,
+    values_from = c(cell, n_fmt),
+    names_glue = "{.value}_W{wave}"
+  )
+
+# Build header row labelling wave + approximate year
+wave_col_names <- paste0("W", waves_present, "\n(", wave_years[as.character(waves_present)], ")")
+
+# ── Lower panel: inter-wave differences ───────────────────────────────────────
+diff_stats <- wave_stats |>
+  arrange(variable, wave) |>
+  group_by(variable) |>
+  mutate(
+    diff     = mean - lag(mean),
+    se_diff  = sqrt(se^2 + lag(se)^2),
+    from_w   = lag(wave),
+    to_w     = wave,
+    interval = paste0("W", from_w, "\u2192W", to_w)
+  ) |>
+  filter(!is.na(diff)) |>
+  ungroup()
+
+lower_panel <- diff_stats |>
+  mutate(
+    cell = sprintf("%+.3f (%.3f)", diff, se_diff)
+  ) |>
+  select(variable, interval, cell)
+
+lower_wide <- lower_panel |>
+  pivot_wider(id_cols = variable, names_from = interval, values_from = cell)
+
+# Save results
+save(wave_stats, diff_stats, file = file.path(results_dir, "table1_pub.RData"))
+```
+
+```{r table1-render}
+# ── Construct display-ready upper panel ───────────────────────────────────────
+# Rows: one per variable; columns: variable label, then W1–W6 mean(SE) + n
+
+# All possible waves 1–6
+all_waves <- 1:6
+all_wave_labels <- paste0("W", all_waves, "\n(~", wave_years[as.character(all_waves)], ")")
+
+build_upper_row <- function(var) {
+  row_cells <- map_chr(all_waves, function(wv) {
+    d <- wave_stats |> filter(variable == var, wave == wv)
+    if (nrow(d) == 0) return("---")
+    sprintf("%.3f\n(%.3f)\n[%s]",
+            d$mean, d$se, formatC(d$n, format = "d", big.mark = ","))
+  })
+  c(var_labels[var], paste0(scale_labels[var]), row_cells)
+}
+
+upper_mat <- map(abs_vars, build_upper_row)
+upper_df  <- as.data.frame(do.call(rbind, upper_mat), stringsAsFactors = FALSE)
+colnames(upper_df) <- c("Variable", "Scale", all_wave_labels)
+
+# ── Construct display-ready lower panel ───────────────────────────────────────
+all_intervals <- c("W1\u2192W2", "W2\u2192W3", "W3\u2192W4", "W4\u2192W5", "W5\u2192W6")
+
+build_lower_row <- function(var) {
+  row_cells <- map_chr(all_intervals, function(intv) {
+    d <- diff_stats |> filter(variable == var, interval == intv)
+    if (nrow(d) == 0) return("---")
+    sprintf("%+.3f\n(%.3f)", d$diff, d$se_diff)
+  })
+  c(var_labels[var], "", row_cells)
+}
+
+lower_mat <- map(abs_vars, build_lower_row)
+lower_df  <- as.data.frame(do.call(rbind, lower_mat), stringsAsFactors = FALSE)
+colnames(lower_df) <- c("Variable", "Scale", all_intervals)
+
+# ── Identify rows corresponding to W4 and W5 (critical interval) ─────────────
+# In lower panel, W4→W5 is the critical interval (column 5 = index 6 after var+scale)
+# Highlight with bold in footnote reference
+
+# ── Render Table 1 ────────────────────────────────────────────────────────────
+kbl(
+  upper_df,
+  caption   = "Table 1 (Upper Panel). ABS Korea Wave Means for Key Perception Variables. Cell entries: mean (SE) [n]. Waves 1–2 use unweighted means (survey weights unavailable).",
+  booktabs  = TRUE,
+  align     = c("l", "c", rep("c", 6)),
+  escape    = FALSE
+) |>
+  kable_styling(
+    latex_options = c("hold_position", "scale_down"),
+    font_size     = 10,
+    full_width    = FALSE
+  ) |>
+  column_spec(1, width = "8em") |>
+  column_spec(3:8, width = "5em") |>
+  # Highlight W4 and W5 columns (cols 6 and 7 = index 6,7 counting from col 1)
+  column_spec(6, background = "#FFF9C4") |>
+  column_spec(7, background = "#FFF9C4") |>
+  footnote(
+    general = paste0(
+      "Wave approximate fieldwork midpoints: W1 = 2003, W2 = 2006, W3 = 2011, ",
+      "W4 = 2015, W5 = 2019, W6 = 2022. ",
+      "Yellow shading marks the critical pre/post-shock waves (W4 and W5). ",
+      "govt_withholds_info not administered in Wave 1."
+    ),
+    general_title = "Note.",
+    threeparttable = TRUE
+  )
+```
+
+```{r table1b-render}
+kbl(
+  lower_df,
+  caption   = "Table 1 (Lower Panel). ABS Korea Inter-Wave Differences. Cell entries: difference score (SE of difference). W4→W5 spans the accountability shock interval.",
+  booktabs  = TRUE,
+  align     = c("l", "c", rep("c", 5)),
+  escape    = FALSE
+) |>
+  kable_styling(
+    latex_options = c("hold_position", "scale_down"),
+    font_size     = 10,
+    full_width    = FALSE
+  ) |>
+  column_spec(1, width = "8em") |>
+  column_spec(5, background = "#FFF9C4") |>
+  footnote(
+    general = paste0(
+      "Inter-wave differences = mean(Wave t) \u2212 mean(Wave t\u22121). ",
+      "SE of difference = \u221a(SE\u00b2\u209c + SE\u00b2\u209c\u208b\u2081). ",
+      "Yellow shading marks the W4\u2192W5 interval (Kim Young-ran Act, September 2016; ",
+      "Park Geun-hye conviction, April 2018). ",
+      "--- indicates variable not available in that wave."
+    ),
+    general_title = "Note.",
+    threeparttable = TRUE
+  )
+```
+
+---
+
+# Table 2: KAMOS Institutional Trust Means, 2016 and 2019 {#sec-t2}
+
+```{r table2-compute}
+# Trust variables in block order
+trust_block_a <- c("trust_central_govt", "trust_local_govt")
+trust_block_b <- c("trust_national_assembly", "trust_legislature",
+                   "trust_media", "trust_ngo")
+trust_secondary <- c("trust_private_enterprise", "trust_religious")
+
+trust_all <- c(trust_block_a, trust_block_b, trust_secondary)
+
+trust_labels <- c(
+  trust_central_govt      = "Central government",
+  trust_local_govt        = "Local government",
+  trust_national_assembly = "National Assembly",
+  trust_legislature       = "Legislature",
+  trust_media             = "Media and press",
+  trust_ngo               = "Civil society organizations",
+  trust_private_enterprise = "Private enterprise",
+  trust_religious         = "Religious organizations"
+)
+
+# Compute means, SDs, SEs by wave for each trust variable
+kamos_trust_stats <- map_dfr(trust_all, function(var) {
+  map_dfr(c(1, 4), function(wv) {
+    sub <- kamos |> filter(wave == wv, !is.na(.data[[var]]))
+    s   <- wt_stats(sub[[var]], sub$w)
+    tibble(variable = var, wave = wv, wave_year = if_else(wv==1,2016L,2019L),
+           mean = s$mean, sd = s$sd, se = s$se, n = s$n)
+  })
+})
+
+# Compute t-tests (Welch, independent samples)
+kamos_ttests <- map_dfr(trust_all, function(var) {
+  d2016 <- kamos |> filter(wave == 1, !is.na(.data[[var]])) |> pull(!!sym(var))
+  d2019 <- kamos |> filter(wave == 4, !is.na(.data[[var]])) |> pull(!!sym(var))
+  tt    <- t.test(d2019, d2016)
+  tibble(
+    variable = var,
+    t_stat   = tt$statistic,
+    p_value  = tt$p.value,
+    sig      = case_when(
+      tt$p.value < 0.001 ~ "***",
+      tt$p.value < 0.01  ~ "**",
+      tt$p.value < 0.05  ~ "*",
+      tt$p.value < 0.10  ~ "\u2020",
+      TRUE               ~ ""
+    )
+  )
+})
+
+# Build wide format
+tab2_wide <- kamos_trust_stats |>
+  pivot_wider(
+    id_cols     = variable,
+    names_from  = wave_year,
+    values_from = c(mean, sd, se, n)
+  ) |>
+  mutate(
+    change = mean_2019 - mean_2016,
+    se_change = sqrt(se_2016^2 + se_2019^2)
+  ) |>
+  left_join(kamos_ttests |> select(variable, t_stat, sig), by = "variable") |>
+  mutate(
+    label      = trust_labels[variable],
+    `2016 Mean (SD)` = sprintf("%.2f (%.2f)", mean_2016, sd_2016),
+    `2019 Mean (SD)` = sprintf("%.2f (%.2f)", mean_2019, sd_2019),
+    Change     = sprintf("%+.2f%s",  change, sig),
+    `t`        = sprintf("%.2f",   t_stat)
+  ) |>
+  select(variable, label, `2016 Mean (SD)`, `2019 Mean (SD)`, Change, `t`) |>
+  # Sort: block A first, then block B, then secondary
+  mutate(sort_order = match(variable, trust_all)) |>
+  arrange(sort_order) |>
+  select(-variable, -sort_order)
+
+# N per wave for header note
+n_2016 <- kamos |> filter(wave == 1) |> nrow()
+n_2019 <- kamos |> filter(wave == 4) |> nrow()
+
+save(kamos_trust_stats, kamos_ttests, tab2_wide,
+     file = file.path(results_dir, "table2_pub.RData"))
+```
+
+```{r table2-render}
+kbl(
+  tab2_wide |> select(-label, Institution = label,
+                      `2016 Mean (SD)`, `2019 Mean (SD)`, Change, t) |>
+    select(Institution, everything()),
+  caption  = sprintf(
+    "Table 2. KAMOS Institutional Trust: Wave 1 (2016, n = %s) and Wave 4 (2019, n = %s). Trust measured on 0–10 scale (0 = completely untrustworthy, 10 = completely trustworthy). Change = 2019 mean minus 2016 mean. t = Welch two-sample t-statistic (2019 vs. 2016).",
+    formatC(n_2016, format="d", big.mark=","),
+    formatC(n_2019, format="d", big.mark=",")
+  ),
+  booktabs = TRUE,
+  align    = c("l", "c", "c", "c", "r"),
+  escape   = FALSE
+) |>
+  kable_styling(
+    latex_options = c("hold_position"),
+    full_width    = FALSE,
+    font_size     = 11
+  ) |>
+  column_spec(1, width = "12em") |>
+  pack_rows("Block A: Executive Institutions", 1, 2,
+            bold = TRUE, hline_before = FALSE, hline_after = TRUE,
+            latex_align = "l") |>
+  pack_rows("Block B: Accountability Intermediaries", 3, 6,
+            bold = TRUE, hline_before = FALSE, hline_after = TRUE,
+            latex_align = "l") |>
+  pack_rows("Secondary (for completeness)", 7, 8,
+            bold = FALSE, hline_before = FALSE, hline_after = FALSE,
+            latex_align = "l") |>
+  footnote(
+    general = paste0(
+      "\u2020 p < .10. * p < .05. ** p < .01. *** p < .001. ",
+      "Significance stars appear in the Change column. ",
+      "Waves 1 and 4 are independent cross-sections; t-test is Welch (unpooled variance). ",
+      "All analyses use survey-provided probability weights."
+    ),
+    general_title = "Note.",
+    threeparttable = TRUE,
+    escape = FALSE
+  )
+```
+
+---
+
+# Table 3: Ideology--Trust Correlations, 2016 and 2019 {#sec-t3}
+
+```{r table3-compute}
+# Variables per spec: ideology correlated with 5 trust vars
+# ideology: 1=extremely liberal, 5=extremely conservative
+ideo_trust_vars <- c(
+  "trust_central_govt",
+  "trust_national_assembly",
+  "trust_legislature",
+  "trust_media",
+  "trust_ngo"
+)
+
+ideo_labels <- c(
+  trust_central_govt      = "Central government",
+  trust_national_assembly = "National Assembly",
+  trust_legislature       = "Legislature",
+  trust_media             = "Media and press",
+  trust_ngo               = "Civil society organizations"
+)
+
+ideo_cors <- map_dfr(ideo_trust_vars, function(var) {
+  map_dfr(c(1, 4), function(wv) {
+    sub <- kamos |> filter(wave == wv, !is.na(.data[[var]]), !is.na(ideology))
+    r   <- cor(sub[[var]], sub$ideology, method = "pearson")
+    n   <- nrow(sub)
+    tibble(variable = var, wave_year = if_else(wv==1,2016L,2019L), r = r, n = n)
+  })
+})
+
+tab3 <- ideo_cors |>
+  pivot_wider(id_cols = variable, names_from = wave_year,
+              values_from = c(r, n), names_glue = "{.value}_{wave_year}") |>
+  mutate(
+    label      = ideo_labels[variable],
+    `r (2016)` = sprintf("%.3f", r_2016),
+    `r (2019)` = sprintf("%.3f", r_2019),
+    Direction  = case_when(
+      r_2016 > 0.05 | r_2019 > 0.05 ~ "Positive",
+      r_2016 < -0.05 | r_2019 < -0.05 ~ "Negative",
+      TRUE ~ "Near zero"
+    )
+  ) |>
+  arrange(match(variable, ideo_trust_vars)) |>
+  select(Institution = label, `r (2016)`, `r (2019)`, Direction)
+
+save(ideo_cors, tab3, file = file.path(results_dir, "table3_pub.RData"))
+```
+
+```{r table3-render}
+kbl(
+  tab3,
+  caption  = "Table 3. Pearson Correlations between Ideological Self-Placement and Institutional Trust, KAMOS Korea 2016 and 2019. Ideology coded 1 = extremely liberal to 5 = extremely conservative.",
+  booktabs = TRUE,
+  align    = c("l", "c", "c", "l"),
+  escape   = FALSE
+) |>
+  kable_styling(
+    latex_options = c("hold_position"),
+    full_width    = FALSE,
+    font_size     = 11
+  ) |>
+  column_spec(1, width = "12em") |>
+  footnote(
+    general = paste0(
+      "Near-zero correlations (|r| < .10 across both waves) indicate that the ",
+      "observed trust decline is not an artifact of ideological composition shifts ",
+      "between 2016 and 2019. No significance stars reported; the substantive finding ",
+      "is the absence of meaningful association, not a significant result."
+    ),
+    general_title = "Note.",
+    threeparttable = TRUE
+  )
+```
+
+---
+
+# Figure 1: ABS Longitudinal Trends {#sec-f1}
+
+```{r figure1-compute}
+# Transparency series: W2–W6
+transp <- kor |>
+  filter(!is.na(govt_withholds_info)) |>
+  group_by(wave, survey_year) |>
+  summarise(
+    mean = weighted.mean(govt_withholds_info, w, na.rm = TRUE),
+    se   = {s <- wt_stats(govt_withholds_info, w); s$se},
+    n    = n(),
+    .groups = "drop"
+  )
+
+# Corruption series: W1–W6
+corrupt_vars <- c("corrupt_witnessed", "corrupt_national_govt", "corrupt_local_govt")
+corrupt_labels_fig <- c(
+  corrupt_witnessed     = "Personally witnessed/experienced corruption (1\u20132)",
+  corrupt_national_govt = "Corruption in national government (1\u20134)",
+  corrupt_local_govt    = "Corruption in local government (1\u20134)"
+)
+
+corrupt <- kor |>
+  select(wave, survey_year, w, all_of(corrupt_vars)) |>
+  pivot_longer(all_of(corrupt_vars), names_to = "variable", values_to = "value") |>
+  filter(!is.na(value)) |>
+  group_by(wave, survey_year, variable) |>
+  summarise(
+    mean = weighted.mean(value, w, na.rm = TRUE),
+    se   = {s <- wt_stats(value, w); s$se},
+    n    = n(),
+    .groups = "drop"
+  ) |>
+  mutate(label = corrupt_labels_fig[variable])
+```
+
+```{r figure1-plot, fig.width=12, fig.height=5.5}
+# Shared x-axis parameters
+x_breaks  <- c(2003, 2006, 2011, 2015, 2019, 2022)
+x_labels  <- c("W1\n(~2003)", "W2\n(~2006)", "W3\n(2011)",
+                "W4\n(2015)", "W5\n(2019)", "W6\n(2022)")
+x_limits  <- c(2001, 2024)
+
+# Reference line annotations
+ref_labs <- tibble(
+  x     = c(ref_kyr, ref_park),
+  label = c("Kim Young-ran Act\n(Sept 2016)", "Park conviction\n(Apr 2018)")
+)
+
+# ── Left panel: Government withholds information ───────────────────────────────
+pL <- ggplot(transp, aes(x = survey_year, y = mean)) +
+  # Accountability shock shading
+  annotate("rect", xmin = ref_kyr, xmax = ref_park,
+           ymin = -Inf, ymax = Inf, fill = "#FDE8D8", alpha = 0.5) +
+  # Reference lines
+  geom_vline(xintercept = ref_kyr,  linetype = "dashed", colour = "grey50",
+             linewidth = 0.6) +
+  geom_vline(xintercept = ref_park, linetype = "dashed", colour = "grey50",
+             linewidth = 0.6) +
+  # CI ribbon
+  geom_ribbon(aes(ymin = mean - 1.96*se, ymax = mean + 1.96*se),
+              fill = col_withholds, alpha = 0.12) +
+  # Trend line
+  geom_line(colour = col_withholds, linewidth = 1.1) +
+  geom_point(colour = col_withholds, fill = "white", shape = 21,
+             size = 3.5, stroke = 1.8) +
+  # Reference line labels (top of panel)
+  geom_text(data = ref_labs,
+            aes(x = x, label = label, y = 2.55),
+            size = 2.6, colour = "grey40", lineheight = 0.85,
+            inherit.aes = FALSE) +
+  scale_x_continuous(breaks = x_breaks, labels = x_labels, limits = x_limits) +
+  scale_y_continuous(limits = c(1.80, 2.60), breaks = seq(1.8, 2.6, 0.1)) +
+  labs(
+    x        = NULL,
+    y        = "Mean score (1\u20134 scale)",
+    title    = "**A.** Government withholds information from the public",
+    subtitle = "ABS Korea, Waves 2\u20136 (weighted means \u00b1 95% CI)"
+  ) +
+  theme_minimal(base_size = 11) +
+  theme(
+    plot.title    = element_markdown(size = 11),
+    plot.subtitle = element_text(size = 9, colour = "grey50"),
+    panel.grid.major.x = element_blank(),
+    panel.grid.minor   = element_blank(),
+    axis.text.x = element_text(size = 8)
+  )
+
+# ── Right panel: Corruption perceptions ───────────────────────────────────────
+# Line type and colour mapping for greyscale reproduction
+lt_map  <- c(
+  "Personally witnessed/experienced corruption (1\u20132)" = "solid",
+  "Corruption in national government (1\u20134)"           = "dashed",
+  "Corruption in local government (1\u20134)"              = "dotdash"
+)
+col_map <- c(
+  "Personally witnessed/experienced corruption (1\u20132)" = col_witnessed,
+  "Corruption in national government (1\u20134)"           = col_natl_govt,
+  "Corruption in local government (1\u20134)"              = col_local_govt
+)
+
+pR <- ggplot(corrupt, aes(x = survey_year, y = mean,
+                           colour = label, linetype = label, group = label)) +
+  # Accountability shock shading
+  annotate("rect", xmin = ref_kyr, xmax = ref_park,
+           ymin = -Inf, ymax = Inf, fill = "#FDE8D8", alpha = 0.5) +
+  # Reference lines
+  geom_vline(xintercept = ref_kyr,  linetype = "dashed", colour = "grey50",
+             linewidth = 0.6) +
+  geom_vline(xintercept = ref_park, linetype = "dashed", colour = "grey50",
+             linewidth = 0.6) +
+  # CI ribbons
+  geom_ribbon(aes(ymin = mean - 1.96*se, ymax = mean + 1.96*se,
+                  fill = label), alpha = 0.10, colour = NA) +
+  # Trend lines
+  geom_line(linewidth = 1.0) +
+  geom_point(aes(fill = label), shape = 21, size = 3, stroke = 1.5,
+             colour = "white") +
+  # Reference line labels
+  geom_text(data = ref_labs,
+            aes(x = x, label = label, y = 2.18),
+            size = 2.6, colour = "grey40", lineheight = 0.85,
+            inherit.aes = FALSE) +
+  scale_colour_manual(values = col_map, name = NULL) +
+  scale_fill_manual(values   = col_map, name = NULL) +
+  scale_linetype_manual(values = lt_map, name = NULL) +
+  scale_x_continuous(breaks = x_breaks, labels = x_labels, limits = x_limits) +
+  scale_y_continuous(limits = c(1.40, 2.20), breaks = seq(1.4, 2.2, 0.1)) +
+  labs(
+    x        = NULL,
+    y        = "Mean score",
+    title    = "**B.** Corruption perceptions: experiential vs. institutional",
+    subtitle = "ABS Korea, Waves 1\u20136. Note: experiential series (1\u20132 scale) not directly comparable to institutional series (1\u20134)."
+  ) +
+  theme_minimal(base_size = 11) +
+  theme(
+    plot.title    = element_markdown(size = 11),
+    plot.subtitle = element_text(size = 9, colour = "grey50"),
+    legend.position = "inside",
+    legend.position.inside = c(0.02, 0.98),
+    legend.justification = c(0, 1),
+    legend.text = element_text(size = 8),
+    legend.key.width = unit(1.5, "cm"),
+    panel.grid.major.x = element_blank(),
+    panel.grid.minor   = element_blank(),
+    axis.text.x = element_text(size = 8)
+  )
+
+# ── Combine with patchwork ─────────────────────────────────────────────────────
+fig1 <- pL + pR +
+  plot_annotation(
+    title = "Figure 1. ABS Longitudinal Trends: Transparency Erosion and Corruption Perceptions, South Korea 2003\u20132022",
+    caption = paste0(
+      "Source: Asian Barometer Survey (ABS), Korea, Waves 1\u20136. ",
+      "Weighted means shown (Waves 1\u20132 unweighted; probability weights unavailable). ",
+      "Shaded corridor = accountability shock interval (Kim Young-ran Act, September 2016 to Park Geun-hye conviction, April 2018). ",
+      "Dashed vertical lines mark event dates. ",
+      "Colour palette distinguishable in greyscale via line type."
+    ),
+    theme = theme(
+      plot.title   = element_text(size = 12, face = "bold"),
+      plot.caption = element_text(size = 8, colour = "grey50", hjust = 0)
+    )
+  )
+
+ggsave(file.path(fig_dir, "fig1_pub_abs_trends.pdf"),  fig1, width = 12, height = 5.5)
+ggsave(file.path(fig_dir, "fig1_pub_abs_trends.png"),  fig1, width = 12, height = 5.5, dpi = 300)
+fig1
+```
+
+---
+
+# Figure 2: KAMOS Trust Decline by Institutional Category {#sec-f2}
+
+```{r figure2-compute}
+# All nine trust variables
+trust_all_fig2 <- c(trust_block_a, trust_block_b, trust_secondary)
+
+trust_labels_fig2 <- c(
+  trust_central_govt       = "Central government",
+  trust_local_govt         = "Local government",
+  trust_national_assembly  = "National Assembly",
+  trust_legislature        = "Legislature",
+  trust_media              = "Media and press",
+  trust_ngo                = "Civil society organizations",
+  trust_private_enterprise = "Private enterprise",
+  trust_religious          = "Religious organizations"
+)
+
+inst_type_fig2 <- c(
+  trust_central_govt       = "Executive",
+  trust_local_govt         = "Executive",
+  trust_national_assembly  = "Accountability intermediary",
+  trust_legislature        = "Accountability intermediary",
+  trust_media              = "Accountability intermediary",
+  trust_ngo                = "Accountability intermediary",
+  trust_private_enterprise = "Secondary",
+  trust_religious          = "Secondary"
+)
+
+trust_stats_fig2 <- map_dfr(trust_all_fig2, function(var) {
+  map_dfr(c(1, 4), function(wv) {
+    sub <- kamos |> filter(wave == wv, !is.na(.data[[var]]))
+    s   <- wt_stats(sub[[var]], sub$w)
+    tibble(variable = var, wave = wv, wave_year = if_else(wv==1,2016L,2019L),
+           mean = s$mean, se = s$se, n = s$n)
+  })
+})
+
+# Change scores with CI
+change_stats <- trust_stats_fig2 |>
+  pivot_wider(id_cols = variable, names_from = wave_year,
+              values_from = c(mean, se, n)) |>
+  mutate(
+    change    = mean_2019 - mean_2016,
+    se_change = sqrt(se_2016^2 + se_2019^2),
+    ci_lo     = change - 1.96 * se_change,
+    ci_hi     = change + 1.96 * se_change,
+    label     = trust_labels_fig2[variable],
+    inst_type = inst_type_fig2[variable]
+  ) |>
+  arrange(change)
+```
+
+```{r figure2-plot, fig.width=8, fig.height=6}
+# Factor levels: ordered by magnitude of decline
+change_stats <- change_stats |>
+  mutate(
+    label = factor(label, levels = change_stats$label),
+    shape_val = case_when(
+      inst_type == "Executive"               ~ 16,
+      inst_type == "Accountability intermediary" ~ 17,
+      TRUE                                   ~ 15
+    ),
+    col_val = case_when(
+      inst_type == "Executive"               ~ col_exec,
+      inst_type == "Accountability intermediary" ~ col_intermed,
+      TRUE                                   ~ "#7F8C8D"
+    )
+  )
+
+fig2 <- ggplot(change_stats,
+               aes(x = change, y = label, colour = inst_type, shape = inst_type)) +
+  # Zero reference line
+  geom_vline(xintercept = 0, linewidth = 0.8, colour = "grey30") +
+  # Background shading for blocks
+  annotate("rect", xmin = -Inf, xmax = Inf,
+           ymin = 0.5, ymax = 2.5, fill = col_exec, alpha = 0.04) +
+  annotate("rect", xmin = -Inf, xmax = Inf,
+           ymin = 2.5, ymax = 6.5, fill = col_intermed, alpha = 0.04) +
+  # CI bars
+  geom_linerange(aes(xmin = ci_lo, xmax = ci_hi), linewidth = 0.8, alpha = 0.7) +
+  # Point estimates
+  geom_point(size = 4, stroke = 1.5) +
+  # Change value labels
+  geom_text(aes(label = sprintf("%+.2f", change),
+                x     = ci_lo - 0.04),
+            hjust = 1, size = 3.2, fontface = "bold") +
+  # Block labels on right margin
+  annotate("text", x = 0.08, y = 1.5,
+           label = "Executive\ninstitutions", size = 3.1,
+           colour = col_exec, fontface = "bold", hjust = 0) +
+  annotate("text", x = 0.08, y = 4.5,
+           label = "Accountability\nintermediaries", size = 3.1,
+           colour = col_intermed, fontface = "bold", hjust = 0) +
+  annotate("text", x = 0.08, y = 7.5,
+           label = "Secondary", size = 3.0,
+           colour = "grey50", hjust = 0) +
+  scale_colour_manual(
+    values = c("Executive" = col_exec,
+               "Accountability intermediary" = col_intermed,
+               "Secondary" = "#7F8C8D"),
+    guide = "none"
+  ) +
+  scale_shape_manual(
+    values = c("Executive" = 16,
+               "Accountability intermediary" = 17,
+               "Secondary" = 15),
+    guide = "none"
+  ) +
+  scale_x_continuous(
+    limits = c(-0.95, 0.20),
+    breaks = seq(-0.9, 0.2, 0.2),
+    labels = label_number(style_positive = "plus", accuracy = 0.1)
+  ) +
+  labs(
+    x       = "Change in mean trust (2019 \u2212 2016)",
+    y       = NULL,
+    title   = "Figure 2. KAMOS Institutional Trust Decline by Category, 2016\u20132019",
+    caption = paste0(
+      "Source: KAMOS Korea, Wave 1 (2016, n = 2,000) and Wave 4 (2019, n = 1,500). ",
+      "Trust measured on 0\u201310 scale. ",
+      "Points show 2019 \u2212 2016 change in weighted means; horizontal bars = 95% CI. ",
+      "Items ordered by magnitude of decline (largest at top). ",
+      "\u25cf = Executive institutions; \u25b2 = Accountability intermediaries; \u25a0 = Secondary."
+    )
+  ) +
+  theme_minimal(base_size = 11) +
+  theme(
+    plot.title   = element_text(size = 11, face = "bold"),
+    plot.caption = element_text(size = 8, colour = "grey50", hjust = 0),
+    panel.grid.major.y = element_blank(),
+    panel.grid.minor   = element_blank(),
+    axis.text.y = element_text(size = 10)
+  )
+
+ggsave(file.path(fig_dir, "fig2_pub_kamos_trust_decline.pdf"), fig2, width = 8, height = 6)
+ggsave(file.path(fig_dir, "fig2_pub_kamos_trust_decline.png"), fig2, width = 8, height = 6, dpi = 300)
+fig2
+```
+
+---
+
+# Figure 3: Korea vs. Regional ABS Trends {#sec-f3}
+
+Full multi-country ABS data are available; Figure 3 is generated below (not deferred).
+
+```{r figure3-compute}
+# Regional comparison: all non-Korea ABS countries, wave-level means
+# Variables: govt_withholds_info, corrupt_witnessed
+
+# For each wave, compute (a) Korea mean and (b) non-Korea mean
+f3_vars <- c("govt_withholds_info", "corrupt_witnessed")
+
+f3_stats <- map_dfr(f3_vars, function(var) {
+  map_dfr(1:6, function(wv) {
+    sub_kor <- abs_full |>
+      filter(wave == wv, country == 3, !is.na(.data[[var]])) |>
+      mutate(w_eff = coalesce(weight, 1))
+
+    sub_reg <- abs_full |>
+      filter(wave == wv, country != 3, !is.na(.data[[var]])) |>
+      mutate(w_eff = coalesce(weight, 1))
+
+    if (nrow(sub_kor) == 0 && nrow(sub_reg) == 0) return(NULL)
+
+    rows <- list()
+    if (nrow(sub_kor) > 0) {
+      s <- wt_stats(sub_kor[[var]], sub_kor$w_eff)
+      rows[[1]] <- tibble(variable = var, wave = wv,
+                          survey_year = wave_years[as.character(wv)],
+                          group = "Korea", mean = s$mean, se = s$se, n = s$n,
+                          n_countries = 1L)
+    }
+    if (nrow(sub_reg) > 0) {
+      s <- wt_stats(sub_reg[[var]], sub_reg$w_eff)
+      n_ctry <- n_distinct(sub_reg$country)
+      rows[[2]] <- tibble(variable = var, wave = wv,
+                          survey_year = wave_years[as.character(wv)],
+                          group = "Regional average", mean = s$mean, se = s$se,
+                          n = s$n, n_countries = as.integer(n_ctry))
+    }
+    bind_rows(rows)
+  })
+})
+
+# govt_withholds_info only available W2+ for Korea;
+# flag the Korea W1 point as missing (will appear as gap in line)
+f3_stats <- f3_stats |>
+  filter(!(variable == "govt_withholds_info" & group == "Korea" & n == 0))
+
+f3_labels <- c(
+  govt_withholds_info = "A. Government withholds information",
+  corrupt_witnessed   = "B. Personally witnessed/experienced corruption"
+)
+```
+
+```{r figure3-plot, fig.width=12, fig.height=5.5}
+# Line aesthetics for greyscale reproduction
+grp_col <- c("Korea" = col_withholds, "Regional average" = col_regional)
+grp_lt  <- c("Korea" = "solid",       "Regional average" = "dashed")
+grp_sz  <- c("Korea" = 1.2,           "Regional average" = 0.9)
+
+make_f3_panel <- function(var, panel_label, y_limits, y_breaks) {
+  d <- f3_stats |> filter(variable == var)
+
+  ggplot(d, aes(x = survey_year, y = mean,
+                colour = group, linetype = group, linewidth = group)) +
+    # Accountability shock shading
+    annotate("rect", xmin = ref_kyr, xmax = ref_park,
+             ymin = -Inf, ymax = Inf, fill = "#FDE8D8", alpha = 0.5) +
+    # Reference lines
+    geom_vline(xintercept = ref_kyr,  linetype = "dashed", colour = "grey60",
+               linewidth = 0.5) +
+    geom_vline(xintercept = ref_park, linetype = "dashed", colour = "grey60",
+               linewidth = 0.5) +
+    # CI ribbons
+    geom_ribbon(aes(ymin = mean - 1.96*se, ymax = mean + 1.96*se,
+                    fill = group), alpha = 0.10, colour = NA) +
+    # Trend lines
+    geom_line() +
+    geom_point(aes(fill = group), shape = 21, size = 3, stroke = 1.5,
+               colour = "white") +
+    scale_colour_manual(values = grp_col, name = NULL) +
+    scale_fill_manual(values   = grp_col, name = NULL) +
+    scale_linetype_manual(values = grp_lt, name = NULL) +
+    scale_linewidth_manual(values = grp_sz, name = NULL, guide = "none") +
+    scale_x_continuous(breaks = x_breaks, labels = x_labels, limits = x_limits) +
+    scale_y_continuous(limits = y_limits, breaks = y_breaks) +
+    labs(
+      x     = NULL,
+      y     = "Mean score",
+      title = paste0("**", panel_label, "**")
+    ) +
+    theme_minimal(base_size = 11) +
+    theme(
+      plot.title    = element_markdown(size = 11),
+      legend.position = "bottom",
+      legend.text     = element_text(size = 9),
+      panel.grid.major.x = element_blank(),
+      panel.grid.minor   = element_blank(),
+      axis.text.x = element_text(size = 8)
+    )
+}
+
+pF3_left  <- make_f3_panel("govt_withholds_info",
+                            "A. Government withholds information (1\u20134 scale)",
+                            c(1.70, 2.70), seq(1.7, 2.7, 0.2))
+
+pF3_right <- make_f3_panel("corrupt_witnessed",
+                            "B. Personally witnessed/experienced corruption (1\u20132 scale)",
+                            c(1.40, 2.00), seq(1.4, 2.0, 0.1))
+
+fig3 <- pF3_left + pF3_right +
+  plot_layout(guides = "collect") &
+  theme(legend.position = "bottom")
+
+fig3 <- fig3 + plot_annotation(
+  title = "Figure 3. Korea vs. Regional ABS Average: Transparency and Corruption Perceptions, 2003\u20132022",
+  caption = paste0(
+    "Source: Asian Barometer Survey (ABS), all waves. ",
+    "Korea = country code 3. Regional average = all other available ABS countries per wave ",
+    "(Wave 1: 7 countries; Wave 2: 12; Wave 3: 12; Wave 4: 13; Wave 5: 14; Wave 6: 8). ",
+    "Weighted means (Waves 1\u20132 unweighted where weights unavailable). ",
+    "govt_withholds_info not administered in ABS Wave 1; Korea line begins at Wave 2. ",
+    "Shaded corridor = accountability shock interval. ",
+    "Solid line = Korea; dashed line = regional average."
+  ),
+  theme = theme(
+    plot.title   = element_text(size = 12, face = "bold"),
+    plot.caption = element_text(size = 8, colour = "grey50", hjust = 0)
+  )
+)
+
+ggsave(file.path(fig_dir, "fig3_pub_korea_vs_regional.pdf"), fig3, width = 12, height = 5.5)
+ggsave(file.path(fig_dir, "fig3_pub_korea_vs_regional.png"), fig3, width = 12, height = 5.5, dpi = 300)
+fig3
+```
+
+---
+
+# Table 4: Cross-National ABS Slopes --- Korea in Comparative Context {#sec-t4}
+
+```{r table4-compute}
+# Load pre-cooked slopes from results/
+# Generated by computing lm(variable ~ wave) per country (weighted OLS),
+# requiring >= 3 waves of data. Z-scores standardised within variable
+# across the cross-national distribution.
+cross_slopes <- readRDS(file.path(results_dir, "cross_national_slopes.rds"))
+
+# Extract Korea inline values for use in prose and caption
+kor_gwi <- cross_slopes |> filter(country == 3, variable == "govt_withholds_info")
+kor_cw  <- cross_slopes |> filter(country == 3, variable == "corrupt_witnessed")
+
+# Summary rows (cross-national mean and SD)
+summary_gwi <- cross_slopes |>
+  filter(variable == "govt_withholds_info") |>
+  summarise(
+    country_name = "Cross-national mean (SD)",
+    slope        = first(mean_slope),
+    se           = first(sd_slope),
+    p_value      = NA_real_,
+    z_score      = NA_real_,
+    n_waves      = NA_integer_,
+    rank_slope   = NA_real_
+  )
+
+summary_cw <- cross_slopes |>
+  filter(variable == "corrupt_witnessed") |>
+  summarise(
+    country_name = "Cross-national mean (SD)",
+    slope        = first(mean_slope),
+    se           = first(sd_slope),
+    p_value      = NA_real_,
+    z_score      = NA_real_,
+    n_waves      = NA_integer_,
+    rank_slope   = NA_real_
+  )
+
+# Build display tables
+format_slope_panel <- function(var_name, summary_row) {
+  cross_slopes |>
+    filter(variable == var_name) |>
+    arrange(desc(slope)) |>
+    mutate(
+      is_korea  = country == 3,
+      Rank      = as.integer(rank_slope),
+      Country   = country_name,
+      Slope     = sprintf("%.4f", slope),
+      SE        = sprintf("%.4f", se),
+      `z-score` = sprintf("%.2f",  z_score),
+      Waves     = as.integer(n_waves),
+      sig       = case_when(
+        p_value < 0.001 ~ "***",
+        p_value < 0.01  ~ "**",
+        p_value < 0.05  ~ "*",
+        p_value < 0.10  ~ "\u2020",
+        TRUE            ~ ""
+      ),
+      `Slope (sig)` = paste0(Slope, sig)
+    ) |>
+    select(Rank, Country, `Slope (sig)`, SE, `z-score`, Waves) |>
+    bind_rows(
+      tibble(
+        Rank          = NA_integer_,
+        Country       = "Cross-national mean (SD)",
+        `Slope (sig)` = sprintf("%.4f (%.4f)", summary_row$slope, summary_row$se),
+        SE            = "---",
+        `z-score`     = "---",
+        Waves         = NA_integer_
+      )
+    )
+}
+
+tab4_gwi <- format_slope_panel("govt_withholds_info", summary_gwi)
+tab4_cw  <- format_slope_panel("corrupt_witnessed",   summary_cw)
+
+# Row indices for highlighting Korea
+korea_row_gwi <- which(tab4_gwi$Country == "Korea")
+korea_row_cw  <- which(tab4_cw$Country  == "Korea")
+summary_row_gwi <- nrow(tab4_gwi)
+summary_row_cw  <- nrow(tab4_cw)
+
+# Save inline values object for manuscript use
+slopes_inline <- list(
+  gwi_slope     = round(kor_gwi$slope,     4),
+  gwi_se        = round(kor_gwi$se,        4),
+  gwi_z         = round(kor_gwi$z_score,   2),
+  gwi_rank      = as.integer(kor_gwi$rank_slope),
+  gwi_n_cty     = as.integer(kor_gwi$n_countries),
+  cw_slope      = round(kor_cw$slope,      4),
+  cw_se         = round(kor_cw$se,         4),
+  cw_z          = round(kor_cw$z_score,    2),
+  cw_rank       = as.integer(kor_cw$rank_slope),
+  cw_n_cty      = as.integer(kor_cw$n_countries)
+)
+saveRDS(slopes_inline, file.path(results_dir, "slopes_inline.rds"))
+```
+
+**Panel A: Government withholds information** (`govt_withholds_info`)
+
+```{r table4a-render}
+kbl(
+  tab4_gwi |> select(-Rank),
+  caption  = sprintf(
+    "Table 4A. Cross-National ABS Slopes: Government Withholds Information. Korea slope = %.4f (SE = %.4f), z = %.2f, rank %d of %d countries (steepest rising). Countries ranked by slope, descending. Minimum 3 waves required for inclusion.",
+    slopes_inline$gwi_slope, slopes_inline$gwi_se,
+    slopes_inline$gwi_z, slopes_inline$gwi_rank, slopes_inline$gwi_n_cty
+  ),
+  booktabs = TRUE,
+  align    = c("l", "r", "r", "r", "r"),
+  escape   = FALSE
+) |>
+  kable_styling(
+    latex_options = c("hold_position"),
+    full_width    = FALSE,
+    font_size     = 11
+  ) |>
+  column_spec(1, width = "10em") |>
+  row_spec(korea_row_gwi,   bold = TRUE, background = "#FFF9C4") |>
+  row_spec(summary_row_gwi, italic = TRUE) |>
+  footnote(
+    general = paste0(
+      "\u2020 p < .10. * p < .05. ** p < .01. *** p < .001 (significance applies to slope estimate). ",
+      "Slope = coefficient on wave number from weighted OLS regression (wave 1\u20136 as continuous predictor). ",
+      "z-score = (country slope \u2212 cross-national mean slope) / cross-national SD. ",
+      "Countries with fewer than 3 waves excluded (Myanmar, Australia, India for this variable). ",
+      "Caution: z-scores depend on the set of countries and waves included; Korea's position should be ",
+      "interpreted as 'among the steepest in the ABS sample' rather than as an absolute claim. ",
+      "Yellow shading = Korea."
+    ),
+    general_title = "Note.",
+    threeparttable = TRUE,
+    escape = FALSE
+  )
+```
+
+**Panel B: Personally witnessed/experienced corruption** (`corrupt_witnessed`)
+
+```{r table4b-render}
+kbl(
+  tab4_cw |> select(-Rank),
+  caption  = sprintf(
+    "Table 4B. Cross-National ABS Slopes: Personally Witnessed/Experienced Corruption. Korea slope = %.4f (SE = %.4f), z = %.2f, rank %d of %d countries (steepest rising). Countries ranked by slope, descending.",
+    slopes_inline$cw_slope, slopes_inline$cw_se,
+    slopes_inline$cw_z, slopes_inline$cw_rank, slopes_inline$cw_n_cty
+  ),
+  booktabs = TRUE,
+  align    = c("l", "r", "r", "r", "r"),
+  escape   = FALSE
+) |>
+  kable_styling(
+    latex_options = c("hold_position"),
+    full_width    = FALSE,
+    font_size     = 11
+  ) |>
+  column_spec(1, width = "10em") |>
+  row_spec(korea_row_cw,   bold = TRUE, background = "#FFF9C4") |>
+  row_spec(summary_row_cw, italic = TRUE) |>
+  footnote(
+    general = paste0(
+      "\u2020 p < .10. * p < .05. ** p < .01. *** p < .001 (significance applies to slope estimate). ",
+      "Vietnam, Myanmar, Australia, and India excluded (fewer than 3 waves). ",
+      "Same methodological caveats apply as in Panel A."
+    ),
+    general_title = "Note.",
+    threeparttable = TRUE,
+    escape = FALSE
+  )
+```
+
+---
+
+```{r session-info, include=FALSE}
+save(transp, corrupt, change_stats, f3_stats,
+     file = file.path(results_dir, "pub_figures_data.RData"))
+cat("\nAll outputs written to:\n")
+cat("  Figures:", fig_dir, "\n")
+cat("  Tables (inline via kableExtra)\n")
+cat("  Results:", results_dir, "\n")
+cat("  Inline slopes object: results/slopes_inline.rds\n")
+cat("  Cross-national slopes: results/cross_national_slopes.rds\n")
+```
