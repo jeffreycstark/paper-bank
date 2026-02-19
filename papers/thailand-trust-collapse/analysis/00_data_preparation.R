@@ -48,7 +48,7 @@ vars_to_select <- c(
   # Trust (6 primary institutions + NGOs + local govt for breadth analysis)
   "trust_national_government", "trust_parliament", "trust_military",
   "trust_courts", "trust_police", "trust_political_parties",
-  "trust_ngo", "trust_local_govt",
+  "trust_ngos", "trust_local_government",
 
   # Democratic attitudes
   "democracy_satisfaction", "dem_always_preferable", "dem_vs_econ",
