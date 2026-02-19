@@ -1238,7 +1238,6 @@ cross_instrument_results$means |>
          across(contains("Rank"), as.integer)) |>
   kableExtra::kbl(align = c("l", "l", "r", "r", "r", "r", "r")) |>
   kableExtra::kable_styling(
-    bootstrap_options = c("condensed"),
     latex_options = c("hold_position"),
     font_size = 9, full_width = FALSE
   ) |>
@@ -1309,7 +1308,6 @@ items |>
   ) |>
   kableExtra::kbl(align = c("l", "l", "r", "r", "r", "r")) |>
   kableExtra::kable_styling(
-    bootstrap_options = c("condensed"),
     latex_options = c("hold_position"),
     font_size = 9, full_width = FALSE
   ) |>
@@ -1411,7 +1409,6 @@ ven_gradient_results |>
   kableExtra::kbl(align = c("l", "l", "r", "r", "r", "r", "r"),
                   escape = FALSE) |>
   kableExtra::kable_styling(
-    bootstrap_options = c("condensed"),
     latex_options = c("hold_position"),
     font_size = 9, full_width = FALSE
   ) |>
@@ -1460,7 +1457,6 @@ nic_gradient_results |>
   kableExtra::kbl(align = c("l", "l", "r", "r", "r", "r", "r"),
                   escape = FALSE) |>
   kableExtra::kable_styling(
-    bootstrap_options = c("condensed"),
     latex_options = c("hold_position"),
     font_size = 9, full_width = FALSE
   ) |>
