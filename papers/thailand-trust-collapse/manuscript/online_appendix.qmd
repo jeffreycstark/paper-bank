@@ -1,6 +1,6 @@
 ---
-title: "Online Appendix: From Most Trusted to Least"
-subtitle: "Thailand's Two-Decade Institutional Erosion, 2001--2022"
+title: "Online Appendix: The Limits of Borrowed Legitimacy"
+subtitle: "Military Trust Collapse in Thailand, 2001–2022"
 author:
   - name: Jeffrey Stark
     affiliation: Yonsei University, Seoul, South Korea
