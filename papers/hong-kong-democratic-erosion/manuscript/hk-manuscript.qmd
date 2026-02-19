@@ -9,7 +9,29 @@ author:
     corresponding: true
 date-format: "MMMM D, YYYY [at] h:mm A"
 abstract: |
-  Scholars of democratic backsliding rely on survey data to track regime legitimacy, yet the same repressive forces that dismantle institutions also distort the instruments used to measure public attitudes. This article develops a "sensitivity gradient" framework to identify measurement distortion—the aggregate effect of preference falsification and compositional selection—during authoritarian consolidation. I argue that under repression, survey reliability degrades along a predictable gradient: high-sensitivity items (e.g., trust in police) inflate due to strategic compliance and the exit of critics, while low-sensitivity items (e.g., abstract democratic values) remain comparatively robust. Testing this framework using a natural quasi-experiment in Hong Kong (the 2020 National Security Law), consistent with a measurement distortion account, the data reveal a "trust paradox": trust in police surged ($d \approx +0.49$) while perceived democratic suitability collapsed ($d = -0.54$). Furthermore, the canonical "critical citizens" correlation reverses, a diagnostic signal that standard survey relationships have broken down. A cross-national replication using World Values Survey data from Turkey—bracketing the 2016 coup attempt and subsequent authoritarian consolidation—suggests that the same gradient pattern emerges independently ($r = -0.68$), with trust in coercive institutions rising while democratic evaluations decline. Critically, the gradient does not appear in all autocratizing contexts: in Venezuela and Nicaragua, where institutional collapse was genuine and uniform, and in Burkina Faso, where the coup enjoyed popular support, the gradient is absent or inverted—providing discriminant validity for the framework. These findings challenge "authoritarian resilience" interpretations of rising trust, suggesting instead that autocratization generates systematic false positives for regime support specifically when repression is targeted and procedurally legitimated.
+  Scholars of democratic backsliding rely on survey data to track regime legitimacy, yet
+  the same repressive forces that dismantle institutions also distort the instruments used
+  to measure public attitudes. This article develops and validates a "sensitivity gradient"
+  framework—a portable diagnostic for identifying measurement distortion in standard survey
+  batteries without experimental design. The framework exploits a theoretical prediction:
+  because the cost of honest response varies predictably across survey items as a function
+  of institutional coerciveness, preference falsification generates a systematic within-instrument
+  gradient. High-sensitivity items (e.g., trust in police) inflate due to strategic compliance
+  and the selective exit of critics; low-sensitivity items (e.g., abstract democratic values)
+  remain comparatively robust. The divergence itself constitutes a false positive for regime
+  support. Testing this framework using a natural quasi-experiment in Hong Kong (the 2020
+  National Security Law), the data reveal a "trust paradox" consistent with measurement
+  distortion: trust in police surged ($d \approx +0.49$) while perceived democratic suitability
+  collapsed ($d = -0.54$), and the canonical "critical citizens" correlation reverses—a second
+  diagnostic signal that standard survey relationships have broken down. Cross-national
+  replication using World Values Survey data from Turkey ($r = -0.68$), Latinobarómetro
+  data from Venezuela and Nicaragua, and Afrobarometer data from Burkina Faso establishes
+  both external validity and discriminant validity: the gradient appears when repression is
+  targeted and procedurally legitimated, and is absent or inverted when institutional collapse
+  is genuine. The resulting diagnostic toolkit—five portable signals computable from standard
+  ABS, WVS, Afrobarometer, and Latinobarómetro batteries—offers researchers a practical
+  method for assessing whether survey-based legitimacy claims in autocratizing contexts can
+  be trusted to mean what they appear to say.
 keywords:
   - survey measurement
   - autocratization 
@@ -100,7 +122,24 @@ I test this framework using a natural quasi-experiment created by the disruption
 
 To assess whether the pattern generalizes, I apply the same framework to Turkey using World Values Survey data spanning the 2016 coup attempt, finding consistent evidence of differential item inflation across a different autocratization context and survey instrument (Section 4.6). I further adjudicate among competing mechanisms through age-stratified analysis, information environment tests, and rally effect diagnostics (Section 4.5), finding that no single alternative explanation accounts for all observed patterns. The framework is best suited to contexts where autocratization is rapid and survey fieldwork spans the transition, though cross-wave comparisons (as in Turkey) also reveal gradient patterns when waves bracket clear autocratization shocks. The approach requires only standard trust and democratic evaluation items available in all major cross-national survey programs.
 
-These findings contribute to three literatures. First, they refine the measurement of democratic backsliding [@Waldner2018-yw], offering a diagnostic tool---replicated cross-nationally in Turkey---for researchers working in closing spaces.^[Preliminary evidence from published Levada Center tracking polls in Russia shows patterns consistent with the framework (trust increases coinciding with democratic support decreases around the February 2022 invasion of Ukraine), but individual-level microdata access would be required for the item-level diagnostics that constitute the key tests. Online Appendix J reports available WVS-based evidence for Russia, where Waves 6 (2011) and 7 (2017) bracket the post-Crimea annexation period rather than the 2022 invasion.] Second, they engage debates on authoritarian legitimacy [@Nathan2003-wg; @Tang2016-nl; @Dukalskis2017-md], providing empirical grounds to question whether "performance legitimacy" in autocracies is often an artifact of survey non-response and falsification. Finally, they bridge the gap between critical theory and survey methodology, operationalizing the concern that quantitative metrics can inadvertently reproduce the logic of domination by masking the silence of the marginalized.
+These findings contribute to three literatures. First, and most directly, they offer
+a practical methodological advance for the study of democratic backsliding
+[@Waldner2018-yw]: a diagnostic toolkit that can be applied retrospectively to data
+already collected in ABS, WVS, Afrobarometer, and Latinobarómetro archives, without
+experimental design, and that has now been validated in five distinct political
+contexts.^[Preliminary evidence from published Levada Center tracking polls in Russia
+shows patterns consistent with the framework (trust increases coinciding with democratic
+support decreases around the February 2022 invasion of Ukraine), but individual-level
+microdata access would be required for the item-level diagnostics that constitute the
+key tests. Online Appendix J reports available WVS-based evidence for Russia, where
+Waves 6 (2011) and 7 (2017) bracket the post-Crimea annexation period rather than the
+2022 invasion.] Second, the findings engage debates on authoritarian legitimacy
+[@Nathan2003-wg; @Tang2016-nl; @Dukalskis2017-md], providing empirical grounds to
+question whether "performance legitimacy" in autocracies is often an artifact of survey
+non-response and falsification rather than genuine public approval. Third, they bridge
+critical theory and survey methodology, operationalizing the concern that quantitative
+metrics can inadvertently reproduce the logic of domination by masking the silence of
+the marginalized—and offering a concrete means of detection.
 
 # The Validity Problem in Autocratizing Regimes
 
@@ -907,7 +946,22 @@ Surveys are essential tools for studying democratic backsliding, but they requir
 
 The Hong Kong natural experiment provides proof-of-concept that the sensitivity gradient constitutes a detectable pattern under rapid autocratization. When trust in police increases by half a standard deviation in the months following mass police violence against protesters, the measure is capturing something other than genuine institutional confidence. The simultaneous collapse of democracy suitability, the reversal of the critical citizens correlation among procedural democrats, the implausible increase in reported free speech, and the age gradient contradicting conservative revaluation converge on evidence consistent with measurement distortion: the post-NSL survey environment produced systematic false positives for regime support on politically sensitive items. The Turkey replication—using a different survey instrument, autocratization trajectory, and cross-wave design—strengthens the inference that this pattern generalizes beyond single-case idiosyncrasy. If scholars cannot distinguish these false positives from genuine attitude change, they risk misdiagnosing authoritarian consolidation as popular legitimacy—a consequential error for both academic understanding and policy response.
 
-The sensitivity gradient approach does not resolve every measurement challenge in authoritarian survey research. It works best when repression is uneven, political change is rapid, and surveys contain items spanning a range of political sensitivity. While proof-of-concept relies on Hong Kong's unique natural experiment, the Turkey replication (Section 4.6) demonstrates that the core diagnostic patterns—differential item inflation and trust-democracy divergence—emerge in standard cross-wave comparisons as well, and preliminary Russia evidence (Online Appendix J) shows consistent non-response patterns. For the growing number of cases where these conditions obtain—not only Hong Kong and Turkey (as demonstrated here) but potentially Myanmar, Russia, and other rapid autocratization cases—the sensitivity gradient offers an immediately applicable tool for assessing whether the data can be trusted to mean what it appears to say.
+The sensitivity gradient approach does not resolve every measurement challenge in
+authoritarian survey research. It works best when repression is uneven, political change
+is rapid, and surveys contain items spanning a range of political sensitivity. The
+approach identifies patterns consistent with falsification but cannot precisely decompose
+the relative contributions of falsification, selection, and genuine attitude change.
+What it does offer is something previously unavailable: a method for applying
+falsification-detection logic retrospectively, to the vast archives of standard survey
+data already collected under conditions of repression. The sensitivity gradient can be
+computed from trust and democratic evaluation items available in every major cross-national
+survey program. The critical citizens diagnostic requires only two items. The toolkit
+in @tbl-toolkit provides explicit thresholds that researchers can apply without
+specialized data collection. For the growing number of cases where the underlying
+conditions obtain---not only Hong Kong and Turkey, but potentially Myanmar, Russia, and
+other rapidly autocratizing contexts---the framework offers a practical answer to a
+consequential question: when survey data from closing spaces report rising regime support,
+how do we know whether to believe it?
 
 # References {.unnumbered}
 
