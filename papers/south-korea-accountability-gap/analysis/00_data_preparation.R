@@ -33,7 +33,7 @@ abs <- readRDS(abs_harmonized_path)
 cat("ABS harmonized:", nrow(abs), "obs,", n_distinct(abs$country_num), "countries\n")
 
 # ABS country code: 3 = Korea
-kor_abs <- abs |> filter(country_num == 3)
+kor_abs <- abs |> filter(country == 3)
 cat("Korea (ABS): n =", nrow(kor_abs), "\n")
 cat("Waves:", sort(unique(kor_abs$wave)), "\n\n")
 

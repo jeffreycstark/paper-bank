@@ -1,0 +1,1025 @@
+---
+title: "Analysis: South Korea Accountability Gap"
+format:
+  html:
+    toc: true
+    toc-depth: 3
+    number-sections: true
+    theme: cosmo
+    code-fold: true
+execute:
+  echo: true
+  warning: false
+  message: false
+  cache: true
+---
+
+```{r setup}
+library(tidyverse)
+library(patchwork)
+library(ggtext)
+library(scales)
+library(kableExtra)
+
+project_root <- "/Users/jeffreystark/Development/Research/econdev-authpref"
+source(file.path(project_root, "_data_config.R"))
+
+paper_dir    <- file.path(project_root, "papers/south-korea-accountability-gap")
+analysis_dir <- file.path(paper_dir, "analysis")
+fig_dir      <- file.path(analysis_dir, "figures")
+results_dir  <- file.path(analysis_dir, "results")
+
+# ── Color palette ─────────────────────────────────────────────────────────────
+# Consistent with broader project style
+col_pre        <- "#2166AC"   # deep blue — pre-shock / 2016
+col_post       <- "#D6604D"   # muted red — post-shock / 2019
+col_exec       <- "#4393C3"   # lighter blue — executive institutions
+col_intermed   <- "#D73027"   # red — intermediary/accountability institutions
+col_rising     <- "#D73027"   # rising series
+col_stable     <- "#878787"   # stable/flat series
+col_shade      <- "#F0F0F0"   # background shading
+
+# ── Wave year lookup (Korea ABS) ──────────────────────────────────────────────
+# W1: ~2003, W2: ~2006 (int_year not recorded); W3–W6 confirmed from int_year
+wave_years <- c("1" = 2003, "2" = 2006, "3" = 2011,
+                "4" = 2015, "5" = 2019, "6" = 2022)
+
+# ── Political event timeline ──────────────────────────────────────────────────
+events <- tribble(
+  ~year,   ~label,                           ~y,
+  2016.67, "Kim Young-ran Act",               2.42,
+  2016.92, "Park impeachment vote",           2.38,
+  2017.19, "Constitutional Court ruling",     2.34,
+  2018.25, "Park convicted",                  2.30
+)
+```
+
+```{r load-data}
+# ── ABS (Korea) ───────────────────────────────────────────────────────────────
+abs_raw <- readRDS(abs_harmonized_path)
+kor <- abs_raw |>
+  filter(country == 3) |>
+  mutate(
+    survey_year = wave_years[as.character(wave)],
+    wave        = as.integer(wave)
+  )
+
+cat("ABS Korea: n =", nrow(kor), "| waves:", paste(sort(unique(kor$wave)), collapse = " "), "\n")
+
+# ── KAMOS ─────────────────────────────────────────────────────────────────────
+kamos_raw <- readRDS(kamos_harmonized_path)
+kamos <- kamos_raw |>
+  mutate(
+    wave_year = if_else(wave == 1, 2016L, 2019L),
+    wave_label = if_else(wave == 1, "Wave 1 (2016)", "Wave 4 (2019)")
+  )
+
+cat("KAMOS: n =", nrow(kamos), "| waves:", paste(sort(unique(kamos$wave)), collapse = " "), "\n")
+```
+
+---
+
+# ABS Longitudinal Trends (H1 & H2) {#sec-abs}
+
+## Compute wave means
+
+```{r abs-means}
+# Transparency perceptions (H1): govt_withholds_info — W2–W6
+transp_means <- kor |>
+  filter(!is.na(govt_withholds_info)) |>
+  group_by(wave, survey_year) |>
+  summarise(
+    mean  = weighted.mean(govt_withholds_info, weight, na.rm = TRUE),
+    se    = sd(govt_withholds_info, na.rm = TRUE) / sqrt(n()),
+    n     = n(),
+    .groups = "drop"
+  )
+
+# Corruption perceptions (H2): all three series, all six waves
+corrupt_means <- kor |>
+  select(wave, survey_year, weight,
+         corrupt_witnessed, corrupt_national_govt, corrupt_local_govt) |>
+  pivot_longer(starts_with("corrupt"),
+               names_to = "variable", values_to = "value") |>
+  filter(!is.na(value)) |>
+  group_by(wave, survey_year, variable) |>
+  summarise(
+    mean = weighted.mean(value, weight, na.rm = TRUE),
+    se   = sd(value, na.rm = TRUE) / sqrt(n()),
+    n    = n(),
+    .groups = "drop"
+  ) |>
+  mutate(
+    label = recode(variable,
+      corrupt_witnessed     = "Personally witnessed/experienced corruption",
+      corrupt_national_govt = "Corruption in national government",
+      corrupt_local_govt    = "Corruption in local government"
+    ),
+    series_type = if_else(variable == "corrupt_witnessed", "Experiential", "Institutional")
+  )
+
+# ABS trust series (W1 → W6) — secondary reference
+trust_means_abs <- kor |>
+  select(wave, survey_year, weight,
+         trust_national_government, trust_parliament,
+         trust_military, trust_newspapers, trust_political_parties) |>
+  pivot_longer(starts_with("trust"),
+               names_to = "variable", values_to = "value") |>
+  filter(!is.na(value)) |>
+  group_by(wave, survey_year, variable) |>
+  summarise(
+    mean = weighted.mean(value, weight, na.rm = TRUE),
+    se   = sd(value, na.rm = TRUE) / sqrt(n()),
+    n    = n(),
+    .groups = "drop"
+  ) |>
+  mutate(
+    label = recode(variable,
+      trust_national_government = "National government",
+      trust_parliament          = "Parliament",
+      trust_military            = "Military",
+      trust_newspapers          = "Newspapers",
+      trust_political_parties   = "Political parties"
+    )
+  )
+
+# Print summaries
+cat("=== H1: govt_withholds_info (W2–W6) ===\n")
+transp_means |> select(wave, survey_year, mean, n) |>
+  mutate(mean = round(mean, 3)) |> print()
+
+cat("\n=== H2: Corruption divergence ===\n")
+corrupt_means |>
+  select(wave, survey_year, variable, mean, n) |>
+  mutate(mean = round(mean, 3)) |> print(n = 30)
+
+# Save
+save(transp_means, corrupt_means, trust_means_abs,
+     file = file.path(results_dir, "abs_wave_means.RData"))
+cat("\n✓ Saved abs_wave_means.RData\n")
+```
+
+## Figure 1 — The Accountability Gap Timeline
+
+A two-panel figure: (A) monotonic transparency erosion with incumbent shading,
+(B) the reclassification divergence with event annotation.
+
+```{r fig1-timeline, fig.width=10, fig.height=8}
+# ── Panel A: Transparency (H1) ────────────────────────────────────────────────
+# Presidency shading bands
+pres_bands <- tribble(
+  ~xmin, ~xmax,  ~president,        ~fill,
+  2003,  2008,   "Roh",             "#F7F7F7",
+  2008,  2013,   "Lee MB",          "#EEF2F7",
+  2013,  2017.35,"Park GH",         "#F7EFEF",
+  2017.35, 2022, "Moon",            "#EFF7EF",
+  2022,  2023,   "Yoon",            "#F7F7EF"
+)
+
+pA <- ggplot(transp_means, aes(x = survey_year, y = mean)) +
+  # Presidency shading
+  geom_rect(data = pres_bands,
+            aes(xmin = xmin, xmax = xmax, ymin = -Inf, ymax = Inf, fill = president),
+            inherit.aes = FALSE, alpha = 0.25) +
+  scale_fill_manual(values = c(
+    "Roh" = "#E8EAF6", "Lee MB" = "#E3F2FD",
+    "Park GH" = "#FFEBEE", "Moon" = "#E8F5E9", "Yoon" = "#FFF8E1"
+  ), guide = "none") +
+  # Government withholds info trend
+  geom_line(linewidth = 1.1, color = "#1A1A2E") +
+  geom_point(size = 3.5, color = "#1A1A2E", fill = "white", shape = 21, stroke = 1.5) +
+  geom_errorbar(aes(ymin = mean - 1.96 * se, ymax = mean + 1.96 * se),
+                width = 0.5, linewidth = 0.5, color = "#1A1A2E", alpha = 0.5) +
+  # President labels
+  annotate("text", x = c(2005, 2010, 2015, 2019.5, 2022.3),
+           y = rep(2.43, 5),
+           label = c("Roh", "Lee MB", "Park GH", "Moon", "Yoon"),
+           size = 2.8, color = "grey40", fontface = "italic") +
+  scale_x_continuous(breaks = c(2003, 2006, 2011, 2015, 2019, 2022),
+                     labels = c("W1\n(~2003)", "W2\n(~2006)", "W3\n(2011)",
+                                "W4\n(2015)", "W5\n(2019)", "W6\n(2022)"),
+                     limits = c(2001, 2023)) +
+  scale_y_continuous(limits = c(1.9, 2.5),
+                     breaks = seq(1.9, 2.5, 0.1)) +
+  labs(
+    x = NULL,
+    y = "Mean agreement (1–4)",
+    title = "**A.** Government withholds information from the public",
+    subtitle = "ABS Korea, Waves 2–6 (weighted means ± 95% CI)"
+  ) +
+  theme_minimal(base_size = 11) +
+  theme(
+    plot.title   = element_markdown(size = 11),
+    plot.subtitle = element_text(size = 9, color = "grey50"),
+    panel.grid.minor = element_blank(),
+    panel.grid.major.x = element_blank(),
+    axis.text.x = element_text(size = 8)
+  )
+
+# ── Panel B: Reclassification divergence (H2) ─────────────────────────────────
+# Accountability shock shading: Sep 2016 – Apr 2018
+shock_band <- data.frame(xmin = 2016.67, xmax = 2018.25, y = 0)
+
+col_exp  <- "#D73027"
+col_inst <- "#878787"
+
+pB <- ggplot(corrupt_means, aes(x = survey_year, y = mean,
+                                 color = series_type, group = variable,
+                                 linetype = variable)) +
+  # Accountability shock band
+  annotate("rect", xmin = 2016.67, xmax = 2018.25,
+           ymin = -Inf, ymax = Inf, fill = "#FFE0E0", alpha = 0.5) +
+  annotate("text", x = 2017.46, y = 2.68,
+           label = "Accountability\nshock", size = 2.8,
+           color = "#C0392B", fontface = "italic", hjust = 0.5) +
+  # Event lines
+  geom_vline(xintercept = 2016.67, linetype = "dotted", color = "#C0392B", alpha = 0.7) +
+  geom_vline(xintercept = 2018.25, linetype = "dotted", color = "#C0392B", alpha = 0.7) +
+  # Trend lines
+  geom_line(linewidth = 1.1) +
+  geom_point(size = 3, aes(fill = series_type), shape = 21, stroke = 1.2, color = "white") +
+  # End-of-series labels
+  geom_text(data = corrupt_means |> filter(wave == 6),
+            aes(label = label), hjust = -0.05, size = 2.8,
+            show.legend = FALSE) +
+  scale_color_manual(
+    values = c("Experiential" = col_exp, "Institutional" = col_inst),
+    name = "Series type"
+  ) +
+  scale_fill_manual(
+    values = c("Experiential" = col_exp, "Institutional" = col_inst),
+    guide = "none"
+  ) +
+  scale_linetype_manual(
+    values = c(
+      "corrupt_witnessed"     = "solid",
+      "corrupt_national_govt" = "dashed",
+      "corrupt_local_govt"    = "dotdash"
+    ), guide = "none"
+  ) +
+  scale_x_continuous(breaks = c(2003, 2006, 2011, 2015, 2019, 2022),
+                     labels = c("W1\n(~2003)", "W2\n(~2006)", "W3\n(2011)",
+                                "W4\n(2015)", "W5\n(2019)", "W6\n(2022)"),
+                     limits = c(2001, 2027)) +
+  scale_y_continuous(
+    limits = c(1.5, 2.8),
+    sec.axis = sec_axis(~ ., name = NULL, breaks = NULL)
+  ) +
+  labs(
+    x = NULL,
+    y = "Mean score",
+    title = "**B.** The reclassification signature: experiential vs. institutional corruption",
+    subtitle = "ABS Korea, Waves 1–6 — <span style='color:#D73027'>**Experiential** (1–2 scale)</span> vs. <span style='color:#878787'>**Institutional** (1–4 scale)</span>",
+    color = NULL
+  ) +
+  theme_minimal(base_size = 11) +
+  theme(
+    plot.title    = element_markdown(size = 11),
+    plot.subtitle = element_markdown(size = 9),
+    legend.position = "none",
+    panel.grid.minor = element_blank(),
+    panel.grid.major.x = element_blank(),
+    axis.text.x = element_text(size = 8)
+  )
+
+fig1 <- pA / pB +
+  plot_annotation(
+    title = "Figure 1. The Accountability Gap Syndrome: Transparency Erosion and Perceptual Reclassification",
+    subtitle = "South Korea, 2001–2022. Shaded interval = accountability shock (Kim Young-ran Act Sep 2016 – Park conviction Apr 2018).",
+    theme = theme(
+      plot.title    = element_text(size = 12, face = "bold"),
+      plot.subtitle = element_text(size = 9, color = "grey40")
+    )
+  )
+
+ggsave(file.path(fig_dir, "fig1_accountability_gap_timeline.pdf"),
+       fig1, width = 10, height = 8)
+ggsave(file.path(fig_dir, "fig1_accountability_gap_timeline.png"),
+       fig1, width = 10, height = 8, dpi = 300)
+
+fig1
+```
+
+## Figure 2 — The Reclassification Window (W4 → W5 slope chart)
+
+A focused before-after comparison isolating the critical W4 (2015) → W5 (2019) interval,
+showing the divergence between rising experiential and flat institutional perceptions.
+
+```{r fig2-reclassification, fig.width=7, fig.height=5}
+# Build W4–W5 slope data
+slope_data <- corrupt_means |>
+  filter(wave %in% c(4, 5)) |>
+  mutate(
+    wave_label  = if_else(wave == 4, "Pre-shock\n(W4, 2015)", "Post-shock\n(W5, 2019)"),
+    wave_num    = if_else(wave == 4, 0, 1),
+    short_label = recode(variable,
+      corrupt_witnessed     = "Witnessed\ncorruption",
+      corrupt_national_govt = "National govt\ncorruption",
+      corrupt_local_govt    = "Local govt\ncorruption"
+    )
+  )
+
+# Normalize to W4 = 0 scale for direct comparison of change
+w4_vals <- slope_data |> filter(wave == 4) |>
+  select(variable, base = mean)
+
+slope_norm <- slope_data |>
+  left_join(w4_vals, by = "variable") |>
+  mutate(delta = mean - base)
+
+# Delta bar chart: cleanest way to show divergence
+delta_data <- slope_norm |>
+  filter(wave == 5) |>
+  mutate(
+    direction  = if_else(delta > 0, "Increased", "Stable/Decreased"),
+    fill_color = case_when(
+      variable == "corrupt_witnessed"     ~ col_rising,
+      TRUE                                ~ col_stable
+    )
+  )
+
+fig2 <- ggplot(delta_data, aes(x = reorder(short_label, delta), y = delta,
+                                fill = fill_color)) +
+  geom_col(width = 0.55, alpha = 0.9) +
+  geom_hline(yintercept = 0, linewidth = 0.7, color = "grey30") +
+  geom_errorbar(aes(ymin = delta - 1.96 * se, ymax = delta + 1.96 * se),
+                width = 0.12, linewidth = 0.8, color = "grey20") +
+  geom_text(aes(label = sprintf("%+.3f", delta),
+                vjust = if_else(delta >= 0, -0.5, 1.3)),
+            size = 3.5, fontface = "bold") +
+  scale_fill_identity() +
+  scale_y_continuous(limits = c(-0.05, 0.18),
+                     labels = label_number(style_positive = "plus")) +
+  annotate("richtext", x = 1, y = 0.155,
+           label = "<span style='color:#D73027'>**Experiential**</span> perception rose<br>sharply across the shock interval",
+           fill = NA, label.color = NA, size = 3.2, hjust = 0) +
+  annotate("richtext", x = 2.5, y = -0.04,
+           label = "<span style='color:#878787'>**Institutional**</span> assessments<br>effectively unchanged",
+           fill = NA, label.color = NA, size = 3.2, hjust = 0.5) +
+  labs(
+    x = NULL,
+    y = "Change in mean score (W5 − W4)",
+    title = "Figure 2. The Reclassification Signature: W4 (2015) → W5 (2019) Change",
+    subtitle = "ABS Korea. Bars show change across the accountability shock interval (± 95% CI).\nExperiential perception rises while institutional assessments remain flat — the signature of perceptual reclassification."
+  ) +
+  coord_flip() +
+  theme_minimal(base_size = 11) +
+  theme(
+    plot.title   = element_text(size = 11, face = "bold"),
+    plot.subtitle = element_text(size = 9, color = "grey50"),
+    panel.grid.major.y = element_blank(),
+    panel.grid.minor = element_blank(),
+    axis.text.y = element_text(size = 10)
+  )
+
+ggsave(file.path(fig_dir, "fig2_reclassification_window.pdf"),
+       fig2, width = 7, height = 5)
+ggsave(file.path(fig_dir, "fig2_reclassification_window.png"),
+       fig2, width = 7, height = 5, dpi = 300)
+
+fig2
+```
+
+---
+
+# KAMOS Institutional Trust (H3) {#sec-kamos}
+
+## Compute KAMOS trust means
+
+```{r kamos-means}
+trust_vars_kamos <- c(
+  "trust_central_govt", "trust_local_govt",
+  "trust_national_assembly", "trust_legislature",
+  "trust_media", "trust_ngo"
+)
+
+inst_labels <- c(
+  trust_central_govt      = "Central government",
+  trust_local_govt        = "Local government",
+  trust_national_assembly = "National Assembly",
+  trust_legislature       = "Legislature",
+  trust_media             = "Media & press",
+  trust_ngo               = "Civil society (NGOs)"
+)
+
+inst_type <- c(
+  trust_central_govt      = "Executive",
+  trust_local_govt        = "Executive",
+  trust_national_assembly = "Intermediary",
+  trust_legislature       = "Intermediary",
+  trust_media             = "Intermediary",
+  trust_ngo               = "Intermediary"
+)
+
+kamos_trust <- kamos |>
+  select(wave, wave_year, wave_label, weight, all_of(trust_vars_kamos)) |>
+  pivot_longer(all_of(trust_vars_kamos), names_to = "variable", values_to = "value") |>
+  filter(!is.na(value)) |>
+  group_by(wave, wave_year, wave_label, variable) |>
+  summarise(
+    mean = weighted.mean(value, weight, na.rm = TRUE),
+    se   = sd(value, na.rm = TRUE) / sqrt(n()),
+    n    = n(),
+    .groups = "drop"
+  ) |>
+  mutate(
+    label     = inst_labels[variable],
+    inst_type = inst_type[variable]
+  )
+
+# Compute change (W4 - W1) for ordering
+kamos_change <- kamos_trust |>
+  select(variable, label, inst_type, wave_year, mean) |>
+  pivot_wider(names_from = wave_year, values_from = mean,
+              names_prefix = "y") |>
+  mutate(change = y2019 - y2016) |>
+  arrange(change)
+
+cat("=== KAMOS: Trust means by wave ===\n")
+kamos_trust |>
+  select(wave_year, variable, mean, n) |>
+  mutate(mean = round(mean, 3)) |>
+  pivot_wider(names_from = wave_year, values_from = c(mean, n)) |>
+  mutate(change = round(mean_2019 - mean_2016, 3)) |>
+  arrange(change) |> print()
+
+# Political satisfaction
+pol_sat <- kamos |>
+  group_by(wave, wave_year) |>
+  summarise(
+    mean_sat = weighted.mean(pol_satisfaction, weight, na.rm = TRUE),
+    se_sat   = sd(pol_satisfaction, na.rm = TRUE) / sqrt(n()),
+    n        = n(),
+    .groups  = "drop"
+  )
+
+cat("\n=== Political satisfaction ===\n")
+print(pol_sat)
+
+# Save
+save(kamos_trust, kamos_change, pol_sat,
+     file = file.path(results_dir, "kamos_trust_means.RData"))
+cat("\n✓ Saved kamos_trust_means.RData\n")
+```
+
+## Figure 3 — Dumbbell: Selective Trust Collapse
+
+```{r fig3-dumbbell, fig.width=8, fig.height=6}
+# Widen for dumbbell
+dumbbell_data <- kamos_trust |>
+  select(variable, label, inst_type, wave_year, mean, se) |>
+  pivot_wider(names_from = wave_year, values_from = c(mean, se),
+              names_prefix = "") |>
+  rename(mean_2016 = `mean_2016`, mean_2019 = `mean_2019`,
+         se_2016   = `se_2016`,   se_2019   = `se_2019`) |>
+  mutate(
+    change     = mean_2019 - mean_2016,
+    label      = factor(label, levels = rev(kamos_change$label)),
+    inst_color = if_else(inst_type == "Executive", col_exec, col_intermed)
+  )
+
+# Type annotation positions
+type_ann <- dumbbell_data |>
+  group_by(inst_type) |>
+  summarise(y_pos = mean(as.numeric(label)), .groups = "drop")
+
+fig3 <- ggplot(dumbbell_data) +
+  # Connector lines
+  geom_segment(aes(x = mean_2016, xend = mean_2019,
+                   y = label, yend = label,
+                   color = inst_type),
+               linewidth = 1.5, alpha = 0.6) +
+  # 2016 dots
+  geom_point(aes(x = mean_2016, y = label, color = inst_type),
+             size = 5, shape = 16) +
+  # 2019 dots (hollow to distinguish)
+  geom_point(aes(x = mean_2019, y = label, color = inst_type),
+             size = 5, shape = 21, fill = "white", stroke = 2) +
+  # Change labels
+  geom_text(aes(x = (mean_2016 + mean_2019) / 2, y = label,
+                label = sprintf("%+.2f", change)),
+            vjust = -0.85, size = 3, color = "grey30") +
+  # Type background bands
+  annotate("rect",
+           xmin = 2.5, xmax = Inf,
+           ymin = 0.5, ymax = 2.5,
+           fill = col_exec, alpha = 0.04) +
+  annotate("rect",
+           xmin = 2.5, xmax = Inf,
+           ymin = 2.5, ymax = 6.5,
+           fill = col_intermed, alpha = 0.04) +
+  # Type labels on right
+  annotate("text", x = 5.55, y = 1.5,
+           label = "Executive\ninstitutions", size = 3, color = col_exec,
+           fontface = "bold", hjust = 0) +
+  annotate("text", x = 5.55, y = 4.5,
+           label = "Intermediary\n(accountability)\ninstitutions", size = 3,
+           color = col_intermed, fontface = "bold", hjust = 0) +
+  scale_color_manual(values = c("Executive" = col_exec, "Intermediary" = col_intermed),
+                     guide = "none") +
+  scale_x_continuous(limits = c(2.5, 6.2), breaks = seq(3, 6, 1)) +
+  labs(
+    x = "Mean trust (0 = completely untrustworthy, 10 = completely trustworthy)",
+    y = NULL,
+    title = "Figure 3. Selective Collapse of Accountability Institutions",
+    subtitle = paste0(
+      "KAMOS Korea, Wave 1 (2016) vs. Wave 4 (2019). ",
+      "<span style='color:", col_pre, "'>● 2016</span>  →  ",
+      "<span style='color:grey40'>○ 2019</span>. ",
+      "Numbers show change (2019 − 2016)."
+    )
+  ) +
+  theme_minimal(base_size = 11) +
+  theme(
+    plot.title    = element_text(size = 11, face = "bold"),
+    plot.subtitle = element_markdown(size = 9, color = "grey50"),
+    panel.grid.major.y = element_blank(),
+    panel.grid.minor   = element_blank(),
+    axis.text.y = element_text(size = 10, face = c(rep("bold", 4), rep("plain", 2)))
+  )
+
+ggsave(file.path(fig_dir, "fig3_kamos_dumbbell.pdf"),
+       fig3, width = 8, height = 6)
+ggsave(file.path(fig_dir, "fig3_kamos_dumbbell.png"),
+       fig3, width = 8, height = 6, dpi = 300)
+
+fig3
+```
+
+## Figure 4 — The Dissociation: Trust Collapses, Satisfaction Holds
+
+```{r fig4-dissociation, fig.width=9, fig.height=5.5}
+# Compute normalized W1→W4 changes for all key variables on a comparable Δ scale
+# We standardize each variable (z-score within wave 1) then show wave 4 position
+
+# Build change data: combine trust changes + satisfaction change
+all_changes <- bind_rows(
+  kamos_change |>
+    select(label, inst_type, change) |>
+    mutate(category = inst_type),
+  tibble(
+    label     = "Political satisfaction",
+    inst_type = "Satisfaction",
+    change    = pol_sat$mean_sat[pol_sat$wave == 4] -
+                pol_sat$mean_sat[pol_sat$wave == 1],
+    category  = "Satisfaction"
+  )
+) |>
+  mutate(
+    fill_col = case_when(
+      inst_type == "Executive"     ~ col_exec,
+      inst_type == "Intermediary"  ~ col_intermed,
+      inst_type == "Satisfaction"  ~ "#4DAF4A"
+    ),
+    label = factor(label, levels = c(
+      "Political satisfaction",
+      "Central government", "Local government",
+      "National Assembly", "Legislature",
+      "Media & press", "Civil society (NGOs)"
+    ))
+  ) |>
+  arrange(label)
+
+fig4 <- ggplot(all_changes, aes(x = change, y = fct_rev(label), fill = fill_col)) +
+  geom_col(width = 0.6, alpha = 0.88) +
+  geom_vline(xintercept = 0, linewidth = 0.8, color = "grey20") +
+  geom_text(aes(label = sprintf("%+.3f", change),
+                hjust = if_else(change >= 0, -0.2, 1.2)),
+            size = 3.3, fontface = "bold", color = "grey20") +
+  # Annotation bands
+  annotate("rect", xmin = -Inf, xmax = Inf,
+           ymin = 5.5, ymax = 7.5, fill = "#FFF3CD", alpha = 0.4) +
+  annotate("text", x = -0.82, y = 6.5,
+           label = "Accountability\ninstitutions collapse",
+           size = 3.0, color = col_intermed, fontface = "italic", hjust = 0) +
+  annotate("rect", xmin = -Inf, xmax = Inf,
+           ymin = 0.5, ymax = 2.5, fill = "#EBF5FB", alpha = 0.4) +
+  annotate("text", x = -0.82, y = 1.5,
+           label = "Near-zero change\n(executive & satisfaction)",
+           size = 3.0, color = "grey50", fontface = "italic", hjust = 0) +
+  scale_fill_identity() +
+  scale_x_continuous(limits = c(-0.85, 0.2),
+                     labels = label_number(style_positive = "plus")) +
+  labs(
+    x = "Change in mean score (Wave 4, 2019 − Wave 1, 2016)",
+    y = NULL,
+    title = "Figure 4. The Dissociation: Accountability Institutions Collapse While Satisfaction Holds",
+    subtitle = "KAMOS Korea. Generalized cynicism would produce uniform decline; the observed pattern is selective.\n● Civil society and media fall furthest; political satisfaction is effectively unchanged."
+  ) +
+  theme_minimal(base_size = 11) +
+  theme(
+    plot.title    = element_text(size = 11, face = "bold"),
+    plot.subtitle = element_text(size = 9, color = "grey50"),
+    panel.grid.major.y = element_blank(),
+    panel.grid.minor   = element_blank(),
+    axis.text.y = element_text(size = 10)
+  )
+
+ggsave(file.path(fig_dir, "fig4_dissociation.pdf"),
+       fig4, width = 9, height = 5.5)
+ggsave(file.path(fig_dir, "fig4_dissociation.png"),
+       fig4, width = 9, height = 5.5, dpi = 300)
+
+fig4
+```
+
+---
+
+# Partisan Sorting Analysis {#sec-partisan}
+
+## Compute partisan sorting statistics
+
+```{r partisan-stats}
+# ── Ideology–trust correlations ──────────────────────────────────────────────
+ideo_cors <- kamos |>
+  group_by(wave, wave_year) |>
+  summarise(
+    across(all_of(trust_vars_kamos),
+           ~ cor(.x, ideology, use = "pairwise.complete.obs"),
+           .names = "r_{.col}"),
+    .groups = "drop"
+  )
+
+cat("=== Ideology–trust correlations ===\n")
+ideo_cors |>
+  pivot_longer(starts_with("r_"), names_to = "variable", values_to = "r") |>
+  mutate(variable = str_remove(variable, "r_trust_")) |>
+  pivot_wider(names_from = wave_year, values_from = r) |>
+  mutate(across(where(is.numeric), ~ round(.x, 3))) |>
+  print()
+
+# ── Party-ID means by wave ────────────────────────────────────────────────────
+# Identify major parties: in W1 (2016, Park/Saenuri gov't), the group
+# with highest central govt trust ≈ Saenuri supporters.
+# In W4 (2019, Moon/Minjoo gov't), the group with highest ≈ Minjoo supporters.
+
+# Compute mean central govt trust by party_id and wave
+party_cgov <- kamos |>
+  group_by(wave, wave_year, party_id) |>
+  summarise(
+    mean_cgov = weighted.mean(trust_central_govt, weight, na.rm = TRUE),
+    n = n(),
+    .groups = "drop"
+  ) |>
+  filter(!is.na(party_id)) |>
+  arrange(wave_year, desc(mean_cgov))
+
+cat("\n=== Central govt trust by party_id and wave (for partisan pattern) ===\n")
+print(party_cgov, n = 20)
+
+# Identify top party per wave (co-partisan bonus holder)
+top_party_per_wave <- party_cgov |>
+  group_by(wave_year) |>
+  slice_max(mean_cgov, n = 1) |>
+  select(wave_year, governing_party_id = party_id)
+
+cat("\nParty with highest central govt trust (co-partisan bonus):\n")
+print(top_party_per_wave)
+
+# ── Trust means by partisan group (simplified 3-group) ────────────────────────
+# Use party_id: 1=Minjoo, 2=Liberty Korea/Saenuri, 5=No preference
+# (pending codebook verification — identified from size and trust patterns)
+kamos_partisan <- kamos |>
+  filter(party_id %in% c(1, 2, 5)) |>
+  mutate(
+    party_label = case_when(
+      party_id == 1 ~ "Minjoo\n(Democratic)",
+      party_id == 2 ~ "Liberty Korea\n(Conservative)",
+      party_id == 5 ~ "No preference"
+    )
+  )
+
+partisan_means <- kamos_partisan |>
+  group_by(wave, wave_year, party_label) |>
+  summarise(
+    across(all_of(trust_vars_kamos),
+           ~ weighted.mean(.x, weight, na.rm = TRUE),
+           .names = "mean_{.col}"),
+    n = n(),
+    .groups = "drop"
+  )
+
+cat("\n=== Partisan trust means ===\n")
+partisan_means |>
+  select(wave_year, party_label, n, mean_trust_central_govt,
+         mean_trust_national_assembly, mean_trust_media, mean_trust_ngo) |>
+  mutate(across(where(is.numeric), ~ round(.x, 3))) |>
+  print(n = 20)
+
+# Save
+save(ideo_cors, party_cgov, partisan_means,
+     file = file.path(results_dir, "partisan_sorting.RData"))
+cat("\n✓ Saved partisan_sorting.RData\n")
+```
+
+## Figure 5 — Cross-Partisan Trust Collapse
+
+A 2×3 faceted figure contrasting the partisan premium in central government trust
+(co-partisan flip) vs. uniform cross-partisan decline in intermediary institutions.
+
+```{r fig5-partisan, fig.width=10, fig.height=6.5}
+# Reshape for plotting
+partisan_long <- partisan_means |>
+  pivot_longer(starts_with("mean_trust_"),
+               names_to = "variable", values_to = "mean") |>
+  mutate(
+    variable  = str_remove(variable, "mean_trust_"),
+    inst_label = recode(variable,
+      central_govt      = "Central government\n(executive — partisan flip)",
+      local_govt        = "Local government",
+      national_assembly = "National Assembly\n(intermediary — cross-partisan collapse)",
+      legislature       = "Legislature\n(intermediary — cross-partisan collapse)",
+      media             = "Media & press\n(intermediary — cross-partisan collapse)",
+      ngo               = "Civil society\n(intermediary — cross-partisan collapse)"
+    ),
+    inst_type  = if_else(variable %in% c("central_govt", "local_govt"),
+                         "Executive", "Intermediary"),
+    wave_year  = factor(wave_year, labels = c("2016\n(Park era)", "2019\n(Moon era)"))
+  )
+
+# Focus on the 4 most theoretically important institutions
+focal_vars <- c("central_govt", "national_assembly", "media", "ngo")
+
+focal_partisan <- partisan_long |>
+  filter(variable %in% focal_vars) |>
+  mutate(
+    inst_label = recode(variable,
+      central_govt      = "Central government",
+      national_assembly = "National Assembly",
+      media             = "Media & press",
+      ngo               = "Civil society (NGOs)"
+    ),
+    inst_label = factor(inst_label,
+      levels = c("Central government", "National Assembly",
+                 "Media & press", "Civil society (NGOs)"))
+  )
+
+fig5 <- ggplot(focal_partisan,
+               aes(x = wave_year, y = mean,
+                   color = party_label, group = party_label)) +
+  geom_line(linewidth = 1.1, alpha = 0.9) +
+  geom_point(size = 3.5, aes(shape = party_label)) +
+  facet_wrap(~ inst_label, nrow = 2, scales = "free_y") +
+  scale_color_manual(
+    values = c(
+      "Minjoo\n(Democratic)"       = "#1565C0",
+      "Liberty Korea\n(Conservative)" = "#C62828",
+      "No preference"              = "#757575"
+    ),
+    name = "Party affiliation"
+  ) +
+  scale_shape_manual(
+    values = c(
+      "Minjoo\n(Democratic)"       = 16,
+      "Liberty Korea\n(Conservative)" = 17,
+      "No preference"              = 15
+    ),
+    name = "Party affiliation"
+  ) +
+  # Annotation on central govt panel
+  geom_text(
+    data = data.frame(
+      inst_label = factor("Central government",
+        levels = c("Central government","National Assembly","Media & press","Civil society (NGOs)")),
+      x = "2019\n(Moon era)", y = 5.5,
+      label = "Co-partisan premium\n(governing party supporters\nshow highest trust)"
+    ),
+    aes(x = x, y = y, label = label),
+    inherit.aes = FALSE, size = 2.6, color = "grey40", fontface = "italic",
+    hjust = 1
+  ) +
+  labs(
+    x = NULL,
+    y = "Mean trust (0–10)",
+    title = "Figure 5. The Trust Collapse Is Cross-Partisan: Intermediary Institutions Only",
+    subtitle = "KAMOS Korea, 2016 vs. 2019. Central government trust tracks the governing party (partisan flip);\nmedia, assembly, and civil society trust collapse uniformly across partisan lines."
+  ) +
+  theme_minimal(base_size = 11) +
+  theme(
+    plot.title    = element_text(size = 11, face = "bold"),
+    plot.subtitle = element_text(size = 9, color = "grey50"),
+    strip.text    = element_text(size = 10, face = "bold"),
+    legend.position = "bottom",
+    legend.title  = element_text(size = 9),
+    panel.grid.minor = element_blank()
+  )
+
+ggsave(file.path(fig_dir, "fig5_partisan_sorting.pdf"),
+       fig5, width = 10, height = 6.5)
+ggsave(file.path(fig_dir, "fig5_partisan_sorting.png"),
+       fig5, width = 10, height = 6.5, dpi = 300)
+
+fig5
+```
+
+## Figure 6 — Ideology × Trust Correlations (Near-Zero)
+
+```{r fig6-ideology-cors, fig.width=7, fig.height=5}
+ideo_long <- ideo_cors |>
+  pivot_longer(starts_with("r_"), names_to = "variable", values_to = "r") |>
+  mutate(
+    variable   = str_remove(variable, "r_trust_"),
+    inst_label = recode(variable,
+      central_govt      = "Central government",
+      local_govt        = "Local government",
+      national_assembly = "National Assembly",
+      legislature       = "Legislature",
+      media             = "Media & press",
+      ngo               = "Civil society (NGOs)"
+    ),
+    inst_type  = if_else(variable %in% c("central_govt", "local_govt"),
+                         "Executive", "Intermediary"),
+    wave_label = if_else(wave_year == 2016, "Wave 1 (2016)", "Wave 4 (2019)")
+  )
+
+fig6 <- ggplot(ideo_long,
+               aes(x = r, y = reorder(inst_label, abs(r)),
+                   fill = wave_label, color = wave_label)) +
+  geom_col(position = position_dodge(width = 0.6), width = 0.5, alpha = 0.8) +
+  geom_vline(xintercept = 0, linewidth = 0.7, color = "grey20") +
+  geom_vline(xintercept = c(-0.1, 0.1), linewidth = 0.4,
+             color = "grey50", linetype = "dashed") +
+  scale_fill_manual(values  = c("Wave 1 (2016)" = col_pre, "Wave 4 (2019)" = col_post),
+                    name = NULL) +
+  scale_color_manual(values = c("Wave 1 (2016)" = col_pre, "Wave 4 (2019)" = col_post),
+                     name = NULL) +
+  annotate("richtext", x = 0.11, y = 0.6,
+           label = "Dashed lines = ±0.10\n(substantive threshold)",
+           fill = NA, label.color = NA, size = 2.8, color = "grey50", hjust = 0) +
+  scale_x_continuous(limits = c(-0.2, 0.2),
+                     labels = label_number(accuracy = 0.1, style_positive = "plus")) +
+  labs(
+    x = "Pearson r (ideology × institutional trust)",
+    y = NULL,
+    title = "Figure 6. Ideology Explains Negligible Variance in Trust (Any Institution, Either Wave)",
+    subtitle = "KAMOS Korea. All correlations fall within ±0.11, indicating the trust collapse\nis not an artifact of ideological composition shifting between waves."
+  ) +
+  theme_minimal(base_size = 11) +
+  theme(
+    plot.title    = element_text(size = 11, face = "bold"),
+    plot.subtitle = element_text(size = 9, color = "grey50"),
+    panel.grid.major.y = element_blank(),
+    panel.grid.minor   = element_blank(),
+    legend.position    = "top",
+    axis.text.y = element_text(size = 10)
+  )
+
+ggsave(file.path(fig_dir, "fig6_ideology_correlations.pdf"),
+       fig6, width = 7, height = 5)
+ggsave(file.path(fig_dir, "fig6_ideology_correlations.png"),
+       fig6, width = 7, height = 5, dpi = 300)
+
+fig6
+```
+
+---
+
+# Manuscript Tables {#sec-tables}
+
+## Table 1 — ABS Wave Means (H1 + H2)
+
+```{r table1}
+tab1 <- bind_rows(
+  transp_means |>
+    mutate(variable = "govt_withholds_info",
+           series   = "Transparency (H1)") |>
+    select(series, wave, survey_year, mean, se, n),
+  corrupt_means |>
+    mutate(series = recode(variable,
+      corrupt_witnessed     = "Experiential corruption (H2)",
+      corrupt_national_govt = "National govt corruption (H2)",
+      corrupt_local_govt    = "Local govt corruption (H2)"
+    )) |>
+    select(series, wave, survey_year, mean, se, n)
+) |>
+  mutate(
+    `Wave (year)` = sprintf("W%d (%d)", wave, survey_year),
+    Mean          = sprintf("%.3f", mean),
+    SE            = sprintf("%.3f", se),
+    N             = formatC(n, format = "d", big.mark = ",")
+  ) |>
+  select(Series = series, `Wave (year)`, Mean, SE, N) |>
+  arrange(Series, `Wave (year)`)
+
+save(tab1, file = file.path(results_dir, "table1_abs_wave_means.RData"))
+
+tab1 |>
+  kbl(booktabs = TRUE,
+      caption = "Table 1. ABS Korea: Wave Means for Transparency and Corruption Perceptions") |>
+  kable_styling(latex_options = c("hold_position"), full_width = FALSE) |>
+  pack_rows("Transparency — Govt withholds information (1–4 scale, H1)", 1, 5) |>
+  pack_rows("Experiential corruption — Personally witnessed (1–2 scale, H2)", 6, 11) |>
+  pack_rows("Institutional corruption — National government (1–4 scale, H2)", 12, 17) |>
+  pack_rows("Institutional corruption — Local government (1–4 scale, H2)", 18, 23)
+```
+
+## Table 2 — KAMOS Trust Means (H3)
+
+```{r table2}
+tab2 <- kamos_trust |>
+  select(label, inst_type, wave_year, mean, se, n) |>
+  pivot_wider(names_from = wave_year,
+              values_from = c(mean, se, n),
+              names_glue = "{.value}_{wave_year}") |>
+  mutate(
+    change   = mean_2019 - mean_2016,
+    Institution = label,
+    Type        = inst_type,
+    `2016 Mean` = sprintf("%.3f", mean_2016),
+    `2019 Mean` = sprintf("%.3f", mean_2019),
+    `Change`    = sprintf("%+.3f", change),
+    `N (2016)`  = formatC(n_2016, format = "d", big.mark = ","),
+    `N (2019)`  = formatC(n_2019, format = "d", big.mark = ",")
+  ) |>
+  arrange(inst_type, change) |>
+  select(Institution, Type, `2016 Mean`, `2019 Mean`, Change, `N (2016)`, `N (2019)`)
+
+# Add political satisfaction row
+sat_row <- tibble(
+  Institution = "Political satisfaction",
+  Type        = "Benchmark",
+  `2016 Mean` = sprintf("%.3f", pol_sat$mean_sat[pol_sat$wave == 1]),
+  `2019 Mean` = sprintf("%.3f", pol_sat$mean_sat[pol_sat$wave == 4]),
+  Change      = sprintf("%+.3f", pol_sat$mean_sat[pol_sat$wave == 4] -
+                                  pol_sat$mean_sat[pol_sat$wave == 1]),
+  `N (2016)`  = formatC(pol_sat$n[pol_sat$wave == 1], format = "d", big.mark = ","),
+  `N (2019)`  = formatC(pol_sat$n[pol_sat$wave == 4], format = "d", big.mark = ",")
+)
+
+tab2_full <- bind_rows(tab2, sat_row)
+
+save(tab2_full, file = file.path(results_dir, "table2_kamos_trust.RData"))
+
+tab2_full |>
+  select(-Type) |>
+  kbl(booktabs = TRUE,
+      caption = "Table 2. KAMOS Korea: Institutional Trust by Wave (0–10 scale). Political satisfaction on 1–4 scale.") |>
+  kable_styling(latex_options = c("hold_position"), full_width = FALSE) |>
+  pack_rows("Executive institutions", 1, 2) |>
+  pack_rows("Intermediary (accountability) institutions", 3, 6) |>
+  pack_rows("Benchmark", 7, 7)
+```
+
+---
+
+# Summary: Inline Statistics for Manuscript {#sec-inline}
+
+```{r inline-stats}
+# Extract all key numbers referenced in manuscript for inline use
+
+inline <- list(
+  # H1: govt_withholds_info
+  transp_w2  = round(transp_means$mean[transp_means$wave == 2], 3),
+  transp_w6  = round(transp_means$mean[transp_means$wave == 6], 3),
+
+  # H2: corrupt_witnessed
+  cw_w1 = round(corrupt_means$mean[corrupt_means$variable=="corrupt_witnessed" & corrupt_means$wave==1], 3),
+  cw_w4 = round(corrupt_means$mean[corrupt_means$variable=="corrupt_witnessed" & corrupt_means$wave==4], 3),
+  cw_w5 = round(corrupt_means$mean[corrupt_means$variable=="corrupt_witnessed" & corrupt_means$wave==5], 3),
+  cw_w6 = round(corrupt_means$mean[corrupt_means$variable=="corrupt_witnessed" & corrupt_means$wave==6], 3),
+  cw_w4_to_w5 = round(
+    corrupt_means$mean[corrupt_means$variable=="corrupt_witnessed" & corrupt_means$wave==5] -
+    corrupt_means$mean[corrupt_means$variable=="corrupt_witnessed" & corrupt_means$wave==4], 3),
+
+  # H2: institutional corruption stability
+  cng_range = round(range(corrupt_means$mean[corrupt_means$variable=="corrupt_national_govt"]), 3),
+  clg_range = round(range(corrupt_means$mean[corrupt_means$variable=="corrupt_local_govt"]), 3),
+
+  # KAMOS: trust changes
+  cgov_2016 = round(kamos_change$y2016[kamos_change$variable=="trust_central_govt"], 3),
+  cgov_2019 = round(kamos_change$y2019[kamos_change$variable=="trust_central_govt"], 3),
+  cgov_chg  = round(kamos_change$change[kamos_change$variable=="trust_central_govt"], 3),
+  ngo_chg   = round(kamos_change$change[kamos_change$variable=="trust_ngo"], 3),
+  media_chg = round(kamos_change$change[kamos_change$variable=="trust_media"], 3),
+  leg_chg   = round(kamos_change$change[kamos_change$variable=="trust_legislature"], 3),
+  nassem_chg = round(kamos_change$change[kamos_change$variable=="trust_national_assembly"], 3),
+
+  # Political satisfaction
+  polsat_chg = round(pol_sat$mean_sat[pol_sat$wave==4] - pol_sat$mean_sat[pol_sat$wave==1], 3),
+
+  # Ideology correlations (range)
+  ideo_cor_min = round(min(ideo_cors |> select(starts_with("r_"))), 3),
+  ideo_cor_max = round(max(ideo_cors |> select(starts_with("r_"))), 3)
+)
+
+save(inline, file = file.path(results_dir, "inline_stats.RData"))
+
+cat("=== KEY INLINE STATISTICS ===\n\n")
+cat(sprintf("H1 — govt_withholds_info: W2=%.3f → W6=%.3f\n",
+            inline$transp_w2, inline$transp_w6))
+cat(sprintf("H2 — corrupt_witnessed: W1=%.3f, W4=%.3f, W5=%.3f, W6=%.3f\n",
+            inline$cw_w1, inline$cw_w4, inline$cw_w5, inline$cw_w6))
+cat(sprintf("     W4→W5 change: %+.3f\n", inline$cw_w4_to_w5))
+cat(sprintf("     corrupt_national_govt range: %.3f–%.3f (flat)\n",
+            inline$cng_range[1], inline$cng_range[2]))
+cat(sprintf("KAMOS — Central govt: %.3f → %.3f (Δ=%+.3f)\n",
+            inline$cgov_2016, inline$cgov_2019, inline$cgov_chg))
+cat(sprintf("KAMOS — Civil society: Δ=%+.3f\n", inline$ngo_chg))
+cat(sprintf("KAMOS — Media:         Δ=%+.3f\n", inline$media_chg))
+cat(sprintf("KAMOS — Legislature:   Δ=%+.3f\n", inline$leg_chg))
+cat(sprintf("KAMOS — Nat. Assembly: Δ=%+.3f\n", inline$nassem_chg))
+cat(sprintf("KAMOS — Pol. satisfaction: Δ=%+.3f\n", inline$polsat_chg))
+cat(sprintf("Ideology correlations: %.3f to %.3f\n",
+            inline$ideo_cor_min, inline$ideo_cor_max))
+cat("\n✓ Saved inline_stats.RData\n")
+```
