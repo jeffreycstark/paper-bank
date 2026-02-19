@@ -53,7 +53,8 @@ econdev-authpref/
     ├── meaning-of-democracy-revision/   # Loser effects on democratic conceptions
     ├── hong-kong-democratic-erosion/     # HK democratic attitudes + sensitivity gradient
     ├── thailand-trust-collapse/         # Thailand 20-year institutional trust erosion
-    └── trust-dynamics/                  # Trust dynamics across Asian democracies
+    ├── trust-dynamics/                  # Trust dynamics across Asian democracies
+    └── south-korea-accountability-gap/  # South Korea accountability gap [in progress]
 ```
 
 ---
@@ -79,6 +80,11 @@ econdev-authpref/
 **Topic**: Institutional trust dynamics across Asian democracies.
 **Data**: ABS (all waves).
 **Key files**: `analysis/00_create_analysis_data.qmd`, `paper.qmd`.
+
+### south-korea-accountability-gap
+**Topic**: [TBD] South Korea accountability gap.
+**Data**: ABS (country_num == 3, Korea, all waves).
+**Key files**: `analysis/00_data_preparation.R`, `analysis/01_descriptive_analysis.R`, `analysis/02_models.R`, `manuscript/manuscript.qmd`.
 
 ---
 
