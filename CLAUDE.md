@@ -21,9 +21,10 @@ d <- readRDS(abs_harmonized_path)
 ```
 
 The config file defines paths to:
-- `abs_harmonized_path` → ABS harmonized dataset (110,721 respondents, 341 variables, 6 waves)
-- `wvs_harmonized_path` → WVS harmonized dataset (186,785 respondents, 84 countries, 2 waves)
-- `lbs_harmonized_path` → LBS harmonized dataset (~20,000 respondents, 18 countries, 5 waves)
+- `abs_harmonized_path`   → ABS harmonized dataset (110,721 respondents, 341 variables, 6 waves)
+- `wvs_harmonized_path`   → WVS harmonized dataset (186,785 respondents, 84 countries, 2 waves)
+- `lbs_harmonized_path`   → LBS harmonized dataset (~20,000 respondents, 18 countries, 5 waves)
+- `kamos_harmonized_path` → KAMOS harmonized dataset (Korean domestic panel; `.rds` and `.parquet` both available)
 
 All paths point to `/Users/jeffreystark/Development/Research/survey-data-prep/data/processed/`.
 
@@ -84,7 +85,6 @@ econdev-authpref/
 ### south-korea-accountability-gap
 **Topic**: [TBD] South Korea accountability gap.
 **Data**: ABS (country_num == 3, Korea, all waves) + KAMOS (Korean domestic panel survey).
-**Note**: KAMOS harmonization pipeline TBD in `survey-data-prep`; path will be `kamos_harmonized_path` in `_data_config.R`.
 **Key files**: `analysis/00_data_preparation.R`, `analysis/01_descriptive_analysis.R`, `analysis/02_models.R`, `manuscript/manuscript.qmd`.
 
 ---
