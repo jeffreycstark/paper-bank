@@ -14,6 +14,8 @@ library(patchwork)
 project_root <- "/Users/jeffreystark/Development/Research/econdev-authpref"
 analysis_dir <- file.path(project_root, "papers/thailand-trust-collapse/analysis")
 fig_dir <- file.path(analysis_dir, "figures")
+results_dir <- file.path(analysis_dir, "results")
+dir.create(results_dir, showWarnings = FALSE, recursive = TRUE)
 
 set.seed(2025)
 theme_set(theme_minimal(base_size = 12))
@@ -185,9 +187,39 @@ ggsave(file.path(fig_dir, "fig4_bottom_box_trends.png"),
        p_bottom_combined, width = 14, height = 6, dpi = 300)
 
 # Save bottom-box data for inline manuscript use
-saveRDS(bottom_box, file.path(analysis_dir, "results/bottom_box_trends.rds"))
+saveRDS(bottom_box, file.path(results_dir, "bottom_box_trends.rds"))
 
 cat("\nFigure 4 (bottom-box trends) saved.\n")
+
+# ── Institutional breadth: NGOs, local govt, national govt, military ──────────
+# Produces institutional_breadth.rds for Online Appendix Table A6 and
+# the preference-falsification robustness check in the manuscript body.
+# Requires trust_ngo and trust_local_govt in the panel (added in 00_data_preparation.R).
+
+if (all(c("trust_ngo", "trust_local_govt") %in% names(d))) {
+  institutional_breadth <- d %>%
+    filter(country_name %in% c("Philippines", "Thailand")) %>%
+    group_by(country_name, wave) %>%
+    summarise(
+      trust_ngo       = mean(trust_ngo, na.rm = TRUE),
+      trust_local_govt = mean(trust_local_govt, na.rm = TRUE),
+      trust_natl_govt  = mean(trust_national_government, na.rm = TRUE),
+      trust_military   = mean(trust_military, na.rm = TRUE),
+      n_total          = n(),
+      .groups = "drop"
+    )
+
+  cat("\nInstitutional breadth means (Philippines and Thailand):\n")
+  print(institutional_breadth %>%
+          mutate(across(where(is.numeric) & !matches("^n_"), ~round(., 2))))
+
+  saveRDS(institutional_breadth, file.path(results_dir, "institutional_breadth.rds"))
+  cat("Institutional breadth data saved to results/\n")
+} else {
+  cat("\nWARNING: trust_ngo or trust_local_govt not found in panel data.\n")
+  cat("institutional_breadth.rds NOT updated.\n")
+  cat("Ensure 00_data_preparation.R has been re-run after adding these variables.\n")
+}
 
 # ── Table 1: Wave-to-wave changes ───────────────────────────────────────────
 

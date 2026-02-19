@@ -45,9 +45,10 @@ vars_to_select <- c(
   # Identifiers
   "country", "country_name", "wave", "idnumber",
 
-  # Trust (6 institutions)
+  # Trust (6 primary institutions + NGOs + local govt for breadth analysis)
   "trust_national_government", "trust_parliament", "trust_military",
   "trust_courts", "trust_police", "trust_political_parties",
+  "trust_ngo", "trust_local_govt",
 
   # Democratic attitudes
   "democracy_satisfaction", "dem_always_preferable", "dem_vs_econ",

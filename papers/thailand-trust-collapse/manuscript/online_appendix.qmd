@@ -177,7 +177,7 @@ sub_summary %>%
 
 ```{r subgroup-inline}
 edu_high_mil_slope <- sub_summary$thailand_wave_slope[
-  sub_summary$group == "Edu: High" & sub_summary$institution == "Military"
+  sub_summary$group == "Education: High" & sub_summary$institution == "Military"
 ]
 ```
 

@@ -137,6 +137,11 @@ bb_th_govt_w6 <- bb_th_govt %>% filter(wave == 6) %>% pull(pct)
 bb_phil_mil_w6 <- bb %>% filter(country_name == "Philippines", institution == "Military", wave == 6) %>% pull(pct)
 bb_taiwan_mil_w6 <- bb %>% filter(country_name == "Taiwan", institution == "Military", wave == 6) %>% pull(pct)
 
+# Waves 1–5 bottom-box range (for introduction inline)
+bb_th_mil_w1_5 <- bb_th_mil %>% filter(wave %in% 1:5) %>% pull(pct)
+bb_th_mil_min_w1_5 <- min(bb_th_mil_w1_5)
+bb_th_mil_max_w1_5 <- max(bb_th_mil_w1_5)
+
 # Institutional breadth (NGOs, local govt, national govt, military)
 ib <- readRDS(file.path(results_dir, "institutional_breadth.rds"))
 ib_phil <- ib %>% filter(country_name == "Philippines")
@@ -227,9 +232,9 @@ thai_mil_govt_ratio <- thai_mil_drop / thai_govt_drop
 
 # Introduction
 
-In Wave 1 of the Asian Barometer Survey (2001–2003), Thai respondents reported the highest institutional trust in the survey's coverage: 3.07 for the military and 2.85 for the national government on a four-point scale. That baseline captured an unusual moment — the optimism of the 1997 "People's Constitution," Thaksin Shinawatra's early delivery on populist pledges, and a military that had not yet tested its reservoir of public goodwill through direct intervention [@Phongpaichit2008-wr; @McCargo2025-ke;]. The trust was diffuse: default civic confidence rooted in post-crisis renewal rather than considered institutional judgment.
+In Wave 1 of the Asian Barometer Survey (2001–2003), Thai respondents reported the highest institutional trust in the survey's coverage: `r round(thai_mil_w1, 2)` for the military and `r round(thai_govt_w1, 2)` for the national government on a four-point scale. That baseline captured an unusual moment — the optimism of the 1997 "People's Constitution," Thaksin Shinawatra's early delivery on populist pledges, and a military that had not yet tested its reservoir of public goodwill through direct intervention [@Phongpaichit2008-wr; @McCargo2025-ke;]. The trust was diffuse: default civic confidence rooted in post-crisis renewal rather than considered institutional judgment.
 
-Two decades later, both had collapsed — government trust to 1.89, military trust to 1.62. No other country in the ABS's longitudinal coverage underwent a reversal of this magnitude. But the more consequential finding is not the endpoint. It is the shape of the journey. Trust did not erode steadily across two decades of political turbulence. It held — remarkably stable through two coups, a five-year military government, and a manipulated election — before collapsing catastrophically between Waves 5 and 6. The share of Thai respondents reporting no military trust at all stood between 3% and 6% across Waves 1 through 5. In Wave 6, it reached 57%.
+Two decades later, both had collapsed — government trust to `r round(thai_govt_w6, 2)`, military trust to `r round(thai_mil_w6, 2)`. No other country in the ABS's longitudinal coverage underwent a reversal of this magnitude. But the more consequential finding is not the endpoint. It is the shape of the journey. Trust did not erode steadily across two decades of political turbulence. It held — remarkably stable through two coups, a five-year military government, and a manipulated election — before collapsing catastrophically between Waves 5 and 6. The share of Thai respondents reporting no military trust at all stood between `r round(bb_th_mil_min_w1_5, 0)`% and `r round(bb_th_mil_max_w1_5, 0)`% across Waves 1 through 5. In Wave 6, it reached `r round(bb_th_mil_w6, 0)`%.
 
 This paper documents that collapse and argues for a specific account of its causes. The timing and institutional structure of the decline point to the 2020–2021 pro-democracy protests as the proximate shock. Those protests were qualitatively distinct from the Red Shirt mobilizations of the preceding decade. Where the earlier conflict was partisan — organized around support for Thaksin-aligned parties against a royalist-military establishment — the 2020–2021 movement explicitly targeted the military-monarchy nexus itself [@Sinpeng2021-hd; @McCargo2021-na; @Unno2021-to]. 
 
