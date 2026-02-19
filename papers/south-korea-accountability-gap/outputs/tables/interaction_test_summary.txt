@@ -1,6 +1,6 @@
 WAVE × IDEOLOGY INTERACTION TEST SUMMARY
 ==========================================
-Generated: 2026-02-20 06:39:05
+Generated: 2026-02-20 06:54:59
 
 Models: M1=govt_withholds_info (ABS, ordered logit, ref=W2)
         M2=corrupt_witnessed    (ABS, ordered logit, ref=W1)

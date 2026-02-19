@@ -84,7 +84,7 @@ pick <- function(data, candidates) {
 }
 
 abs_age    <- pick(kor,   c("age", "respondent_age", "q2_age", "age_r"))
-abs_edu    <- pick(kor,   c("edu", "education", "educ", "edu_level", "q_edu", "edu_r"))
+abs_edu    <- pick(kor,   c("education_level", "education_years", "edu", "education", "educ", "edu_level", "q_edu", "edu_r"))
 abs_urban  <- pick(kor,   c("urban", "urb", "urban_rural", "locality", "rural", "q113_urb"))
 abs_gender <- pick(kor,   c("gender", "sex", "female", "male", "q1_sex", "q1_gender"))
 abs_ideo   <- pick(kor,   c("ideology", "polviews", "ideo", "pol_views", "polview",
@@ -617,6 +617,8 @@ model_list <- list(
 )
 
 # Suppress threshold row-names from polr (named like "1|2", "2|3")
+# Avoid tabularray/tblr LaTeX dependency (requires extra packages in preamble)
+options(modelsummary_format_numeric_latex = "plain")
 tryCatch({
   modelsummary::modelsummary(
     models    = model_list,
