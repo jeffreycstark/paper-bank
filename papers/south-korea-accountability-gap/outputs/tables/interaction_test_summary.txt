@@ -1,0 +1,23 @@
+WAVE × IDEOLOGY INTERACTION TEST SUMMARY
+==========================================
+Generated: 2026-02-20 06:39:05
+
+Models: M1=govt_withholds_info (ABS, ordered logit, ref=W2)
+        M2=corrupt_witnessed    (ABS, ordered logit, ref=W1)
+        M3=trust_media         (KAMOS, OLS, ref=2016)
+        M4=trust_ngo           (KAMOS, OLS, ref=2016)
+        M5=trust_national_assembly (KAMOS, OLS, ref=2016)
+
+Ideology variable — ABS: 'NOT FOUND' | KAMOS: 'ideology'
+
+RESULTS:
+--------
+  M1 (Govt withholds info): ideology variable not available — interaction skipped
+  M2 (Corrupt witnessed): ideology variable not available — interaction skipped
+  M3 (Trust: media): 1 interaction term(s), p range [0.644, 0.644]
+  M4 (Trust: civil society): 1 interaction term(s), p range [0.648, 0.648]
+  M5 (Trust: national assembly): 1 interaction term(s), p range [0.491, 0.491]
+
+CONCLUSION: No wave×ideology interaction significant at p < .05 in any model.
+
+Note: These are robustness checks only. Main text tables are unchanged.
