@@ -1363,3 +1363,123 @@ ggplot(items, aes(x = sensitivity_rank, y = cohens_d,
   theme_minimal(base_size = 11) +
   theme(legend.position = "top")
 ```
+
+# Sensitivity Gradient in Latin America: Venezuela and Nicaragua {#sec-latin-america}
+
+```{r}
+#| echo: false
+#| warning: false
+
+load("../analysis/results/venezuela_gradient.RData")
+load("../analysis/results/nicaragua_gradient.RData")
+```
+
+## Venezuela: Uniform Institutional Collapse {#sec-venezuela}
+
+### Case Background and Data
+
+Venezuela's authoritarian consolidation under Nicolás Maduro accelerated dramatically following the July 2017 National Constituent Assembly, which effectively superseded the opposition-controlled National Assembly and concentrated executive authority. The period from 2017 onward combined targeted political repression---arrests of opposition leaders, suppression of protests, criminalization of dissent---with catastrophic economic mismanagement producing hyperinflation exceeding one million percent by 2018. Approximately 7.7 million Venezuelans emigrated between 2015 and 2023, constituting the largest displacement crisis in the Western Hemisphere. This case provides the strongest available test of the compositional selection mechanism: if emigration of regime critics were the dominant driver of the sensitivity gradient, Venezuela's massive politically non-random exodus should produce the strongest gradient in the analysis.
+
+Latinobarómetro data for Venezuela are available for 2015 (pre-shock baseline), 2017 (partially overlapping with the July constituent assembly), 2018, 2020, and 2023. Following the preregistration filed on OSF prior to data access (February 14, 2026), the analysis compares pooled pre-shock waves (2015; $N \approx$ `r round(mean(ven_gradient_results$w_before_n), 0)`) against pooled post-shock waves (2018, 2020, 2023; $N \approx$ `r round(mean(ven_gradient_results$w_after_n), 0)` per item). The 2017 wave is excluded from the primary comparison due to fieldwork timing uncertainty relative to the July constituent assembly. All estimates incorporate Latinobarómetro survey weights.
+
+### Item Classification
+
+Items are classified following the sensitivity gradient framework, adapted to the Latinobarómetro instrument. High-sensitivity items evaluate institutions with direct coercive capacity: confidence in police, national government, and armed forces (all coded 1--4, higher = more confidence). Medium-sensitivity items assess political institutions: confidence in parliament, courts, electoral authority, and political parties. Low-sensitivity items capture abstract democratic evaluations: satisfaction with democracy and support for democracy as the best system of government. A control item (confidence in the church) serves as an apolitical benchmark.
+
+### Results
+
+```{r}
+#| label: tbl-ven-gradient
+#| tbl-cap: "Venezuela sensitivity gradient results (Latinobarómetro, pre-2017 vs. post-2017). Items coded 1--4 (higher = more confidence), except Dem. Best System (1--4). Cohen's $d$ = (post $-$ pre) / pooled SD; positive values indicate higher post-shock means. Survey weights applied. Pre $N \\approx$ 1,195; Post $N \\approx$ 1,185 per item."
+#| echo: false
+#| warning: false
+
+ven_gradient_results |>
+  mutate(
+    delta = w_after_mean - w_before_mean,
+    pre   = sprintf("%.2f", w_before_mean),
+    post  = sprintf("%.2f", w_after_mean),
+    delta_fmt = sprintf("%+.3f", delta),
+    d_fmt = sprintf("%+.3f", cohens_d),
+    p_fmt = ifelse(p_value < 0.001, "< .001",
+            ifelse(p_value < 0.01,  sprintf("%.3f", p_value),
+                                    sprintf("%.3f", p_value)))
+  ) |>
+  select(Item = label, Category = category,
+         `Pre mean` = pre, `Post mean` = post,
+         `$\\Delta$` = delta_fmt, `$d$` = d_fmt, `$p$` = p_fmt) |>
+  kableExtra::kbl(align = c("l", "l", "r", "r", "r", "r", "r"),
+                  escape = FALSE) |>
+  kableExtra::kable_styling(
+    bootstrap_options = c("condensed"),
+    latex_options = c("hold_position"),
+    font_size = 9, full_width = FALSE
+  ) |>
+  kableExtra::pack_rows("High sensitivity (coercive)",       1, 3) |>
+  kableExtra::pack_rows("Medium sensitivity (political)",    4, 7) |>
+  kableExtra::pack_rows("Low sensitivity (democratic)",      8, 9) |>
+  kableExtra::pack_rows("Control",                          10, 10)
+```
+
+@tbl-ven-gradient presents the full item-level results. The pattern is strikingly inconsistent with the sensitivity gradient prediction. All institutional confidence items declined significantly, including high-sensitivity items (armed forces $d =$ `r sprintf("%.2f", ven_gradient_results$cohens_d[ven_gradient_results$label == "Conf. Armed Forces"])`, government $d =$ `r sprintf("%.2f", ven_gradient_results$cohens_d[ven_gradient_results$label == "Conf. Government"])`, police $d =$ `r sprintf("%.2f", ven_gradient_results$cohens_d[ven_gradient_results$label == "Conf. Police"])`). Democratic satisfaction fell nearly as steeply ($d =$ `r sprintf("%.2f", ven_gradient_results$cohens_d[ven_gradient_results$label == "Dem. Satisfaction"])`), and support for democracy as the best system collapsed substantially ($d =$ `r sprintf("%.2f", ven_gradient_results$cohens_d[ven_gradient_results$label == "Dem. Best System"])`). The one item that did not decline significantly is the apolitical control: confidence in churches changed marginally ($d =$ `r sprintf("%+.2f", ven_gradient_results$cohens_d[ven_gradient_results$label == "Conf. Churches"])`, $p =$ `r sprintf("%.2f", ven_gradient_results$p_value[ven_gradient_results$label == "Conf. Churches"])`). The gradient correlation across all items is $r =$ `r sprintf("%.2f", ven_gradient_r_all)`---statistically indistinguishable from zero.
+
+The null gradient is theoretically informative. Venezuela's combination of targeted political repression and catastrophic economic failure produced disillusionment so severe and evenly distributed that genuine attitude change overwhelmed any strategic compliance signal. The massive emigration removed critics from the survey frame, but those who remained were not falsifying regime support: they too had lost faith in all institutions. This confirms a boundary condition of the framework: the sensitivity gradient requires that strategic compliance remain a viable respondent strategy, which presupposes that the regime retains sufficient coercive authority and apparent legitimacy to make strategic response rational. When regime failure is too total and visible, this condition fails.
+
+The gradient figure for Venezuela is presented in @fig-gradient-ven-nic in the main text.
+
+## Nicaragua: Inverted Gradient Under Overt Repression {#sec-nicaragua}
+
+### Case Background and Data
+
+Nicaragua's April 2018 crackdown on anti-government protests---which left over 300 civilians dead and triggered the arrest or exile of opposition leaders, independent journalists, and civil society figures under President Daniel Ortega---provides a second Latin American test. Unlike Venezuela's gradual economic-political collapse, Nicaragua's repression was rapid, targeted, and highly visible: live ammunition against protesters, paramilitary violence captured on video, and international condemnation were immediate features of the crisis. Nicaragua's V-Dem liberal democracy index fell from 0.38 in 2017 to 0.17 by 2020.
+
+Latinobarómetro data are available for Nicaragua in 2017 (pre-shock baseline; $N \approx$ `r round(mean(nic_gradient_results$w_before_n), 0)`) and 2019--2021 (post-shock; $N \approx$ `r round(mean(nic_gradient_results$w_after_n), 0)` per wave). The analysis compares the 2017 wave against pooled 2019--2021 waves, following the same preregistration logic as the Venezuela analysis. All estimates incorporate survey weights.
+
+### Results
+
+```{r}
+#| label: tbl-nic-gradient
+#| tbl-cap: "Nicaragua sensitivity gradient results (Latinobarómetro, 2017 vs. 2019--2021). Items coded 1--4 (higher = more confidence), except Dem. Best System (1--4). Cohen's $d$ = (post $-$ pre) / pooled SD; all values negative (universal decline). Survey weights applied. Pre $N \\approx$ 1,200; Post $N \\approx$ 1,200 per wave."
+#| echo: false
+#| warning: false
+
+nic_gradient_results |>
+  mutate(
+    delta = w_after_mean - w_before_mean,
+    pre   = sprintf("%.2f", w_before_mean),
+    post  = sprintf("%.2f", w_after_mean),
+    delta_fmt = sprintf("%+.3f", delta),
+    d_fmt = sprintf("%+.3f", cohens_d),
+    p_fmt = ifelse(p_value < 0.001, "< .001",
+            ifelse(p_value < 0.01,  sprintf("%.3f", p_value),
+                                    sprintf("%.3f", p_value)))
+  ) |>
+  select(Item = label, Category = category,
+         `Pre mean` = pre, `Post mean` = post,
+         `$\\Delta$` = delta_fmt, `$d$` = d_fmt, `$p$` = p_fmt) |>
+  kableExtra::kbl(align = c("l", "l", "r", "r", "r", "r", "r"),
+                  escape = FALSE) |>
+  kableExtra::kable_styling(
+    bootstrap_options = c("condensed"),
+    latex_options = c("hold_position"),
+    font_size = 9, full_width = FALSE
+  ) |>
+  kableExtra::pack_rows("High sensitivity (coercive)",       1, 3) |>
+  kableExtra::pack_rows("Medium sensitivity (political)",    4, 7) |>
+  kableExtra::pack_rows("Low sensitivity (democratic)",      8, 9) |>
+  kableExtra::pack_rows("Control",                          10, 10)
+```
+
+@tbl-nic-gradient presents the full item-level results. Every item in the battery declined significantly, including the control item (confidence in churches, $d =$ `r sprintf("%.2f", nic_gradient_results$cohens_d[nic_gradient_results$label == "Conf. Churches"])`). Crucially, democratic satisfaction declined most steeply ($d =$ `r sprintf("%.2f", nic_gradient_results$cohens_d[nic_gradient_results$label == "Dem. Satisfaction"])`), while high-sensitivity coercive institution items declined substantially but less than democratic evaluations. The gradient correlation is $r =$ `r sprintf("%+.2f", nic_gradient_r_all)`---positive, meaning the most coercive institutions declined least while low-sensitivity democratic evaluation items declined most. This is the precise inverse of the falsification-consistent pattern.
+
+The inverted gradient has a theoretically coherent interpretation. When repression involves live-fire violence against civilian protesters---events that are publicly documented, internationally condemned, and directly experienced by a large fraction of the population---the strategic calculus of survey response changes fundamentally. In the Hong Kong and Turkey cases, respondents faced diffuse surveillance risk and the possibility of legal consequences for expressed dissent, making strategic compliance rational. In Nicaragua's April 2018 context, the regime's violence was so overt that the "safety" of expressing loyalty through survey responses was psychologically unavailable to respondents who had witnessed or experienced direct state violence. Under these conditions, genuine disillusionment dominates: even institutions normally protected by fear-driven falsification collapsed in measured confidence.
+
+The inverted gradient does not indicate that Nicaragua is "beyond" measurement distortion in a technical sense. It indicates that the conditions generating the falsification-consistent gradient were absent: targeted differential cost of honest response requires that respondents believe expressing dissatisfaction is more costly than expressing loyalty, a belief that becomes difficult to sustain when the regime is conducting mass killings in full public view.
+
+The gradient figure for Nicaragua is presented alongside Venezuela in @fig-gradient-ven-nic in the main text.
+
+## Comparison: Venezuela, Nicaragua, and the Positive Cases {#sec-latam-comparison}
+
+The contrast between the Latin American cases and Hong Kong/Turkey can be summarized along three dimensions. First, the direction of institutional trust shifts: upward in Hong Kong and Turkey (falsification-consistent), uniformly downward in Venezuela and Nicaragua (genuine collapse). Second, the gradient correlation: strongly negative in Hong Kong ($r = -0.85$) and Turkey ($r = -0.68$), near-zero in Venezuela ($r =$ `r sprintf("%.2f", ven_gradient_r_all)`), and inverted in Nicaragua ($r =$ `r sprintf("%+.2f", nic_gradient_r_all)`). Third, the diagnostic signatures: differential non-response favoring trust items in Hong Kong and Turkey, identical non-response across categories in Burkina Faso, and no gradient-consistent pattern in Venezuela or Nicaragua.
+
+These contrasts establish that the sensitivity gradient is not a universal feature of survey data from autocratizing regimes. It is a signature of a specific type of autocratization: targeted political repression that preserves procedural legitimacy claims, creates differential costs of honest response across item types, and does not destroy the regime's credibility so completely that strategic compliance becomes irrational. Venezuela and Nicaragua represent the failure mode of that condition---regimes whose visible incompetence or overt violence eliminated the informational and coercive preconditions for the gradient to emerge.
