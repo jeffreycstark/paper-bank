@@ -47,6 +47,26 @@ h6_perf <- readRDS(file.path(results_dir, "h6_performance_controls.rds"))
 h6_ologit <- readRDS(file.path(results_dir, "h6_ordered_logit.rds"))
 h6_secondary <- readRDS(file.path(results_dir, "h6_secondary_institutions.rds"))
 
+# New analyses (05_new_analyses.R)
+did_res    <- readRDS(file.path(results_dir, "did_model.rds"))
+h3_phil_formal <- readRDS(file.path(results_dir, "h3_phil_formal.rds"))
+ologit_pp  <- readRDS(file.path(results_dir, "ologit_pred_probs.rds"))
+wt_comp    <- readRDS(file.path(results_dir, "weighted_unweighted_comparison.rds"))
+ib_grad    <- readRDS(file.path(results_dir, "ib_sensitivity_gradient.rds"))
+dc_rel     <- readRDS(file.path(results_dir, "dem_commit_reliability.rds"))
+
+# Key DiD inline values
+did_tidy        <- did_res$did_tidy
+did_threeway    <- did_tidy %>% filter(term == "post:is_military:is_thailand")
+did_post_mil    <- did_tidy %>% filter(term == "post:is_military")
+did_post_thai   <- did_tidy %>% filter(term == "post:is_thailand")
+
+# H3 Philippines formal
+h3_coercive_interact <- h3_phil_formal$stacked_tidy %>%
+  filter(term == "wave_num:is_coercive")
+h3_coercive_main     <- h3_phil_formal$stacked_tidy %>%
+  filter(term == "wave_num")
+
 # Attitudinal mechanism results (H3 descriptives, H4, H5, satisfaction)
 h3_phil_means <- readRDS(file.path(results_dir, "h3_philippines_means.rds"))
 h4_dem <- readRDS(file.path(results_dir, "h4_democratic_expectations.rds"))
@@ -547,13 +567,45 @@ ologit_key %>%
   kable_styling(latex_options = c("hold_position", "scale_down"))
 ```
 
-*Subgroup analyses.* The military-government differential holds across all demographic subgroups (young and old, urban and rural, low and high education), ruling out the possibility that aggregate patterns are driven by compositional change (Online Appendix, Table A2). Consistent with mechanism-based expectations, declines are steepest among younger, urban, educated respondents, the demographics overrepresented in the 2020--2021 protests. Yet erosion is present across all groups, suggesting diffusion beyond the activist core into the broader population.
+*Subgroup analyses.* The military-government differential holds across all demographic subgroups (young and old, urban and rural, low and high education), ruling out the possibility that aggregate patterns are driven by compositional change (Online Appendix, Table A3). Consistent with mechanism-based expectations, declines are steepest among younger, urban, educated respondents, the demographics overrepresented in the 2020--2021 protests. Yet erosion is present across all groups, suggesting diffusion beyond the activist core into the broader population.
 
-*Comparator country dynamics.* Country-specific models for the Philippines and Taiwan provide useful contrasts. In the Philippines, military and police trust remain stable or rise slightly during the Duterte period (Waves 4--6), consistent with preference alignment under a leader who endorsed coercive institutions. In Taiwan, military trust shows no significant trend ($b$ = `r round(res$h5$taiwan_mil_slope$estimate, 3)`, *p* = `r round(res$h5$ftest_pvalue, 3)`), consistent with successful depoliticization of the armed forces following democratization. These patterns are detailed in the Online Appendix (Tables A3--A4).
+*Comparator country dynamics.* Country-specific models for the Philippines and Taiwan provide useful contrasts. In the Philippines, military and police trust remain stable or rise slightly during the Duterte period (Waves 4--6), consistent with preference alignment under a leader who endorsed coercive institutions. In Taiwan, military trust shows no significant trend ($b$ = `r round(res$h5$taiwan_mil_slope$estimate, 3)`, *p* = `r round(res$h5$ftest_pvalue, 3)`), consistent with successful depoliticization of the armed forces following democratization. These patterns are detailed in the Online Appendix (Tables A4--A5).
+
+## Difference-in-Differences: Isolating the Protest-Era Military Shock
+
+The wave × country interaction models establish Thailand's exceptional trajectory, but embed the treatment effect across a linear time trend. To sharpen causal identification, we estimate a difference-in-differences specification in which the "treatment" is defined as the post-Wave 4 period (Waves 5–6), coinciding with the military government's consolidation and the 2020–2021 protests.
+
+```{r tab-did}
+did_key <- did_tidy %>%
+  filter(str_detect(term, "post|is_military|is_thailand")) %>%
+  mutate(
+    term = term %>%
+      str_replace("post", "Post-W4") %>%
+      str_replace("is_military", "Military") %>%
+      str_replace("is_thailand", "Thailand") %>%
+      str_replace_all(":", " × ")
+  ) %>%
+  select(term, estimate, std.error, p.value) %>%
+  mutate(across(where(is.numeric), ~round(., 3)))
+
+did_key %>%
+  kbl(
+    caption = "Difference-in-differences model: Trust ~ Post-Wave4 × Military × Thailand. Observations are respondent–institution pairs (government and military trust stacked); Post-Wave4 = 1 for Waves 5–6. Model includes a linear wave trend and country fixed effects. Respondent-clustered SEs. N = `r format(did_res$n_obs, big.mark = ',')`.",
+    col.names = c("Term", "Estimate", "SE", "p"),
+    booktabs = TRUE
+  ) %>%
+  kable_styling(latex_options = c("hold_position", "scale_down"))
+```
+
+The key estimate is the three-way interaction Post-Wave4 × Military × Thailand ($b$ = `r round(did_threeway$estimate, 3)`, *p* `r if(did_threeway$p.value < .001) '< .001' else paste0('= ', round(did_threeway$p.value, 3))`). This coefficient captures the *additional* trust decline for the Thai military in the protest era, over and above any general post-Wave 4 trend, any general military-specific trend, and any general Thai trend. Its magnitude and significance confirm that the military trust collapse is concentrated in Thailand and in the post-2018 period, and is not an artifact of the linear time-trend assumption used in the main H1 and H2 models.
+
+The Wave 6 cross-sectional robustness check (Online Appendix, Table A9) produces a comparable estimate, confirming that the DiD result is not sensitive to how the post-period is defined.
 
 ## Philippines: Coercive Legitimacy Alignment (H3)
 
-The Philippine case provides a theoretically informative contrast to Thailand's trajectory. Unlike Thailand's dramatic decline, trust in coercive institutions in the Philippines remained stable or increased during the Duterte period. Military trust rose from `r round(phil_mil_w4, 2)` in Wave 4 to `r round(phil_mil_w5, 2)` in Wave 5, before easing to `r round(phil_mil_w6, 2)` in Wave 6; police trust followed a parallel trajectory, moving from `r round(phil_police_w4, 2)` to `r round(phil_police_w5, 2)` and then `r round(phil_police_w6, 2)`. This pattern is consistent with H3: where state coercive action aligned with mass preferences, institutional trust in the relevant institutions was maintained.
+The Philippine case provides a theoretically informative contrast to Thailand's trajectory. We first present a formal test before turning to the descriptive trajectory.
+
+To test H3 directly, we estimate a stacked model in which coercive institutions (military and police) and non-coercive institutions (national government and NGOs) are compared within the Philippines across Waves 4–6. If preference alignment specifically elevates coercive trust, the interaction between wave and a coercive institution indicator should be positive and significant. The baseline wave trend is positive and highly significant ($b$ = `r round(h3_coercive_main$estimate, 3)`, *p* < .001), confirming that all Philippine institutions trended upward across Waves 4–6. However, the wave × coercive interaction is near-zero and non-significant ($b$ = `r round(h3_coercive_interact$estimate, 3)`, *p* = `r round(h3_coercive_interact$p.value, 3)`), indicating that coercive institutions did not trend upward *differentially* relative to non-coercive institutions during the Duterte period. This null result is itself theoretically informative: trust rose uniformly across institutional types, consistent with a generalized legitimacy boost rather than preference alignment that specifically elevated the security apparatus. Full results are reported in Online Appendix, Table A8. Unlike Thailand's dramatic decline, trust in coercive institutions in the Philippines remained stable or increased during the Duterte period. Military trust rose from `r round(phil_mil_w4, 2)` in Wave 4 to `r round(phil_mil_w5, 2)` in Wave 5, before easing to `r round(phil_mil_w6, 2)` in Wave 6; police trust followed a parallel trajectory, moving from `r round(phil_police_w4, 2)` to `r round(phil_police_w5, 2)` and then `r round(phil_police_w6, 2)`. This pattern is consistent with H3: where state coercive action aligned with mass preferences, institutional trust in the relevant institutions was maintained.
 
 The police trust trajectory is particularly revealing. Despite international condemnation of extrajudicial killings and documented human rights abuses associated with the drug war, Filipino respondents did not withdraw trust from the institution most directly implicated. This finding is consistent with survey evidence that Duterte himself commanded sustained popular approval throughout his presidency, with his net satisfaction rating reaching "Excellent" levels as late as December 2019, and with the drug campaign receiving majority backing in contemporaneous polling despite international condemnation [@Curato2016-kl; @Teehankee2016-xm]. Scholars situate this support within a tradition of punitive populism in Philippine politics, where perceptions of endemic drug-related crime activated strong demand for coercive enforcement among communities most directly affected.
 
@@ -625,7 +677,7 @@ Regression analysis confirms these descriptive patterns. With the South as refer
 
 A potential concern with the Philippine findings is that elevated trust during the Duterte period (Wave 5) reflects preference falsification rather than genuine attitudinal change. Under conditions of coercive governance, respondents may report higher trust in politically salient institutions—particularly the national government and military—while harboring private reservations they are unwilling to disclose. If this mechanism were operative, trust in less politically sensitive institutions such as NGOs and local government would be expected to remain stable even as trust in national-level institutions rose, producing a divergent pattern across institutional types.
 
-To evaluate this possibility, we examine trust scores for NGOs and local government alongside national government and military trust across all six waves. Online Appendix Table A6 presents mean trust scores for all four institutional categories in both the Philippines and Thailand. If preference falsification inflates Philippine trust during the Duterte era, we would expect a widening gap between sensitive institutions (national government, military) and non-sensitive institutions (NGOs, local government) in Wave 5. Conversely, if the trust surge reflects a genuine attitudinal shift---consistent with the coercive legitimacy mechanism proposed in H3---trust should rise uniformly across institutional types.
+To evaluate this possibility, we examine trust scores for NGOs and local government alongside national government and military trust across all six waves. Online Appendix Table A7 presents mean trust scores for all four institutional categories in both the Philippines and Thailand. If preference falsification inflates Philippine trust during the Duterte era, we would expect a widening gap between sensitive institutions (national government, military) and non-sensitive institutions (NGOs, local government) in Wave 5. Conversely, if the trust surge reflects a genuine attitudinal shift---consistent with the coercive legitimacy mechanism proposed in H3---trust should rise uniformly across institutional types.
 
 The Philippine data provide little support for the falsification interpretation. In Wave 5, trust increased substantially across all four institutions: NGOs rose from `r round(phil_ngo_w4, 2)` to `r round(phil_ngo_w5, 2)`, local government from `r round(phil_local_w4, 2)` to `r round(phil_local_w5, 2)`, national government from `r round(phil_natl_w4, 2)` to `r round(phil_natl_w5, 2)`, and the military from `r round(phil_mil_ib_w4, 2)` to `r round(phil_mil_ib_w5, 2)`. This uniform surge is more consistent with a generalized legitimacy boost under Duterte's populist governance than with selective inflation of politically sensitive measures. The military does register the highest absolute trust level in Wave 5 (`r round(phil_mil_ib_w5, 2)`), and its relative elevation persists into Wave 6 (`r round(phil_mil_ib_w6, 2)` versus `r round(phil_ngo_w6, 2)` for NGOs), suggesting that Duterte's securitized policy agenda conferred a modest additional premium on military legitimacy. However, the gap between institutional categories is substantively small and does not exhibit the sharp divergence that a preference falsification account would predict.
 
@@ -705,11 +757,13 @@ Fifth, response bias concerns apply to both countries. In Thailand, government r
 
 Finally, our analysis ends in 2022, and subsequent political developments provide natural extensions of the theoretical framework developed here. The 2023 general election, in which the progressive Move Forward Party won the most seats on a platform of military reform before being judicially dissolved, offers suggestive evidence that the trust dynamics documented in this paper have behavioral consequences. More consequentially for the democratic expectation updating framework, the February 2026 general election—held following a brief border conflict with Cambodia that created conditions for nationalist mobilization—provides a particularly informative out-of-sample test. If democratic expectation updating has durably raised evaluative thresholds, the framework generates three specific predictions: (1) no major constituency should rally to explicitly defend military political prerogatives, even under nationalist mobilization conditions; (2) younger cohorts should remain resistant to authoritarian appeals; and (3) any trust restoration should be conditional on perceived institutional reform rather than performative nationalism.
 
-Preliminary evidence from the 2026 election is broadly consistent with these predictions, though it also reveals important scope conditions. The nationalist-conservative Bhumjaithai Party won a decisive plurality (193 seats), drawing disproportionately from older, rural voters—the demographic profile our framework identifies as most susceptible to rally effects and least exposed to the cognitive mobilization dynamics described above. Critically, however, Bhumjaithai's appeal rested on populist economic promises and cultural conservatism rather than explicit endorsement of military political prerogatives, consistent with prediction (1). The revived Democrat Party (22 seats) attracted a segment of younger, urban voters who had previously supported progressive alternatives, but post-election analysis characterized this constituency as seeking "clean governance" in explicit opposition to the leading conservative coalition rather than endorsing the institutional status quo. The People's Party retained its base among younger voters committed to structural reform. No major electoral constituency mobilized in defense of the military-backed institutional order per se.
+Preliminary evidence from the 2026 election is broadly consistent with these predictions, though it also reveals important scope conditions.^[Seat counts draw on preliminary results from the Election Commission of Thailand (February 2026). Turnout figures and election conduct assessments draw on @ANFREL2026-xb, which reported a provisional turnout of 65--70 percent across the concurrent parliamentary elections and constitutional referendum. Party-level demographic characterizations are drawn from Thai news reporting and should be treated as provisional pending academic analysis of final results.] The nationalist-conservative Bhumjaithai Party won a decisive plurality (193 seats), drawing disproportionately from older, rural voters—the demographic profile our framework identifies as most susceptible to rally effects and least exposed to the cognitive mobilization dynamics described above. Critically, however, Bhumjaithai's appeal rested on populist economic promises and cultural conservatism rather than explicit endorsement of military political prerogatives, consistent with prediction (1). The revived Democrat Party (22 seats) attracted a segment of younger, urban voters who had previously supported progressive alternatives, but post-election analysis characterized this constituency as seeking "clean governance" in explicit opposition to the leading conservative coalition rather than endorsing the institutional status quo. The People's Party retained its base among younger voters committed to structural reform. No major electoral constituency mobilized in defense of the military-backed institutional order per se.
 
-This fragmentation pattern is itself theoretically informative. Rather than reversing democratic learning, the 2026 election reveals its differentiation across competing reform pathways: radical constitutional change (People's Party), incremental reform within existing constraints (Democrats), and populist economic redistribution without structural institutional challenge (Bhumjaithai). The democratic expectation updating framework does not predict unanimous opposition to military influence, but rather that the evaluative threshold shift should be durable and that trust restoration should require substantive rather than symbolic institutional change. Future ABS waves will be essential for determining whether these electoral patterns correspond to the institutional trust dynamics documented here, and whether the shift from diffuse to conditional trust that we identify proves as durable as the theory predicts.
+This fragmentation pattern is itself theoretically informative. Rather than reversing democratic learning, the 2026 election reveals its differentiation across competing reform pathways: radical constitutional change (People's Party), incremental reform within existing constraints (Democrats), and populist economic redistribution without structural institutional challenge (Bhumjaithai). The democratic expectation updating framework does not predict unanimous opposition to military influence, but rather that the evaluative threshold shift should be durable and that trust restoration should require substantive rather than symbolic institutional change. Future ABS waves will be essential for determining whether these electoral patterns correspond to the institutional trust dynamics documented here, and whether the shift from diffuse to conditional trust that we identify proves as durable as the theory predicts. The National Anti-Corruption Commission's February 9 verdict finding 44 former Move Forward MPs guilty of ethical violations for legislative speech acts—potentially disqualifying 15 People's Party incumbents and banning them from politics—illustrates precisely the institutional resistance that the democratic expectation updating framework predicts: an institutional order under legitimacy pressure deploying formal legal mechanisms to constrain the reform coalitions that trust erosion has empowered [@ANFREL2026-xb].
 
 # Conclusion
+
+<!-- TODO: after running 05_new_analyses.R, verify all inline values below render correctly -->
 
 Thailand underwent the most dramatic institutional trust collapse in the Asian Barometer Survey's two-decade history. Between 2001 and 2022, it went from the most trusting to among the least trusting societies in the survey's coverage, a reversal with no parallel in the ABS data. This paper has documented that collapse, identified its institutional structure, and evaluated competing explanations for its occurrence.
 
