@@ -390,7 +390,7 @@ ggplot(gradient_plot_data, aes(x = cohens_d, y = label)) +
   geom_point(aes(color = category, shape = category), size = 2.5) +
   scale_color_manual(values = cat_colors, name = "Sensitivity") +
   scale_shape_manual(values = cat_shapes, name = "Sensitivity") +
-  labs(x = "Cohen's *d* (Post-NSL minus Protest)", y = NULL) +
+  labs(x = "Cohen&#39;s *d* (Post-NSL minus Protest)", y = NULL) +
   theme_minimal(base_size = 11) +
   theme(
     axis.title.x = ggtext::element_markdown(),
