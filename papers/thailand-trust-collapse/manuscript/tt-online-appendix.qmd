@@ -24,6 +24,7 @@ library(kableExtra)
 project_root <- "/Users/jeffreystark/Development/Research/econdev-authpref"
 analysis_dir <- file.path(project_root, "papers/thailand-trust-collapse/analysis")
 results_dir <- file.path(analysis_dir, "results")
+fig_dir <- file.path(analysis_dir, "figures")
 
 d <- readRDS(file.path(analysis_dir, "thailand_panel.rds"))
 res <- readRDS(file.path(results_dir, "all_results_summary.rds"))
