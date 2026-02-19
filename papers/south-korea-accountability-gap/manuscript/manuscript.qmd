@@ -1,0 +1,104 @@
+---
+title: "The Accountability Gap: [TITLE TBD]"
+author:
+  - name: Jeffrey Stark
+    affiliations:
+      - name: Yonsei University
+        department: Department of Sociology
+    email: jeffrey.stark@yonsei.ac.kr
+    corresponding: true
+date: "`r format(Sys.time(), '%B %d, %Y — %H:%M')`"
+abstract: |
+  [ABSTRACT TBD]
+keywords:
+  - South Korea
+  - accountability
+  - [KEYWORDS TBD]
+format:
+  pdf:
+    documentclass: article
+    classoption: [12pt, letterpaper]
+    geometry:
+      - margin=1in
+    linestretch: 2
+    number-sections: true
+    colorlinks: true
+    keep-tex: true
+    include-in-header:
+      - text: |
+          \usepackage{setspace}
+          \usepackage{booktabs}
+          \usepackage{caption}
+          \usepackage{longtable}
+          \usepackage{array}
+          \usepackage{multirow}
+          \usepackage{float}
+          \usepackage{graphicx}
+          \usepackage{threeparttable}
+          \usepackage{threeparttablex}
+          \captionsetup{width=\textwidth}
+          \setlength\LTcapwidth{\textwidth}
+          \floatplacement{figure}{H}
+          \floatplacement{table}{H}
+          \raggedright
+  html:
+    toc: true
+    toc-depth: 3
+    number-sections: true
+    theme: cosmo
+bibliography: references.bib
+csl: apa.csl
+execute:
+  echo: false
+  warning: false
+  message: false
+---
+
+```{r setup}
+library(tidyverse)
+library(kableExtra)
+
+project_root <- "/Users/jeffreystark/Development/Research/econdev-authpref"
+paper_dir    <- file.path(project_root, "papers/south-korea-accountability-gap")
+analysis_dir <- file.path(paper_dir, "analysis")
+fig_dir      <- file.path(analysis_dir, "figures")
+table_dir    <- file.path(analysis_dir, "tables")
+results_dir  <- file.path(analysis_dir, "results")
+
+source(file.path(project_root, "_data_config.R"))
+```
+
+# Introduction {#sec-introduction}
+
+[INTRODUCTION TBD]
+
+# Theoretical Framework {#sec-theory}
+
+[THEORY TBD]
+
+# Data and Research Design {#sec-design}
+
+[DESIGN TBD]
+
+## Data
+
+## Operationalization
+
+## Analytical Strategy
+
+# Results {#sec-results}
+
+[RESULTS TBD]
+
+# Discussion {#sec-discussion}
+
+[DISCUSSION TBD]
+
+# Conclusion {#sec-conclusion}
+
+[CONCLUSION TBD]
+
+# References {.unnumbered}
+
+::: {#refs}
+:::
