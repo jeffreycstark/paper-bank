@@ -107,6 +107,7 @@ abs_long <- kor |>
   filter(!is.na(corruption)) |>
   mutate(
     wave_num = as.numeric(wave),
+    wave_f   = factor(paste0("w", wave_num), levels = paste0("w", 1:6)),
     type     = factor(type, levels = c("institutional", "experiential"))
   )
 
@@ -123,6 +124,7 @@ Tests whether the slope over waves differs between experiential and institutiona
 measures (H2: experiential should rise faster).
 
 ```{r model-linear}
+# wave_num used here for the linear (continuous) trend model
 m_linear <- lm(corruption ~ wave_num * type, data = abs_long)
 summary(m_linear)
 ```
@@ -133,7 +135,7 @@ Allows non-linear trajectories; pins down which inter-wave intervals drive
 divergence.
 
 ```{r model-factor}
-m_factor <- lm(corruption ~ factor(wave_num) * type, data = abs_long)
+m_factor <- lm(corruption ~ wave_f * type, data = abs_long)
 summary(m_factor)
 ```
 
@@ -150,10 +152,11 @@ wave_labels <- c(
 preds <- predictions(
   m_factor,
   newdata = datagrid(
-    wave_num = 1:6,
-    type     = c("experiential", "institutional")
+    wave_f = paste0("w", 1:6),
+    type   = c("experiential", "institutional")
   )
-)
+) |>
+  mutate(wave_num = as.integer(sub("w", "", wave_f)))
 
 preds |>
   as_tibble() |>
@@ -233,10 +236,7 @@ the W4→W5 change in institutional perceptions.
 ```{r contrast}
 contrasts_out <- hypotheses(
   m_factor,
-  hypothesis = paste0(
-    "(factor(wave_num)5:typeexperiential - factor(wave_num)4:typeexperiential) - ",
-    "(factor(wave_num)5 - factor(wave_num)4) = 0"
-  )
+  hypothesis = "(wave_fw5:typeexperiential - wave_fw4:typeexperiential) - (wave_fw5 - wave_fw4) = 0"
 )
 
 print(contrasts_out)

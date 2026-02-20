@@ -52,12 +52,21 @@ execute:
 
 ```{r setup}
 library(tidyverse)
+library(marginaleffects)
 library(kableExtra)
 
 project_root <- "/Users/jeffreystark/Development/Research/econdev-authpref"
+source(file.path(project_root, "_data_config.R"))
+
 paper_dir    <- file.path(project_root, "papers/south-korea-accountability-gap")
 analysis_dir <- file.path(paper_dir, "analysis")
 results_dir  <- file.path(analysis_dir, "results")
+
+# kableExtra hardcodes \label{tab:...}; rewrite to \label{tbl-...} so
+# Quarto's crossref filter does not emit "non-tbl label" warnings.
+knitr::knit_hooks$set(document = function(x) {
+  gsub("\\\\label\\{tab:", "\\\\label\\{tbl-", x)
+})
 ```
 
 # Appendix A: Variable Descriptions {#sec-app-variables}
@@ -83,12 +92,12 @@ The ABS Korea sample covers six waves: Wave 1 (~2003), Wave 2 (~2006), Wave 3 (2
 
 **Variable:** `corrupt_witnessed`
 **Waves available:** 1--6
-**Scale:** [Verify against ABS codebook; coded 1--2 in harmonized dataset]
-**Direction:** Higher values indicate more frequent personal encounter with or witnessing of corrupt acts.
+**Scale:** Binary (0 = No, not witnessed; 1 = Yes, witnessed)
+**Direction:** Higher values indicate personal experience or witnessing of corruption.
 
-*Survey question (approximate; verify against ABS Wave codebook):* "During the past year, have you or anyone in your family come across a government official who demanded a bribe or corrupt payment for their services, or have you personally witnessed such acts?" Response categories should be confirmed against official Wave 1--6 codebooks; the harmonized variable is coded such that higher values reflect greater experiential exposure to corruption.
+*Survey question (approximate; verify against ABS Wave codebook):* "During the past year, have you or anyone in your family come across a government official who demanded a bribe or corrupt payment for their services, or have you personally witnessed such acts?" Wave 3 additionally included the response "No one I know has personally witnessed" (collapsed to 0); Wave 4 used a five-category scale distinguishing personal, second-hand, and third-hand witnessing (categories 1--3 collapsed to 1; 4--5 collapsed to 0).
 
-*Coding note:* The harmonized `corrupt_witnessed` variable takes values 1--2 in the analysis dataset. The manuscript references a "four-point scale" that should be reconciled with the coding in the harmonized data prior to final submission. If the original item uses a broader frequency scale (e.g., Never / Rarely / Sometimes / Often), the harmonized version may have been recoded; this should be documented in the data preparation script.
+*Coding note:* Wave-level proportions reporting witnessed corruption are: W1 39%, W2 45%, W3 19%, W4 16%, W5 2%, W6 2%. The sharp decline from W4 to W5 suggests potential question wording differences across waves; see Appendix B for the formal divergence test.
 
 ---
 
@@ -182,9 +191,113 @@ All trust items use a common 11-point response scale.
 
 ---
 
-# Appendix B: Robustness Checks {#sec-app-robustness}
+# Appendix B: Divergence Test — Experiential vs. Institutional Corruption {#sec-app-robustness}
 
-[APPENDIX B TBD --- Planned content: wave-by-wave regression models with and without survey weights; alternative operationalizations of the key perception variables; sensitivity to sample restriction decisions (e.g., exclusion of Wave 1 from transparency analysis due to item non-availability).]
+The reclassification hypothesis (H2) predicts that experiential and institutional corruption perceptions diverge discontinuously following the 2016--2018 accountability shock. Figure B1 plots predicted means from an OLS model interacting wave (as a factor) with perception type, placing both series on a common 0--1 scale. The formal test reported in Table B1 asks whether the W4→W5 change in experiential perceptions exceeds the W4→W5 change in institutional perceptions.
+
+```{r app-b-data, include=FALSE}
+kor <- readRDS(abs_harmonized_path) |>
+  dplyr::filter(country == 3) |>
+  dplyr::mutate(wave = as.integer(wave))
+
+abs_long <- kor |>
+  dplyr::filter(!is.na(corrupt_national_govt), !is.na(corrupt_local_govt)) |>
+  dplyr::mutate(
+    institutional = ((corrupt_national_govt + corrupt_local_govt) / 2 - 1) / 3,
+    experiential  = as.double(corrupt_witnessed)
+  ) |>
+  dplyr::select(wave, institutional, experiential) |>
+  tidyr::pivot_longer(
+    cols      = c(experiential, institutional),
+    names_to  = "type",
+    values_to = "corruption"
+  ) |>
+  dplyr::filter(!is.na(corruption)) |>
+  dplyr::mutate(
+    wave_num = as.numeric(wave),
+    wave_f   = factor(paste0("w", wave_num),
+                      levels = paste0("w", 1:6)),
+    type     = factor(type, levels = c("institutional", "experiential"))
+  )
+
+m_factor <- lm(corruption ~ wave_f * type, data = abs_long)
+
+wave_labels <- c("W1\n(2001)", "W2\n(2003)", "W3\n(2008)",
+                 "W4\n(2015)", "W5\n(2019)", "W6\n(2022)")
+
+preds <- predictions(
+  m_factor,
+  newdata = datagrid(wave_f = paste0("w", 1:6),
+                     type   = c("experiential", "institutional"))
+) |>
+  dplyr::mutate(wave_num = as.integer(sub("w", "", wave_f)))
+```
+
+```{r fig-app-divergence, fig.cap="Predicted means for experiential (proportion witnessing corruption, binary 0/1) and institutional (mean perceived governmental corruption, 1--4 rescaled to 0--1) perceptions by ABS wave, South Korea. Shaded corridor marks the W4--W5 accountability shock interval. OLS with wave $\\times$ type interaction; 95\\% CIs shown.", out.width="\\textwidth"}
+preds |>
+  as_tibble() |>
+  mutate(
+    wave_label = factor(wave_num, levels = 1:6, labels = wave_labels),
+    Type = dplyr::recode(type,
+      "experiential"  = "Experiential (witnessed corruption)",
+      "institutional" = "Institutional (govt. corruption)"
+    )
+  ) |>
+  ggplot(aes(x = wave_label, y = estimate,
+             color = Type, group = Type,
+             ymin = conf.low, ymax = conf.high)) +
+  geom_ribbon(aes(fill = Type), alpha = 0.15, color = NA) +
+  geom_line(linewidth = 0.9) +
+  geom_point(size = 2.5) +
+  annotate("rect", xmin = 3.5, xmax = 4.5, ymin = -Inf, ymax = Inf,
+           alpha = 0.08, fill = "steelblue") +
+  annotate("text", x = 4, y = 0.01,
+           label = "Accountability\nshock", size = 3, color = "grey40") +
+  scale_color_manual(values = c(
+    "Experiential (witnessed corruption)" = "#D55E00",
+    "Institutional (govt. corruption)"   = "#0072B2"
+  )) +
+  scale_fill_manual(values = c(
+    "Experiential (witnessed corruption)" = "#D55E00",
+    "Institutional (govt. corruption)"   = "#0072B2"
+  )) +
+  scale_y_continuous(
+    labels = scales::percent_format(accuracy = 1),
+    name   = "Predicted level (0--1 scale)"
+  ) +
+  labs(x = NULL, color = NULL, fill = NULL) +
+  theme_minimal(base_size = 11) +
+  theme(legend.position = "bottom")
+```
+
+```{r tbl-app-divergence}
+contrast_out <- hypotheses(
+  m_factor,
+  hypothesis = "(wave_fw5:typeexperiential - wave_fw4:typeexperiential) - (wave_fw5 - wave_fw4) = 0"
+) |>
+  as_tibble() |>
+  transmute(
+    Contrast        = "W4\\textrightarrow{}W5: experiential $-$ institutional",
+    Estimate        = round(estimate, 3),
+    SE              = round(std.error, 3),
+    `$z$`           = round(statistic, 2),
+    `$p$`           = round(p.value, 3)
+  )
+
+kableExtra::kbl(
+  contrast_out,
+  caption  = "Formal test of W4\\textendash{}W5 divergence: difference-in-differences contrast from OLS wave $\\times$ type interaction model. Estimate = change in experiential minus change in institutional perceptions, W4 to W5.",
+  booktabs = TRUE, escape = FALSE,
+  align    = c("l", "r", "r", "r", "r")
+) |>
+  kableExtra::kable_styling(latex_options = "hold_position", font_size = 11) |>
+  kableExtra::footnote(
+    general      = "OLS with wave (factor) $\\\\times$ type interaction. Experiential = proportion witnessing corruption (0/1); Institutional = mean governmental corruption perception (1--4, rescaled 0--1). ABS Korea, $N$ = 7,603.",
+    general_title = "Note.",
+    escape        = FALSE,
+    threeparttable = TRUE
+  )
+```
 
 # Appendix C: Full Model Results {#sec-app-models}
 
