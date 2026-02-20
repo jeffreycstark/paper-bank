@@ -9,6 +9,7 @@ source(file.path(project_root, "_data_config.R"))
 paper_dir    <- file.path(project_root, "papers/south-korea-accountability-gap")
 analysis_dir <- file.path(paper_dir, "analysis")
 results_dir  <- file.path(analysis_dir, "results")
+fig_dir      <- file.path(analysis_dir, "figures")
 
 # ── 1. Load & prepare ─────────────────────────────────────────────────────────
 # NOTE: variable is party_id (not partyid) in the harmonized file
@@ -108,10 +109,12 @@ fig_trust3 <- preds |>
   theme(legend.position = "bottom",
         legend.text     = element_text(size = 9))
 
+ggsave(file.path(fig_dir,     "fig_trust_threeway.pdf"), fig_trust3,
+       width = 6.5, height = 5.5)
+ggsave(file.path(fig_dir,     "fig_trust_threeway.png"), fig_trust3,
+       width = 6.5, height = 5.5, dpi = 300)
 ggsave(file.path(results_dir, "fig_trust_threeway.pdf"), fig_trust3,
        width = 6.5, height = 5.5)
-ggsave(file.path(results_dir, "fig_trust_threeway.png"), fig_trust3,
-       width = 6.5, height = 5.5, dpi = 300)
 
 cat("Figure saved.\n")
 
@@ -133,8 +136,18 @@ cat("\nAverage slopes by inst_type:\n")
 print(slopes_by_type)
 
 # ── 7. Save results ───────────────────────────────────────────────────────────
-saveRDS(interaction_terms, file.path(results_dir, "trust3_interaction_terms.rds"))
-saveRDS(slopes_by_type,    file.path(results_dir, "trust3_slopes_by_type.rds"))
-saveRDS(preds,             file.path(results_dir, "trust3_predicted_margins.rds"))
+# ── 8. Correlation between the two legislative items (for footnote) ───────────
+assembly_leg_cor <- cor(
+  kamos$trust_national_assembly,
+  kamos$trust_legislature,
+  use = "complete.obs"
+)
+cat(sprintf("\ntrust_national_assembly × trust_legislature  r = %.2f\n",
+            assembly_leg_cor))
+
+saveRDS(interaction_terms,  file.path(results_dir, "trust3_interaction_terms.rds"))
+saveRDS(slopes_by_type,     file.path(results_dir, "trust3_slopes_by_type.rds"))
+saveRDS(preds,              file.path(results_dir, "trust3_predicted_margins.rds"))
+saveRDS(assembly_leg_cor,   file.path(results_dir, "trust3_assembly_leg_cor.rds"))
 
 cat("Results saved to", results_dir, "\n")

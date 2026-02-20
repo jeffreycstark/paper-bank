@@ -90,6 +90,11 @@ load(file.path(results_dir, "data_description_stats.RData")) # n_abs_total, abs_
 slopes_inline <- readRDS(file.path(results_dir, "slopes_inline.rds"))
 cross_slopes  <- readRDS(file.path(results_dir, "cross_national_slopes.rds"))
 
+# Three-way KAMOS trust model (05_kamos_trust_threeway.R)
+trust3_slopes   <- readRDS(file.path(results_dir, "trust3_slopes_by_type.rds"))
+trust3_terms    <- readRDS(file.path(results_dir, "trust3_interaction_terms.rds"))
+trust3_leg_cor  <- readRDS(file.path(results_dir, "trust3_assembly_leg_cor.rds"))
+
 wave_years <- c("1"=2003,"2"=2006,"3"=2011,"4"=2015,"5"=2019,"6"=2022)
 n_2016 <- kamos_trust_stats |> dplyr::filter(variable=="trust_central_govt", wave_year==2016) |> dplyr::pull(n)
 n_2019 <- kamos_trust_stats |> dplyr::filter(variable=="trust_central_govt", wave_year==2019) |> dplyr::pull(n)
@@ -116,6 +121,22 @@ ngo_chg      <- abs(round(kc("trust_ngo")$change, 3))
 intermed_min <- min(nassem_chg, leg_chg, media_chg, ngo_chg)
 intermed_max <- max(nassem_chg, leg_chg, media_chg, ngo_chg)
 polsat_chg   <- abs(round(pol_sat$mean_sat[pol_sat$wave == 4] - pol_sat$mean_sat[pol_sat$wave == 1], 3))
+
+# Three-way trust model inline values
+t3s <- function(type) trust3_slopes$estimate[trust3_slopes$inst_type == type]
+t3t <- function(pat) trust3_terms[grepl(pat, trust3_terms$term), ]
+trust3_exec_slope  <- abs(round(t3s("Executive"),  3))
+trust3_horiz_slope <- abs(round(t3s("Horizontal"), 3))
+trust3_soc_slope   <- abs(round(t3s("Societal"),   3))
+trust3_horiz_b     <- round(t3t("Horizontal")$estimate,  3)
+trust3_horiz_se    <- round(t3t("Horizontal")$std.error, 3)
+trust3_horiz_t     <- round(t3t("Horizontal")$statistic, 2)
+trust3_soc_b       <- round(t3t("Societal")$estimate,    3)
+trust3_soc_se      <- round(t3t("Societal")$std.error,   3)
+trust3_soc_t       <- round(t3t("Societal")$statistic,   2)
+trust3_ratio       <- round(mean(c(trust3_horiz_slope, trust3_soc_slope)) /
+                              trust3_exec_slope, 0)
+trust3_leg_cor_r   <- round(trust3_leg_cor, 2)
 
 ideo_r_vals  <- unlist(ideo_cors |> dplyr::select(dplyr::starts_with("r_")))
 ideo_cor_min <- round(min(ideo_r_vals), 3)
@@ -296,6 +317,16 @@ kableExtra::kbl(
 knitr::include_graphics(file.path(fig_dir, "fig2_pub_kamos_trust_decline.pdf"))
 ```
 
+The controlled trust models confirm that institutional trust decline between 2016 and 2019 was neither uniform nor driven by generalized political cynicism. Rather, the magnitude of collapse varied systematically by institutional function in a pattern consistent with the accountability gap hypothesis. Figure 3 displays predicted trust levels by institutional category, estimated from a mixed model controlling for age, gender, education, income, ideology, and party identification.^[The KAMOS data are repeated cross-sections rather than a true longitudinal panel: Wave 1 (2016) and Wave 4 (2019) consist of independent probability samples drawn from the same population, not the same individuals tracked over time. The random effect for respondent identifier in the mixed model accordingly absorbs between-respondent variance within each wave rather than estimating within-person change. Inferences about aggregate trend are unaffected by this design feature, but the model cannot speak to individual-level trajectories of trust change. The `trust_legislative` composite used to operationalize horizontal accountability institutions averages two survey items---trust in the National Assembly and trust in the legislature---which, while correlated ($r$ = `r trust3_leg_cor_r`), showed a systematic mean difference suggesting they tap partially distinct referents. Results are substantively unchanged when either item is used alone.]
+
+Executive institutions---central and local government---registered a modest but statistically significant decline of `r trust3_exec_slope` points on the 0--10 trust scale. By contrast, horizontal accountability institutions (the National Assembly, operationalized as a composite of two legislative trust items) fell by `r trust3_horiz_slope` points, and societal accountability intermediaries (media and civil society organizations) by `r trust3_soc_slope` points. Both interaction terms---Wave $\times$ Horizontal ($\beta$ = `r trust3_horiz_b`, SE = `r trust3_horiz_se`, $t$ = `r trust3_horiz_t`) and Wave $\times$ Societal ($\beta$ = `r trust3_soc_b`, SE = `r trust3_soc_se`, $t$ = `r trust3_soc_t`)---are negative and highly significant, confirming that the differential decline cannot be attributed to compositional differences in the survey samples or individual-level confounders. Intermediary institutions collapsed at approximately `r trust3_ratio` times the rate of executive institutions across this period.
+
+Two features of this pattern deserve attention. First, the ordering of decline---societal intermediaries falling harder than formal horizontal institutions---suggests the collapse extended beyond demonstrable institutional failure. The National Assembly's role in the impeachment process gave it a concrete accountability function during the 2016--2018 crisis; media and civil society organizations exercised no formal sanctioning power yet suffered greater trust losses. This asymmetry is inconsistent with a simple performance-based account of distrust and points instead toward a broader delegitimation of the accountability ecosystem as a whole. Second, the comparatively modest executive decline rules out the most straightforward alternative interpretation: if the 2016--2019 period had produced generalized disaffection with political institutions, trust in central and local government would have fallen commensurately. It did not. The structured divergence between accountability targets and accountability mechanisms constitutes the core empirical signature of the accountability gap syndrome identified in the theoretical framework.
+
+```{r fig3-kamos-threeway, fig.cap="Differential trust collapse by accountability function, KAMOS 2016\\textendash 2019. Predicted trust levels (0\\textendash 10 scale) by institutional category from a mixed model controlling for age, gender, education, income, ideology, and party identification. Shaded bands = 95\\% CIs. Executive = central and local government; Horizontal = National Assembly (composite); Societal = media and civil society. Source: KAMOS W1 (2016) / W4 (2019).", out.width="80%", fig.align="center"}
+knitr::include_graphics(file.path(fig_dir, "fig_trust_threeway.pdf"))
+```
+
 ## Partisan Sorting and the Trust Collapse
 
 A potential alternative explanation for the observed trust decline is partisan realignment: if the 2019 KAMOS wave was administered under a left-liberal Moon government whose supporters were more trusting of institutions than the conservative Park government's supporters had been in 2016, the aggregate trust decline might reflect compositional change in the electorate rather than a structural shift in accountability perceptions. The data do not support this interpretation. Correlations between ideological self-placement and trust across all five key institutional variables are near-zero in both waves, ranging from `r ideo_cor_min` to `r ideo_cor_max`, indicating that ideology explains a negligible share of trust variance at either timepoint. Furthermore, while co-partisan trust effects are evident in central government trust—Minjoo supporters report higher central government trust in 2019, just as Saenuri supporters did in 2016—no such co-partisan premium is evident for media trust, civil society trust, or legislative trust. The collapse of intermediary institution trust is cross-partisan, affecting supporters of both major parties and unaffiliated respondents in roughly equal measure. This cross-partisan character is the strongest evidence that the trust decline reflects a structural feature of the accountability environment rather than an artifact of electoral turnover.
@@ -319,7 +350,7 @@ kableExtra::kbl(
 
 ## Korea in Comparative Context
 
-Figure 3 situates Korea's longitudinal trends within the broader ABS sample by plotting the Korean series against the unweighted regional average across all ABS countries with available data. Korea tracks above the regional mean on both variables across the full period, with the gap on the experiential corruption measure widening sharply following the accountability shock. Table 4 formalizes this comparative position, reporting weighted OLS slope estimates for all ABS countries with at least three survey waves. Korea ranks first among `r slopes_inline$gwi_n_cty` countries on the rate of increase in government information withholding (slope = `r slopes_inline$gwi_slope`, z = `r slopes_inline$gwi_z`) and first among `r slopes_inline$cw_n_cty` countries on the rate of increase in experiential corruption perceptions (slope = `r slopes_inline$cw_slope`, z = `r slopes_inline$cw_z`). This cross-national positioning suggests that the dynamics documented here are not merely a generic pattern of declining institutional confidence common across Asia but reflect a specifically Korean trajectory of perceptual change.
+Figure 4 situates Korea's longitudinal trends within the broader ABS sample by plotting the Korean series against the unweighted regional average across all ABS countries with available data. Korea tracks above the regional mean on both variables across the full period, with the gap on the experiential corruption measure widening sharply following the accountability shock. Table 4 formalizes this comparative position, reporting weighted OLS slope estimates for all ABS countries with at least three survey waves. Korea ranks first among `r slopes_inline$gwi_n_cty` countries on the rate of increase in government information withholding (slope = `r slopes_inline$gwi_slope`, z = `r slopes_inline$gwi_z`) and first among `r slopes_inline$cw_n_cty` countries on the rate of increase in experiential corruption perceptions (slope = `r slopes_inline$cw_slope`, z = `r slopes_inline$cw_z`). This cross-national positioning suggests that the dynamics documented here are not merely a generic pattern of declining institutional confidence common across Asia but reflect a specifically Korean trajectory of perceptual change.
 
 ```{r fig3, fig.cap="Korea vs. ABS Regional Average: Government Information Withholding and Experiential Corruption Perceptions, 2003\\textendash 2022. Solid line = Korea; dashed = unweighted regional average across all available ABS countries.", out.width="\\textwidth"}
 knitr::include_graphics(file.path(fig_dir, "fig3_pub_korea_vs_regional.pdf"))
