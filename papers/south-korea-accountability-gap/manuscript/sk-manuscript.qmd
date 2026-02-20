@@ -63,6 +63,12 @@ execute:
 library(tidyverse)
 library(kableExtra)
 
+# Rewrite kableExtra's tab: labels to tbl- so Quarto crossref filter
+# recognises them and suppresses the "non-tbl label" warnings.
+knitr::knit_hooks$set(document = function(x) {
+  gsub("\\\\label\\{tab:", "\\\\label\\{tbl-", x)
+})
+
 project_root <- "/Users/jeffreystark/Development/Research/econdev-authpref"
 paper_dir    <- file.path(project_root, "papers/south-korea-accountability-gap")
 analysis_dir <- file.path(paper_dir, "analysis")

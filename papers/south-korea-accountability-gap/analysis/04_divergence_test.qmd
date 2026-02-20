@@ -1,0 +1,249 @@
+---
+title: "Divergence Test: Experiential vs. Institutional Corruption Perceptions"
+subtitle: "South Korea ABS W1–W6 — OLS interaction test"
+format:
+  html:
+    toc: true
+    toc-depth: 3
+    number-sections: true
+    theme: cosmo
+    code-fold: true
+    self-contained: true
+execute:
+  echo: true
+  warning: false
+  message: false
+  cache: true
+---
+
+```{r setup}
+library(tidyverse)
+library(marginaleffects)
+
+project_root <- "/Users/jeffreystark/Development/Research/econdev-authpref"
+source(file.path(project_root, "_data_config.R"))
+
+paper_dir    <- file.path(project_root, "papers/south-korea-accountability-gap")
+analysis_dir <- file.path(paper_dir, "analysis")
+results_dir  <- file.path(analysis_dir, "results")
+fig_dir      <- file.path(analysis_dir, "figures")
+```
+
+# Data notes {#sec-notes}
+
+**ABS structure**: Each wave is an independent cross-section — respondents are
+*not* re-interviewed across waves. The random-intercept term `(1 | resp_id)`
+from the original script has been dropped; we use `lm()` with wave fixed effects
+instead. The interaction test remains valid.
+
+**`corrupt_witnessed` harmonization**: The variable is now coded **0 = not
+witnessed, 1 = witnessed** in the harmonized dataset (fixed in
+`survey-data-prep` alongside `sm_express_political_binary`). No paper-level
+recode is needed.
+
+**Empirical note — check against manuscript narrative**: Wave means for
+`corrupt_witnessed` (Korea):
+
+| Wave | % witnessed | n    |
+|------|-------------|------|
+| W1   | 38.8 %      | 1499 |
+| W2   | 45.0 %      | 967  |
+| W3   | 18.8 %      | 1125 |
+| W4   | 16.2 %      | 1183 |
+| W5   |  2.1 %      | 1239 |
+| W6   |  1.7 %      | 1209 |
+
+The proportion witnessing corruption **falls sharply** from W4 to W5—the
+opposite of the rising-experiential-perception narrative in the manuscript. The
+diagnostic chunk below confirms this from the live data. This needs to be
+resolved before using this series as evidence for H2: either (a) the survey
+question wording changed fundamentally in W5–W6 (rendering the series
+non-comparable), or (b) the theoretical claim needs revision.
+
+---
+
+# Load and reshape {#sec-data}
+
+```{r load-data}
+abs_raw <- readRDS(abs_harmonized_path)
+
+kor <- abs_raw |>
+  filter(country == 3) |>
+  mutate(wave = as.integer(wave))
+
+cat("Korea rows:", nrow(kor), "| waves:", paste(sort(unique(kor$wave)), collapse = " "), "\n")
+```
+
+```{r coding-diagnostic}
+# ── Confirm corrupt_witnessed is 0/1 and surface the trend ───────────────────
+cat("corrupt_witnessed × wave\n")
+print(table(kor$corrupt_witnessed, kor$wave, useNA = "ifany"))
+
+cat("\nProportion witnessing (wave mean):\n")
+kor |>
+  filter(!is.na(corrupt_witnessed)) |>
+  group_by(wave) |>
+  summarise(pct_witnessed = mean(corrupt_witnessed), n = n()) |>
+  mutate(pct_witnessed = scales::percent(pct_witnessed, accuracy = 0.1)) |>
+  print()
+```
+
+```{r reshape}
+# institutional: average of national + local govt corruption (1–4 → 0–1)
+# experiential:  corrupt_witnessed already 0/1 from harmonization
+
+abs_long <- kor |>
+  filter(!is.na(corrupt_national_govt), !is.na(corrupt_local_govt)) |>
+  mutate(
+    institutional = ((corrupt_national_govt + corrupt_local_govt) / 2 - 1) / 3,
+    experiential  = as.double(corrupt_witnessed)
+  ) |>
+  select(wave, institutional, experiential) |>
+  pivot_longer(
+    cols      = c(experiential, institutional),
+    names_to  = "type",
+    values_to = "corruption"
+  ) |>
+  filter(!is.na(corruption)) |>
+  mutate(
+    wave_num = as.numeric(wave),
+    type     = factor(type, levels = c("institutional", "experiential"))
+  )
+
+cat("Stacked rows:", nrow(abs_long), "\n")
+```
+
+---
+
+# Models {#sec-models}
+
+## Linear trend × type {#sec-m-linear}
+
+Tests whether the slope over waves differs between experiential and institutional
+measures (H2: experiential should rise faster).
+
+```{r model-linear}
+m_linear <- lm(corruption ~ wave_num * type, data = abs_long)
+summary(m_linear)
+```
+
+## Wave-as-factor × type {#sec-m-factor}
+
+Allows non-linear trajectories; pins down which inter-wave intervals drive
+divergence.
+
+```{r model-factor}
+m_factor <- lm(corruption ~ factor(wave_num) * type, data = abs_long)
+summary(m_factor)
+```
+
+---
+
+# Marginal means and divergence figure {#sec-margins}
+
+```{r predictions}
+wave_labels <- c(
+  "W1\n(2001)", "W2\n(2003)", "W3\n(2008)",
+  "W4\n(2015)", "W5\n(2019)", "W6\n(2022)"
+)
+
+preds <- predictions(
+  m_factor,
+  newdata = datagrid(
+    wave_num = 1:6,
+    type     = c("experiential", "institutional")
+  )
+)
+
+preds |>
+  as_tibble() |>
+  select(wave_num, type, estimate, conf.low, conf.high) |>
+  arrange(type, wave_num) |>
+  print(n = 12)
+```
+
+```{r fig-divergence}
+fig_divergence <- preds |>
+  as_tibble() |>
+  mutate(
+    wave_label = factor(wave_num, levels = 1:6, labels = wave_labels),
+    Type = recode(type,
+      "experiential"  = "Experiential (witnessed corruption)",
+      "institutional" = "Institutional (govt. corruption)"
+    )
+  ) |>
+  ggplot(aes(
+    x = wave_label, y = estimate,
+    color = Type, group = Type,
+    ymin = conf.low, ymax = conf.high
+  )) +
+  geom_ribbon(aes(fill = Type), alpha = 0.15, color = NA) +
+  geom_line(linewidth = 0.9) +
+  geom_point(size = 2.5) +
+  annotate("rect",
+    xmin = 3.5, xmax = 4.5,
+    ymin = -Inf, ymax = Inf,
+    alpha = 0.08, fill = "steelblue"
+  ) +
+  annotate("text",
+    x = 4, y = 0.02,
+    label = "Accountability\nshock", size = 3, color = "grey40"
+  ) +
+  scale_color_manual(values = c(
+    "Experiential (witnessed corruption)" = "#D55E00",
+    "Institutional (govt. corruption)"   = "#0072B2"
+  )) +
+  scale_fill_manual(values = c(
+    "Experiential (witnessed corruption)" = "#D55E00",
+    "Institutional (govt. corruption)"   = "#0072B2"
+  )) +
+  scale_y_continuous(
+    labels = scales::percent_format(accuracy = 1),
+    name   = "Predicted level (0–1 scale)"
+  ) +
+  labs(
+    x       = NULL,
+    color   = NULL, fill = NULL,
+    title   = "Divergence in corruption perceptions, South Korea ABS W1–W6",
+    caption = paste0(
+      "Predicted margins from OLS with wave × type interaction (95% CIs).\n",
+      "Experiential = proportion witnessing corruption (0/1);\n",
+      "Institutional = mean perceived govt. corruption (1–4, rescaled to 0–1)."
+    )
+  ) +
+  theme_minimal(base_size = 12) +
+  theme(legend.position = "bottom")
+
+fig_divergence
+```
+
+```{r save-figure}
+ggsave(file.path(fig_dir, "fig_divergence_test.pdf"), fig_divergence, width = 7, height = 5)
+ggsave(file.path(fig_dir, "fig_divergence_test.png"), fig_divergence, width = 7, height = 5, dpi = 300)
+cat("Figures saved.\n")
+```
+
+---
+
+# W4→W5 divergence contrast {#sec-contrast}
+
+Formal test of whether the W4→W5 change in experiential perceptions exceeds
+the W4→W5 change in institutional perceptions.
+
+```{r contrast}
+contrasts_out <- hypotheses(
+  m_factor,
+  hypothesis = paste0(
+    "(factor(wave_num)5:typeexperiential - factor(wave_num)4:typeexperiential) - ",
+    "(factor(wave_num)5 - factor(wave_num)4) = 0"
+  )
+)
+
+print(contrasts_out)
+```
+
+```{r save-results}
+saveRDS(contrasts_out, file.path(results_dir, "divergence_test_contrasts.rds"))
+saveRDS(preds,         file.path(results_dir, "divergence_predicted_margins.rds"))
+cat("Results saved.\n")
+```
