@@ -651,6 +651,141 @@ tryCatch({
   cat("⚠ .docx error:", e$message, "\n")
 })
 
+# ═══════════════════════════════════════════════════════════════════════════════
+# TASK 7: Winner/Loser Robustness Check
+# Uses party_id as proxy for vote choice (high alignment in Korean elections).
+# Winner coding:
+#   W1 (2016): Dec 2012 presidential → Park Geun-hye (Saenuri) won
+#     party_id = 1 (Saenuri)           → winner = 1
+#     party_id = 2 (Minjoo)            → winner = 0
+#   W4 (2019): May 2017 presidential → Moon Jae-in (Minjoo) won (post-impeachment)
+#     party_id = 1 (Minjoo)            → winner = 1
+#     party_id = 2 (Jayu Hanguk Dang)  → winner = 0
+#   All "none" / other codes           → NA (excluded)
+# DV: trust_media, trust_ngo, trust_national_assembly (all 0–10 KAMOS scale)
+# ═══════════════════════════════════════════════════════════════════════════════
+cat("══ TASK 7: Winner/Loser Robustness Check ══\n")
+
+kamos_wl <- kamos |>
+  mutate(
+    winner = case_when(
+      wave_year == 2016 & party_id == 1 ~ 1L,   # Saenuri → winner (Park 2012)
+      wave_year == 2016 & party_id == 2 ~ 0L,   # Minjoo  → loser
+      wave_year == 2019 & party_id == 1 ~ 1L,   # Minjoo  → winner (Moon 2017)
+      wave_year == 2019 & party_id == 2 ~ 0L,   # Liberty Korea → loser
+      TRUE ~ NA_integer_
+    )
+  ) |>
+  filter(!is.na(winner))
+
+cat("  Winner/loser sample: n =", nrow(kamos_wl), "\n")
+cat("  Winners:", sum(kamos_wl$winner == 1),
+    "| Losers:", sum(kamos_wl$winner == 0), "\n\n")
+
+# Fit OLS models: DV ~ wave_fac + winner + wave_fac:winner
+wl_dvs <- c(
+  "Trust: media"             = "trust_media",
+  "Trust: civil society"     = "trust_ngo",
+  "Trust: national assembly" = "trust_national_assembly"
+)
+
+wl_results <- purrr::map_dfr(names(wl_dvs), function(label) {
+  dv  <- wl_dvs[[label]]
+  frm <- as.formula(paste(dv, "~ wave_fac * winner"))
+  mod <- lm(frm, data = kamos_wl)
+  cf  <- broom::tidy(mod, conf.int = TRUE)
+
+  # Wave effect for losers (reference winner = 0)
+  wave_loser <- cf |> filter(term == "wave_fac2019") |>
+    select(estimate, std.error, p.value, conf.low, conf.high) |>
+    mutate(group = "losers", dv = label)
+
+  # Wave effect for winners (wave_fac2019 + wave_fac2019:winner1)
+  b_wave   <- cf$estimate[cf$term == "wave_fac2019"]
+  b_int    <- cf$estimate[cf$term == "wave_fac2019:winner"]
+  se_wave  <- cf$std.error[cf$term == "wave_fac2019"]
+  se_int   <- cf$std.error[cf$term == "wave_fac2019:winner"]
+  b_winner_wave <- b_wave + b_int
+  se_winner_wave <- sqrt(se_wave^2 + se_int^2)  # conservative (ignores cov)
+  z_winner_wave  <- b_winner_wave / se_winner_wave
+  p_winner_wave  <- 2 * pnorm(-abs(z_winner_wave))
+  wave_winner <- tibble(
+    estimate  = b_winner_wave,
+    std.error = se_winner_wave,
+    p.value   = p_winner_wave,
+    conf.low  = b_winner_wave - 1.96 * se_winner_wave,
+    conf.high = b_winner_wave + 1.96 * se_winner_wave,
+    group     = "winners",
+    dv        = label
+  )
+
+  # Interaction term itself
+  int_row <- cf |> filter(term == "wave_fac2019:winner") |>
+    select(estimate, std.error, p.value, conf.low, conf.high) |>
+    mutate(group = "interaction (wave x winner)", dv = label)
+
+  n_dv <- sum(!is.na(kamos_wl[[dv]]))
+  bind_rows(wave_loser, wave_winner, int_row) |>
+    mutate(n = n_dv)
+})
+
+wl_out <- wl_results |>
+  select(dv, group, estimate, std.error, p.value, conf.low, conf.high, n) |>
+  mutate(across(c(estimate, std.error, p.value, conf.low, conf.high), \(x) round(x, 4)))
+
+write.csv(wl_out, file.path(out_tables, "table_winner_loser_robustness.csv"),
+          row.names = FALSE)
+cat("  ✓ Saved table_winner_loser_robustness.csv\n")
+
+# Plain-text summary
+wl_wave_rows <- wl_results |> filter(group %in% c("losers", "winners"))
+wl_int_rows  <- wl_results |> filter(group == "interaction (wave x winner)")
+
+sink(file.path(out_tables, "winner_loser_summary.txt"))
+cat("Winner/Loser Robustness Check — Wave Effect on KAMOS Intermediary Trust\n")
+cat(strrep("─", 70), "\n\n")
+cat("Party_id used as proxy for vote choice (Korean party-vote alignment is high).\n")
+cat("Winner coding: W1(2016): Saenuri=winner, Minjoo=loser;\n")
+cat("               W4(2019): Minjoo=winner, Jayu Hanguk Dang=loser.\n\n")
+cat(sprintf("Sample: %d winner/loser-identifiable respondents (winners=%d, losers=%d)\n\n",
+            nrow(kamos_wl), sum(kamos_wl$winner==1), sum(kamos_wl$winner==0)))
+
+cat("Wave effect (2019 vs 2016) on each trust outcome:\n\n")
+cat(sprintf("  %-28s  %-8s  %-8s  %-8s  %-6s  %-8s\n",
+            "Outcome", "Group", "Est.", "SE", "p", "95% CI"))
+cat("  ", strrep("-", 68), "\n", sep = "")
+for (i in seq_len(nrow(wl_wave_rows))) {
+  r <- wl_wave_rows[i, ]
+  cat(sprintf("  %-28s  %-8s  %+6.3f  %6.3f  %.3f  [%+.3f, %+.3f]\n",
+              r$dv, r$group, r$estimate, r$std.error, r$p.value,
+              r$conf.low, r$conf.high))
+}
+cat("\n")
+
+# Verdict
+hold_winners <- all(wl_wave_rows$estimate[wl_wave_rows$group == "winners"] < 0)
+hold_losers  <- all(wl_wave_rows$estimate[wl_wave_rows$group == "losers"]  < 0)
+sig_int      <- any(wl_int_rows$p.value < .10)
+
+cat("Verdict:\n")
+if (hold_winners && hold_losers) {
+  cat("  HOLDS: Wave (2016→2019) trust decline is negative among BOTH winners and\n")
+  cat("  losers of the 2017 presidential election, consistent with a cross-partisan\n")
+  cat("  structural trust collapse rather than electoral loser effects.\n")
+} else {
+  cat("  MIXED: Wave effect does not uniformly hold across winner/loser subgroups;\n")
+  cat("  inspect model coefficients for pattern.\n")
+}
+if (sig_int) {
+  cat("  INTERACTION: At least one wave × winner interaction is significant (p<.10),\n")
+  cat("  suggesting the magnitude of the wave effect differs by winner status.\n")
+} else {
+  cat("  INTERACTION: No wave × winner interaction reaches p<.10; the wave effect\n")
+  cat("  magnitude does not significantly differ between winners and losers.\n")
+}
+sink()
+cat("  ✓ Saved winner_loser_summary.txt\n\n")
+
 # ══ COMPLETION SUMMARY ════════════════════════════════════════════════════════
 cat("\n", strrep("═", 64), "\n", sep = "")
 cat("ANALYSIS ADDITIONS COMPLETE\n")
@@ -671,7 +806,9 @@ expected_files <- c(
   file.path(out_figures, "fig_coefplot_kamos.pdf"),
   file.path(out_figures, "fig_coefplot_kamos.png"),
   file.path(out_figures, "fig_coefplot.pdf"),
-  file.path(out_figures, "fig_coefplot.png")
+  file.path(out_figures, "fig_coefplot.png"),
+  file.path(out_tables,  "table_winner_loser_robustness.csv"),
+  file.path(out_tables,  "winner_loser_summary.txt")
 )
 
 cat("Output files:\n")

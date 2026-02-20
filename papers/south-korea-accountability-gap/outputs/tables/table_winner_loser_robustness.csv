@@ -1,0 +1,10 @@
+"dv","group","estimate","std.error","p.value","conf.low","conf.high","n"
+"Trust: media","losers",-1.2247,0.1564,0,-1.5316,-0.9179,1340
+"Trust: media","winners",-0.7799,0.2559,0.0023,-1.2815,-0.2784,1340
+"Trust: media","interaction (wave x winner)",0.4448,0.2025,0.0282,0.0475,0.8421,1340
+"Trust: civil society","losers",-1.599,0.1616,0,-1.9161,-1.282,1340
+"Trust: civil society","winners",-0.3115,0.2644,0.2388,-0.8297,0.2067,1340
+"Trust: civil society","interaction (wave x winner)",1.2876,0.2092,0,0.8771,1.698,1340
+"Trust: national assembly","losers",-1.203,0.1662,0,-1.529,-0.877,1340
+"Trust: national assembly","winners",-0.5106,0.2718,0.0603,-1.0435,0.0222,1340
+"Trust: national assembly","interaction (wave x winner)",0.6923,0.2151,0.0013,0.2703,1.1144,1340
