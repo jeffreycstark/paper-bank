@@ -9,6 +9,10 @@ date-format: "MMMM D, YYYY [at] h:mm A"
 format:
   pdf:
     keep-tex: true
+    include-in-header:
+      text: |
+        \usepackage{caption}
+        \captionsetup[table]{labelformat=empty,labelsep=none}
   html:
     embed-resources: true
 execute:
@@ -45,6 +49,10 @@ ologit_pp      <- readRDS(file.path(results_dir, "ologit_pred_probs.rds"))
 wt_comp        <- readRDS(file.path(results_dir, "weighted_unweighted_comparison.rds"))
 ib_grad        <- readRDS(file.path(results_dir, "ib_sensitivity_gradient.rds"))
 dc_rel         <- readRDS(file.path(results_dir, "dem_commit_reliability.rds"))
+
+# Pre-computed table captions for tbl-cap: !expr
+cap_a5_taiwan  <- paste0("Table A5: Taiwan military trust model (all waves). Weighted OLS with survey weights; SEs are heteroskedasticity-consistent. N = 7,930. F-test for wave coefficient = 0: p = ", round(h5_taiwan$ftest[["Pr(>F)"]][2], 3), ".")
+cap_a8_philh3  <- paste0("Table A8: Philippines coercive vs. non-coercive trust, Waves 4\u20136. Stacked OLS with government, military, police, and NGO trust as outcomes; Coercive = 1 for military and police. Respondent-clustered SEs. N = ", format(h3_phil_formal$n_obs, big.mark = ","), ".")
 ```
 
 This appendix presents supplementary analyses referenced in the main text. All models control for age (centered), gender, education (standardized), and urban residence unless otherwise noted.
@@ -53,7 +61,8 @@ This appendix presents supplementary analyses referenced in the main text. All m
 
 Table A1 describes the key variables used in the analysis, their original scales, and any transformations applied.
 
-```{r tab-a1-variables}
+```{r tbl-a1-variables}
+#| tbl-cap: "Table A1: Variable descriptions and transformations"
 var_table <- tribble(
   ~Variable, ~Source, ~`Original Scale`, ~Transformation, ~`Analysis Scale`,
   "trust_national_government", "ABS Q7", "1--4 (none -- a great deal)", "None", "1--4 (higher = more trust)",
@@ -86,9 +95,7 @@ var_table <- tribble(
 )
 
 kbl(var_table,
-    caption = "Table A1: Variable descriptions and transformations",
-    booktabs = TRUE, longtable = TRUE,
-    label = "tab-a1-variables") %>%
+    booktabs = TRUE, longtable = TRUE) %>%
   kable_styling(latex_options = c("repeat_header"),
                 font_size = 8) %>%
   column_spec(1, width = "3.5cm") %>%
@@ -106,7 +113,8 @@ The main text models trust as a linear function of wave. Here we test whether no
 
 We define three political periods: pre-coup (Waves 1--2, 2001--2008), coup era (Waves 3--4, 2010--2016), and protest era (Waves 5--6, 2018--2022). These periods correspond to distinct phases of Thailand's political trajectory described in the main text.
 
-```{r tab-a1-piecewise}
+```{r tbl-a2-piecewise}
+#| tbl-cap: "Table A2: Piecewise period models. Reference period: pre-coup (Waves 1--2); reference country: Thailand. Weighted OLS with survey weights; SEs are heteroskedasticity-consistent. N = 21,036 (government), 21,049 (military)."
 pw_key <- bind_rows(
   h3_piecewise$govt$tidy %>%
     filter(str_detect(term, "period|country")) %>%
@@ -119,8 +127,7 @@ pw_key <- bind_rows(
   mutate(across(where(is.numeric), ~round(., 3)))
 
 pw_key %>%
-  kbl(caption = "Table A2: Piecewise period models. Reference period: pre-coup (Waves 1--2); reference country: Thailand. Weighted OLS with survey weights; SEs are heteroskedasticity-consistent. N = 21,036 (government), 21,049 (military).",
-      col.names = c("Outcome", "Term", "Estimate", "SE", "p"),
+  kbl(col.names = c("Outcome", "Term", "Estimate", "SE", "p"),
       booktabs = TRUE) %>%
   kable_styling(latex_options = c("hold_position", "scale_down")) %>%
   kable_styling(font_size = 9)
@@ -137,7 +144,8 @@ Table A2 reveals a clear pattern of acceleration. For government trust, the coup
 
 ## Quadratic Specifications
 
-```{r tab-a1-quadratic}
+```{r tbl-a2b-quadratic}
+#| tbl-cap: "Table A2b: Quadratic time specification with country interactions. Weighted OLS with survey weights; SEs are heteroskedasticity-consistent. N = 21,036 (government), 21,049 (military)."
 q_key <- bind_rows(
   h3_quadratic$govt$tidy %>%
     filter(str_detect(term, "wave|country")) %>%
@@ -150,8 +158,7 @@ q_key <- bind_rows(
   mutate(across(where(is.numeric), ~round(., 3)))
 
 q_key %>%
-  kbl(caption = "Table A2b: Quadratic time specification with country interactions. Weighted OLS with survey weights; SEs are heteroskedasticity-consistent. N = 21,036 (government), 21,049 (military).",
-      col.names = c("Outcome", "Term", "Estimate", "SE", "p"),
+  kbl(col.names = c("Outcome", "Term", "Estimate", "SE", "p"),
       booktabs = TRUE) %>%
   kable_styling(latex_options = c("hold_position", "scale_down")) %>%
   kable_styling(font_size = 9)
@@ -163,7 +170,8 @@ The quadratic specifications (Table A2b) confirm that Thailand's trust trajector
 
 To rule out the possibility that the aggregate patterns are driven by compositional shifts across waves—for example, if later waves disproportionately sampled younger, more urban, or more educated respondents who tend to report lower trust—we estimate the baseline model separately for demographic subgroups.
 
-```{r tab-a3-subgroups}
+```{r tbl-a3-subgroups}
+#| tbl-cap: "Table A3: Thailand's per-wave trust slope by demographic subgroup. All models include country × wave interactions; the reported slope is Thailand's (reference category). Weighted OLS with survey weights; SEs are heteroskedasticity-consistent. N ranges from 7,411 to 13,124 depending on subgroup."
 sub_summary <- h6_subgroups$summary %>%
   mutate(
     institution = if_else(str_detect(subgroup, "_govt$"), "Government", "Military"),
@@ -177,8 +185,7 @@ sub_summary <- h6_subgroups$summary %>%
   arrange(group, institution)
 
 sub_summary %>%
-  kbl(caption = "Table A3: Thailand's per-wave trust slope by demographic subgroup. All models include country × wave interactions; the reported slope is Thailand's (reference category). Weighted OLS with survey weights; SEs are heteroskedasticity-consistent. N ranges from 7,411 to 13,124 depending on subgroup.",
-      col.names = c("Subgroup", "Institution", "N", "Slope", "SE", "p"),
+  kbl(col.names = c("Subgroup", "Institution", "N", "Slope", "SE", "p"),
       booktabs = TRUE) %>%
   kable_styling(latex_options = c("hold_position")) %>%
   kable_styling(font_size = 9)
@@ -202,7 +209,8 @@ The consistency of the pattern across subgroups rules out compositional explanat
 
 The Philippines provides a useful contrast case. Under Rodrigo Duterte (2016--2022), the government pursued a highly visible drug war that relied heavily on police and military enforcement. If citizens who support a coercive policy agenda maintain trust in the institutions that implement it, we should observe stable or rising coercive trust during the Duterte period.
 
-```{r tab-a4-philippines}
+```{r tbl-a4-philippines}
+#| tbl-cap: "Table A4: Philippines trust trends during the Duterte period (Waves 4--6 only). Wave coefficient captures per-wave change. Weighted OLS with survey weights; SEs are heteroskedasticity-consistent. N = 3,517--3,571 depending on institution."
 phil_key <- bind_rows(
   h4_phil$phil_military$tidy %>% mutate(outcome = "Military"),
   h4_phil$phil_police$tidy %>% mutate(outcome = "Police"),
@@ -213,8 +221,7 @@ phil_key <- bind_rows(
   mutate(across(where(is.numeric), ~round(., 3)))
 
 phil_key %>%
-  kbl(caption = "Table A4: Philippines trust trends during the Duterte period (Waves 4--6 only). Wave coefficient captures per-wave change. Weighted OLS with survey weights; SEs are heteroskedasticity-consistent. N = 3,517--3,571 depending on institution.",
-      col.names = c("Institution", "Wave slope", "SE", "p"),
+  kbl(col.names = c("Institution", "Wave slope", "SE", "p"),
       booktabs = TRUE) %>%
   kable_styling(latex_options = c("hold_position"))
 ```
@@ -233,14 +240,14 @@ The contrast with Thailand is instructive. In Thailand, the military's political
 
 Taiwan presents the opposite theoretical case: a successfully depoliticized military. Following democratization in the 1990s, the Taiwanese military transitioned from a party-state instrument to a professional defense force under firm civilian control. If depoliticization insulates military trust from political volatility, we should observe a flat trajectory.
 
-```{r tab-a5-taiwan}
+```{r tbl-a5-taiwan}
+#| tbl-cap: !expr cap_a5_taiwan
 tw_key <- h5_taiwan$tidy %>%
   select(term, estimate, std.error, p.value) %>%
   mutate(across(where(is.numeric), ~round(., 3)))
 
 tw_key %>%
-  kbl(caption = paste0("Table A5: Taiwan military trust model (all waves). Weighted OLS with survey weights; SEs are heteroskedasticity-consistent. N = 7,930. F-test for wave coefficient = 0: p = ", round(h5_taiwan$ftest[["Pr(>F)"]][2], 3), "."),
-      col.names = c("Term", "Estimate", "SE", "p"),
+  kbl(col.names = c("Term", "Estimate", "SE", "p"),
       booktabs = TRUE) %>%
   kable_styling(latex_options = c("hold_position"))
 ```
@@ -256,7 +263,8 @@ This stability contrasts sharply with Thailand and supports the theoretical clai
 
 # A6. Full Secondary Institution Results
 
-```{r tab-a6-secondary-full}
+```{r tbl-a6-secondary-full}
+#| tbl-cap: "Table A6: Country × Wave interaction models for secondary trust measures (courts, police, parliament, political parties). Thailand is the reference category. Weighted OLS with survey weights; SEs are heteroskedasticity-consistent. N ranges from 20,630 (courts) to 21,465 (police)."
 # Full interaction model results for all institutions
 sec_full <- map_dfr(h6_secondary$models, function(mod) {
   mod$tidy %>%
@@ -269,8 +277,7 @@ sec_full <- map_dfr(h6_secondary$models, function(mod) {
   mutate(across(where(is.numeric), ~round(., 3)))
 
 sec_full %>%
-  kbl(caption = "Table A6: Country × Wave interaction models for secondary trust measures (courts, police, parliament, political parties). Thailand is the reference category. Weighted OLS with survey weights; SEs are heteroskedasticity-consistent. N ranges from 20,630 (courts) to 21,465 (police).",
-      col.names = c("Institution", "Term", "Estimate", "SE", "p"),
+  kbl(col.names = c("Institution", "Term", "Estimate", "SE", "p"),
       booktabs = TRUE) %>%
   kable_styling(latex_options = c("hold_position", "scale_down")) %>%
   kable_styling(font_size = 8)
@@ -282,7 +289,8 @@ Table A6 reports the full interaction models for the four secondary trust measur
 
 To evaluate whether preference falsification inflates Philippine trust during the Duterte era, or whether Thailand's trust collapse is targeted at specific institutions rather than systemic, we compare trust in four institutional categories across all six waves.
 
-```{r tab-a7-breadth}
+```{r tbl-a7-breadth}
+#| tbl-cap: "Table A7: Mean trust in NGOs, local government, national government, and military by country and wave. Scale: 1 (none at all) to 4 (a great deal). Descriptive means (unweighted). N is the total number of respondents per country-wave cell; item-level missingness varies slightly across institutions."
 ib <- readRDS(file.path(results_dir, "institutional_breadth.rds"))
 
 ib_table <- ib %>%
@@ -292,8 +300,7 @@ ib_table <- ib %>%
   arrange(country_name, wave)
 
 ib_table %>%
-  kbl(caption = "Table A7: Mean trust in NGOs, local government, national government, and military by country and wave. Scale: 1 (none at all) to 4 (a great deal). Descriptive means (unweighted). N is the total number of respondents per country-wave cell; item-level missingness varies slightly across institutions.",
-      col.names = c("Country", "Wave", "NGOs", "Local Govt", "Nat'l Govt", "Military", "N"),
+  kbl(col.names = c("Country", "Wave", "NGOs", "Local Govt", "Nat'l Govt", "Military", "N"),
       booktabs = TRUE) %>%
   kable_styling(latex_options = c("hold_position")) %>%
   kable_styling(font_size = 9) %>%
@@ -307,7 +314,8 @@ Table A7 shows that in the Philippines, the Wave 5 trust surge is uniform across
 
 Table A8 presents the stacked model comparing coercive (military, police) and non-coercive (national government, NGO) trust within the Philippines across Waves 4–6. If the preference-alignment mechanism specifically elevates coercive trust during the Duterte era, the wave × coercive interaction should be positive.
 
-```{r tab-a8-phil-h3}
+```{r tbl-a8-phil-h3}
+#| tbl-cap: !expr cap_a8_philh3
 h3_key <- h3_phil_formal$stacked_tidy %>%
   filter(str_detect(term, "wave_num|is_coercive")) %>%
   mutate(
@@ -320,7 +328,6 @@ h3_key <- h3_phil_formal$stacked_tidy %>%
 
 h3_key %>%
   kbl(
-    caption = paste0("Table A8: Philippines coercive vs. non-coercive trust, Waves 4–6. Stacked OLS with government, military, police, and NGO trust as outcomes; Coercive = 1 for military and police. Respondent-clustered SEs. N = ", format(h3_phil_formal$n_obs, big.mark = ","), "."),
     col.names = c("Term", "Estimate", "SE", "Statistic", "p"),
     booktabs = TRUE
   ) %>%
@@ -329,7 +336,8 @@ h3_key %>%
 
 A positive `Wave × Coercive` interaction would indicate coercive institutions trending upward relative to non-coercive institutions during the Duterte period, consistent with H3. The individual per-institution wave slopes are also reported below for completeness.
 
-```{r tab-a8-per-inst}
+```{r tbl-a8b-per-inst}
+#| tbl-cap: "Table A8b: Per-institution wave slopes, Philippines Waves 4--6. Weighted OLS with survey weights; SEs are heteroskedasticity-consistent."
 h3_phil_formal$per_institution %>%
   mutate(
     institution = institution %>%
@@ -340,7 +348,6 @@ h3_phil_formal$per_institution %>%
   select(institution, estimate, std.error, p.value) %>%
   mutate(across(where(is.numeric), ~round(., 3))) %>%
   kbl(
-    caption = "Table A8b: Per-institution wave slopes, Philippines Waves 4–6. Weighted OLS with survey weights; SEs are heteroskedasticity-consistent.",
     col.names = c("Institution", "Wave slope", "SE", "p"),
     booktabs = TRUE
   ) %>%
@@ -351,7 +358,8 @@ h3_phil_formal$per_institution %>%
 
 The main text DiD model defines the post-period as Waves 5–6. Table A9 presents the Wave 6 cross-section as a robustness check, estimating the military × Thailand interaction in a single-wave sample where the linear time trend cannot confound the estimate.
 
-```{r tab-a9-did-w6}
+```{r tbl-a9-did-w6}
+#| tbl-cap: "Table A9: Wave 6 cross-sectional robustness check for DiD. Military × Thailand interaction tests whether Thai military trust is disproportionately lower in Wave 6 relative to all other country--institution combinations. Respondent-clustered SEs."
 did_res$did_w6_tidy %>%
   filter(str_detect(term, "is_military|is_thailand")) %>%
   mutate(
@@ -363,7 +371,6 @@ did_res$did_w6_tidy %>%
   select(term, estimate, std.error, p.value) %>%
   mutate(across(where(is.numeric), ~round(., 3))) %>%
   kbl(
-    caption = "Table A9: Wave 6 cross-sectional robustness check for DiD. Military × Thailand interaction tests whether Thai military trust is disproportionately lower in Wave 6 relative to all other country–institution combinations. Respondent-clustered SEs.",
     col.names = c("Term", "Estimate", "SE", "p"),
     booktabs = TRUE
   ) %>%
@@ -374,7 +381,8 @@ did_res$did_w6_tidy %>%
 
 Waves 1–2 of the ABS do not provide sampling weights and are treated as self-weighting in the main analysis. Table A10 compares key wave slope estimates with and without survey weights across all six waves to confirm this assumption does not materially affect the results.
 
-```{r tab-a10-weights}
+```{r tbl-a10-weights}
+#| tbl-cap: "Table A10: Weighted vs. unweighted comparison of key wave slopes. Columns show estimates from survey-weighted and unweighted OLS; Waves 1--2 are self-weighting."
 wt_comp %>%
   filter(term %in% c("wave_num",
                      "wave_num:country_namePhilippines",
@@ -393,7 +401,6 @@ wt_comp %>%
   mutate(across(where(is.numeric), ~round(., 3))) %>%
   arrange(dv, term, specification) %>%
   kbl(
-    caption = "Table A10: Weighted vs. unweighted comparison of key wave slopes. Columns show estimates from survey-weighted and unweighted OLS; Waves 1–2 are self-weighting.",
     col.names = c("DV", "Specification", "Term", "Estimate", "SE", "p"),
     booktabs = TRUE
   ) %>%
@@ -404,7 +411,9 @@ wt_comp %>%
 
 Figure A1 translates the ordered logit coefficients (main text, Table 8) into predicted probabilities of reporting "no trust at all" (trust = 1) across waves, holding demographic controls at sample means. This provides a more intuitive representation of the Wave 6 collapse than log-odds coefficients.
 
-```{r fig-a1-pred-probs, fig.cap="Figure A1: Predicted probability of reporting 'no trust at all' in military and government trust, by country and wave. Ordered logit predictions from models in Table 8; demographics held at sample means.", out.width="90%"}
+```{r fig-a1-pred-probs}
+#| fig-cap: "Figure A1: Predicted probability of reporting 'no trust at all' in military and government trust, by country and wave. Ordered logit predictions from models in Table 8; demographics held at sample means."
+#| out-width: "90%"
 knitr::include_graphics(file.path(fig_dir, "fig_ologit_pred_probs.png"))
 ```
 
@@ -412,22 +421,22 @@ knitr::include_graphics(file.path(fig_dir, "fig_ologit_pred_probs.png"))
 
 The democratic commitment index combines rejection of military rule, strongman rule, and single-party rule. Table A12 reports Cronbach's alpha and mean inter-item correlations by country and wave to verify the scale behaves consistently across contexts.
 
-```{r tab-a11-reliability}
+```{r tbl-a12a-reliability}
+#| tbl-cap: "Table A12a: Democratic commitment scale reliability by country (all waves pooled). Alpha = standardized Cronbach's alpha (k = 3). r\\_avg = mean pairwise inter-item correlation."
 dc_rel$by_country %>%
   mutate(across(where(is.numeric), ~round(., 3))) %>%
   kbl(
-    caption = "Table A12a: Democratic commitment scale reliability by country (all waves pooled). Alpha = standardized Cronbach's alpha (k = 3). r\\_avg = mean pairwise inter-item correlation.",
     col.names = c("Country", "N", "r(mil, strongman)", "r(mil, single-party)", "r(strongman, single-party)", "Mean r", "Alpha"),
     booktabs = TRUE
   ) %>%
   kable_styling(latex_options = c("hold_position", "scale_down"))
 ```
 
-```{r tab-a11b-reliability-wave}
+```{r tbl-a12b-reliability-wave}
+#| tbl-cap: "Table A12b: Democratic commitment scale reliability by country-wave."
 dc_rel$by_wave %>%
   mutate(across(where(is.numeric), ~round(., 3))) %>%
   kbl(
-    caption = "Table A12b: Democratic commitment scale reliability by country-wave.",
     col.names = c("Country", "Wave", "N", "Mean r", "Alpha"),
     booktabs = TRUE
   ) %>%
@@ -439,7 +448,8 @@ dc_rel$by_wave %>%
 
 The main text argues that in Thailand, trust erosion is broad-based (not institution-specific) and in the Philippines, the Wave 5 trust surge is uniform (not limited to politically sensitive institutions). Table A13 formalizes these claims with stacked interaction models.
 
-```{r tab-a12-ib-gradient}
+```{r tbl-a13-ib-gradient}
+#| tbl-cap: "Table A13: Institutional breadth sensitivity-gradient tests. Thailand: Post-W5 × Sensitive tests whether national government and military (protest targets) decline more than NGOs and local government in Wave 6. Philippines: Wave × Coercive tests whether military and police trend higher than national government and NGOs during the Duterte period. Respondent-clustered SEs."
 bind_rows(
   ib_grad$thai_tidy %>% mutate(sample = "Thailand W5–6"),
   ib_grad$phil_tidy %>% mutate(sample = "Philippines W4–6")
@@ -456,7 +466,6 @@ bind_rows(
   select(sample, term, estimate, std.error, p.value) %>%
   mutate(across(where(is.numeric), ~round(., 3))) %>%
   kbl(
-    caption = "Table A13: Institutional breadth sensitivity-gradient tests. Thailand: Post-W5 × Sensitive tests whether national government and military (protest targets) decline more than NGOs and local government in Wave 6. Philippines: Wave × Coercive tests whether military and police trend higher than national government and NGOs during the Duterte period. Respondent-clustered SEs.",
     col.names = c("Sample", "Term", "Estimate", "SE", "p"),
     booktabs = TRUE
   ) %>%
@@ -467,7 +476,8 @@ bind_rows(
 
 Table A14 presents models testing whether democratic commitment moderates trust erosion. Models 1 and 1b examine the interaction between wave and democratic commitment (centered) for military and government trust in Thailand. Model 2 uses a stacked outcome (military and government trust) to test whether the commitment effect differs across institution type. Model 3 reports a Wave 6 cross-sectional model predicting military trust from democratic commitment and political interest. Model 4 tests the three-country interaction.
 
-```{r tab-a7-dem-commitment}
+```{r tbl-a14-dem-commitment}
+#| tbl-cap: "Table A14: Democratic commitment and institutional trust decline. Democratic commitment is a composite index (0--1) of democratic preference, democratic priority over economic development, and rejection of authoritarian alternatives, centered at the sample mean for interaction models (Models 1, 1b, 2, 4). All models are weighted OLS with survey weights; SEs are heteroskedasticity-consistent except Model 2 (respondent-clustered SEs). N: Model 1 = 5,947; Model 1b = 5,889; Model 2 = 11,836 (stacked); Model 3 = 1,082; Model 4 = 21,261."
 # Build table from saved model tidy results
 mod1 <- dem_commit$mod1_mil$tidy %>%
   filter(term %in% c("dem_commit_c", "wave_num:dem_commit_c")) %>%
@@ -518,8 +528,7 @@ dc_table <- bind_rows(mod1, mod1b, mod2, mod3, mod4) %>%
   mutate(across(c(estimate, std.error), ~round(., 3)))
 
 dc_table %>%
-  kbl(caption = "Table A14: Democratic commitment and institutional trust decline. Democratic commitment is a composite index (0--1) of democratic preference, democratic priority over economic development, and rejection of authoritarian alternatives, centered at the sample mean for interaction models (Models 1, 1b, 2, 4). All models are weighted OLS with survey weights; SEs are heteroskedasticity-consistent except Model 2 (respondent-clustered SEs). N: Model 1 = 5,947; Model 1b = 5,889; Model 2 = 11,836 (stacked); Model 3 = 1,082; Model 4 = 21,261.",
-      col.names = c("Model", "Dependent Variable", "Key Coefficient", "b", "SE", "p"),
+  kbl(col.names = c("Model", "Dependent Variable", "Key Coefficient", "b", "SE", "p"),
       booktabs = TRUE) %>%
   kable_styling(latex_options = c("hold_position", "scale_down")) %>%
   kable_styling(font_size = 8)
