@@ -55,6 +55,11 @@ wt_comp    <- readRDS(file.path(results_dir, "weighted_unweighted_comparison.rds
 ib_grad    <- readRDS(file.path(results_dir, "ib_sensitivity_gradient.rds"))
 dc_rel     <- readRDS(file.path(results_dir, "dem_commit_reliability.rds"))
 
+# Pre-computed table captions (for tbl-cap: !expr in chunk options)
+cap_h3perf   <- paste0("Models with performance controls: economic satisfaction and democracy satisfaction added to baseline specification. Weighted OLS with survey weights; SEs are heteroskedasticity-consistent. N = ", format(h6_perf$n_obs, big.mark = ","), ".")
+cap_pretrend <- paste0("Pre-trend check: differential trends in Waves 1--4 (pre-COVID). Weighted OLS with survey weights; SEs are heteroskedasticity-consistent. N = ", format(h6_pretrend$n_obs, big.mark = ","), ".")
+cap_did      <- paste0("Difference-in-differences model: Trust ~ Post-Wave4 \u00d7 Military \u00d7 Thailand. Observations are respondent--institution pairs (government and military trust stacked); Post-Wave4 = 1 for Waves 5--6. Model includes a linear wave trend and country fixed effects. Respondent-clustered SEs. N = ", format(did_res$n_obs, big.mark = ","), ".")
+
 # Key DiD inline values
 did_tidy        <- did_res$did_tidy
 did_threeway    <- did_tidy %>% filter(term == "post:is_military:is_thailand")
@@ -322,13 +327,13 @@ H4/H5 test attitudinal mechanisms. Democratic expectation updating implies Thail
 
 We use the Asian Barometer Survey (ABS), analyzing all six waves (2001--2022) for Thailand, Philippines, and Taiwan, the only countries with complete coverage. Total sample: `r format(nrow(d), big.mark = ",")` respondents.
 
-```{r sample-table}
+```{r tbl-sample}
+#| tbl-cap: "Sample size by country and wave"
 d %>%
   group_by(country_name, wave) %>%
   summarise(n = n(), .groups = "drop") %>%
   pivot_wider(names_from = wave, values_from = n, values_fill = 0) %>%
-  kbl(caption = "Sample size by country and wave",
-      col.names = c("Country", paste0("W", 1:6)),
+  kbl(col.names = c("Country", paste0("W", 1:6)),
       booktabs = TRUE) %>%
   kable_styling(latex_options = c("hold_position"))
 ```
@@ -379,7 +384,8 @@ The distributional evidence in Figure 2 underscores the severity of the collapse
 
 ## Thailand Exceptionalism (H1)
 
-```{r tab-h1-interaction}
+```{r tbl-h1-interaction}
+#| tbl-cap: "Country x Wave interaction models for government and military trust (H1). Thailand is the reference category; interaction terms capture deviations from Thailand's trajectory. Weighted OLS with survey weights; SEs are heteroskedasticity-consistent. N = 21,036 (government), 21,049 (military)."
 # H1: Country x Wave interaction models
 h1_key <- bind_rows(
   h1_govt$tidy %>%
@@ -394,15 +400,15 @@ h1_key <- bind_rows(
   mutate(across(where(is.numeric), ~round(., 3)))
 
 h1_key %>%
-  kbl(caption = "Country x Wave interaction models for government and military trust (H1). Thailand is the reference category; interaction terms capture deviations from Thailand's trajectory. Weighted OLS with survey weights; SEs are heteroskedasticity-consistent. N = 21,036 (government), 21,049 (military).",
-      col.names = c("Outcome", "Term", "Estimate", "SE", "p"),
+  kbl(col.names = c("Outcome", "Term", "Estimate", "SE", "p"),
       booktabs = TRUE) %>%
   kable_styling(latex_options = c("hold_position", "scale_down"))
 ```
 
-Table 2 reports fixed-effects models with country × wave interactions, testing whether Thailand's trust decline is exceptionally steep (H1). With Thailand as the reference category, the `wave_num` coefficient captures Thailand's per-wave trend: government trust declines by `r round(res$h1$thai_govt_slope, 3)` points per wave (*p* < .001), and military trust by `r round(res$h1$thai_mil_slope, 3)` points per wave (*p* < .001). The positive and highly significant interaction terms for both the Philippines ($b$ = `r round(res$h1$phil_govt_interaction$estimate, 3)`, *p* < .001 for government; $b$ = `r round(res$h1$phil_mil_interaction$estimate, 3)`, *p* < .001 for military) and Taiwan ($b$ = `r round(res$h1$taiwan_govt_interaction$estimate, 3)`, *p* < .001 for government; $b$ = `r round(res$h1$taiwan_mil_interaction$estimate, 3)`, *p* < .001 for military) confirm that these countries experienced significantly less steep declines. Indeed, the interaction coefficients for the Philippines are large enough to imply a *positive* net slope, indicating rising trust over the period, a pattern we discuss further below.
+@tbl-h1-interaction reports fixed-effects models with country × wave interactions, testing whether Thailand's trust decline is exceptionally steep (H1). With Thailand as the reference category, the `wave_num` coefficient captures Thailand's per-wave trend: government trust declines by `r round(res$h1$thai_govt_slope, 3)` points per wave (*p* < .001), and military trust by `r round(res$h1$thai_mil_slope, 3)` points per wave (*p* < .001). The positive and highly significant interaction terms for both the Philippines ($b$ = `r round(res$h1$phil_govt_interaction$estimate, 3)`, *p* < .001 for government; $b$ = `r round(res$h1$phil_mil_interaction$estimate, 3)`, *p* < .001 for military) and Taiwan ($b$ = `r round(res$h1$taiwan_govt_interaction$estimate, 3)`, *p* < .001 for government; $b$ = `r round(res$h1$taiwan_mil_interaction$estimate, 3)`, *p* < .001 for military) confirm that these countries experienced significantly less steep declines. Indeed, the interaction coefficients for the Philippines are large enough to imply a *positive* net slope, indicating rising trust over the period, a pattern we discuss further below.
 
-```{r tab-random-slopes}
+```{r tbl-random-slopes}
+#| tbl-cap: "Country-specific random slope deviations from the average wave trend. Multilevel models with random intercepts and slopes by country; maximum likelihood estimation with survey weights. N = 21,036 (government), 21,049 (military)."
 # Random slopes comparison
 re_combined <- bind_rows(h1_rs_govt$random_effects, h1_rs_mil$random_effects) %>%
   select(country, institution, slope_dev) %>%
@@ -413,8 +419,7 @@ re_combined <- bind_rows(h1_rs_govt$random_effects, h1_rs_mil$random_effects) %>
   )
 
 re_combined %>%
-  kbl(caption = "Country-specific random slope deviations from the average wave trend. Multilevel models with random intercepts and slopes by country; maximum likelihood estimation with survey weights. N = 21,036 (government), 21,049 (military).",
-      col.names = c("Country", "Government", "Military", "Difference"),
+  kbl(col.names = c("Country", "Government", "Military", "Difference"),
       booktabs = TRUE) %>%
   kable_styling(latex_options = c("hold_position"))
 ```
@@ -423,13 +428,14 @@ re_combined %>%
 thai_slope_diff <- re_combined$difference[re_combined$country == "Thailand"]
 ```
 
-Multilevel models with random slopes corroborate these findings (Table 3). Thailand's slope deviations are the most negative for both institutions, and the gap between military and government slope deviations is largest for Thailand (`r round(thai_slope_diff, 3)`), consistent with both H1 and H2. A likelihood ratio test confirms that the random-slopes specification significantly improves fit over random intercepts alone (*p* < .001), indicating meaningful cross-country heterogeneity in trust trajectories.
+Multilevel models with random slopes corroborate these findings (@tbl-random-slopes). Thailand's slope deviations are the most negative for both institutions, and the gap between military and government slope deviations is largest for Thailand (`r round(thai_slope_diff, 3)`), consistent with both H1 and H2. A likelihood ratio test confirms that the random-slopes specification significantly improves fit over random intercepts alone (*p* < .001), indicating meaningful cross-country heterogeneity in trust trajectories.
 
 ## Institutional Differentiation (H2)
 
-The descriptive evidence already suggests that Thailand's military trust declined more steeply than government trust. Table 2 showed a total twenty-year decline of `r round(abs(thai_mil_w6 - thai_mil_w1), 2)` points for military trust versus `r round(abs(thai_govt_w6 - thai_govt_w1), 2)` points for government trust, a ratio of roughly `r round(abs(thai_mil_w6 - thai_mil_w1) / abs(thai_govt_w6 - thai_govt_w1), 1)` to 1. To test this formally, we estimate a pooled model stacking government and military trust observations with a three-way interaction (Wave × Military × Country).
+The descriptive evidence already suggests that Thailand's military trust declined more steeply than government trust. @tbl-h1-interaction showed a total twenty-year decline of `r round(abs(thai_mil_w6 - thai_mil_w1), 2)` points for military trust versus `r round(abs(thai_govt_w6 - thai_govt_w1), 2)` points for government trust, a ratio of roughly `r round(abs(thai_mil_w6 - thai_mil_w1) / abs(thai_govt_w6 - thai_govt_w1), 1)` to 1. To test this formally, we estimate a pooled model stacking government and military trust observations with a three-way interaction (Wave × Military × Country).
 
-```{r tab-h2-threeway}
+```{r tbl-h2-threeway}
+#| tbl-cap: "Three-way interaction model testing institutional differentiation (H2). The dependent variable is trust (government and military stacked); Thailand is the reference country. Weighted OLS with respondent-clustered SEs. N = 42,085 (two observations per respondent)."
 h2_key <- h2_threeway$tidy %>%
   filter(str_detect(term, "is_military|wave_num:")) %>%
   mutate(term = clean_terms(term)) %>%
@@ -437,8 +443,7 @@ h2_key <- h2_threeway$tidy %>%
   mutate(across(where(is.numeric), ~round(., 3)))
 
 h2_key %>%
-  kbl(caption = "Three-way interaction model testing institutional differentiation (H2). The dependent variable is trust (government and military stacked); Thailand is the reference country. Weighted OLS with respondent-clustered SEs. N = 42,085 (two observations per respondent).",
-      col.names = c("Term", "Estimate", "SE", "p"),
+  kbl(col.names = c("Term", "Estimate", "SE", "p"),
       booktabs = TRUE) %>%
   kable_styling(latex_options = c("hold_position", "scale_down"))
 ```
@@ -451,13 +456,14 @@ h2_threeway_taiwan <- h2_threeway$tidy %>% filter(term == "wave_num:is_military:
 h2_w5w6_key <- h2_w5w6$tidy %>% filter(term == "is_w5w6:is_military:is_thailand")
 ```
 
-Table 4 presents the key results. The `wave_num:is_military` interaction ($b$ = `r round(h2_wave_mil$estimate, 3)`, *p* < .001) shows that across the pooled sample, military trust declines faster than government trust per wave. The critical three-way interactions test whether this military-specific decline is *disproportionately* concentrated in Thailand. The positive coefficients for both the Philippines ($b$ = `r round(h2_threeway_phil$estimate, 3)`, *p* < .001) and Taiwan ($b$ = `r round(h2_threeway_taiwan$estimate, 3)`, *p* < .001) confirm that Thailand's military-government differential is significantly larger than in either comparator country, supporting H2.
+@tbl-h2-threeway presents the key results. The `wave_num:is_military` interaction ($b$ = `r round(h2_wave_mil$estimate, 3)`, *p* < .001) shows that across the pooled sample, military trust declines faster than government trust per wave. The critical three-way interactions test whether this military-specific decline is *disproportionately* concentrated in Thailand. The positive coefficients for both the Philippines ($b$ = `r round(h2_threeway_phil$estimate, 3)`, *p* < .001) and Taiwan ($b$ = `r round(h2_threeway_taiwan$estimate, 3)`, *p* < .001) confirm that Thailand's military-government differential is significantly larger than in either comparator country, supporting H2.
 
 The W5--W6 acceleration test further sharpens this result. A model interacting a Wave 5--6 indicator with the military and Thailand dummies yields a three-way coefficient of $b$ = `r round(h2_w5w6_key$estimate, 3)` (*p* < .001), indicating that the military-specific trust collapse in Thailand was concentrated in the period coinciding with the 2020--2021 pro-democracy protests. This temporal specificity strengthens the link between political crisis and institutional differentiation.
 
 ## Performance Controls
 
-```{r tab-h3-performance}
+```{r tbl-h3-performance}
+#| tbl-cap: !expr cap_h3perf
 h6a_key <- bind_rows(
   h6_perf$govt$tidy %>%
     filter(str_detect(term, "wave_num|econ|democracy")) %>%
@@ -471,8 +477,7 @@ h6a_key <- bind_rows(
   mutate(across(where(is.numeric), ~round(., 3)))
 
 h6a_key %>%
-  kbl(caption = paste0("Models with performance controls: economic satisfaction and democracy satisfaction added to baseline specification. Weighted OLS with survey weights; SEs are heteroskedasticity-consistent. N = ", format(h6_perf$n_obs, big.mark = ","), "."),
-      col.names = c("Outcome", "Term", "Estimate", "SE", "p"),
+  kbl(col.names = c("Outcome", "Term", "Estimate", "SE", "p"),
       escape = FALSE,
       booktabs = TRUE) %>%
   kable_styling(latex_options = c("hold_position", "scale_down"))
@@ -485,13 +490,14 @@ h6a_econ_govt <- h6_perf$govt$tidy %>% filter(term == "econ_national_now")
 h6a_demsat_govt <- h6_perf$govt$tidy %>% filter(term == "democracy_satisfaction")
 ```
 
-If the trust collapse were driven by declining economic conditions or dissatisfaction with democratic governance, controlling for these performance proxies should substantially attenuate the wave × country interactions. Table 5 adds economic satisfaction and democracy satisfaction to the baseline H1 specification. Both performance variables are significant and positively associated with trust, as expected: respondents who evaluate the economy more favorably report higher government trust ($b$ = `r round(h6a_econ_govt$estimate, 3)`, *p* < .001), as do those more satisfied with democracy ($b$ = `r round(h6a_demsat_govt$estimate, 3)`, *p* < .001).
+If the trust collapse were driven by declining economic conditions or dissatisfaction with democratic governance, controlling for these performance proxies should substantially attenuate the wave × country interactions. @tbl-h3-performance adds economic satisfaction and democracy satisfaction to the baseline H1 specification. Both performance variables are significant and positively associated with trust, as expected: respondents who evaluate the economy more favorably report higher government trust ($b$ = `r round(h6a_econ_govt$estimate, 3)`, *p* < .001), as do those more satisfied with democracy ($b$ = `r round(h6a_demsat_govt$estimate, 3)`, *p* < .001).
 
 Crucially, however, the country × wave interaction pattern survives largely intact. Thailand's per-wave decline remains steep for both government trust ($b$ = `r round(h6a_govt_wave$estimate, 3)`) and military trust ($b$ = `r round(h6a_mil_wave$estimate, 3)`), and the interaction terms for the Philippines and Taiwan remain positive and significant. This indicates that Thailand's trust erosion cannot be explained away by declining perceptions of economic or democratic performance, supporting the political crisis interpretation over performance-based accounts.
 
 ## Pre-Trend Analysis
 
-```{r tab-pretrend}
+```{r tbl-pretrend}
+#| tbl-cap: !expr cap_pretrend
 pretrend_key <- bind_rows(
   h6_pretrend$govt$tidy %>%
     filter(str_detect(term, "wave_num|country")) %>%
@@ -505,8 +511,7 @@ pretrend_key <- bind_rows(
   mutate(across(where(is.numeric), ~round(., 3)))
 
 pretrend_key %>%
-  kbl(caption = paste0("Pre-trend check: differential trends in Waves 1--4 (pre-COVID). Weighted OLS with survey weights; SEs are heteroskedasticity-consistent. N = ", format(h6_pretrend$n_obs, big.mark = ","), "."),
-      col.names = c("Outcome", "Term", "Estimate", "SE", "p"),
+  kbl(col.names = c("Outcome", "Term", "Estimate", "SE", "p"),
       escape = FALSE,
       booktabs = TRUE) %>%
   kable_styling(latex_options = c("hold_position", "scale_down"))
@@ -517,13 +522,14 @@ pre_govt_wave <- h6_pretrend$govt$tidy %>% filter(term == "wave_num")
 pre_mil_wave <- h6_pretrend$mil$tidy %>% filter(term == "wave_num")
 ```
 
-To assess whether the full-sample results are driven by post-2019 shocks or reflect longer-running dynamics, we restrict the sample to Waves 1--4 (pre-COVID). Table 6 reveals an instructive asymmetry. For government trust, Thailand was already declining before COVID ($b$ = `r round(pre_govt_wave$estimate, 3)` per wave, *p* < .001), but the slope is roughly half the magnitude of the full-sample estimate (`r round(res$h1$thai_govt_slope, 3)`), indicating substantial acceleration in the later waves. For military trust, the pre-trend is even more revealing: the coefficient is *positive* ($b$ = `r round(pre_mil_wave$estimate, 3)`, *p* < .001), meaning Thai military trust was actually *rising* through Wave 4 before collapsing precipitously in Waves 5--6. This reversal is inconsistent with a smooth secular decline and instead points to a discrete shock, consistent with the political crisis surrounding the 2020--2021 protests.
+To assess whether the full-sample results are driven by post-2019 shocks or reflect longer-running dynamics, we restrict the sample to Waves 1--4 (pre-COVID). @tbl-pretrend reveals an instructive asymmetry. For government trust, Thailand was already declining before COVID ($b$ = `r round(pre_govt_wave$estimate, 3)` per wave, *p* < .001), but the slope is roughly half the magnitude of the full-sample estimate (`r round(res$h1$thai_govt_slope, 3)`), indicating substantial acceleration in the later waves. For military trust, the pre-trend is even more revealing: the coefficient is *positive* ($b$ = `r round(pre_mil_wave$estimate, 3)`, *p* < .001), meaning Thai military trust was actually *rising* through Wave 4 before collapsing precipitously in Waves 5--6. This reversal is inconsistent with a smooth secular decline and instead points to a discrete shock, consistent with the political crisis surrounding the 2020--2021 protests.
 
 ## Robustness
 
 We conduct several additional robustness checks, reported in full in the Online Appendix.
 
-```{r tab-secondary}
+```{r tbl-secondary}
+#| tbl-cap: "Thailand's per-wave trust slope across all six institutions, from the country x wave interaction model. Weighted OLS with survey weights; SEs are heteroskedasticity-consistent. N ranges from 20,630 (courts) to 21,465 (police)."
 secondary <- h6_secondary$summary %>%
   mutate(
     institution = str_remove(institution, "trust_") %>%
@@ -534,17 +540,17 @@ secondary <- h6_secondary$summary %>%
   arrange(thailand_slope)
 
 secondary %>%
-  kbl(caption = "Thailand's per-wave trust slope across all six institutions, from the country x wave interaction model. Weighted OLS with survey weights; SEs are heteroskedasticity-consistent. N ranges from 20,630 (courts) to 21,465 (police).",
-      col.names = c("Institution", "Slope", "SE", "p"),
+  kbl(col.names = c("Institution", "Slope", "SE", "p"),
       booktabs = TRUE) %>%
   kable_styling(latex_options = c("hold_position"))
 ```
 
-*Secondary institutions.* Table 7 reports Thailand's per-wave slopes for all six trust measures. The military exhibits by far the steepest decline (`r round(secondary$thailand_slope[1], 3)`), followed by national government (`r round(secondary$thailand_slope[2], 3)`). Courts, police, parliament, and political parties all decline, but at roughly half the rate or less. This gradient, with the military as the clear outlier, is consistent with a political crisis mechanism that specifically targeted the military's role rather than generalized institutional malaise.
+*Secondary institutions.* @tbl-secondary reports Thailand's per-wave slopes for all six trust measures. The military exhibits by far the steepest decline (`r round(secondary$thailand_slope[1], 3)`), followed by national government (`r round(secondary$thailand_slope[2], 3)`). Courts, police, parliament, and political parties all decline, but at roughly half the rate or less. This gradient, with the military as the clear outlier, is consistent with a political crisis mechanism that specifically targeted the military's role rather than generalized institutional malaise.
 
-*Ordered logit models.* Ordered logistic regression treating trust as ordinal categories produces substantively identical patterns (Table 8), confirming results are not artifacts of treating the scale as continuous.
+*Ordered logit models.* Ordered logistic regression treating trust as ordinal categories produces substantively identical patterns (@tbl-ologit), confirming results are not artifacts of treating the scale as continuous.
 
-```{r tab-ologit}
+```{r tbl-ologit}
+#| tbl-cap: "Ordered logistic regression (proportional odds) for government and military trust. Coefficients are log-odds; SEs are model-based. N = 20,446."
 ologit_key <- bind_rows(
   h6_ologit$govt$tidy %>%
     filter(str_detect(term, "wave_num|country"), coef.type == "coefficient") %>%
@@ -561,8 +567,7 @@ ologit_key <- bind_rows(
   mutate(across(where(is.numeric), ~round(., 3)))
 
 ologit_key %>%
-  kbl(caption = "Ordered logistic regression (proportional odds) for government and military trust. Coefficients are log-odds; SEs are model-based. N = 20,446.",
-      col.names = c("Outcome", "Term", "Estimate", "SE", "p"),
+  kbl(col.names = c("Outcome", "Term", "Estimate", "SE", "p"),
       booktabs = TRUE) %>%
   kable_styling(latex_options = c("hold_position", "scale_down"))
 ```
@@ -575,7 +580,8 @@ ologit_key %>%
 
 The wave × country interaction models establish Thailand's exceptional trajectory, but embed the treatment effect across a linear time trend. To sharpen causal identification, we estimate a difference-in-differences specification in which the "treatment" is defined as the post-Wave 4 period (Waves 5–6), coinciding with the military government's consolidation and the 2020–2021 protests.
 
-```{r tab-did}
+```{r tbl-did}
+#| tbl-cap: !expr cap_did
 did_key <- did_tidy %>%
   filter(str_detect(term, "post|is_military|is_thailand")) %>%
   mutate(
@@ -590,7 +596,6 @@ did_key <- did_tidy %>%
 
 did_key %>%
   kbl(
-    caption = "Difference-in-differences model: Trust ~ Post-Wave4 × Military × Thailand. Observations are respondent–institution pairs (government and military trust stacked); Post-Wave4 = 1 for Waves 5–6. Model includes a linear wave trend and country fixed effects. Respondent-clustered SEs. N = `r format(did_res$n_obs, big.mark = ',')`.",
     col.names = c("Term", "Estimate", "SE", "p"),
     booktabs = TRUE
   ) %>%
@@ -645,9 +650,10 @@ These findings carry two implications for our theoretical framework. First, they
 
 ### Regional Variation and Political Geography
 
-Region identifiers available in Waves 4 through 6 allow us to test whether trust erosion concentrated in areas most affected by protest activity and Thaksin-era mobilization. Table 8 displays mean military trust by region across the three waves. Bangkok and the Northeast, the protest movement's urban epicenter and the Red Shirt movement's rural heartland, respectively, experienced virtually identical declines of approximately `r round((reg_bkk_w4 - reg_bkk_w6 + reg_ne_w4 - reg_ne_w6) / 2, 2)` points from Wave 4 to Wave 6. The South, historically a Democrat Party stronghold with lower protest participation, showed the smallest decline at `r round(reg_south_w4 - reg_south_w6, 2)` points, less than half the magnitude of Bangkok and the Northeast.
+Region identifiers available in Waves 4 through 6 allow us to test whether trust erosion concentrated in areas most affected by protest activity and Thaksin-era mobilization. @tbl-regional-means displays mean military trust by region across the three waves. Bangkok and the Northeast, the protest movement's urban epicenter and the Red Shirt movement's rural heartland, respectively, experienced virtually identical declines of approximately `r round((reg_bkk_w4 - reg_bkk_w6 + reg_ne_w4 - reg_ne_w6) / 2, 2)` points from Wave 4 to Wave 6. The South, historically a Democrat Party stronghold with lower protest participation, showed the smallest decline at `r round(reg_south_w4 - reg_south_w6, 2)` points, less than half the magnitude of Bangkok and the Northeast.
 
-```{r tab-regional-means}
+```{r tbl-regional-means}
+#| tbl-cap: "Military trust by region, Waves 4--6. Scale: 1 (none at all) to 4 (a great deal). Descriptive means (unweighted). N = 3,301 (Thailand, Waves 4--6 with non-missing region)."
 reg_table <- reg_means %>%
   select(region, wave_num, trust_mil) %>%
   pivot_wider(names_from = wave_num, values_from = trust_mil,
@@ -660,8 +666,7 @@ reg_table <- reg_means %>%
   mutate(across(where(is.numeric), ~round(., 2)))
 
 reg_table %>%
-  kbl(caption = "Military trust by region, Waves 4--6. Scale: 1 (none at all) to 4 (a great deal). Descriptive means (unweighted). N = 3,301 (Thailand, Waves 4--6 with non-missing region).",
-      col.names = c("Region", "W4", "W5", "W6", "Change W4\\textrightarrow W6", "Change W5\\textrightarrow W6"),
+  kbl(col.names = c("Region", "W4", "W5", "W6", "Change W4\\textrightarrow W6", "Change W5\\textrightarrow W6"),
       booktabs = TRUE, escape = FALSE) %>%
   kable_styling(latex_options = c("hold_position")) %>%
   kable_styling(font_size = 9)
