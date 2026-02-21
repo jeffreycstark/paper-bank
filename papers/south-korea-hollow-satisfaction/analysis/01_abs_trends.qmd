@@ -104,7 +104,7 @@ sat_means <- kor |>
 # ── Quality cluster wave means ────────────────────────────────────────────────
 qual_means <- kor |>
   select(wave, survey_year, weight,
-         qual_extent, qual_current_govt, qual_pref_dem,
+         qual_extent, qual_pref_dem,
          qual_no_change_needed, qual_system_support) |>
   pivot_longer(starts_with("qual_"), names_to = "variable", values_to = "value") |>
   filter(!is.na(value)) |>
@@ -119,7 +119,6 @@ qual_means <- kor |>
     cluster = "Democratic quality",
     label   = recode(variable,
       qual_extent           = "Current democratic extent",
-      qual_current_govt     = "Current government's democratic rating",
       qual_pref_dem         = "Democracy always preferable",
       qual_no_change_needed = "System does not need major change",
       qual_system_support   = "System deserves support"
@@ -265,13 +264,12 @@ more closely than they track quality perception.
 ## Wave means: economic cluster
 
 ```{r econ-means}
+econ_vars <- c("econ_national", "econ_hh_now", "econ_hh_change",
+               "econ_hh_sat", "econ_outlook", "econ_hh_outlook", "econ_status")
+
 econ_means <- kor |>
-  select(wave, survey_year, weight,
-         econ_national, econ_hh_sat, econ_outlook, econ_status) |>
-  pivot_longer(starts_with("econ_") | starts_with("econ_"),
-               names_to = "variable", values_to = "value") |>
-  # pick only our four economic vars (avoid re-picking sat_ or qual_ vars)
-  filter(variable %in% c("econ_national", "econ_hh_sat", "econ_outlook", "econ_status")) |>
+  select(wave, survey_year, weight, all_of(econ_vars)) |>
+  pivot_longer(all_of(econ_vars), names_to = "variable", values_to = "value") |>
   filter(!is.na(value)) |>
   group_by(wave, survey_year, variable) |>
   summarise(
@@ -283,10 +281,13 @@ econ_means <- kor |>
   mutate(
     cluster = "Economic evaluations",
     label   = recode(variable,
-      econ_national = "Current national economic conditions",
-      econ_hh_sat   = "Household income satisfaction",
-      econ_outlook  = "Economic outlook (next year)",
-      econ_status   = "Subjective social status"
+      econ_national    = "National economic conditions (now)",
+      econ_hh_now      = "Household economic conditions (now)",
+      econ_hh_change   = "Household economic conditions (change)",
+      econ_hh_sat      = "Household income satisfaction",
+      econ_outlook     = "National economic outlook (next year)",
+      econ_hh_outlook  = "Household economic outlook (next year)",
+      econ_status      = "Subjective social status (1–10)"
     )
   )
 
@@ -445,7 +446,8 @@ acc_means <- kor |>
     .groups = "drop"
   ) |>
   mutate(
-    label = recode(variable,
+    cluster = "Accountability",
+    label   = recode(variable,
       acc_transparency = "Government transparency (reversed)",
       acc_responsive   = "Government responsiveness to citizens",
       acc_elections    = "Elections free and fair",
@@ -517,7 +519,8 @@ part_means <- kor |>
     .groups = "drop"
   ) |>
   mutate(
-    label = recode(variable,
+    cluster = "Participation",
+    label   = recode(variable,
       part_voted         = "Voted in last election",
       part_petition      = "Signed petition",
       part_demonstration = "Participated in demonstration",
