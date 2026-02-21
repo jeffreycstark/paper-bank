@@ -31,6 +31,7 @@ coefficient plot (Fig 3) which shows both countries.
 
 ```{r setup}
 library(tidyverse)
+library(broom)
 library(patchwork)
 
 project_root <- "/Users/jeffreystark/Development/Research/econdev-authpref"
@@ -69,9 +70,10 @@ survey_years_tw <- c(2001, 2006, 2010, 2014, 2019, 2022)
 ## Compute wave means for both countries
 
 ```{r wave-means}
-compute_wave_means <- function(data, country, years) {
+compute_wave_means <- function(data, cntry_label, years) {
+  # Use .env$ to reference the function arg, not the 'country' column in dat
   data |>
-    filter(country_label == country) |>
+    filter(country_label == .env$cntry_label) |>
     group_by(wave) |>
     summarise(
       n         = n(),
@@ -84,8 +86,8 @@ compute_wave_means <- function(data, country, years) {
       .groups = "drop"
     ) |>
     mutate(
-      year    = years[wave],
-      country = country
+      year         = years[wave],
+      country_name = cntry_label
     )
 }
 
