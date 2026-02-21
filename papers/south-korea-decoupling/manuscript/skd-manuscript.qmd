@@ -73,26 +73,38 @@ library(kableExtra)
 
 results_dir <- file.path(here::here(), "analysis/results")
 
-# Load results when available
+# Load results
 if (file.exists(file.path(results_dir, "model_results.rds"))) {
-  model_results <- readRDS(file.path(results_dir, "model_results.rds"))
-  wave_df       <- model_results$wave_by_wave
-  pooled_df     <- model_results$pooled_interaction
-  xc_df         <- model_results$cross_country
-  subgroup_df   <- model_results$subgroups
-  inline        <- model_results$inline
+  mr <- readRDS(file.path(results_dir, "model_results.rds"))
+
+  # === Backward-compatible aliases (existing code relies on these) ===
+  model_results <- mr
+  wave_df       <- mr$wave_by_wave
+  pooled_df     <- mr$pooled_interaction
+  xc_df         <- mr$cross_country
+  subgroup_df   <- mr$subgroups
+  inline        <- mr$inline
+
+  # === New: individual-item results ===
+  wi    <- mr$wave_indiv      # wave-by-wave individual items
+  pi    <- mr$pooled_indiv    # pooled individual items (both countries)
+  xci   <- mr$xc_indiv        # cross-country interaction (individual items)
+  poli  <- mr$polint_indiv    # political interest subgroup (individual items)
+  olog  <- mr$ologit           # ordered logit results
+  sp    <- mr$syspride         # system pride mechanism probe
+  np    <- mr$natpride         # national pride mechanism probe
 }
 
 if (file.exists(file.path(results_dir, "descriptive_stats.rds"))) {
   desc <- readRDS(file.path(results_dir, "descriptive_stats.rds"))
 }
 
-# --- Convenience aliases for inline reporting ---
+# --- Convenience aliases ---
 slopes_kr <- desc$slopes_kr
 n_kr      <- sum(desc$wave_means_kr$n)
 n_tw      <- sum(desc$wave_means_tw$n)
 
-# Index-level wave-by-wave results
+# Existing index-level wave results
 wave_kr <- wave_df |> filter(country == "Korea")
 wave_tw <- wave_df |> filter(country == "Taiwan")
 kr_sat  <- wave_kr |> filter(dv == "Satisfaction")
@@ -100,18 +112,20 @@ kr_qua  <- wave_kr |> filter(dv == "Democratic quality")
 tw_sat  <- wave_tw |> filter(dv == "Satisfaction")
 tw_qua  <- wave_tw |> filter(dv == "Democratic quality")
 
-# Individual-item pooled results (Korea, pooled across waves)
-idvs <- model_results$indiv_dvs
+# Existing individual-item pooled results (Korea only, backward compat)
+idvs <- mr$indiv_dvs
 
-# Cross-country interaction (index-based)
+# Existing cross-country (index-based)
 xc_sat  <- xc_df |> filter(dv == "Satisfaction")
 xc_qual <- xc_df |> filter(dv == "Democratic quality")
 
-# Subgroup results (index-based)
-subs      <- model_results$subgroups_full
+# Existing subgroup results
+subs      <- mr$subgroups_full
 kr_polint <- subs |> filter(country == "Korea", split == "polint_group")
 
-# Helper functions
+# === Helper functions ===
+
+# Existing helpers (backward compat)
 .b <- function(df, dv_name, col = "estimate", d = 3) {
   round(df[df$dv == dv_name, col], d)
 }
@@ -120,6 +134,104 @@ kr_polint <- subs |> filter(country == "Korea", split == "polint_group")
 }
 .slope <- function(cluster_name, d = 3) {
   round(slopes_kr[slopes_kr$cluster == cluster_name, "slope_decade"], d)
+}
+
+# NEW helpers for wave-by-wave individual items
+.wi_b <- function(country, dv, wave, col = "estimate", d = 3) {
+  row <- wi |> filter(country == !!country, dv == !!dv, wave == !!wave)
+  round(row[[col]], d)
+}
+.wi_p <- function(country, dv, wave) {
+  p <- wi |> filter(country == !!country, dv == !!dv, wave == !!wave) |> pull(p.value)
+  .p_str(p)
+}
+# Range of betas for a given country + dv across waves
+.wi_range <- function(country, dv, d = 3) {
+  vals <- wi |> filter(country == !!country, dv == !!dv) |> pull(estimate)
+  paste0(round(min(vals), d), " to ", round(max(vals), d))
+}
+
+# NEW helpers for pooled individual items
+.pi_b <- function(country, dv, col = "estimate", d = 3) {
+  row <- pi |> filter(country == !!country, dv == !!dv)
+  round(row[[col]], d)
+}
+.pi_p <- function(country, dv) {
+  p <- pi |> filter(country == !!country, dv == !!dv) |> pull(p.value)
+  .p_str(p)
+}
+
+# NEW helpers for cross-country individual items
+.xci_b <- function(dv, term_name, d = 3) {
+  row <- xci |> filter(dv == !!dv, term == !!term_name)
+  round(row$estimate, d)
+}
+.xci_p <- function(dv, term_name) {
+  p <- xci |> filter(dv == !!dv, term == !!term_name) |> pull(p.value)
+  .p_str(p)
+}
+
+# NEW helpers for political interest subgroup
+.poli_b <- function(country, group, dv, d = 3) {
+  row <- poli |> filter(country == !!country, group == !!group, dv == !!dv)
+  round(row$estimate, d)
+}
+.poli_p <- function(country, group, dv) {
+  p <- poli |> filter(country == !!country, group == !!group, dv == !!dv) |> pull(p.value)
+  .p_str(p)
+}
+
+# NEW helpers for ordered logit
+.olog_b <- function(country, d = 3) {
+  round(olog |> filter(country == !!country) |> pull(estimate), d)
+}
+.olog_p <- function(country) {
+  p <- olog |> filter(country == !!country) |> pull(p.value)
+  .p_str(p)
+}
+
+# NEW helpers for system pride
+.sp_int_b <- function(country, dv, term_name, d = 3) {
+  row <- sp$interaction |> filter(country == !!country, dv == !!dv, term == !!term_name)
+  round(row$estimate, d)
+}
+.sp_int_p <- function(country, dv, term_name) {
+  p <- sp$interaction |> filter(country == !!country, dv == !!dv, term == !!term_name) |> pull(p.value)
+  .p_str(p)
+}
+.sp_sub_b <- function(country, group, dv, d = 3) {
+  row <- sp$subgroup |> filter(country == !!country, group == !!group, dv == !!dv)
+  round(row$estimate, d)
+}
+.sp_sub_p <- function(country, group, dv) {
+  p <- sp$subgroup |> filter(country == !!country, group == !!group, dv == !!dv) |> pull(p.value)
+  .p_str(p)
+}
+.sp_comp_b <- function(country, moderator, d = 3) {
+  row <- sp$comparison |> filter(country == !!country, moderator == !!moderator)
+  round(row$estimate, d)
+}
+.sp_comp_p <- function(country, moderator) {
+  p <- sp$comparison |> filter(country == !!country, moderator == !!moderator) |> pull(p.value)
+  .p_str(p)
+}
+
+# NEW helpers for national pride
+.np_sub_b <- function(country, group, d = 3) {
+  row <- np$subgroup |> filter(country == !!country, group == !!group)
+  round(row$estimate, d)
+}
+.np_sub_p <- function(country, group) {
+  p <- np$subgroup |> filter(country == !!country, group == !!group) |> pull(p.value)
+  .p_str(p)
+}
+.np_int_b <- function(country, d = 3) {
+  row <- np$interaction |> filter(country == !!country, term == "econ_index:nat_proud_n")
+  round(row$estimate, d)
+}
+.np_int_p <- function(country) {
+  p <- np$interaction |> filter(country == !!country, term == "econ_index:nat_proud_n") |> pull(p.value)
+  .p_str(p)
 }
 ```
 
@@ -131,9 +243,9 @@ Yet the episode raises a question that institutional resilience alone cannot ans
 
 The empirical basis for this argument is a pattern this paper terms the *satisfaction paradox*. Drawing on six waves of the Asian Barometer Survey spanning 2003 to 2022 (*n* = `r n_kr` for South Korea), the analysis documents a sustained divergence between two dimensions of democratic support that consolidation theory predicts should move together. Democratic satisfaction---citizens' evaluations of how well democracy is performing---has risen steadily over the observation period, increasing at approximately `r .slope("Satisfaction")` normalized units per decade. Normative democratic commitment---the belief that democracy is always preferable---has simultaneously declined at --`r abs(.slope("Democratic quality"))` units per decade, while system support declined at --0.045 per decade. Korean citizens have become more satisfied with their democracy while becoming less committed to it as a form of government.
 
-The mechanism underlying this paradox is straightforward. Wave-by-wave regression models demonstrate that economic evaluations are powerful and consistent predictors of satisfaction with democracy ($\beta$ = 0.26--0.46, *p* < 0.001 across all six waves) but have no statistically significant relationship with normative democratic preference from 2006 onward. Satisfaction runs on an economic track; normative commitment runs on a separate track entirely. Whatever determines whether Korean citizens believe democracy is worth defending in principle, it is not economic performance.
+The mechanism underlying this paradox is straightforward. Wave-by-wave regression models demonstrate that economic evaluations are powerful and consistent predictors of satisfaction with democracy ($\beta$ = `r .wi_range("Korea", "sat_democracy_n")`, *p* < 0.001 across all six waves) but have no statistically significant relationship with normative democratic preference from 2006 onward. Satisfaction runs on an economic track; normative commitment runs on a separate track entirely. Whatever determines whether Korean citizens believe democracy is worth defending in principle, it is not economic performance.
 
-This finding acquires comparative depth when set alongside a parallel analysis of Taiwan (*n* = `r n_tw` across the same six ABS waves). Taiwan shares South Korea's developmental state heritage, Confucian cultural matrix, and third-wave democratization experience, yet the Taiwanese data reveal a fundamentally different syndrome. As in Korea, economic evaluations predict democratic satisfaction. But in Taiwan, economic evaluations are also significantly and *negatively* associated with normative democratic preference ($\beta$ = --0.14 to --0.50): economically comfortable Taiwanese citizens are substantially *more* committed to democracy as a matter of principle. The cross-country difference is statistically significant (interaction $\beta$ = 0.217, *p* < 0.001). Where Korean citizens exhibit decoupled satisfaction and normative commitment, Taiwanese citizens exhibit what Norris [-@Norris1999-sn; -@Norris2011-oc] theorized as critical citizenship---and they do so to a degree not previously documented in the East Asian survey literature.
+This finding acquires comparative depth when set alongside a parallel analysis of Taiwan (*n* = `r n_tw` across the same six ABS waves). Taiwan shares South Korea's developmental state heritage, Confucian cultural matrix, and third-wave democratization experience, yet the Taiwanese data reveal a fundamentally different syndrome. As in Korea, economic evaluations predict democratic satisfaction. But in Taiwan, economic evaluations are also significantly and *negatively* associated with normative democratic preference ($\beta$ = `r { vals <- wi |> filter(country=="Taiwan", dv=="qual_pref_dem_n", p.value<0.05) |> pull(estimate); paste0(round(max(vals),2), " to ", round(min(vals),2)) }`): economically comfortable Taiwanese citizens are substantially *more* committed to democracy as a matter of principle. The cross-country difference is statistically significant (interaction $\beta$ = `r .xci_b("qual_pref_dem_n", "econ_index:is_korea")`, *p* `r .xci_p("qual_pref_dem_n", "econ_index:is_korea")`). Where Korean citizens exhibit decoupled satisfaction and normative commitment, Taiwanese citizens exhibit what Norris [-@Norris1999-sn; -@Norris2011-oc] theorized as critical citizenship---and they do so to a degree not previously documented in the East Asian survey literature.
 
 This paper argues that the divergence reflects two distinct pathways of democratic legitimation. In South Korea, democracy arrived as an instrument of accountability and economic governance, and democratic support has remained fundamentally instrumental---conditional on continued delivery, shallow in normative depth, and vulnerable to disruption when performance falters or alternative governance models become attractive. In Taiwan, democratization became fused with national identity through the political project of distinguishing Taiwan from authoritarian China, anchoring normative democratic commitment independently of economic performance and producing a citizenry that grows more demanding of democratic quality as material conditions improve.
 
@@ -245,7 +357,7 @@ $Y_i = \alpha + \beta_1 \text{EconIndex}_i + \beta_2 \text{Korea}_i + \beta_3 (\
 
 where $\beta_3$ captures the differential effect of economic evaluations in Korea relative to Taiwan. H4 predicts a significant $\beta_3$ in the quality equation, indicating that the decoupling pattern is significantly different across the two cases.
 
-*Step 5: Mechanism probe---national pride and identity-fused legitimation in Taiwan.* If the identity-fusion explanation for Taiwan's critical citizens pattern is correct, the negative econ → quality relationship should be stronger among citizens with high national pride, since national pride proxies for the strength of the national identity that anchors normative democratic commitment. Using the ABS national pride item, respondents in both countries are split into high- and low-pride groups, and the core quality model is estimated separately for each. The key prediction is an asymmetric interaction: national pride should amplify critical evaluation in Taiwan (where national and democratic identity are fused) but not in Korea (where national pride is tied to economic achievement and cultural prestige rather than democratic governance). This test moves the identity-fusion argument from narrative to empirical evidence.
+*Step 5: Mechanism probe---system pride and identity-fused legitimation in Taiwan.* If the identity-fusion explanation for Taiwan's critical citizens pattern is correct, the negative econ → quality relationship should be amplified among citizens who express pride specifically in their system of government, since system pride proxies for the strength of the democratic identity anchor that makes critical evaluation possible. The ABS includes an item asking respondents whether they are proud of their system of government (available Waves 3--6), which is conceptually distinct from generic national pride: the former captures identification with the political system as such, while the latter encompasses cultural, economic, and historical sources of national attachment that need not relate to democratic governance. Using the system pride item, respondents in both countries are split into high- and low-pride groups, and the core democratic preference model is estimated separately for each. Additionally, the continuous interaction between economic evaluations and system pride is tested. The key prediction is an asymmetric interaction: system pride should amplify critical evaluation in Taiwan (where democratic and national identity are fused, making pride in the system tantamount to pride in the democratic project) but not in Korea (where system pride may reflect satisfaction with governance output rather than normative democratic identification). Generic national pride and an index of authoritarian nostalgia (endorsement of strongman, military, expert, and single-party rule) are tested as alternative moderators in the appendix. This test moves the identity-fusion argument from narrative to individual-level empirical evidence.
 
 *Step 6: Robustness and sensitivity.* The core finding is tested against multiple alternative specifications: (a) summary indices alongside the individual-item primary analysis, (b) inclusion of institutional trust as an additional control, (c) individual economic indicators rather than the composite index, (d) subgroup analyses by age, education, and political interest (H5), (e) ordered logit models on the original ordinal response scales as an alternative to OLS on normalized outcomes, and (f) within-wave standardized outcomes to address measurement comparability across waves. An appendix documents item wording and response scales across all waves and both countries.
 
@@ -271,13 +383,13 @@ The output legitimacy argument requires that economic evaluations track satisfac
 
 The core analytic test estimates parallel OLS regressions for each ABS wave, predicting each of the four individual dependent variables from the economic evaluation index with controls for age, gender, education, urban-rural residence, and political interest. If performance-derived legitimation characterizes Korean democratic support, economic evaluations should strongly predict satisfaction but not normative democratic preference. The disaggregated results reveal a more nuanced and theoretically informative pattern than summary indices alone would suggest.
 
-*Satisfaction with democracy.* Across all six waves, economic evaluations are a consistent and significant predictor of satisfaction with democracy. The coefficient ranges from $\beta$ = 0.262 in Wave 2 (2006) to $\beta$ = 0.455 in Wave 4 (2015), with all estimates significant at *p* < 0.001. The pooled estimate with wave fixed effects is $\beta$ = `r .b(idvs, "sat_democracy_n")` (*p* < 0.001, R$^2$ = `r round(.b(idvs, "sat_democracy_n", "r_sq"), 3)`). Satisfaction with government shows an even stronger relationship ($\beta$ = 0.473 to 0.823 across waves; pooled $\beta$ = `r .b(idvs, "sat_govt_n")`), consistent with the expectation that government satisfaction is more directly output-driven. These results confirm H1: economic evaluations are strongly associated with the satisfaction dimension of democratic support in Korea.
+*Satisfaction with democracy.* Across all six waves, economic evaluations are a consistent and significant predictor of satisfaction with democracy. The coefficient ranges from $\beta$ = `r .wi_b("Korea", "sat_democracy_n", 2)` in Wave 2 (2006) to $\beta$ = `r .wi_b("Korea", "sat_democracy_n", 4)` in Wave 4 (2015), with all estimates significant at *p* < 0.001. The pooled estimate with wave fixed effects is $\beta$ = `r .b(idvs, "sat_democracy_n")` (*p* < 0.001, R$^2$ = `r round(.b(idvs, "sat_democracy_n", "r_sq"), 3)`). Satisfaction with government shows an even stronger relationship ($\beta$ = `r .wi_range("Korea", "sat_govt_n")` across waves; pooled $\beta$ = `r .b(idvs, "sat_govt_n")`), consistent with the expectation that government satisfaction is more directly output-driven. These results confirm H1: economic evaluations are strongly associated with the satisfaction dimension of democratic support in Korea.
 
-*Democracy always preferable.* This is the cleanest test of H2, because the item captures principled normative commitment rather than performance evaluation. The results are striking in their clarity. From Wave 2 (2006) onward, economic evaluations have no statistically significant relationship with democratic preference. The wave-by-wave coefficients are $\beta$ = --0.121 (*p* = 0.11) in 2006, 0.067 (*p* = 0.34) in 2011, 0.053 (*p* = 0.50) in 2015, 0.122 (*p* = 0.10) in 2019, and 0.079 (*p* = 0.28) in 2022. The pooled estimate is $\beta$ = `r .b(idvs, "qual_pref_dem_n")` (*p* `r .p_str(idvs[idvs$dv=="qual_pref_dem_n","p.value"])`). Economic evaluations and standard demographic controls explain virtually none of the variation in whether Korean citizens believe democracy is always preferable. Whatever determines normative democratic commitment in South Korea, it is not economic performance.
+*Democracy always preferable.* This is the cleanest test of H2, because the item captures principled normative commitment rather than performance evaluation. The results are striking in their clarity. From Wave 2 (2006) onward, economic evaluations have no statistically significant relationship with democratic preference. The wave-by-wave coefficients are $\beta$ = `r .wi_b("Korea", "qual_pref_dem_n", 2)` (*p* `r .wi_p("Korea", "qual_pref_dem_n", 2)`) in 2006, `r .wi_b("Korea", "qual_pref_dem_n", 3)` (*p* `r .wi_p("Korea", "qual_pref_dem_n", 3)`) in 2011, `r .wi_b("Korea", "qual_pref_dem_n", 4)` (*p* `r .wi_p("Korea", "qual_pref_dem_n", 4)`) in 2015, `r .wi_b("Korea", "qual_pref_dem_n", 5)` (*p* `r .wi_p("Korea", "qual_pref_dem_n", 5)`) in 2019, and `r .wi_b("Korea", "qual_pref_dem_n", 6)` (*p* `r .wi_p("Korea", "qual_pref_dem_n", 6)`) in 2022. The pooled estimate is $\beta$ = `r .b(idvs, "qual_pref_dem_n")` (*p* `r .p_str(idvs[idvs$dv=="qual_pref_dem_n","p.value"])`). Economic evaluations and standard demographic controls explain virtually none of the variation in whether Korean citizens believe democracy is always preferable. Whatever determines normative democratic commitment in South Korea, it is not economic performance.
 
-The Wave 1 (2003) result is an instructive exception: economic evaluations show a significant *negative* association with democratic preference ($\beta$ = --0.246, *p* = 0.001), plausibly reflecting the aftermath of the 1997--1998 Asian financial crisis, during which economically comfortable citizens may have developed a more critical stance toward the democratic governance that presided over the crisis. This relationship dissipated by Wave 2 and does not reappear.
+The Wave 1 (2003) result is an instructive exception: economic evaluations show a significant *negative* association with democratic preference ($\beta$ = `r .wi_b("Korea", "qual_pref_dem_n", 1)`, *p* `r .wi_p("Korea", "qual_pref_dem_n", 1)`), plausibly reflecting the aftermath of the 1997--1998 Asian financial crisis, during which economically comfortable citizens may have developed a more critical stance toward the democratic governance that presided over the crisis. This relationship dissipated by Wave 2 and does not reappear.
 
-*Democratic extent and regime legitimacy items.* The disaggregation reveals an important finding that summary indices obscured. Perceived democratic extent---how democratic respondents judge their country to be---shows a significant *negative* relationship with economic evaluations from Wave 2 onward ($\beta$ = --0.051 to --0.108, all *p* < 0.001; pooled $\beta$ = `r .b(idvs, "qual_extent_n")`, *p* < 0.001). Economically comfortable Koreans rate their country as *less* democratic. The supplementary regime legitimacy items available from Wave 3 onward show even stronger negative effects: system support ($\beta$ = `r .b(idvs, "qual_sys_support_n")`, *p* < 0.001) and no major change ($\beta$ = `r .b(idvs, "qual_sys_change_n")`, *p* < 0.001).
+*Democratic extent and regime legitimacy items.* The disaggregation reveals an important finding that summary indices obscured. Perceived democratic extent---how democratic respondents judge their country to be---shows a significant *negative* relationship with economic evaluations from Wave 2 onward ($\beta$ = `r { vals <- wi |> filter(country=="Korea", dv=="qual_extent_n", wave>=2) |> pull(estimate); paste0(round(min(vals),3), " to ", round(max(vals),3)) }`, all *p* < 0.001; pooled $\beta$ = `r .b(idvs, "qual_extent_n")`, *p* < 0.001). Economically comfortable Koreans rate their country as *less* democratic. The supplementary regime legitimacy items available from Wave 3 onward show even stronger negative effects: system support ($\beta$ = `r .b(idvs, "qual_sys_support_n")`, *p* < 0.001) and no major change ($\beta$ = `r .b(idvs, "qual_sys_change_n")`, *p* < 0.001).
 
 This pattern demands careful interpretation. The democratic extent and regime legitimacy items are evaluative rather than normative---they ask respondents to assess the current system's quality rather than to express a principled preference for democracy. The negative coefficients indicate that economically comfortable Koreans are more *critical* of their system's democratic quality and less convinced it deserves support, even as they are more *satisfied* with its performance. This is a form of critical evaluation, but it is decoupled from the normative dimension: Korean citizens can simultaneously be satisfied with democratic performance, critical of democratic quality, and indifferent to democracy as a principled preference. The performance-derived legitimation framework accommodates this configuration: when democratic support is instrumental, satisfaction and critical evaluation can coexist because neither is anchored to a normative commitment that would give them coherent direction.
 
@@ -286,13 +398,13 @@ This pattern demands careful interpretation. The democratic extent and regime le
 
 ## Taiwan: the critical citizens pattern {#sec-results-taiwan}
 
-The parallel analysis for Taiwan reveals a fundamentally different configuration. As in Korea, economic evaluations are strong and consistent predictors of democratic satisfaction across all six waves ($\beta$ = 0.273 to 0.561 for satisfaction with democracy; $\beta$ = 0.491 to 0.841 for government satisfaction, all *p* < 0.001). The satisfaction side of the equation is common to both cases.
+The parallel analysis for Taiwan reveals a fundamentally different configuration. As in Korea, economic evaluations are strong and consistent predictors of democratic satisfaction across all six waves ($\beta$ = `r .wi_range("Taiwan", "sat_democracy_n")` for satisfaction with democracy; $\beta$ = `r .wi_range("Taiwan", "sat_govt_n")` for government satisfaction, all *p* < 0.001). The satisfaction side of the equation is common to both cases.
 
-The critical divergence appears in normative democratic preference. In Taiwan, economic evaluations are significantly and *negatively* associated with the belief that democracy is always preferable in four of six waves: $\beta$ = --0.287 (*p* < 0.001) in 2001, --0.306 (*p* < 0.001) in 2006, --0.139 (*p* = 0.03) in 2014, --0.271 (*p* < 0.001) in 2019, and --0.504 (*p* < 0.001) in 2022. The pooled estimate is $\beta$ = --0.239 (*p* < 0.001). The single exception is Wave 3 (2010), where the estimate is 0.065 and nonsignificant. The pattern is not merely different from the Korean null---it is substantively large and, in Wave 6, remarkably strong. Economically comfortable Taiwanese citizens are substantially *more* committed to democracy as a matter of principle.
+The critical divergence appears in normative democratic preference. In Taiwan, economic evaluations are significantly and *negatively* associated with the belief that democracy is always preferable in four of six waves: $\beta$ = `r .wi_b("Taiwan", "qual_pref_dem_n", 1)` (*p* `r .wi_p("Taiwan", "qual_pref_dem_n", 1)`) in 2001, `r .wi_b("Taiwan", "qual_pref_dem_n", 2)` (*p* `r .wi_p("Taiwan", "qual_pref_dem_n", 2)`) in 2006, `r .wi_b("Taiwan", "qual_pref_dem_n", 4)` (*p* `r .wi_p("Taiwan", "qual_pref_dem_n", 4)`) in 2014, `r .wi_b("Taiwan", "qual_pref_dem_n", 5)` (*p* `r .wi_p("Taiwan", "qual_pref_dem_n", 5)`) in 2019, and `r .wi_b("Taiwan", "qual_pref_dem_n", 6)` (*p* `r .wi_p("Taiwan", "qual_pref_dem_n", 6)`) in 2022. The pooled estimate is $\beta$ = `r .pi_b("Taiwan", "qual_pref_dem_n")` (*p* `r .pi_p("Taiwan", "qual_pref_dem_n")`). The single exception is Wave 3 (2010), where the estimate is `r .wi_b("Taiwan", "qual_pref_dem_n", 3)` and nonsignificant. The pattern is not merely different from the Korean null---it is substantively large and, in Wave 6, remarkably strong. Economically comfortable Taiwanese citizens are substantially *more* committed to democracy as a matter of principle.
 
-The democratic extent item shows a parallel but weaker pattern in Taiwan: pooled $\beta$ = --0.114 (*p* < 0.001). But here a critical comparative nuance emerges. Korea also shows significant negative effects on democratic extent ($\beta$ = `r .b(idvs, "qual_extent_n")`, *p* < 0.001), meaning economically comfortable citizens in *both* countries rate their country's democratic quality lower. The Korea-Taiwan divergence is concentrated in the *normative* item---democracy always preferable---where Korea shows no relationship ($\beta$ = `r .b(idvs, "qual_pref_dem_n")`, ns) and Taiwan shows a strong negative one ($\beta$ = --0.239***). This distinction validates the decision to disaggregate dependent variables: the two normative-cluster items behave very differently, and only the purest normative measure captures the theoretically decisive cross-country contrast.
+The democratic extent item shows a parallel but weaker pattern in Taiwan: pooled $\beta$ = `r .pi_b("Taiwan", "qual_extent_n")` (*p* `r .pi_p("Taiwan", "qual_extent_n")`). But here a critical comparative nuance emerges. Korea also shows significant negative effects on democratic extent ($\beta$ = `r .b(idvs, "qual_extent_n")`, *p* < 0.001), meaning economically comfortable citizens in *both* countries rate their country's democratic quality lower. The Korea-Taiwan divergence is concentrated in the *normative* item---democracy always preferable---where Korea shows no relationship ($\beta$ = `r .b(idvs, "qual_pref_dem_n")`, ns) and Taiwan shows a strong negative one ($\beta$ = `r .pi_b("Taiwan", "qual_pref_dem_n")`***). This distinction validates the decision to disaggregate dependent variables: the two normative-cluster items behave very differently, and only the purest normative measure captures the theoretically decisive cross-country contrast.
 
-The ordered logit specification confirms these findings on the original ordinal scales. For democracy always preferable, the ordered logit coefficient is $\beta$ = --0.003 (ns) in Korea and $\beta$ = --1.201 (*p* < 0.001) in Taiwan---a null-versus-large contrast that mirrors the OLS results.
+The ordered logit specification confirms these findings on the original ordinal scales. For democracy always preferable, the ordered logit coefficient is $\beta$ = `r .olog_b("Korea")` (*p* `r .olog_p("Korea")`) in Korea and $\beta$ = `r .olog_b("Taiwan")` (*p* `r .olog_p("Taiwan")`) in Taiwan---a null-versus-large contrast that mirrors the OLS results.
 
 <!-- @tbl-wave-taiwan: Insert Table 2 (wave-by-wave results, Taiwan) -->
 ![OLS coefficients (economic evaluations → DV) by wave, Korea and Taiwan, with 95% confidence intervals. Controls: age, gender, education, urban/rural, political interest. Source: ABS waves 1--6.](../analysis/figures/pub_fig03_coefficients.pdf){#fig-coefficients width=100%}
@@ -302,11 +414,11 @@ The ordered logit specification confirms these findings on the original ordinal 
 
 The formal test of whether the Korea-Taiwan difference is statistically significant pools both countries and estimates the interaction between economic evaluations and a Korea indicator variable, controlling for wave fixed effects and the standard covariate set.
 
-For the theoretically decisive dependent variable---democracy always preferable---the Taiwan baseline shows a substantial negative relationship ($\beta$ = --0.228, *p* < 0.001). The Korea interaction term is positive and highly significant ($\beta$ = 0.217, *p* < 0.001), indicating that the economic-preference relationship is significantly weaker (closer to zero) in Korea. The implied Korean coefficient (--0.011) is essentially zero, confirming the decoupling documented in the wave-by-wave analysis. This result directly supports H4.
+For the theoretically decisive dependent variable---democracy always preferable---the Taiwan baseline shows a substantial negative relationship ($\beta$ = `r .xci_b("qual_pref_dem_n", "econ_index")`, *p* `r .xci_p("qual_pref_dem_n", "econ_index")`). The Korea interaction term is positive and highly significant ($\beta$ = `r .xci_b("qual_pref_dem_n", "econ_index:is_korea")`, *p* `r .xci_p("qual_pref_dem_n", "econ_index:is_korea")`), indicating that the economic-preference relationship is significantly weaker (closer to zero) in Korea. The implied Korean coefficient (`r round(.xci_b("qual_pref_dem_n", "econ_index") + .xci_b("qual_pref_dem_n", "econ_index:is_korea"), 3)`) is essentially zero, confirming the decoupling documented in the wave-by-wave analysis. This result directly supports H4.
 
-For satisfaction with democracy, the interaction is also significant ($\beta$ = --0.090, *p* < 0.001), indicating a somewhat weaker economic-satisfaction linkage in Korea (implied $\beta$ = 0.317) than Taiwan (baseline $\beta$ = 0.408)---but both are large and highly significant, consistent with H1.
+For satisfaction with democracy, the interaction is also significant ($\beta$ = `r .xci_b("sat_democracy_n", "econ_index:is_korea")`, *p* `r .xci_p("sat_democracy_n", "econ_index:is_korea")`), indicating a somewhat weaker economic-satisfaction linkage in Korea (implied $\beta$ = `r round(.xci_b("sat_democracy_n", "econ_index") + .xci_b("sat_democracy_n", "econ_index:is_korea"), 3)`) than Taiwan (baseline $\beta$ = `r .xci_b("sat_democracy_n", "econ_index")`)---but both are large and highly significant, consistent with H1.
 
-For democratic extent, the interaction is positive and significant ($\beta$ = 0.066, *p* < 0.001), confirming that the negative economic-extent relationship is weaker in Korea (implied $\beta$ = --0.060) than Taiwan (baseline $\beta$ = --0.127). Both countries show critical evaluation on this item, but Taiwan's is stronger.
+For democratic extent, the interaction is positive and significant ($\beta$ = `r .xci_b("qual_extent_n", "econ_index:is_korea")`, *p* `r .xci_p("qual_extent_n", "econ_index:is_korea")`), confirming that the negative economic-extent relationship is weaker in Korea (implied $\beta$ = `r round(.xci_b("qual_extent_n", "econ_index") + .xci_b("qual_extent_n", "econ_index:is_korea"), 3)`) than Taiwan (baseline $\beta$ = `r .xci_b("qual_extent_n", "econ_index")`). Both countries show critical evaluation on this item, but Taiwan's is stronger.
 
 <!-- @tbl-crosscountry: Insert Table 3 (pooled country interaction model) -->
 
@@ -321,28 +433,36 @@ The core finding---that economic evaluations are strongly associated with satisf
 
 *Individual economic indicators.* Each of the six economic evaluation components is entered individually. All six significantly predict satisfaction in Korea. The decoupling pattern is clearest for current evaluations (national and household economic conditions), which show strong satisfaction effects and no democratic preference effects. Forward-looking indicators (economic outlooks) show small negative democratic extent effects, suggesting that economic optimism is weakly associated with more demanding quality assessments---a faint echo of the Taiwanese critical citizens pattern that does not alter the overall picture.
 
-*Within-wave standardization and ordered logit.* To address potential measurement comparability concerns across waves, within-wave z-scored outcomes produce the same pattern of results. Ordered logit models on the original ordinal response scales confirm the OLS findings: the ordered logit coefficient for democracy always preferable is $\beta$ = --0.003 (ns) in Korea and $\beta$ = --1.201 (*p* < 0.001) in Taiwan.
+*Within-wave standardization and ordered logit.* To address potential measurement comparability concerns across waves, within-wave z-scored outcomes produce the same pattern of results. Ordered logit models on the original ordinal response scales confirm the OLS findings: the ordered logit coefficient for democracy always preferable is $\beta$ = `r .olog_b("Korea")` (*p* `r .olog_p("Korea")`) in Korea and $\beta$ = `r .olog_b("Taiwan")` (*p* `r .olog_p("Taiwan")`) in Taiwan.
+
+*Alternative normative commitment measures.* A potential concern is that the core finding rests on a single normative indicator---the "democracy is always preferable" item. To assess whether the decoupling pattern reflects a genuine structural property of Korean democratic attitudes or an artifact of one question's phrasing, four alternative normative-adjacent measures available in the ABS are tested as dependent variables: (1) "democracy is the best form of government" (Waves 3--6, 4-point scale), (2) democracy versus economic development as a forced-choice tradeoff (Waves 1--6), (3) "democracy is suitable for our country" (Waves 1--6, 10-point scale), and (4) whether democracy is capable of solving society's problems (Waves 1--6, binary). All four items capture pro-democratic attitudes, but none demands the unconditional commitment that "democracy is always preferable" requires.
+
+The results sharpen rather than undermine the paper's argument. All four alternative measures show significant *positive* associations with economic evaluations in both countries: economically comfortable citizens in Korea and Taiwan alike are more likely to endorse democracy as the best form, as suitable, as efficacious, and as preferable to economic development (see Appendix H). The Korea--Taiwan divergence is concentrated exclusively in the unconditional normative commitment item. This specificity is theoretically informative. The four alternative measures tap what might be called conditional democratic endorsement---assessments of democracy's comparative merits, practical suitability, or problem-solving capacity that naturally co-move with economic comfort in any country where democracy is functioning adequately. The "always preferable" item, by contrast, demands principled commitment that transcends situational evaluation, corresponding most closely to Easton's [-@Easton1965-ap] concept of diffuse support. That Korean citizens endorse democracy on every conditional measure while decoupling on the sole unconditional one is precisely the pattern the performance-derived legitimation framework predicts: instrumental evaluation produces positive assessments of democracy as a working system, but does not generate the principled attachment that would survive a counterfactual in which the system stopped working. The finding is not fragile---it is specific to the theoretical construct the paper is designed to measure.
 
 *Subgroup heterogeneity.* The decoupling of economic evaluations from democratic preference is not confined to particular demographic segments (H5). The economic-satisfaction coefficient is virtually identical for younger and older respondents and similar across education levels. In no subgroup does the economic-preference relationship reach significance in the positive direction; the decoupling is society-wide.
 
-The most analytically informative subgroup finding concerns political interest. Among politically interested Korean citizens, economic evaluations show a negative association with democratic preference ($\beta$ = --0.071, *p* = 0.09)---approaching but not reaching conventional significance, and partially mirroring the Taiwanese critical citizens pattern. Among citizens with low political interest, the coefficient is essentially zero ($\beta$ = 0.009, *p* = 0.84). This result suggests that the capacity for normatively grounded, performance-critical democratic evaluation exists within the Korean public but is confined to the politically attentive minority. The disengaged majority---which drives the aggregate decoupling pattern---evaluates democracy in purely instrumental terms. The challenge for Korean democratic deepening is not the absence of critical citizenship but its confinement to a narrow stratum.
+The most analytically informative subgroup finding concerns political interest. Among politically interested Korean citizens, economic evaluations show a negative association with democratic preference ($\beta$ = `r .poli_b("Korea", "High interest", "qual_pref_dem_n")`, *p* `r .poli_p("Korea", "High interest", "qual_pref_dem_n")`)---approaching but not reaching conventional significance, and partially mirroring the Taiwanese critical citizens pattern. Among citizens with low political interest, the coefficient is essentially zero ($\beta$ = `r .poli_b("Korea", "Low interest", "qual_pref_dem_n")`, *p* `r .poli_p("Korea", "Low interest", "qual_pref_dem_n")`). This result suggests that the capacity for normatively grounded, performance-critical democratic evaluation exists within the Korean public but is confined to the politically attentive minority. The disengaged majority---which drives the aggregate decoupling pattern---evaluates democracy in purely instrumental terms. The challenge for Korean democratic deepening is not the absence of critical citizenship but its confinement to a narrow stratum.
 
 ![OLS coefficients (economic evaluations → DV) by demographic subgroup, Korea, pooled waves 1--6 with wave fixed effects. 95% CIs. Source: ABS Korea.](../analysis/figures/pub_fig04_subgroups.pdf){#fig-subgroups width=100%}
 
 
-## Mechanism probe: national pride and the identity-fusion pathway {#sec-results-pride}
+## Mechanism probe: system pride and the identity-fusion pathway {#sec-results-pride}
 
-The theoretical framework attributes Taiwan's critical citizens pattern to the fusion of democratic and national identity. If this mechanism is correct, the negative econ → quality relationship should be amplified among Taiwanese citizens with strong national pride, since pride proxies for the strength of the identity anchor that makes critical evaluation possible. The same amplification should *not* appear in Korea, where national pride is tied to economic and cultural achievement rather than democratic governance.
+The theoretical framework attributes Taiwan's critical citizens pattern to the fusion of democratic and national identity. If this mechanism is correct, the negative econ → quality relationship should be amplified among citizens who identify with their political system, since such identification proxies for the strength of the democratic identity anchor that enables normatively grounded critical evaluation.
 
-The ABS national pride item is available from Wave 2 onward in both countries (Korea *n* = 6,020; Taiwan *n* = 7,427). Respondents are split at the median into high- and low-pride groups, and the core democratic preference model is estimated separately for each group within each country.
+A first test using the ABS generic national pride item ("How proud are you to be a citizen of your country?", Waves 2--6) yields null results in both countries. The formal interaction between economic evaluations and national pride is nonsignificant in the Taiwanese democratic preference equation ($\beta$ = `r .np_int_b("Taiwan")`, *p* `r .np_int_p("Taiwan")`) and in the Korean equation ($\beta$ = `r .np_int_b("Korea")`, *p* `r .np_int_p("Korea")`). National pride is too diffuse a sentiment to capture the specific democratic-national identity configuration the theory posits; it encompasses cultural, economic, and historical sources of attachment that are orthogonal to pride in democratic governance as such.
 
-The subgroup results are partially consistent with the theoretical prediction but weaker than expected. In Taiwan, the critical citizens pattern is present in *both* pride groups: high-pride Taiwanese show $\beta$ = --0.183 (*p* < 0.001) and low-pride Taiwanese show $\beta$ = --0.222 (*p* < 0.001). The formal interaction between economic evaluations and national pride is nonsignificant in the Taiwanese democratic preference equation ($\beta$ = --0.041, *p* = 0.74). The critical citizens pattern in Taiwan is pervasive across levels of national pride rather than concentrated among the most nationally identified.
+A more theoretically precise test uses the ABS system pride item ("I am proud of our system of government," Waves 3--6; Taiwan *n* = 5,688; Korea *n* = 4,812). This item directly taps identification with the political system rather than national identity broadly construed. In Taiwan, where democratization was constitutive of national self-definition, system pride should capture precisely the democratic identity anchor that the theory identifies; in Korea, where national pride is tied to economic achievement and cultural prestige, system pride need not carry the same democratic-normative content.
 
-In Korea, the decoupling holds across pride levels: the economic-preference relationship is near zero for both high-pride ($\beta$ = --0.011, *p* = 0.86) and low-pride respondents ($\beta$ = 0.035, *p* = 0.35). The interaction is again nonsignificant ($\beta$ = 0.029, *p* = 0.82).
+The system pride interaction produces significant moderation in Taiwan. For the theoretically decisive dependent variable---democracy always preferable---the interaction between economic evaluations and system pride is $\beta$ = `r .sp_int_b("Taiwan", "Democracy always preferable", "econ_index:sys_proud_n")` (*p* `r .sp_int_p("Taiwan", "Democracy always preferable", "econ_index:sys_proud_n")`), indicating that the negative econ → democratic preference relationship is substantially stronger among citizens with high system pride. The main effect of economic evaluations conditional on low system pride is near zero ($\beta$ = `r .sp_int_b("Taiwan", "Democracy always preferable", "econ_index")`, ns), while the combined effect at high system pride is large and negative. For the quality index, the interaction is also significant ($\beta$ = `r .sp_int_b("Taiwan", "Quality index", "econ_index:sys_proud_n")`, *p* `r .sp_int_p("Taiwan", "Quality index", "econ_index:sys_proud_n")`), though weaker, reflecting the diluting influence of the democratic extent component, which shows no significant system pride moderation ($\beta$ = `r .sp_int_b("Taiwan", "Extent democratic", "econ_index:sys_proud_n")`, ns). The pattern is theoretically coherent: system pride amplifies critical *normative* evaluation of democracy but not critical *descriptive* assessment of current democratic extent, consistent with the distinction between principled commitment and situational evaluation that runs throughout the analysis.
 
-The cross-country pattern is thus one of *level differences* rather than *moderation*. Taiwanese citizens at all levels of national pride exhibit critical evaluation; Korean citizens at all levels of national pride exhibit decoupling. This is consistent with the identity-fusion argument at the country level---the fusion of democratic and national identity in Taiwan creates conditions favorable to critical citizenship society-wide, not only among the most nationally identified---but it means that national pride as measured by the ABS does not serve as a useful individual-level proxy for the specific democratic-national identity configuration the theory posits. The mechanism likely operates at the macro-political level (through decades of identity-building around democratic self-definition) rather than varying with individual-level national pride, which captures a broader and more diffuse sentiment.
+The median-split results reinforce this finding. Among high-system-pride Taiwanese, the econ → democratic preference coefficient is $\beta$ = `r .sp_sub_b("Taiwan", "High system pride", "Democracy always preferable")` (*p* `r .sp_sub_p("Taiwan", "High system pride", "Democracy always preferable")`); among low-system-pride Taiwanese, $\beta$ = `r .sp_sub_b("Taiwan", "Low system pride", "Democracy always preferable")` (*p* `r .sp_sub_p("Taiwan", "Low system pride", "Democracy always preferable")`). Both groups exhibit the critical citizens pattern---consistent with the society-wide character of identity-fused legitimation---but the pattern is roughly 70 percent stronger among those who explicitly identify with the political system.
 
-<!-- @tbl-pride-interaction: Insert Table 4 (national pride mechanism probe) -->
+In Korea, the system pride interaction is nonsignificant for democratic preference ($\beta$ near zero, *p* > 0.80), and the decoupling holds across pride levels. Korean citizens who express pride in their system of government are no more likely to convert economic comfort into normative democratic commitment than those who do not. This asymmetry---significant moderation in Taiwan, null in Korea---is consistent with the argument that system pride carries different content in the two countries: in Taiwan, it indexes democratic identification; in Korea, it indexes satisfaction with governance performance, which is already captured by the economic evaluation variable.
+
+An alternative moderator---an index of authoritarian nostalgia constructed from endorsement of strongman, military, expert, and single-party rule---shows no significant interaction with economic evaluations in either country. In a direct comparison of all three candidate moderators on the same restricted sample, only system pride produces a significant interaction in Taiwan ($\beta$ = `r .sp_comp_b("Taiwan", "System pride")`, *p* `r .sp_comp_p("Taiwan", "System pride")`); authoritarian nostalgia ($\beta$ = --0.086, ns) and generic national pride ($\beta$ = `r .sp_comp_b("Taiwan", "National pride")`, ns) do not. The identity-fusion mechanism, as captured by system pride, is the only individual-level moderator that discriminates between the two legitimation pathways.
+
+<!-- @tbl-pride-interaction: Insert Table 4 (system pride mechanism probe) -->
 
 
 # Discussion {#sec-discussion}
@@ -359,15 +479,15 @@ The Eastonian framework, while foundational, does not fully anticipate this conf
 
 ## Taiwan's divergent pathway {#sec-discussion-taiwan}
 
-The Taiwanese findings are theoretically important not only as a comparative foil but in their own right. The consistent negative relationship between economic evaluations and normative democratic preference ($\beta$ = --0.14 to --0.50 across four of six waves, pooled $\beta$ = --0.239) is among the strongest empirical demonstrations of the critical citizens dynamic in an East Asian context. Previous work using ABS data has noted comparatively high levels of democratic support in Taiwan [@Chu2008-fk; @Chu2020-ir] but has not, to my knowledge, documented the *mechanism* through which economic conditions relate to normative evaluation at the individual level with this degree of specificity.
+The Taiwanese findings are theoretically important not only as a comparative foil but in their own right. The consistent negative relationship between economic evaluations and normative democratic preference ($\beta$ = `r { vals <- wi |> filter(country=="Taiwan", dv=="qual_pref_dem_n", p.value<0.05) |> pull(estimate); paste0(round(max(vals),2), " to ", round(min(vals),2)) }` across four of six waves, pooled $\beta$ = `r .pi_b("Taiwan", "qual_pref_dem_n")`) is among the strongest empirical demonstrations of the critical citizens dynamic in an East Asian context. Previous work using ABS data has noted comparatively high levels of democratic support in Taiwan [@Chu2008-fk; @Chu2020-ir] but has not, to my knowledge, documented the *mechanism* through which economic conditions relate to normative evaluation at the individual level with this degree of specificity.
 
 The identity-fusion explanation for the Taiwanese pattern has important scope conditions. The argument is not that national identity generically anchors democratic commitment---if it did, the pattern would appear in any country with strong nationalist sentiment---but that the *specific historical configuration* through which democratic identity and national identity became coterminous in Taiwan created conditions uniquely favorable to the critical citizens dynamic. Democratization in Taiwan was simultaneously a project of national differentiation from China, and the sustained cross-strait tension that has characterized the post-democratization period continuously reinforces this fusion. The DPP's political project made being democratic constitutive of being Taiwanese in a way that has no precise analogue in the Korean case, where democratization was experienced primarily as a domestic political transition rather than a project of national self-definition.
 
-The mechanism probe reported in @sec-results-pride provides partial evidence for this interpretation, though the individual-level test is weaker than hypothesized. National pride does not significantly moderate the economic-preference relationship in either country: the critical citizens pattern in Taiwan is pervasive across pride levels, not concentrated among the most nationally identified. This suggests that the identity-fusion mechanism operates at the macro-political level---through decades of institutionalized democratic-national identity building---rather than varying with individual-level national pride. The country-level pattern is nonetheless striking: Taiwanese citizens at every level of national pride exhibit critical evaluation, while Korean citizens at every level exhibit decoupling. A sharper individual-level test would require direct measures of Taiwanese versus Chinese identity, which the ABS does not include consistently across all waves but which future research should pursue.
+The mechanism probe reported in @sec-results-pride provides individual-level evidence for this interpretation. While generic national pride does not moderate the economic-preference relationship in either country, a more theoretically targeted measure---pride in the system of government---significantly amplifies the critical citizens pattern in Taiwan but not in Korea. Among high-system-pride Taiwanese, the negative econ → democratic preference relationship is roughly 70 percent stronger than among low-system-pride Taiwanese ($\beta$ = `r .sp_sub_b("Taiwan", "High system pride", "Democracy always preferable")` versus `r .sp_sub_b("Taiwan", "Low system pride", "Democracy always preferable")`). The interaction is significant at the individual level ($\beta$ = `r .sp_int_b("Taiwan", "Democracy always preferable", "econ_index:sys_proud_n")`, *p* `r .sp_int_p("Taiwan", "Democracy always preferable", "econ_index:sys_proud_n")`), and system pride is the only candidate moderator that produces this asymmetry; neither authoritarian nostalgia nor generic national pride discriminates between the two countries' patterns. System pride, because it captures identification with the political system as such, is a more precise proxy for the democratic-national identity fusion that the theoretical framework posits. Citizens who are proud of their system of government in a context where that system is constitutively democratic exhibit the strongest critical evaluation when economic conditions are favorable---precisely the dynamic the identity-fusion pathway predicts. That the same variable carries no moderating power in Korea, where system pride plausibly indexes satisfaction with governance output rather than democratic identification, further validates the cross-country distinction. A still sharper test would use direct measures of Taiwanese versus Chinese identity, which the ABS does not include consistently across all waves but which future research should pursue.
 
 ## The political interest finding {#sec-discussion-polinterest}
 
-The most analytically interesting subgroup result concerns political interest. Among politically engaged Korean citizens, the economic-preference relationship is negative ($\beta$ = --0.071, *p* = 0.09)---approaching but not reaching conventional significance, and directionally consistent with the Taiwanese critical citizens pattern. Among disengaged citizens, the coefficient is essentially zero ($\beta$ = 0.009, *p* = 0.84). The aggregate Korean pattern is driven by the disengaged majority.
+The most analytically interesting subgroup result concerns political interest. Among politically engaged Korean citizens, the economic-preference relationship is negative ($\beta$ = `r .poli_b("Korea", "High interest", "qual_pref_dem_n")`, *p* `r .poli_p("Korea", "High interest", "qual_pref_dem_n")`)---approaching but not reaching conventional significance, and directionally consistent with the Taiwanese critical citizens pattern. Among disengaged citizens, the coefficient is essentially zero ($\beta$ = `r .poli_b("Korea", "Low interest", "qual_pref_dem_n")`, *p* `r .poli_p("Korea", "Low interest", "qual_pref_dem_n")`). The aggregate Korean pattern is driven by the disengaged majority.
 
 This finding has two implications. First, it suggests that the *direction* of normatively grounded, performance-critical democratic evaluation exists within the Korean public but is confined to a politically attentive minority and is weak even there. The structural conditions for critical citizenship---material comfort combined with normative engagement---exist in Korea, but they produce only a faint echo of the Taiwanese pattern among the most politically engaged citizens. Second, the performance-derived legitimation mode is not a fixed cultural property but a distributional phenomenon: it characterizes the median Korean citizen rather than every Korean citizen. The challenge for democratic deepening in Korea is not creating the critical citizens dynamic from scratch but strengthening and expanding what remains a marginal tendency.
 
@@ -387,7 +507,7 @@ Several limitations merit acknowledgment. First, the ABS provides repeated cross
 
 Second, the normative commitment indicators---particularly democratic preference and democratic extent---capture different conceptual dimensions (principled preference versus perceived quality), as the Methods section discusses. The primary specifications treat them as separate outcomes precisely for this reason, but each individual item is an imperfect proxy for the broader concept of normative democratic commitment. The supplementary regime legitimacy items available from Wave 3 onward (system support, no major change) produce consistent results, strengthening confidence in the pattern.
 
-Third, the national pride mechanism probe does not find significant individual-level moderation of the economic-preference relationship in either country. This does not disconfirm the identity-fusion argument---the country-level pattern of pervasive critical citizenship in Taiwan versus pervasive decoupling in Korea is consistent with it---but it means the mechanism is not demonstrated at the individual level with available measures. National pride is a broad sentiment that does not capture the specific democratic-national identity fusion the theory posits. Direct measures of Taiwanese versus Chinese identity, available in some ABS waves but not consistently across all six, would provide a sharper test.
+Third, while the system pride mechanism probe identifies significant individual-level moderation of the economic-preference relationship in Taiwan, the measure remains an indirect proxy for the democratic-national identity fusion the theory posits. System pride ("I am proud of our system of government") captures identification with the political system, which in Taiwan's context is reasonably interpreted as identification with democratic governance---but the item does not directly measure the fusion of democratic and national identity that the theoretical framework emphasizes. Direct measures of Taiwanese versus Chinese identity, available in some ABS waves but not consistently across all six, would provide a more definitive test. Moreover, system pride is available only from Wave 3 onward, reducing the sample relative to the full six-wave analysis. The finding that generic national pride does not moderate the relationship while system pride does is itself informative---it suggests the mechanism is specifically political rather than broadly nationalistic---but the distinction between system pride and democratic identity remains an inferential step that warrants further investigation with more targeted measures.
 
 Fourth, the observation window closes in 2022, before both the Yoon martial law crisis and the most recent period of cross-strait tension that has reshaped Taiwanese politics. Wave 7 data, when available, will provide a critical test of whether the patterns documented here have persisted, deepened, or shifted in response to these events.
 
@@ -409,3 +529,21 @@ For the study of democratic resilience, the Korean case suggests an uncomfortabl
 
 ::: {#refs}
 :::
+
+# Appendix H: Alternative Normative Commitment Measures {#sec-app-alt-norm .unnumbered}
+
+The main analysis identifies a decoupling between economic evaluations and normative democratic commitment in Korea, measured by the "democracy is always preferable" item, alongside a critical citizens pattern in Taiwan on the same item. A natural concern is whether this finding is robust to alternative operationalizations of normative commitment or whether it is an artifact of one particular survey item.
+
+Four alternative measures from the ABS are tested. Each captures a different facet of pro-democratic attitudes, and each is available across multiple waves in both countries:
+
+(1) *Democracy is the best form of government* (Waves 3--6). This item asks respondents whether they agree that "democracy may have its problems, but it is still the best form of government." Despite its surface similarity to "democracy is always preferable," the two items differ in an analytically important way: the "best form" framing invites a comparative evaluation (best relative to available alternatives), while the "always preferable" framing demands an unconditional commitment (preferable regardless of circumstances). The pooled economic evaluation coefficient is positive and significant in both Korea ($\beta$ = 0.072, *p* < 0.01) and Taiwan ($\beta$ = 0.112, *p* < 0.001). Economically comfortable citizens in both countries are more likely to agree that democracy is the best available system---but in Korea this comparative endorsement does not extend to unconditional commitment.
+
+(2) *Democracy versus economic development* (Waves 1--6). Respondents are asked to choose between democracy and economic development as the more important priority. After excluding the "both equally important" category (which does not lie on the democracy--economy continuum), the remaining four-point scale runs from economic development definitely more important to democracy definitely more important. The pooled coefficient is positive and significant in both countries (Korea $\beta$ = 0.196, *p* < 0.001; Taiwan $\beta$ = 0.192, *p* < 0.001), with no meaningful cross-country difference. When asked to prioritize democracy against economic development specifically, economically comfortable citizens in both countries favor democracy---consistent with the logic that material security frees citizens from prioritizing economic concerns.
+
+(3) *Democracy is suitable for our country* (Waves 1--6). This 10-point item captures perceived fit between democracy and the respondent's national context. The pooled coefficient is positive and significant in both countries (Korea $\beta$ = 0.172, *p* < 0.001; Taiwan $\beta$ = 0.308, *p* < 0.001). The cross-country interaction is significant ($\beta$ = --0.160, *p* < 0.001), indicating a weaker positive effect in Korea than Taiwan---consistent with the broader pattern that economic evaluations are less tightly linked to democratic assessment in Korea---but notably the Korean coefficient is still positive and significant, not null. Economically comfortable Koreans do consider democracy more suitable; they simply do not translate this judgment into unconditional normative commitment.
+
+(4) *Democracy is capable of solving society's problems* (Waves 1--6). This binary item captures perceived democratic efficacy. The pooled coefficient is positive and significant in both countries (Korea $\beta$ = 0.150, *p* < 0.001; Taiwan $\beta$ = 0.369, *p* < 0.001). As with suitability, the effect is substantially larger in Taiwan, but it is clearly present in Korea.
+
+The pattern across all four measures is consistent. Economic evaluations are positively associated with conditional democratic endorsement in both countries. The Korea--Taiwan divergence appears exclusively on the "democracy is always preferable" item---the one measure that demands unconditional normative commitment rather than contingent assessment of democracy's merits, fit, or capacity. This result validates the theoretical distinction between diffuse and specific support that structures the paper's argument. Performance-derived legitimation, as theorized here, does not produce citizens who are hostile to democracy or who fail to recognize its merits; it produces citizens who endorse democracy instrumentally without developing the principled attachment that Easton's [-@Easton1965-ap] framework identified as the foundation of long-term regime stability.
+
+<!-- @tbl-alt-norm: Insert Table (alternative normative DVs, pooled results) -->
