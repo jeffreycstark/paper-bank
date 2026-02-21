@@ -89,53 +89,67 @@ results_dir  <- file.path(analysis_dir, "results")
 
 # Introduction
 
-[TBD]
+South Korea presents a puzzle for students of democratic attitudes. By conventional survey measures, Korean citizens appear broadly satisfied with their democracy — satisfaction scores have risen modestly but consistently across two decades of Asian Barometer Survey waves. Yet beneath this surface stability, substantive indicators tell a different story. Citizens increasingly perceive government as withholding information, feel less able to influence political outcomes, assess current democratic quality as declining, and express pessimism about democratic futures. Institutional trust has collapsed across nearly every intermediary organization — media, legislature, NGOs, religious institutions — at rates that dwarf erosion in executive trust. Meaningful political participation, beyond voting, has fallen sharply across every channel measured.
 
-Performance legitimacy theory predicts that citizens support democratic institutions when governments deliver economic goods [@Lipset1959; @Easton1965].
-South Korea between 2001 and 2019 complicates this prediction.
+How can citizens be simultaneously more satisfied with democracy and more convinced that it is deteriorating?
 
-<!-- Paragraph outline:
-     1. Hook — the paradox: growth + declining satisfaction
-     2. Why this matters — performance legitimacy is a foundational assumption
-     3. What we do — ABS waves 1–5, Korea; comparators Taiwan + Japan
-     4. What we find — decoupling, trust mediation, institutional specificity
-     5. Contribution to literature
-     6. Road map
--->
+This paper argues that democratic satisfaction in South Korea has become systematically decoupled from democratic quality perception, and that present economic conditions are the primary mechanism sustaining this decoupling. Drawing on six waves of Asian Barometer Survey data (2001–2016) and four waves of the Korean Academic Multimode Open Survey (2016–2019), we document a consistent pattern: satisfaction co-moves with assessments of current economic conditions — both national and personal — while moving in the opposite direction from perceived democratic quality, responsiveness, and institutional trust. Koreans are evaluating their democracy on output legitimacy grounds, rewarding or penalizing governments for economic performance rather than procedural democratic quality.
+
+This finding has implications beyond the Korean case. Satisfaction with democracy is among the most widely used indicators in comparative democratic attitudes research. If satisfaction systematically tracks economic performance rather than democratic quality — at least in contexts shaped by developmental state legacies and output-oriented political cultures — then its validity as a proxy for democratic health is questionable. The Korean case offers a critical test: the 2016–2017 Candlelight Revolution and subsequent impeachment of President Park Geun-hye represented one of the most dramatic democratic accountability moments in recent Asian history. If any event could restore the connection between satisfaction and democratic substance, it was this. Instead, the post-Revolution period saw trust collapse across all institutions simultaneously, including those associated with the reform movement itself, while satisfaction and economic optimism recovered. The decoupling, it appears, is structural rather than conjunctural.
+
+The paper proceeds as follows. Section 2 develops the theoretical framework, drawing on input/output legitimacy distinctions and the comparative literature on democratic satisfaction. Section 3 describes the data and methods. Section 4 presents findings from the ABS longitudinal analysis. Section 5 examines the KAMOS data as a critical juncture test. Section 6 discusses implications for measurement and democratic theory. Section 7 concludes.
 
 # Theoretical Framework
 
-## Performance Legitimacy and Its Limits
+## Input and Output Legitimacy
 
-[TBD]
+Democratic legitimacy has two foundational dimensions. In his influential account, @Scharpf1999 distinguishes between input legitimacy — the participatory quality of governance, rooted in responsiveness to citizen preferences — and output legitimacy — the problem-solving effectiveness of governance, evaluated through policy outcomes and performance. Input legitimacy asks whether government is by the people; output legitimacy asks whether it is for the people. While Scharpf developed this distinction primarily in the context of European integration, where supranational institutions lack the participatory infrastructure for input legitimacy, the framework has broader applicability to any political system where citizens may evaluate government primarily through outcomes rather than procedures.
 
-## Institutional Trust as an Intermediary
+Output-oriented political evaluation is particularly plausible in developmental state contexts. Korea's post-war political economy was organized around a state-led model that linked political authority to economic performance, cultivating a public culture of governance evaluated primarily through growth, stability, and material improvement [@Choi2012]. Where the legitimating logic of the state has historically been performative — "we deliver results" — citizens may internalize output legitimacy as the primary evaluative standard even after formal democratization. This is not irrational; it reflects the political culture shaped by a half-century of developmental governance. The question this paper pursues is whether that output orientation persists through and after democratic transition, generating a systematic decoupling between procedural democratic quality and citizen satisfaction.
 
-[TBD]
+## Democratic Satisfaction as a Measure
 
-## The Decoupling Hypothesis
+Satisfaction with democracy is among the most widely deployed indicators in comparative democratic attitudes research. Since @Norris1999's foundational edited volume, scholars have used satisfaction to measure citizens' evaluations of how well democratic institutions and processes are functioning, distinct from support for democracy-in-principle. The theoretical assumption underlying this measure is that satisfaction with democracy reflects, at least in part, citizens' assessments of democratic quality — responsiveness, accountability, procedural fairness, and rule of law. If citizens are satisfied, the inference runs, the system is performing democratically.
 
-[TBD]
+This assumption has been challenged on several fronts. @Norris2011 documents that satisfaction measures are sensitive to economic conditions and government performance, raising the question of whether they capture democratic quality or simply incumbent approval. The "winner-loser" literature [@AndersonGuillory1997] shows that satisfaction tracks electoral outcomes, with supporters of governing parties systematically more satisfied regardless of institutional quality. @Kang2015, analyzing ABS data specifically for South Korea, finds that inequality concerns and welfare dissatisfaction independently predict democratic satisfaction, suggesting the measure responds to distributive outcomes rather than democratic process.
 
-# Data and Measures
+These findings suggest that satisfaction with democracy may be measuring output legitimacy — economic and policy performance — rather than input legitimacy — procedural democratic quality. If so, its validity as an indicator of democratic health is compromised in precisely the contexts where output legitimacy is most culturally dominant, which is to say, in developmental state legacies like Korea. This paper provides direct empirical evidence for this validity problem by showing that satisfaction moves in the opposite direction from multiple procedural democratic quality measures across two decades of longitudinal data.
 
-## Asian Barometer Survey
+## The Korean Democratic Context
 
-The analysis draws on five waves of the Asian Barometer Survey (ABS) collected in South Korea between 2001 and 2019 (Wave 1: [year]; Wave 2: [year]; Wave 3: [year]; Wave 4: [year]; Wave 5: [year]).
-Each wave provides a nationally representative cross-section of Korean adults (N ≈ [XXX] per wave; pooled N ≈ [XXX]).
-The 2019 endpoint is chosen to avoid confounding from COVID-19 disruptions that affected Wave 6 fieldwork.
+South Korea's democratic transition in 1987 followed nearly three decades of authoritarian developmental rule. As @Choi2012 argues, Korean democratization was "conservative" in a specific sense: it produced competitive elections and formal civil liberties, but the state apparatus, economic structure, and dominant political culture inherited from the developmental era remained largely intact. Civil society expanded but remained organizationally weak relative to state and chaebol power. Political parties demonstrated chronic instability, routinely dissolving and reconstituting to escape accountability associations — a pattern that arguably reinforced output-oriented evaluation by making procedural tracking of political responsibility difficult for ordinary citizens.
 
-## Key Variables
+Prior research using ABS and predecessor surveys has documented several features of Korean democratic attitudes that inform the present analysis. @ChuChangPark2007 identify authoritarian nostalgia among East Asian publics, including Korea, finding that significant minorities prefer past authoritarian arrangements or express skepticism about democratic governance. Shin and colleagues document that Korean democratic support has been historically volatile, moving with economic conditions and presidential approval rather than institutional factors. @Kang2015 specifically links welfare dissatisfaction to democratic satisfaction decline following the 1997 IMF crisis. Taken together, this literature establishes that Korean democratic attitudes are unusually sensitive to economic performance signals, lending prior support to the output legitimacy interpretation this paper advances.
 
-**Democratic satisfaction** is measured by a four-point item asking respondents how satisfied they are with the way democracy works in their country (1 = not at all satisfied, 4 = very satisfied).
+What existing literature has not documented is a systematic, longitudinal dissociation between satisfaction and democratic quality perception — the specific pattern where satisfaction rises while quality perception falls, maintained across regime changes and even through the extraordinary democratic test of the 2016–2017 Candlelight Revolution. This is the contribution of the present analysis.
 
-**Economic performance perceptions** are captured by retrospective personal and national economic evaluations (five-point scales; higher = better).
+# Data and Methods
 
-**Institutional trust** is measured by a four-point battery asking respondents how much they trust [institution] (1 = not at all, 4 = a great deal).
-We analyze trust in the president/government, legislature, courts, political parties, and election commission separately and as a composite index.
+## Asian Barometer Survey (ABS), Korea, 2001–2016
 
-**Controls**: age, gender, education (years or ordinal), urban residence, and income quintile.
-Wave fixed effects capture secular trends and cross-wave composition differences.
+The primary longitudinal data source is the Korean component of the Asian Barometer Survey (ABS), comprising six waves conducted between 2001 and 2016. The ABS is a cross-national survey program covering major political systems across East and Southeast Asia, designed to measure public opinion on political values, democratic attitudes, and governance evaluations. The Korea component employs nationally representative probability samples of adults, with face-to-face interviews conducted by trained enumerators. Wave-level sample sizes are approximately 1,200–1,500 respondents per wave, providing adequate statistical power for trend estimation.
+
+The analysis draws on four thematic clusters of variables. The democratic satisfaction cluster comprises wave-consistent measures of satisfaction with national government performance, presidential and government approval, and satisfaction with democracy as a system. The democratic quality cluster includes citizen assessments of current democratic extent, retrospective assessments of democracy under prior governments, and prospective assessments of democratic trajectory. The participation cluster captures both electoral participation (voting) and a battery of non-electoral political actions including petition signing, contacting elected officials, contacting civil servants, contacting media, and participation in demonstrations. The economic evaluation cluster includes assessments of current national economic conditions, current household economic conditions, subjective social status, household income satisfaction, and economic outlook. A fifth accountability and responsiveness cluster captures perceptions of government information transparency, government responsiveness to citizens, court effectiveness, and legislative oversight.
+
+Variable harmonization across six waves required careful attention to question wording consistency and response scale comparability. Where question wording shifted across waves, variables were excluded from the longitudinal trend analysis rather than recoded under potentially invalid equivalence assumptions. Binary variables were standardized to a consistent 0–1 scale; ordinal variables were normalized to their observed range to enable cross-variable slope comparisons. Full variable documentation, including original ABS variable names and harmonization decisions, is provided in the Appendix.
+
+## Korean Academic Multimode Open Survey (KAMOS), 2016–2019
+
+The second data source is the Korean Academic Multimode Open Survey (KAMOS), a nationally representative Korean survey conducted across four waves between 2016 and 2019. The KAMOS design employs a multimode approach combining face-to-face and online survey modes with probability sampling. For the present analysis, Wave 1 (2016) and Wave 4 (2019) are treated as the primary comparison points, capturing attitudes immediately prior to the October–November 2016 Candlelight Revolution protests and approximately two years into the Moon Jae-in administration respectively.
+
+This wave selection is theoretically motivated. The 2016–2017 period constitutes a critical juncture in Korean democratic history: mass citizen mobilization over the Park Geun-hye corruption scandal culminated in a constitutional impeachment, followed by the election of a reform-oriented successor government. Wave 1 therefore captures pre-mobilization baseline attitudes; Wave 4 captures the post-transition attitudinal environment following democratic renewal. If output legitimacy decoupling were a conjunctural phenomenon specific to particular governments or economic conditions, the transition from Park to Moon — with its mandate for reform and accompanying economic optimism — should have restored the satisfaction–quality connection. The critical juncture design thus provides a strong test of the paper's central claim that the decoupling is structural rather than regime-specific.
+
+The KAMOS battery most relevant to the present analysis is the institutional trust module, which includes trust assessments for the central government, local government, National Assembly, legislature, courts, media, NGOs, religious organizations, private enterprise, and generalized social trust. Economic variables include national and household economic assessments and social mobility expectations for both the current and next generation.
+
+## Analytical Strategy
+
+The primary analytical approach is descriptive trend analysis using wave-level means with ordinary least squares slope estimation. For each variable of interest, a linear slope is estimated across available waves, capturing the direction and magnitude of change over time. Slopes are reported in standardized units to permit cross-variable comparability, and divergences between theoretically related variables — satisfaction rising while quality perception falls, for instance — are the primary empirical objects of interpretation.
+
+This descriptive approach is intentional and appropriate to the paper's theoretical aims. The core claim is a pattern-level dissociation between attitudinal clusters, not a causal claim about individual-level mechanisms. Wave-level means are the appropriate unit of analysis for documenting aggregate trend divergence, and the six-wave ABS structure provides sufficient temporal resolution to distinguish stable trends from wave-specific fluctuations.
+
+Multivariate OLS and logistic regressions controlling for age, education, income, and gender are reported as robustness checks in the Appendix. These models assess whether the observed trends survive adjustment for potential compositional changes across survey waves — that is, whether shifts in sample demographics across waves could artifactually generate the observed attitudinal patterns. The robustness checks confirm that the core dissociation patterns are not attributable to compositional change, though descriptive wave means remain the primary presentation throughout the main text.
+
+Two important limitations of the analytical approach should be noted. First, the ABS Korea data are repeated cross-sections rather than a panel, meaning individual-level attitude change cannot be directly observed. The trend analysis documents aggregate attitudinal shifts at the population level but cannot rule out cohort replacement or selection effects as partial contributors to observed patterns. Second, the six ABS waves are unevenly spaced, with gaps of two to four years between waves, limiting resolution on the precise timing of trend shifts. The KAMOS data, with its four annual waves, offers greater temporal resolution for the 2016–2019 period but covers only three years and a single critical juncture.
 
 # Results
 
