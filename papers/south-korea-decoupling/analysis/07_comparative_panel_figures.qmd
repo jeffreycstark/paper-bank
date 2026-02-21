@@ -1,0 +1,292 @@
+---
+title: "07 — Comparative Panel Figures: Korea and Taiwan"
+subtitle: "Side-by-side descriptive trend figures for the manuscript"
+format:
+  html:
+    toc: true
+    toc-depth: 3
+    number-sections: true
+    theme: cosmo
+    code-fold: true
+    self-contained: true
+execute:
+  echo: true
+  warning: false
+  message: false
+  cache: true
+---
+
+**Purpose**: Replace Korea-only Figures 1 and 2 with comparative panel figures
+showing both Korea and Taiwan side-by-side.
+
+**Rationale**: Taiwan is the comparative case and readers need to *see* the
+contrast. The current manuscript has no trend figures for Taiwan, only the
+coefficient plot (Fig 3) which shows both countries.
+
+**Output**:
+- `figures/pub_fig01_panel_dissociation.pdf` — Satisfaction vs quality trends,
+  Korea (left) and Taiwan (right)
+- `figures/pub_fig02_panel_three_cluster.pdf` — Econ + satisfaction + quality,
+  Korea (left) and Taiwan (right)
+
+```{r setup}
+library(tidyverse)
+library(patchwork)
+
+project_root <- "/Users/jeffreystark/Development/Research/econdev-authpref"
+paper_dir    <- file.path(project_root, "papers/south-korea-decoupling")
+analysis_dir <- file.path(paper_dir, "analysis")
+results_dir  <- file.path(analysis_dir, "results")
+fig_dir      <- file.path(analysis_dir, "figures")
+
+dat <- readRDS(file.path(results_dir, "analysis_data.rds"))
+
+# Publication theme
+theme_pub <- theme_minimal(base_size = 11) +
+  theme(
+    plot.title         = element_text(size = 11, face = "bold", margin = margin(b = 6)),
+    plot.subtitle      = element_text(size = 9, color = "grey30", margin = margin(b = 10)),
+    plot.caption       = element_text(size = 7.5, color = "grey50", hjust = 0,
+                                      margin = margin(t = 8)),
+    legend.position    = "bottom",
+    legend.text        = element_text(size = 9),
+    legend.title       = element_blank(),
+    panel.grid.minor   = element_blank(),
+    panel.grid.major.x = element_blank(),
+    strip.text         = element_text(face = "bold", size = 10),
+    axis.title         = element_text(size = 9),
+    axis.text          = element_text(size = 8.5)
+  )
+
+pal2 <- c("Satisfaction" = "#2166AC", "Democratic quality" = "#B2182B")
+pal3 <- c("Satisfaction" = "#2166AC", "Democratic quality" = "#B2182B",
+           "Economic evaluations" = "#4DAF4A")
+
+survey_years_kr <- c(2003, 2006, 2011, 2015, 2019, 2022)
+survey_years_tw <- c(2001, 2006, 2010, 2014, 2019, 2022)
+```
+
+## Compute wave means for both countries
+
+```{r wave-means}
+compute_wave_means <- function(data, country, years) {
+  data |>
+    filter(country_label == country) |>
+    group_by(wave) |>
+    summarise(
+      n         = n(),
+      sat_mean  = mean(sat_index, na.rm = TRUE),
+      sat_se    = sd(sat_index, na.rm = TRUE) / sqrt(sum(!is.na(sat_index))),
+      qual_mean = mean(qual_index, na.rm = TRUE),
+      qual_se   = sd(qual_index, na.rm = TRUE) / sqrt(sum(!is.na(qual_index))),
+      econ_mean = mean(econ_index, na.rm = TRUE),
+      econ_se   = sd(econ_index, na.rm = TRUE) / sqrt(sum(!is.na(econ_index))),
+      .groups = "drop"
+    ) |>
+    mutate(
+      year    = years[wave],
+      country = country
+    )
+}
+
+wm_kr <- compute_wave_means(dat, "Korea",  survey_years_kr)
+wm_tw <- compute_wave_means(dat, "Taiwan", survey_years_tw)
+wm_both <- bind_rows(wm_kr, wm_tw)
+
+cat("Korea means:\n"); print(wm_kr)
+cat("\nTaiwan means:\n"); print(wm_tw)
+```
+
+## Figure 1: Satisfaction vs Quality — Korea and Taiwan panels {#sec-fig1}
+
+```{r figure1-panel}
+make_dissociation_panel <- function(wm, country_name, show_impeach = FALSE) {
+  fig_data <- wm |>
+    select(wave, year, sat_mean, sat_se, qual_mean, qual_se) |>
+    pivot_longer(
+      cols = c(sat_mean, qual_mean),
+      names_to = "cluster", values_to = "mean"
+    ) |>
+    mutate(
+      se = if_else(cluster == "sat_mean", sat_se, qual_se),
+      cluster_label = if_else(cluster == "sat_mean",
+                              "Satisfaction", "Democratic quality"),
+      cluster_label = factor(cluster_label,
+                             levels = c("Satisfaction", "Democratic quality"))
+    )
+
+  p <- fig_data |>
+    ggplot(aes(x = year, y = mean, color = cluster_label, fill = cluster_label)) +
+    geom_ribbon(aes(ymin = mean - 1.96 * se, ymax = mean + 1.96 * se),
+                alpha = 0.12, color = NA) +
+    geom_line(linewidth = 0.9) +
+    geom_point(size = 2.2) +
+    scale_color_manual(values = pal2) +
+    scale_fill_manual(values = pal2) +
+    scale_y_continuous(limits = c(0, 1), labels = scales::percent_format(),
+                       breaks = seq(0, 1, 0.25)) +
+    labs(
+      x = NULL,
+      y = "Mean (0-1 scale)",
+      title = country_name
+    ) +
+    theme_pub +
+    theme(plot.title = element_text(size = 12, face = "bold"))
+
+  if (show_impeach) {
+    p <- p +
+      geom_vline(xintercept = 2017, linetype = "dashed", color = "grey60",
+                 linewidth = 0.4) +
+      annotate("text", x = 2017.5, y = 0.80, label = "Park\nimpeachment",
+               hjust = 0, size = 2.5, color = "grey40", lineheight = 0.9)
+  }
+
+  p
+}
+
+p_kr <- make_dissociation_panel(wm_kr, "South Korea", show_impeach = TRUE)
+p_tw <- make_dissociation_panel(wm_tw, "Taiwan")
+
+pub_fig01_panel <- (p_kr + p_tw) +
+  plot_layout(guides = "collect") +
+  plot_annotation(
+    title = "The satisfaction paradox: diverging trends in South Korea,\nparallel trends in Taiwan",
+    caption = paste0(
+      "Wave means with 95% CIs. Satisfaction: mean of sat_democracy + sat_govt. ",
+      "Quality: mean of dem_always_preferable + dem_extent_current.\n",
+      "All variables normalized 0–1. Source: ABS waves 1–6."
+    ),
+    theme = theme(
+      plot.title   = element_text(size = 12, face = "bold"),
+      plot.caption = element_text(size = 7.5, color = "grey50", hjust = 0)
+    )
+  ) &
+  theme(legend.position = "bottom")
+
+ggsave(file.path(fig_dir, "pub_fig01_panel_dissociation.pdf"), pub_fig01_panel,
+       width = 10, height = 5)
+ggsave(file.path(fig_dir, "pub_fig01_panel_dissociation.png"), pub_fig01_panel,
+       width = 10, height = 5, dpi = 300)
+
+pub_fig01_panel
+cat("✓ Figure 1 (panel) saved\n")
+```
+
+## Figure 2: Three-cluster co-movement — Korea and Taiwan panels {#sec-fig2}
+
+```{r figure2-panel}
+make_three_cluster_panel <- function(wm, country_name, show_impeach = FALSE) {
+  fig_data <- wm |>
+    select(wave, year, sat_mean, sat_se, qual_mean, qual_se, econ_mean, econ_se) |>
+    pivot_longer(
+      cols = c(sat_mean, qual_mean, econ_mean),
+      names_to = "cluster", values_to = "mean"
+    ) |>
+    mutate(
+      se = case_when(
+        cluster == "sat_mean"  ~ sat_se,
+        cluster == "qual_mean" ~ qual_se,
+        cluster == "econ_mean" ~ econ_se
+      ),
+      cluster_label = case_when(
+        cluster == "sat_mean"  ~ "Satisfaction",
+        cluster == "qual_mean" ~ "Democratic quality",
+        cluster == "econ_mean" ~ "Economic evaluations"
+      ),
+      cluster_label = factor(cluster_label,
+                             levels = c("Satisfaction", "Democratic quality",
+                                        "Economic evaluations"))
+    )
+
+  p <- fig_data |>
+    ggplot(aes(x = year, y = mean, color = cluster_label, fill = cluster_label)) +
+    geom_ribbon(aes(ymin = mean - 1.96 * se, ymax = mean + 1.96 * se),
+                alpha = 0.10, color = NA) +
+    geom_line(linewidth = 0.9) +
+    geom_point(size = 2.2) +
+    scale_color_manual(values = pal3) +
+    scale_fill_manual(values = pal3) +
+    scale_y_continuous(limits = c(0, 1), labels = scales::percent_format(),
+                       breaks = seq(0, 1, 0.25)) +
+    labs(
+      x = NULL,
+      y = "Mean (0-1 scale)",
+      title = country_name
+    ) +
+    theme_pub +
+    theme(plot.title = element_text(size = 12, face = "bold"))
+
+  if (show_impeach) {
+    p <- p +
+      geom_vline(xintercept = 2017, linetype = "dashed", color = "grey60",
+                 linewidth = 0.4) +
+      annotate("text", x = 2017.5, y = 0.85, label = "Impeachment",
+               hjust = 0, size = 2.5, color = "grey40")
+  }
+
+  p
+}
+
+p2_kr <- make_three_cluster_panel(wm_kr, "South Korea", show_impeach = TRUE)
+p2_tw <- make_three_cluster_panel(wm_tw, "Taiwan")
+
+pub_fig02_panel <- (p2_kr + p2_tw) +
+  plot_layout(guides = "collect") +
+  plot_annotation(
+    title = "Economic evaluations track satisfaction in both countries,\nbut quality perceptions diverge",
+    caption = paste0(
+      "Wave means with 95% CIs. Cluster indices are means of ",
+      "normalized component variables.\n",
+      "Source: ABS waves 1–6."
+    ),
+    theme = theme(
+      plot.title   = element_text(size = 12, face = "bold"),
+      plot.caption = element_text(size = 7.5, color = "grey50", hjust = 0)
+    )
+  ) &
+  theme(legend.position = "bottom")
+
+ggsave(file.path(fig_dir, "pub_fig02_panel_three_cluster.pdf"), pub_fig02_panel,
+       width = 10, height = 5)
+ggsave(file.path(fig_dir, "pub_fig02_panel_three_cluster.png"), pub_fig02_panel,
+       width = 10, height = 5, dpi = 300)
+
+pub_fig02_panel
+cat("✓ Figure 2 (panel) saved\n")
+```
+
+## Taiwan trend slopes (for inline reporting) {#sec-tw-slopes}
+
+```{r taiwan-slopes}
+calc_slope <- function(wm, var) {
+  d <- wm[!is.na(wm[[var]]) & !is.na(wm$year), ]
+  if (nrow(d) < 3) {
+    return(tibble(term = "year", estimate = NA_real_, std.error = NA_real_,
+                  p.value = NA_real_, per_decade = NA_real_))
+  }
+  m <- lm(as.formula(paste(var, "~ year")), data = d)
+  tidy(m) |>
+    filter(term == "year") |>
+    mutate(per_decade = estimate * 10)
+}
+
+slopes_tw <- bind_rows(
+  calc_slope(wm_tw, "sat_mean")  |> mutate(cluster = "Satisfaction"),
+  calc_slope(wm_tw, "qual_mean") |> mutate(cluster = "Democratic quality"),
+  calc_slope(wm_tw, "econ_mean") |> mutate(cluster = "Economic evaluations")
+)
+
+cat("=== Taiwan trend slopes (per decade) ===\n")
+slopes_tw |>
+  select(cluster, per_decade, std.error, p.value) |>
+  mutate(per_decade = sprintf("%.3f", per_decade),
+         p.value = sprintf("%.3f", p.value)) |>
+  print()
+
+# Save updated descriptive stats
+desc <- readRDS(file.path(results_dir, "descriptive_stats.rds"))
+desc$wave_means_tw <- wm_tw
+desc$slopes_tw     <- slopes_tw
+saveRDS(desc, file.path(results_dir, "descriptive_stats.rds"))
+cat("\n✓ Updated descriptive_stats.rds with Taiwan econ means and slopes\n")
+```

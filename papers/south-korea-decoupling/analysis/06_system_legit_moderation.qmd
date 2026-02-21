@@ -1,0 +1,306 @@
+---
+title: "06 — System Legitimacy Moderation: Identity-Fusion Mechanism Probe"
+subtitle: "Using 'our system is best' items as proxy for democratic-national identity fusion"
+format:
+  html:
+    toc: true
+    toc-depth: 3
+    number-sections: true
+    theme: cosmo
+    code-fold: true
+    self-contained: true
+execute:
+  echo: true
+  warning: false
+  message: false
+  cache: true
+---
+
+**Purpose**: Test whether system legitimacy items moderate the econ → democratic
+preference relationship differently in Taiwan vs Korea.
+
+**Rationale**: National pride was too diffuse a proxy for democratic-national
+identity fusion — it captures generic patriotism, not the specific attachment
+to "our system" *as democratic*. The system legitimacy items ("I am proud of
+our system of government," "I would rather live under our system," "our system
+is capable," "our system deserves support") are better proxies because in Taiwan,
+"our system" *is* the democratic system that constitutes national distinctiveness
+from China. A Taiwanese citizen who strongly endorses "I would rather live under
+our system" is expressing identity-fused democratic commitment. A Korean citizen
+endorsing the same item may simply be expressing status quo satisfaction.
+
+**Prediction**: In Taiwan, high system-identifiers should show *stronger*
+negative econ → democratic preference relationships (the critical citizens
+pattern is amplified by identity fusion). In Korea, system identification
+should not moderate the econ → preference relationship (because system
+attachment is performance-derived, not identity-fused).
+
+**Input**: `analysis/results/analysis_data.rds`
+**Output**: `results/syslegit_moderation.rds`, updates to `results/model_results.rds`
+
+```{r setup}
+library(tidyverse)
+library(broom)
+
+project_root <- "/Users/jeffreystark/Development/Research/econdev-authpref"
+paper_dir    <- file.path(project_root, "papers/south-korea-decoupling")
+analysis_dir <- file.path(paper_dir, "analysis")
+results_dir  <- file.path(analysis_dir, "results")
+fig_dir      <- file.path(analysis_dir, "figures")
+
+dat <- readRDS(file.path(results_dir, "analysis_data.rds"))
+
+extract_econ_coef <- function(model) {
+  tidy(model, conf.int = TRUE) |>
+    filter(term == "econ_index") |>
+    dplyr::select(estimate, std.error, statistic, p.value, conf.low, conf.high)
+}
+
+controls <- "age_n + gender + edu_n + urban_rural + polint_n"
+```
+
+## Data preparation: system legitimacy median splits
+
+```{r sys-splits}
+# Waves 3-6 only (system items not available in waves 1-2)
+dat_sys <- dat |> filter(wave >= 3)
+
+# Create binary splits for each system item (within country)
+dat_sys <- dat_sys |>
+  group_by(country_label) |>
+  mutate(
+    sys_proud_high  = case_when(
+      sys_proud_n  > median(sys_proud_n, na.rm = TRUE) ~ "High",
+      sys_proud_n <= median(sys_proud_n, na.rm = TRUE) ~ "Low"
+    ),
+    sys_prefer_high = case_when(
+      sys_prefer_n  > median(sys_prefer_n, na.rm = TRUE) ~ "High",
+      sys_prefer_n <= median(sys_prefer_n, na.rm = TRUE) ~ "Low"
+    ),
+    sys_capable_high = case_when(
+      sys_capable_n  > median(sys_capable_n, na.rm = TRUE) ~ "High",
+      sys_capable_n <= median(sys_capable_n, na.rm = TRUE) ~ "Low"
+    ),
+    sys_legit_high = case_when(
+      sys_legit_index  > median(sys_legit_index, na.rm = TRUE) ~ "High",
+      sys_legit_index <= median(sys_legit_index, na.rm = TRUE) ~ "Low"
+    )
+  ) |>
+  ungroup()
+
+# Check sample sizes
+cat("=== Sample sizes by system legitimacy split (waves 3-6) ===\n")
+dat_sys |>
+  group_by(country_label, sys_legit_high) |>
+  summarise(n = n(), .groups = "drop") |>
+  pivot_wider(names_from = sys_legit_high, values_from = n) |>
+  print()
+
+cat("\n=== System legitimacy index means by country-wave ===\n")
+dat_sys |>
+  group_by(country_label, wave) |>
+  summarise(
+    mean_sys = mean(sys_legit_index, na.rm = TRUE),
+    sd_sys   = sd(sys_legit_index, na.rm = TRUE),
+    n        = sum(!is.na(sys_legit_index)),
+    .groups  = "drop"
+  ) |>
+  print()
+```
+
+## F.1b: System legitimacy index as moderator {#sec-syslegit-index}
+
+Core test: does system legitimacy moderate the econ → democratic preference
+relationship differently in the two countries?
+
+```{r syslegit-subgroup}
+syslegit_subgroup <- list()
+
+for (cntry in c("Korea", "Taiwan")) {
+  for (grp in c("High", "Low")) {
+    sub <- dat_sys |>
+      filter(country_label == cntry, sys_legit_high == grp)
+    if (nrow(sub) < 200) next
+
+    # DV: democracy always preferable (normative)
+    f_pref <- as.formula(paste("qual_pref_dem_n ~ econ_index + factor(wave) +", controls))
+    m_pref <- lm(f_pref, data = sub)
+
+    # DV: democratic extent (perceived quality)
+    f_ext <- as.formula(paste("qual_extent_n ~ econ_index + factor(wave) +", controls))
+    m_ext <- lm(f_ext, data = sub)
+
+    # DV: satisfaction (for comparison)
+    f_sat <- as.formula(paste("sat_democracy_n ~ econ_index + factor(wave) +", controls))
+    m_sat <- lm(f_sat, data = sub)
+
+    syslegit_subgroup[[paste(cntry, grp, sep = "_")]] <- bind_rows(
+      extract_econ_coef(m_pref) |> mutate(dv = "Dem preference", country = cntry,
+                                           group = grp, n = nobs(m_pref)),
+      extract_econ_coef(m_ext)  |> mutate(dv = "Dem extent",     country = cntry,
+                                           group = grp, n = nobs(m_ext)),
+      extract_econ_coef(m_sat)  |> mutate(dv = "Satisfaction",   country = cntry,
+                                           group = grp, n = nobs(m_sat))
+    )
+  }
+}
+
+syslegit_sub_df <- bind_rows(syslegit_subgroup)
+
+cat("=== System legitimacy moderation: subgroup results ===\n")
+syslegit_sub_df |>
+  mutate(sig = case_when(p.value < 0.001 ~ "***", p.value < 0.01 ~ "**",
+                         p.value < 0.05  ~ "*", p.value < 0.1 ~ "†",
+                         TRUE ~ "")) |>
+  dplyr::select(country, group, dv, estimate, std.error, p.value, sig, n) |>
+  arrange(country, dv, group) |>
+  print(n = 30)
+```
+
+## F.1b: Formal interaction models {#sec-syslegit-interaction}
+
+```{r syslegit-interaction}
+syslegit_interaction <- list()
+
+for (cntry in c("Korea", "Taiwan")) {
+  sub <- dat_sys |>
+    filter(country_label == cntry) |>
+    mutate(sys_legit_c = sys_legit_index - mean(sys_legit_index, na.rm = TRUE))
+
+  # DV: democracy always preferable
+  f_pref <- as.formula(paste("qual_pref_dem_n ~ econ_index * sys_legit_c + factor(wave) +", controls))
+  m_pref <- lm(f_pref, data = sub)
+
+  # DV: democratic extent
+  f_ext <- as.formula(paste("qual_extent_n ~ econ_index * sys_legit_c + factor(wave) +", controls))
+  m_ext <- lm(f_ext, data = sub)
+
+  # DV: satisfaction (comparison)
+  f_sat <- as.formula(paste("sat_democracy_n ~ econ_index * sys_legit_c + factor(wave) +", controls))
+  m_sat <- lm(f_sat, data = sub)
+
+  for (pair in list(
+    list(m_pref, "Dem preference"),
+    list(m_ext,  "Dem extent"),
+    list(m_sat,  "Satisfaction")
+  )) {
+    m <- pair[[1]]; dv_label <- pair[[2]]
+    syslegit_interaction[[paste(cntry, dv_label, sep = "_")]] <-
+      tidy(m, conf.int = TRUE) |>
+      filter(term %in% c("econ_index", "sys_legit_c", "econ_index:sys_legit_c")) |>
+      mutate(dv = dv_label, country = cntry, n = nobs(m),
+             r_sq = summary(m)$r.squared)
+  }
+}
+
+syslegit_int_df <- bind_rows(syslegit_interaction)
+
+cat("=== System legitimacy interaction models ===\n")
+syslegit_int_df |>
+  mutate(sig = case_when(p.value < 0.001 ~ "***", p.value < 0.01 ~ "**",
+                         p.value < 0.05  ~ "*", p.value < 0.1 ~ "†",
+                         TRUE ~ "")) |>
+  dplyr::select(country, dv, term, estimate, std.error, p.value, sig) |>
+  arrange(country, dv, term) |>
+  print(n = 30)
+```
+
+## F.1c: Individual system items as moderators {#sec-syslegit-individual}
+
+Test each of the 4 system items separately as moderators.
+
+```{r syslegit-individual-items}
+sys_items <- c(
+  "sys_proud_n"  = "System proud",
+  "sys_prefer_n" = "System prefer",
+  "sys_capable_n" = "System capable",
+  "qual_sys_support_n" = "System deserves support"
+)
+
+indiv_sys_interaction <- list()
+
+for (cntry in c("Korea", "Taiwan")) {
+  sub <- dat_sys |> filter(country_label == cntry)
+
+  for (sys_var in names(sys_items)) {
+    sys_label <- sys_items[sys_var]
+    sub_mod <- sub |>
+      mutate(moderator_c = .data[[sys_var]] - mean(.data[[sys_var]], na.rm = TRUE))
+
+    # DV: democracy always preferable
+    f <- as.formula(paste("qual_pref_dem_n ~ econ_index * moderator_c + factor(wave) +", controls))
+    m <- tryCatch(lm(f, data = sub_mod), error = function(e) NULL)
+    if (is.null(m)) next
+
+    indiv_sys_interaction[[paste(cntry, sys_var, sep = "_")]] <-
+      tidy(m, conf.int = TRUE) |>
+      filter(term == "econ_index:moderator_c") |>
+      mutate(dv = "Dem preference", country = cntry,
+             moderator = sys_label, n = nobs(m))
+  }
+}
+
+indiv_sys_int_df <- bind_rows(indiv_sys_interaction)
+
+cat("=== Individual system items as moderators (DV = dem preference) ===\n")
+indiv_sys_int_df |>
+  mutate(sig = case_when(p.value < 0.001 ~ "***", p.value < 0.01 ~ "**",
+                         p.value < 0.05  ~ "*", p.value < 0.1 ~ "†",
+                         TRUE ~ "")) |>
+  dplyr::select(country, moderator, estimate, std.error, p.value, sig, n) |>
+  print()
+```
+
+## Cross-country comparison: system identification × country interaction {#sec-syslegit-xcountry}
+
+The ultimate test: is the moderating effect of system identification
+significantly different between Korea and Taiwan?
+
+```{r syslegit-xcountry}
+both_sys <- dat_sys |>
+  mutate(
+    is_korea    = as.numeric(country_label == "Korea"),
+    sys_legit_c = sys_legit_index - mean(sys_legit_index, na.rm = TRUE)
+  )
+
+# Three-way interaction: econ × sys_legit × country
+f_3way <- as.formula(paste(
+  "qual_pref_dem_n ~ econ_index * sys_legit_c * is_korea + factor(wave) +", controls
+))
+m_3way <- lm(f_3way, data = both_sys)
+
+cat("=== Three-way interaction: econ × system legitimacy × country ===\n")
+tidy(m_3way, conf.int = TRUE) |>
+  filter(str_detect(term, "econ_index|sys_legit|is_korea")) |>
+  mutate(sig = case_when(p.value < 0.001 ~ "***", p.value < 0.01 ~ "**",
+                         p.value < 0.05  ~ "*", p.value < 0.1 ~ "†",
+                         TRUE ~ "")) |>
+  dplyr::select(term, estimate, std.error, p.value, sig) |>
+  print()
+```
+
+## Save results {#sec-save}
+
+```{r save}
+syslegit_results <- list(
+  subgroup_split     = syslegit_sub_df,
+  interaction_index  = syslegit_int_df,
+  interaction_items  = indiv_sys_int_df,
+  three_way          = tidy(m_3way, conf.int = TRUE)
+)
+
+saveRDS(syslegit_results, file.path(results_dir, "syslegit_moderation.rds"))
+
+# Also update model_results.rds
+mods <- readRDS(file.path(results_dir, "model_results.rds"))
+mods$syslegit_subgroup    <- syslegit_sub_df
+mods$syslegit_interaction <- syslegit_int_df
+mods$syslegit_items       <- indiv_sys_int_df
+mods$syslegit_threeway    <- tidy(m_3way, conf.int = TRUE)
+saveRDS(mods, file.path(results_dir, "model_results.rds"))
+
+cat("\n✓ System legitimacy moderation results saved\n")
+cat("  Subgroup results:", nrow(syslegit_sub_df), "rows\n")
+cat("  Interaction results:", nrow(syslegit_int_df), "rows\n")
+cat("  Individual item interactions:", nrow(indiv_sys_int_df), "rows\n")
+```
