@@ -1,0 +1,26 @@
+Winner/Loser Robustness Check — Wave Effect on KAMOS Intermediary Trust
+────────────────────────────────────────────────────────────────────── 
+
+Party_id used as proxy for vote choice (Korean party-vote alignment is high).
+Winner coding: W1(2016): Saenuri=winner, Minjoo=loser;
+               W4(2019): Minjoo=winner, Jayu Hanguk Dang=loser.
+
+Sample: 1340 winner/loser-identifiable respondents (winners=811, losers=529)
+
+Wave effect (2019 vs 2016) on each trust outcome:
+
+  Outcome                       Group     Est.      SE        p       95% CI  
+  --------------------------------------------------------------------
+  Trust: media                  losers    -1.225   0.156  0.000  [-1.532, -0.918]
+  Trust: media                  winners   -0.780   0.256  0.002  [-1.281, -0.278]
+  Trust: civil society          losers    -1.599   0.162  0.000  [-1.916, -1.282]
+  Trust: civil society          winners   -0.311   0.264  0.239  [-0.830, +0.207]
+  Trust: national assembly      losers    -1.203   0.166  0.000  [-1.529, -0.877]
+  Trust: national assembly      winners   -0.511   0.272  0.060  [-1.043, +0.022]
+
+Verdict:
+  HOLDS: Wave (2016→2019) trust decline is negative among BOTH winners and
+  losers of the 2017 presidential election, consistent with a cross-partisan
+  structural trust collapse rather than electoral loser effects.
+  INTERACTION: At least one wave × winner interaction is significant (p<.10),
+  suggesting the magnitude of the wave effect differs by winner status.

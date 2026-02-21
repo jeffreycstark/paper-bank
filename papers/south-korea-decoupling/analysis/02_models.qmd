@@ -1,0 +1,919 @@
+---
+title: "02 — Main Models: The Satisfaction Paradox"
+subtitle: "Core mechanism models and robustness checks"
+format:
+  html:
+    toc: true
+    toc-depth: 3
+    number-sections: true
+    theme: cosmo
+    code-fold: true
+    self-contained: true
+execute:
+  echo: true
+  warning: false
+  message: false
+  cache: true
+---
+
+**Purpose**: Estimate the core mechanism models and robustness checks.
+
+| Hypothesis | Description |
+|------------|-------------|
+| H1 | Economic evaluations → satisfaction (both countries) |
+| H2 | Economic evaluations ≠→ democratic quality (Korea decoupling) |
+| H3 | Economic evaluations → lower quality perception (Taiwan critical citizens) |
+| H4 | Cross-country divergence is significant |
+| H5 | Korean decoupling holds across subgroups |
+
+- **Input**: `analysis/results/analysis_data.rds`
+- **Output**: `results/model_results.rds`, `figures/fig03_coefficient_plot.pdf`,
+  `figures/fig04_subgroup_coefficients.pdf`
+
+```{r setup}
+library(tidyverse)
+library(broom)
+
+project_root <- "/Users/jeffreystark/Development/Research/econdev-authpref"
+paper_dir    <- file.path(project_root, "papers/south-korea-decoupling")
+analysis_dir <- file.path(paper_dir, "analysis")
+results_dir  <- file.path(analysis_dir, "results")
+fig_dir      <- file.path(analysis_dir, "figures")
+
+dat <- readRDS(file.path(results_dir, "analysis_data.rds"))
+
+# Normalize helper (mirrors 00_data_preparation.qmd)
+normalize_01 <- function(x) {
+  rng <- range(x, na.rm = TRUE)
+  if (rng[2] == rng[1]) return(rep(0, length(x)))
+  (x - rng[1]) / (rng[2] - rng[1])
+}
+
+# Helper: extract econ_index coefficient
+extract_econ_coef <- function(model) {
+  tidy(model, conf.int = TRUE) |>
+    filter(term == "econ_index") |>
+    dplyr::select(estimate, std.error, statistic, p.value, conf.low, conf.high)
+}
+
+# Control formula (RHS, excluding econ_index)
+controls <- "age_n + gender + edu_n + urban_rural + polint_n"
+```
+
+## Wave-by-wave OLS — Econ → Satisfaction vs. Quality {#sec-wave-ols}
+
+H1, H2, H3: Does economic voting predict satisfaction and/or quality
+differently by country and wave?
+
+```{r wave-ols}
+wave_results <- list()
+
+for (cntry in c("Korea", "Taiwan")) {
+  for (w in 1:6) {
+    sub <- dat |> filter(country_label == cntry, wave == w)
+    if (nrow(sub) < 100) next
+
+    f_sat  <- as.formula(paste("sat_index ~ econ_index +", controls))
+    m_sat  <- lm(f_sat, data = sub)
+
+    f_qual <- as.formula(paste("qual_index ~ econ_index +", controls))
+    m_qual <- lm(f_qual, data = sub)
+
+    wave_results[[paste(cntry, w, sep = "_")]] <- bind_rows(
+      extract_econ_coef(m_sat)  |> mutate(dv = "Satisfaction", country = cntry,
+                                           wave = w, r_sq = summary(m_sat)$r.squared,
+                                           n = nobs(m_sat)),
+      extract_econ_coef(m_qual) |> mutate(dv = "Democratic quality", country = cntry,
+                                           wave = w, r_sq = summary(m_qual)$r.squared,
+                                           n = nobs(m_qual))
+    )
+  }
+}
+
+wave_df <- bind_rows(wave_results)
+
+cat("--- Korea ---\n")
+wave_df |>
+  filter(country == "Korea") |>
+  mutate(sig = case_when(p.value < 0.001 ~ "***", p.value < 0.01 ~ "**",
+                         p.value < 0.05  ~ "*",   TRUE ~ "")) |>
+  dplyr::select(wave, dv, estimate, std.error, p.value, sig, r_sq, n) |>
+  arrange(wave, dv) |>
+  print(n = 20)
+
+cat("\n--- Taiwan ---\n")
+wave_df |>
+  filter(country == "Taiwan") |>
+  mutate(sig = case_when(p.value < 0.001 ~ "***", p.value < 0.01 ~ "**",
+                         p.value < 0.05  ~ "*",   TRUE ~ "")) |>
+  dplyr::select(wave, dv, estimate, std.error, p.value, sig, r_sq, n) |>
+  arrange(wave, dv) |>
+  print(n = 20)
+```
+
+## Pooled models with wave interaction {#sec-pooled}
+
+Does the economic voting relationship change over time (wave × econ interaction)?
+
+```{r pooled-models}
+pooled_results <- list()
+
+for (cntry in c("Korea", "Taiwan")) {
+  sub <- dat |>
+    filter(country_label == cntry) |>
+    mutate(wave_c = wave - mean(wave))
+
+  f_sat_int  <- as.formula(paste("sat_index ~ econ_index * wave_c +", controls))
+  m_sat_int  <- lm(f_sat_int, data = sub)
+
+  f_qual_int <- as.formula(paste("qual_index ~ econ_index * wave_c +", controls))
+  m_qual_int <- lm(f_qual_int, data = sub)
+
+  sat_tidy  <- tidy(m_sat_int,  conf.int = TRUE) |>
+    filter(term %in% c("econ_index", "econ_index:wave_c")) |>
+    mutate(dv = "Satisfaction", country = cntry,
+           r_sq = summary(m_sat_int)$r.squared, n = nobs(m_sat_int))
+
+  qual_tidy <- tidy(m_qual_int, conf.int = TRUE) |>
+    filter(term %in% c("econ_index", "econ_index:wave_c")) |>
+    mutate(dv = "Democratic quality", country = cntry,
+           r_sq = summary(m_qual_int)$r.squared, n = nobs(m_qual_int))
+
+  pooled_results[[cntry]] <- bind_rows(sat_tidy, qual_tidy)
+
+  cat(cntry, ":\n")
+  bind_rows(sat_tidy, qual_tidy) |>
+    dplyr::select(dv, term, estimate, std.error, p.value) |>
+    print()
+  cat("\n")
+}
+
+pooled_df <- bind_rows(pooled_results)
+```
+
+## Cross-country interaction test (H4) {#sec-cross-country}
+
+Is the Korea–Taiwan divergence in the econ → quality relationship statistically
+significant?
+
+```{r cross-country}
+both <- dat |> mutate(is_korea = as.numeric(country_label == "Korea"))
+
+f_xc_sat  <- as.formula(paste("sat_index ~ econ_index * is_korea + factor(wave) +", controls))
+m_xc_sat  <- lm(f_xc_sat, data = both)
+
+f_xc_qual <- as.formula(paste("qual_index ~ econ_index * is_korea + factor(wave) +", controls))
+m_xc_qual <- lm(f_xc_qual, data = both)
+
+xc_sat_tidy <- tidy(m_xc_sat, conf.int = TRUE) |>
+  filter(term %in% c("econ_index", "is_korea", "econ_index:is_korea")) |>
+  mutate(dv = "Satisfaction")
+
+xc_qual_tidy <- tidy(m_xc_qual, conf.int = TRUE) |>
+  filter(term %in% c("econ_index", "is_korea", "econ_index:is_korea")) |>
+  mutate(dv = "Democratic quality")
+
+xc_df <- bind_rows(xc_sat_tidy, xc_qual_tidy)
+
+cat("Cross-country interaction:\n")
+xc_df |> dplyr::select(dv, term, estimate, std.error, p.value) |> print()
+
+# Korea econ effect = main + interaction
+kr_sat_effect  <- xc_sat_tidy$estimate[xc_sat_tidy$term == "econ_index"] +
+                  xc_sat_tidy$estimate[xc_sat_tidy$term == "econ_index:is_korea"]
+kr_qual_effect <- xc_qual_tidy$estimate[xc_qual_tidy$term == "econ_index"] +
+                  xc_qual_tidy$estimate[xc_qual_tidy$term == "econ_index:is_korea"]
+
+cat(sprintf("\nKorea econ -> satisfaction = %.3f\n", kr_sat_effect))
+cat(sprintf("Korea econ -> quality     = %.3f\n", kr_qual_effect))
+cat(sprintf("Taiwan econ -> satisfaction = %.3f\n",
+            xc_sat_tidy$estimate[xc_sat_tidy$term == "econ_index"]))
+cat(sprintf("Taiwan econ -> quality     = %.3f\n",
+            xc_qual_tidy$estimate[xc_qual_tidy$term == "econ_index"]))
+```
+
+## Robustness checks (H5) {#sec-robustness}
+
+### Individual DV components (Korea)
+
+```{r robustness-indiv-dv}
+indiv_dv_vars <- c(
+  "sat_democracy_n", "sat_govt_n",
+  "qual_pref_dem_n", "qual_extent_n",
+  "qual_sys_support_n", "qual_sys_change_n"
+)
+
+indiv_dv_results <- map_dfr(indiv_dv_vars, function(dv) {
+  f <- as.formula(paste(dv, "~ econ_index + factor(wave) +", controls))
+  m <- lm(f, data = dat |> filter(country_label == "Korea"))
+  extract_econ_coef(m) |>
+    mutate(dv = dv, r_sq = summary(m)$r.squared, n = nobs(m))
+})
+
+indiv_dv_results |>
+  mutate(sig = case_when(p.value < 0.001 ~ "***", p.value < 0.01 ~ "**",
+                         p.value < 0.05  ~ "*",   TRUE ~ "")) |>
+  dplyr::select(dv, estimate, std.error, p.value, sig, r_sq, n) |>
+  print()
+```
+
+### Adding institutional trust (Korea)
+
+```{r robustness-trust}
+controls_trust <- paste(controls, "+ trust_index")
+
+trust_robustness <- map_dfr(c("sat_index", "qual_index"), function(dv) {
+  f_base  <- as.formula(paste(dv, "~ econ_index + factor(wave) +", controls))
+  f_trust <- as.formula(paste(dv, "~ econ_index + factor(wave) +", controls_trust))
+
+  m_base  <- lm(f_base,  data = dat |> filter(country_label == "Korea"))
+  m_trust <- lm(f_trust, data = dat |> filter(country_label == "Korea"))
+
+  bind_rows(
+    extract_econ_coef(m_base)  |> mutate(model = "Base",       dv = dv,
+                                          r_sq = summary(m_base)$r.squared),
+    extract_econ_coef(m_trust) |> mutate(model = "With trust", dv = dv,
+                                          r_sq = summary(m_trust)$r.squared)
+  )
+})
+
+trust_robustness |>
+  dplyr::select(dv, model, estimate, p.value, r_sq) |>
+  print()
+
+f_sat_trust <- as.formula(paste("sat_index ~ econ_index + trust_index + factor(wave) +", controls))
+m_sat_trust <- lm(f_sat_trust, data = dat |> filter(country_label == "Korea"))
+cat(sprintf("Trust -> satisfaction b = %.3f (p = %.4f)\n",
+            coef(m_sat_trust)["trust_index"],
+            tidy(m_sat_trust) |> filter(term == "trust_index") |> pull(p.value)))
+```
+
+### Individual economic predictors (Korea)
+
+```{r robustness-econ-vars}
+econ_vars <- c("econ_national_n", "econ_family_n", "econ_outlook_n",
+               "econ_fam_outlook_n", "econ_change_n", "econ_fam_change_n")
+
+indiv_econ_results <- map_dfr(econ_vars, function(ev) {
+  f_sat  <- as.formula(paste("sat_index ~", ev, "+ factor(wave) +", controls))
+  f_qual <- as.formula(paste("qual_index ~", ev, "+ factor(wave) +", controls))
+
+  m_sat  <- lm(f_sat,  data = dat |> filter(country_label == "Korea"))
+  m_qual <- lm(f_qual, data = dat |> filter(country_label == "Korea"))
+
+  bind_rows(
+    tidy(m_sat)  |> filter(term == ev) |> mutate(dv = "Satisfaction", econ_var = ev),
+    tidy(m_qual) |> filter(term == ev) |> mutate(dv = "Quality",      econ_var = ev)
+  )
+})
+
+indiv_econ_results |>
+  mutate(sig = case_when(p.value < 0.001 ~ "***", p.value < 0.01 ~ "**",
+                         p.value < 0.05  ~ "*",   TRUE ~ "")) |>
+  dplyr::select(econ_var, dv, estimate, p.value, sig) |>
+  pivot_wider(names_from = dv, values_from = c(estimate, p.value, sig)) |>
+  print()
+```
+
+### Subgroup heterogeneity (Korea)
+
+```{r robustness-subgroups}
+kr <- dat |> filter(country_label == "Korea")
+
+subgroup_results <- list()
+
+for (split_var in c("age_group", "edu_group", "polint_group")) {
+  groups <- kr |> pull(!!sym(split_var)) |> unique() |> na.omit()
+
+  for (grp in groups) {
+    sub <- kr |> filter(!!sym(split_var) == grp)
+    if (nrow(sub) < 200) next
+
+    f_sat  <- as.formula(paste("sat_index ~ econ_index + factor(wave) +", controls))
+    f_qual <- as.formula(paste("qual_index ~ econ_index + factor(wave) +", controls))
+
+    m_sat  <- lm(f_sat,  data = sub)
+    m_qual <- lm(f_qual, data = sub)
+
+    subgroup_results[[paste(split_var, grp, sep = ":")]] <- bind_rows(
+      extract_econ_coef(m_sat)  |> mutate(dv = "Satisfaction",
+                                           split = split_var, group = grp, n = nobs(m_sat)),
+      extract_econ_coef(m_qual) |> mutate(dv = "Quality",
+                                           split = split_var, group = grp, n = nobs(m_qual))
+    )
+  }
+}
+
+subgroup_df <- bind_rows(subgroup_results)
+
+subgroup_df |>
+  mutate(sig = case_when(p.value < 0.001 ~ "***", p.value < 0.01 ~ "**",
+                         p.value < 0.05  ~ "*",   TRUE ~ "")) |>
+  dplyr::select(split, group, dv, estimate, p.value, sig, n) |>
+  arrange(split, group, dv) |>
+  print(n = 30)
+```
+
+## Figures {#sec-figures}
+
+### Figure 3: Wave-by-wave coefficient plot (Korea vs Taiwan)
+
+```{r figure3}
+survey_years_both <- tibble(
+  wave = rep(1:6, 2),
+  country = rep(c("Korea", "Taiwan"), each = 6),
+  year = c(2003, 2006, 2011, 2015, 2019, 2022,
+           2001, 2006, 2010, 2014, 2019, 2022)
+)
+
+fig03_data <- wave_df |>
+  left_join(survey_years_both, by = c("country", "wave"))
+
+fig03 <- fig03_data |>
+  ggplot(aes(x = year, y = estimate, color = country, shape = country)) +
+  geom_hline(yintercept = 0, linetype = "dashed", color = "grey60") +
+  geom_pointrange(aes(ymin = conf.low, ymax = conf.high),
+                  position = position_dodge(width = 0.8), size = 0.5) +
+  facet_wrap(~ dv, scales = "free_y") +
+  scale_color_manual(values = c("Korea" = "#2166AC", "Taiwan" = "#D55E00")) +
+  labs(
+    x       = NULL,
+    y       = "b (economic evaluations -> DV)",
+    color   = NULL, shape = NULL,
+    title   = "Economic evaluations predict satisfaction universally,\nbut only predict quality perceptions in Taiwan",
+    caption = "OLS coefficients with 95% CIs. Controls: age, gender, education, urban/rural, political interest.\nSource: ABS waves 1-6."
+  ) +
+  theme_minimal(base_size = 12) +
+  theme(
+    legend.position  = "bottom",
+    plot.title       = element_text(size = 11, face = "bold"),
+    plot.caption     = element_text(size = 8, color = "grey40"),
+    panel.grid.minor = element_blank(),
+    strip.text       = element_text(face = "bold")
+  )
+
+ggsave(file.path(fig_dir, "fig03_coefficient_plot.pdf"), fig03,
+       width = 8, height = 5)
+ggsave(file.path(fig_dir, "fig03_coefficient_plot.png"), fig03,
+       width = 8, height = 5, dpi = 300)
+
+fig03
+cat("✓ Figure 3 saved\n")
+```
+
+### Figure 4: Subgroup coefficient plot (Korea)
+
+```{r figure4}
+fig04_data <- subgroup_df |>
+  mutate(
+    group = factor(group),
+    split_label = case_when(
+      split == "age_group"    ~ "Age",
+      split == "edu_group"    ~ "Education",
+      split == "polint_group" ~ "Political interest"
+    )
+  )
+
+fig04 <- fig04_data |>
+  ggplot(aes(x = group, y = estimate, color = dv, shape = dv)) +
+  geom_hline(yintercept = 0, linetype = "dashed", color = "grey60") +
+  geom_pointrange(aes(ymin = conf.low, ymax = conf.high),
+                  position = position_dodge(width = 0.5), size = 0.5) +
+  facet_wrap(~ split_label, scales = "free_x") +
+  scale_color_manual(values = c("Satisfaction" = "#2166AC", "Quality" = "#B2182B")) +
+  labs(
+    x        = NULL,
+    y        = "b (economic evaluations -> DV)",
+    color    = NULL, shape = NULL,
+    title    = "The decoupling pattern holds across subgroups",
+    subtitle = "Korea: economic evaluations predict satisfaction but not quality across all groups",
+    caption  = "OLS coefficients with 95% CIs. Pooled waves 1-6 with wave fixed effects.\nSource: ABS Korea."
+  ) +
+  theme_minimal(base_size = 12) +
+  theme(
+    legend.position  = "bottom",
+    plot.title       = element_text(size = 11, face = "bold"),
+    plot.subtitle    = element_text(size = 9),
+    plot.caption     = element_text(size = 8, color = "grey40"),
+    panel.grid.minor = element_blank(),
+    strip.text       = element_text(face = "bold"),
+    axis.text.x      = element_text(size = 9)
+  )
+
+ggsave(file.path(fig_dir, "fig04_subgroup_coefficients.pdf"), fig04,
+       width = 9, height = 5)
+ggsave(file.path(fig_dir, "fig04_subgroup_coefficients.png"), fig04,
+       width = 9, height = 5, dpi = 300)
+
+fig04
+cat("✓ Figure 4 saved\n")
+```
+
+## Appendix models {#sec-appendix-models}
+
+All models below produce results for the online appendix (B through G).
+
+### App B: Three-bucket disaggregated DVs (both countries) {#sec-app-b}
+
+```{r app-b-three-buckets}
+# Bucket 1: Performance satisfaction
+bucket1_vars <- c("sat_democracy_n", "sat_govt_n")
+# Bucket 2: Normative democratic preference
+bucket2_vars <- c("qual_pref_dem_n", "qual_extent_n")
+# Bucket 3: System legitimacy (waves 3-6)
+bucket3_vars <- c("sys_proud_n", "sys_prefer_n", "sys_capable_n",
+                  "qual_sys_support_n", "qual_sys_change_n")
+
+all_dv_vars <- c(bucket1_vars, bucket2_vars, bucket3_vars)
+
+# Wave-by-wave for all individual DVs, both countries
+app_b_results <- list()
+
+for (cntry in c("Korea", "Taiwan")) {
+  for (w in 1:6) {
+    sub <- dat |> filter(country_label == cntry, wave == w)
+    if (nrow(sub) < 100) next
+
+    for (dv in all_dv_vars) {
+      # Skip bucket 3 for waves 1-2
+      if (dv %in% bucket3_vars & w < 3) next
+      if (all(is.na(sub[[dv]]))) next
+
+      f <- as.formula(paste(dv, "~ econ_index +", controls))
+      m <- tryCatch(lm(f, data = sub), error = function(e) NULL)
+      if (is.null(m)) next
+
+      bucket <- case_when(
+        dv %in% bucket1_vars ~ "Performance satisfaction",
+        dv %in% bucket2_vars ~ "Normative democratic preference",
+        dv %in% bucket3_vars ~ "System legitimacy"
+      )
+
+      app_b_results[[paste(cntry, w, dv, sep = "_")]] <-
+        extract_econ_coef(m) |>
+        mutate(dv = dv, country = cntry, wave = w, bucket = bucket,
+               r_sq = summary(m)$r.squared, n = nobs(m))
+    }
+  }
+}
+
+app_b_df <- bind_rows(app_b_results)
+
+cat("=== Three-bucket results (Korea) ===")
+app_b_df |>
+  filter(country == "Korea") |>
+  mutate(sig = case_when(p.value < 0.001 ~ "***", p.value < 0.01 ~ "**",
+                         p.value < 0.05  ~ "*",   TRUE ~ "")) |>
+  dplyr::select(bucket, dv, wave, estimate, sig, n) |>
+  arrange(bucket, dv, wave) |>
+  print(n = 60)
+
+cat("\n=== Three-bucket results (Taiwan) ===")
+app_b_df |>
+  filter(country == "Taiwan") |>
+  mutate(sig = case_when(p.value < 0.001 ~ "***", p.value < 0.01 ~ "**",
+                         p.value < 0.05  ~ "*",   TRUE ~ "")) |>
+  dplyr::select(bucket, dv, wave, estimate, sig, n) |>
+  arrange(bucket, dv, wave) |>
+  print(n = 60)
+```
+
+### App C.2: Within-wave z-score models {#sec-app-c2}
+
+```{r app-c-zscores}
+controls_z <- "age_z + gender + edu_z + urban_rural + polint_z"
+
+zscore_results <- list()
+
+for (cntry in c("Korea", "Taiwan")) {
+  for (w in 1:6) {
+    sub <- dat |> filter(country_label == cntry, wave == w)
+    if (nrow(sub) < 100) next
+
+    for (dv_pair in list(
+      c("sat_index_z",  "Satisfaction (z)"),
+      c("qual_index_z", "Quality (z)")
+    )) {
+      f <- as.formula(paste(dv_pair[1], "~ econ_index_z +", controls_z))
+      m <- tryCatch(lm(f, data = sub), error = function(e) NULL)
+      if (is.null(m)) next
+
+      zscore_results[[paste(cntry, w, dv_pair[1], sep = "_")]] <-
+        tidy(m, conf.int = TRUE) |>
+        filter(term == "econ_index_z") |>
+        dplyr::select(estimate, std.error, p.value, conf.low, conf.high) |>
+        mutate(dv = dv_pair[2], country = cntry, wave = w, n = nobs(m))
+    }
+  }
+}
+
+zscore_df <- bind_rows(zscore_results)
+
+cat("Within-wave z-score models:\n")
+zscore_df |>
+  mutate(sig = case_when(p.value < 0.001 ~ "***", p.value < 0.01 ~ "**",
+                         p.value < 0.05  ~ "*",   TRUE ~ "")) |>
+  dplyr::select(country, wave, dv, estimate, sig) |>
+  pivot_wider(names_from = dv, values_from = c(estimate, sig)) |>
+  print(n = 20)
+```
+
+### App C.3: Ordered logit {#sec-app-c3}
+
+```{r app-c-ologit}
+# Use MASS::polr() directly to avoid masking dplyr::select()
+
+# Helper must be defined before the loop that calls it
+coeftest_polr <- function(model) {
+  coef(summary(model))
+}
+
+ologit_results <- list()
+
+for (cntry in c("Korea", "Taiwan")) {
+  sub <- dat |>
+    filter(country_label == cntry) |>
+    mutate(
+      dem_pref_ord = factor(dem_always_preferable),
+      sat_dem_ord  = factor(democracy_satisfaction)
+    )
+
+  for (dv_info in list(
+    c("sat_dem_ord",  "Satisfaction with democracy"),
+    c("dem_pref_ord", "Democracy always preferable")
+  )) {
+    f <- as.formula(paste(dv_info[1], "~ econ_index + factor(wave) +", controls))
+    m <- tryCatch(MASS::polr(f, data = sub, Hess = TRUE), error = function(e) NULL)
+    if (is.null(m)) next
+
+    ct <- coeftest_polr(m)
+    econ_row <- ct["econ_index", ]
+
+    ologit_results[[paste(cntry, dv_info[1], sep = "_")]] <- tibble(
+      country  = cntry,
+      dv       = dv_info[2],
+      estimate = econ_row["Value"],
+      std.error = econ_row["Std. Error"],
+      t.value  = econ_row["t value"],
+      p.value  = 2 * pt(abs(econ_row["t value"]), df = nobs(m) - length(coef(m)), lower.tail = FALSE),
+      n        = nobs(m)
+    )
+  }
+}
+
+ologit_df <- bind_rows(ologit_results)
+cat("Ordered logit results:\n")
+ologit_df |>
+  mutate(sig = case_when(p.value < 0.001 ~ "***", p.value < 0.01 ~ "**",
+                         p.value < 0.05  ~ "*",   TRUE ~ "")) |>
+  print()
+```
+
+### App D: Survey-weighted models {#sec-app-d}
+
+```{r app-d-weighted}
+# Use survey:: prefix throughout to avoid masking dplyr::select
+weighted_results <- list()
+
+for (cntry in c("Korea", "Taiwan")) {
+  for (w in 1:6) {
+    sub <- dat |> filter(country_label == cntry, wave == w)
+    if (nrow(sub) < 100) next
+
+    # Use weight variable if available; skip if not
+    if (!"weight" %in% names(sub) || all(is.na(sub$weight))) {
+      wt_var <- rep(1, nrow(sub))
+    } else {
+      wt_var <- sub$weight
+    }
+
+    des <- survey::svydesign(ids = ~1, weights = ~wt_var,
+                             data = sub |> mutate(wt_var = wt_var))
+
+    for (dv_pair in list(
+      c("sat_index",  "Satisfaction"),
+      c("qual_index", "Quality")
+    )) {
+      f <- as.formula(paste(dv_pair[1], "~ econ_index +", controls))
+      m <- tryCatch(survey::svyglm(f, design = des), error = function(e) NULL)
+      if (is.null(m)) next
+
+      weighted_results[[paste(cntry, w, dv_pair[1], sep = "_")]] <-
+        tidy(m, conf.int = TRUE) |>
+        filter(term == "econ_index") |>
+        dplyr::select(estimate, std.error, p.value, conf.low, conf.high) |>
+        mutate(dv = dv_pair[2], country = cntry, wave = w, n = nobs(m))
+    }
+  }
+}
+
+weighted_df <- bind_rows(weighted_results)
+cat("Survey-weighted models:\n")
+weighted_df |>
+  mutate(sig = case_when(p.value < 0.001 ~ "***", p.value < 0.01 ~ "**",
+                         p.value < 0.05  ~ "*",   TRUE ~ "")) |>
+  dplyr::select(country, wave, dv, estimate, sig) |>
+  pivot_wider(names_from = dv, values_from = c(estimate, sig)) |>
+  print(n = 20)
+```
+
+### App E.3: Additional controls (partisanship, income, region) {#sec-app-e3}
+
+```{r app-e3-extra-controls}
+# Check what additional control variables are available
+cat("Party ID coverage:\n")
+if ("party_id" %in% names(dat)) {
+  dat |>
+    group_by(country_label, wave) |>
+    summarise(n = n(),
+              party_ok = sum(!is.na(party_id)),
+              pct = round(100 * party_ok / n, 1),
+              .groups = "drop") |>
+    print(n = 20)
+} else {
+  cat("  party_id not in dataset — skipping\n")
+}
+
+cat("\nIncome coverage:\n")
+if ("household_income" %in% names(dat)) {
+  dat |>
+    group_by(country_label, wave) |>
+    summarise(n = n(),
+              income_ok = sum(!is.na(household_income)),
+              pct = round(100 * income_ok / n, 1),
+              .groups = "drop") |>
+    print(n = 20)
+} else {
+  cat("  household_income not in dataset — skipping\n")
+}
+
+# Run models with available additional controls
+extra_ctrl_results <- list()
+
+for (cntry in c("Korea", "Taiwan")) {
+  sub <- dat |> filter(country_label == cntry)
+
+  # Build extended control string based on available data
+  extra_controls <- controls
+  if ("household_income" %in% names(sub) &&
+      sum(!is.na(sub$household_income)) > nrow(sub) * 0.5) {
+    sub <- sub |> mutate(income_n = normalize_01(household_income))
+    extra_controls <- paste(extra_controls, "+ income_n")
+  }
+
+  for (dv_pair in list(
+    c("sat_index",  "Satisfaction"),
+    c("qual_index", "Quality")
+  )) {
+    f <- as.formula(paste(dv_pair[1], "~ econ_index + factor(wave) +", extra_controls))
+    m <- tryCatch(lm(f, data = sub), error = function(e) NULL)
+    if (is.null(m)) next
+
+    extra_ctrl_results[[paste(cntry, dv_pair[1], sep = "_")]] <-
+      extract_econ_coef(m) |>
+      mutate(dv = dv_pair[2], country = cntry,
+             model = "Extra controls", n = nobs(m))
+  }
+}
+
+extra_ctrl_df <- bind_rows(extra_ctrl_results)
+cat("Models with additional controls:\n")
+extra_ctrl_df |> print()
+```
+
+### App E.4: Placebo outcomes {#sec-app-e4}
+
+```{r app-e4-placebo}
+# Placebo test: economic evaluations should predict life satisfaction
+# but NOT interpersonal trust or national pride
+placebo_vars <- c("trust_interpersonal" = "Interpersonal trust",
+                  "nat_proud_citizen"   = "National pride",
+                  "life_satisfaction"   = "Life satisfaction")
+
+placebo_results <- list()
+
+for (cntry in c("Korea", "Taiwan")) {
+  sub <- dat |> filter(country_label == cntry)
+
+  for (i in seq_along(placebo_vars)) {
+    var_name <- names(placebo_vars)[i]
+    var_label <- placebo_vars[i]
+
+    if (!var_name %in% names(sub)) next
+    if (all(is.na(sub[[var_name]]))) next
+
+    sub_tmp <- sub |> mutate(placebo_dv = normalize_01(.data[[var_name]]))
+
+    f <- as.formula(paste("placebo_dv ~ econ_index + factor(wave) +", controls))
+    m <- tryCatch(lm(f, data = sub_tmp), error = function(e) NULL)
+    if (is.null(m)) next
+
+    placebo_results[[paste(cntry, var_name, sep = "_")]] <-
+      extract_econ_coef(m) |>
+      mutate(dv = var_label, country = cntry, n = nobs(m))
+  }
+}
+
+placebo_df <- bind_rows(placebo_results)
+cat("Placebo outcome tests:\n")
+placebo_df |>
+  mutate(sig = case_when(p.value < 0.001 ~ "***", p.value < 0.01 ~ "**",
+                         p.value < 0.05  ~ "*",   TRUE ~ "")) |>
+  dplyr::select(country, dv, estimate, p.value, sig, n) |>
+  print()
+```
+
+### App F: Taiwan identity mechanism probes {#sec-app-f}
+
+```{r app-f-identity}
+# F.1: National pride × Econ → Quality (both countries)
+identity_interaction_results <- list()
+
+for (cntry in c("Korea", "Taiwan")) {
+  sub <- dat |> filter(country_label == cntry, !is.na(nat_proud_n))
+  if (nrow(sub) < 200) next
+
+  f <- as.formula(paste("qual_index ~ econ_index * nat_proud_n + factor(wave) +", controls))
+  m <- lm(f, data = sub)
+
+  identity_interaction_results[[paste(cntry, "pride", sep = "_")]] <-
+    tidy(m, conf.int = TRUE) |>
+    filter(term %in% c("econ_index", "nat_proud_n", "econ_index:nat_proud_n")) |>
+    mutate(country = cntry, moderator = "National pride", dv = "Quality",
+           n = nobs(m))
+
+  # Also run on individual normative items
+  for (dv_pair in list(
+    c("qual_pref_dem_n", "Democracy always preferable"),
+    c("qual_extent_n",   "Extent democratic")
+  )) {
+    f2 <- as.formula(paste(dv_pair[1], "~ econ_index * nat_proud_n + factor(wave) +", controls))
+    m2 <- tryCatch(lm(f2, data = sub), error = function(e) NULL)
+    if (is.null(m2)) next
+
+    identity_interaction_results[[paste(cntry, "pride", dv_pair[1], sep = "_")]] <-
+      tidy(m2, conf.int = TRUE) |>
+      filter(term %in% c("econ_index", "nat_proud_n", "econ_index:nat_proud_n")) |>
+      mutate(country = cntry, moderator = "National pride", dv = dv_pair[2],
+             n = nobs(m2))
+  }
+}
+
+cat("=== F.1: National pride moderation ===")
+bind_rows(identity_interaction_results) |>
+  mutate(sig = case_when(p.value < 0.001 ~ "***", p.value < 0.01 ~ "**",
+                         p.value < 0.05  ~ "*",   TRUE ~ "")) |>
+  dplyr::select(country, dv, term, estimate, sig) |>
+  print(n = 30)
+
+# F.2: China threat × Econ → Quality (Taiwan only, W3-6)
+china_results <- list()
+
+tw_china <- dat |> filter(country_label == "Taiwan", !is.na(china_threat))
+cat("\nTaiwan China-threat sample: n =", nrow(tw_china), "\n")
+cat("  Waves:", sort(unique(tw_china$wave)), "\n")
+
+if (nrow(tw_china) > 200) {
+  # Subgroup split
+  for (grp in c("China harmful", "China beneficial")) {
+    sub <- tw_china |> filter(china_threat == grp)
+    if (nrow(sub) < 100) next
+
+    f <- as.formula(paste("qual_index ~ econ_index + factor(wave) +", controls))
+    m <- lm(f, data = sub)
+
+    china_results[[paste("split", grp, sep = "_")]] <-
+      extract_econ_coef(m) |>
+      mutate(dv = "Quality", group = grp, model = "Subgroup", n = nobs(m))
+  }
+
+  # Interaction model
+  tw_china <- tw_china |> mutate(china_harm_bin = as.numeric(china_threat == "China harmful"))
+  f_int <- as.formula(paste("qual_index ~ econ_index * china_harm_bin + factor(wave) +", controls))
+  m_int <- lm(f_int, data = tw_china)
+
+  china_results[["interaction"]] <-
+    tidy(m_int, conf.int = TRUE) |>
+    filter(term %in% c("econ_index", "china_harm_bin", "econ_index:china_harm_bin")) |>
+    mutate(dv = "Quality", model = "Interaction", n = nobs(m_int))
+
+  # Also by individual normative items
+  for (dv_pair in list(
+    c("qual_pref_dem_n", "Democracy always preferable"),
+    c("qual_extent_n",   "Extent democratic")
+  )) {
+    f2 <- as.formula(paste(dv_pair[1], "~ econ_index * china_harm_bin + factor(wave) +", controls))
+    m2 <- tryCatch(lm(f2, data = tw_china), error = function(e) NULL)
+    if (is.null(m2)) next
+
+    china_results[[paste("interaction", dv_pair[1], sep = "_")]] <-
+      tidy(m2, conf.int = TRUE) |>
+      filter(term %in% c("econ_index", "china_harm_bin", "econ_index:china_harm_bin")) |>
+      mutate(dv = dv_pair[2], model = "Interaction", n = nobs(m2))
+  }
+}
+
+china_df <- bind_rows(china_results)
+cat("\n=== F.2: China threat moderation (Taiwan) ===")
+china_df |>
+  mutate(sig = case_when(p.value < 0.001 ~ "***", p.value < 0.01 ~ "**",
+                         p.value < 0.05  ~ "*",   TRUE ~ "")) |>
+  print(n = 30)
+```
+
+### App G: Full subgroup tables (both countries) {#sec-app-g}
+
+```{r app-g-subgroups-full}
+# Extend existing subgroup analysis to include Taiwan
+subgroup_full <- list()
+
+for (cntry in c("Korea", "Taiwan")) {
+  cdat <- dat |> filter(country_label == cntry)
+
+  for (split_var in c("age_group", "edu_group", "polint_group")) {
+    groups <- cdat |> pull(!!sym(split_var)) |> unique() |> na.omit()
+
+    for (grp in groups) {
+      sub <- cdat |> filter(!!sym(split_var) == grp)
+      if (nrow(sub) < 200) next
+
+      f_sat  <- as.formula(paste("sat_index ~ econ_index + factor(wave) +", controls))
+      f_qual <- as.formula(paste("qual_index ~ econ_index + factor(wave) +", controls))
+
+      m_sat  <- tryCatch(lm(f_sat,  data = sub), error = function(e) NULL)
+      m_qual <- tryCatch(lm(f_qual, data = sub), error = function(e) NULL)
+
+      if (!is.null(m_sat)) {
+        subgroup_full[[paste(cntry, split_var, grp, "sat", sep = ":")]] <-
+          extract_econ_coef(m_sat) |>
+          mutate(dv = "Satisfaction", country = cntry,
+                 split = split_var, group = grp, n = nobs(m_sat))
+      }
+      if (!is.null(m_qual)) {
+        subgroup_full[[paste(cntry, split_var, grp, "qual", sep = ":")]] <-
+          extract_econ_coef(m_qual) |>
+          mutate(dv = "Quality", country = cntry,
+                 split = split_var, group = grp, n = nobs(m_qual))
+      }
+    }
+  }
+}
+
+subgroup_full_df <- bind_rows(subgroup_full)
+cat("Full subgroup results (both countries):\n")
+subgroup_full_df |>
+  mutate(sig = case_when(p.value < 0.001 ~ "***", p.value < 0.01 ~ "**",
+                         p.value < 0.05  ~ "*",   TRUE ~ "")) |>
+  dplyr::select(country, split, group, dv, estimate, sig, n) |>
+  arrange(country, split, group, dv) |>
+  print(n = 40)
+```
+
+
+## Save all results
+
+```{r save}
+model_results <- list(
+  # --- Main text ---
+  wave_by_wave       = wave_df,
+  pooled_interaction = pooled_df,
+  cross_country      = xc_df,
+  subgroups          = subgroup_df,
+
+  # --- Appendix B: Disaggregated DVs ---
+  three_bucket       = app_b_df,
+
+  # --- Appendix C: Measurement comparability ---
+  zscore_models      = zscore_df,
+  ordered_logit      = ologit_df,
+
+  # --- Appendix D: Weights ---
+  weighted_models    = weighted_df,
+
+  # --- Appendix E: Additional robustness ---
+  indiv_dvs          = indiv_dv_results,
+  trust_robustness   = trust_robustness,
+  indiv_econ         = indiv_econ_results,
+  extra_controls     = extra_ctrl_df,
+  placebo_outcomes   = placebo_df,
+
+  # --- Appendix F: Identity probes ---
+  pride_interaction  = bind_rows(identity_interaction_results),
+  china_moderation   = china_df,
+
+  # --- Appendix G: Full subgroups ---
+  subgroups_full     = subgroup_full_df,
+
+  # --- Inline stats ---
+  inline = list(
+    kr_sat_effect             = kr_sat_effect,
+    kr_qual_effect            = kr_qual_effect,
+    xc_qual_interaction_p     = xc_qual_tidy$p.value[xc_qual_tidy$term == "econ_index:is_korea"],
+    xc_qual_interaction_b     = xc_qual_tidy$estimate[xc_qual_tidy$term == "econ_index:is_korea"]
+  )
+)
+
+saveRDS(model_results, file.path(results_dir, "model_results.rds"))
+cat("\n✓ All model results saved to", file.path(results_dir, "model_results.rds"), "\n")
+cat("  Components:", paste(names(model_results), collapse = ", "), "\n")
+```

@@ -1,0 +1,257 @@
+---
+title: "01 — Descriptive Analysis: The Satisfaction Paradox"
+subtitle: "Wave means, trend slopes, and Figures 1–2"
+format:
+  html:
+    toc: true
+    toc-depth: 3
+    number-sections: true
+    theme: cosmo
+    code-fold: true
+    self-contained: true
+execute:
+  echo: true
+  warning: false
+  message: false
+  cache: true
+---
+
+**Purpose**: Document the satisfaction–quality dissociation descriptively.
+Wave means, trend slopes, and Figures 1–2 for the paper.
+
+- **Input**: `analysis/results/analysis_data.rds`
+- **Output**: `figures/fig01_dissociation.pdf`, `figures/fig02_econ_comovement.pdf`,
+  `results/descriptive_stats.rds`
+
+```{r setup}
+library(tidyverse)
+library(survey)
+
+project_root <- "/Users/jeffreystark/Development/Research/econdev-authpref"
+paper_dir    <- file.path(project_root, "papers/south-korea-decoupling")
+analysis_dir <- file.path(paper_dir, "analysis")
+results_dir  <- file.path(analysis_dir, "results")
+fig_dir      <- file.path(analysis_dir, "figures")
+
+dat <- readRDS(file.path(results_dir, "analysis_data.rds"))
+
+# Palette
+pal <- c("Satisfaction" = "#2166AC", "Democratic quality" = "#B2182B",
+         "Economic evaluations" = "#4DAF4A")
+```
+
+## Wave means: Korea
+
+```{r wave-means-korea}
+kr <- dat |> filter(country_label == "Korea")
+
+wave_means_kr <- kr |>
+  group_by(wave) |>
+  summarise(
+    n = n(),
+    sat_mean    = mean(sat_index, na.rm = TRUE),
+    sat_se      = sd(sat_index, na.rm = TRUE) / sqrt(sum(!is.na(sat_index))),
+    qual_mean   = mean(qual_index, na.rm = TRUE),
+    qual_se     = sd(qual_index, na.rm = TRUE) / sqrt(sum(!is.na(qual_index))),
+    econ_mean   = mean(econ_index, na.rm = TRUE),
+    econ_se     = sd(econ_index, na.rm = TRUE) / sqrt(sum(!is.na(econ_index))),
+    .groups = "drop"
+  )
+
+cat("=== Korea: Cluster wave means ===\n")
+print(wave_means_kr)
+
+# Survey year mapping (approximate)
+survey_years <- tibble(
+  wave = 1:6,
+  year = c(2003, 2006, 2011, 2015, 2019, 2022)
+)
+
+wave_means_kr <- wave_means_kr |> left_join(survey_years, by = "wave")
+```
+
+## OLS trend slopes (Korea)
+
+```{r trend-slopes}
+calc_slope <- function(data, yvar, year_var = "year") {
+  d <- data |> select(y = all_of(yvar), x = all_of(year_var)) |> drop_na()
+  if (nrow(d) < 3) return(tibble(slope = NA_real_, slope_decade = NA_real_, n_waves = nrow(d)))
+  m <- lm(y ~ x, data = d)
+  tibble(
+    slope        = coef(m)["x"],
+    slope_decade = coef(m)["x"] * 10,
+    n_waves      = nrow(d)
+  )
+}
+
+slopes_kr <- bind_rows(
+  calc_slope(wave_means_kr, "sat_mean")    |> mutate(cluster = "Satisfaction"),
+  calc_slope(wave_means_kr, "qual_mean")   |> mutate(cluster = "Democratic quality"),
+  calc_slope(wave_means_kr, "econ_mean")   |> mutate(cluster = "Economic evaluations")
+)
+
+cat("=== Korea: Cluster-level trend slopes ===\n")
+print(slopes_kr)
+```
+
+## Figure 1: Core dissociation plot (Korea)
+
+```{r figure1}
+fig01_data <- wave_means_kr |>
+  pivot_longer(
+    cols      = c(sat_mean, qual_mean),
+    names_to  = "cluster",
+    values_to = "mean"
+  ) |>
+  mutate(
+    se = case_when(
+      cluster == "sat_mean"  ~ sat_se,
+      cluster == "qual_mean" ~ qual_se
+    ),
+    cluster_label = case_when(
+      cluster == "sat_mean"  ~ "Satisfaction",
+      cluster == "qual_mean" ~ "Democratic quality"
+    )
+  )
+
+fig01 <- fig01_data |>
+  ggplot(aes(x = year, y = mean, color = cluster_label, fill = cluster_label)) +
+  geom_ribbon(aes(ymin = mean - 1.96 * se, ymax = mean + 1.96 * se),
+              alpha = 0.15, color = NA) +
+  geom_line(linewidth = 1) +
+  geom_point(size = 2.5) +
+  geom_vline(xintercept = 2017, linetype = "dashed", color = "grey50", linewidth = 0.4) +
+  annotate("text", x = 2017.3, y = 0.78, label = "Park\nimpeachment",
+           hjust = 0, size = 3, color = "grey40") +
+  scale_color_manual(values = pal) +
+  scale_fill_manual(values = pal) +
+  scale_y_continuous(limits = c(0, 1), labels = scales::percent_format(),
+                     breaks = seq(0, 1, 0.25)) +
+  scale_x_continuous(breaks = survey_years$year) +
+  labs(
+    x       = NULL,
+    y       = "Mean (normalized scale, 0-1)",
+    color   = NULL, fill = NULL,
+    title   = "The satisfaction paradox: diverging trends in democratic satisfaction\nand democratic quality perception, South Korea 2003-2022",
+    caption = paste0(
+      "Wave means with 95% CIs. Satisfaction cluster: mean of sat_democracy + sat_govt.\n",
+      "Quality cluster: mean of dem_always_preferable + dem_extent_current.\n",
+      "All variables normalized 0-1. Source: ABS Korea, waves 1-6."
+    )
+  ) +
+  theme_minimal(base_size = 12) +
+  theme(
+    legend.position  = "bottom",
+    plot.title       = element_text(size = 11, face = "bold"),
+    plot.caption     = element_text(size = 8, color = "grey40"),
+    panel.grid.minor = element_blank()
+  )
+
+ggsave(file.path(fig_dir, "fig01_dissociation.pdf"), fig01,
+       width = 7, height = 5)
+ggsave(file.path(fig_dir, "fig01_dissociation.png"), fig01,
+       width = 7, height = 5, dpi = 300)
+
+fig01
+cat("✓ Figure 1 saved\n")
+```
+
+## Figure 2: Three-cluster co-movement
+
+```{r figure2}
+fig02_data <- wave_means_kr |>
+  pivot_longer(
+    cols      = c(sat_mean, qual_mean, econ_mean),
+    names_to  = "cluster",
+    values_to = "mean"
+  ) |>
+  mutate(
+    se = case_when(
+      cluster == "sat_mean"  ~ sat_se,
+      cluster == "qual_mean" ~ qual_se,
+      cluster == "econ_mean" ~ econ_se
+    ),
+    cluster_label = case_when(
+      cluster == "sat_mean"  ~ "Satisfaction",
+      cluster == "qual_mean" ~ "Democratic quality",
+      cluster == "econ_mean" ~ "Economic evaluations"
+    )
+  )
+
+fig02 <- fig02_data |>
+  ggplot(aes(x = year, y = mean, color = cluster_label, fill = cluster_label)) +
+  geom_ribbon(aes(ymin = mean - 1.96 * se, ymax = mean + 1.96 * se),
+              alpha = 0.12, color = NA) +
+  geom_line(linewidth = 1) +
+  geom_point(size = 2.5) +
+  geom_vline(xintercept = 2017, linetype = "dashed", color = "grey50", linewidth = 0.4) +
+  annotate("text", x = 2017.3, y = 0.82, label = "Impeachment",
+           hjust = 0, size = 3, color = "grey40") +
+  scale_color_manual(values = pal) +
+  scale_fill_manual(values = pal) +
+  scale_y_continuous(limits = c(0, 1), labels = scales::percent_format(),
+                     breaks = seq(0, 1, 0.25)) +
+  scale_x_continuous(breaks = survey_years$year) +
+  labs(
+    x       = NULL,
+    y       = "Mean (normalized scale, 0-1)",
+    color   = NULL, fill = NULL,
+    title   = "Output legitimacy: economic evaluations track satisfaction,\nnot democratic quality perception",
+    caption = paste0(
+      "Weighted wave means with 95% CIs. Cluster indices are means of\n",
+      "normalized component variables. Source: ABS Korea, waves 1-6."
+    )
+  ) +
+  theme_minimal(base_size = 12) +
+  theme(
+    legend.position  = "bottom",
+    plot.title       = element_text(size = 11, face = "bold"),
+    plot.caption     = element_text(size = 8, color = "grey40"),
+    panel.grid.minor = element_blank()
+  )
+
+ggsave(file.path(fig_dir, "fig02_econ_comovement.pdf"), fig02,
+       width = 7, height = 5)
+ggsave(file.path(fig_dir, "fig02_econ_comovement.png"), fig02,
+       width = 7, height = 5, dpi = 300)
+
+fig02
+cat("✓ Figure 2 saved\n")
+```
+
+## Taiwan descriptive comparison
+
+```{r taiwan-means}
+tw <- dat |> filter(country_label == "Taiwan")
+
+wave_means_tw <- tw |>
+  group_by(wave) |>
+  summarise(
+    n = n(),
+    sat_mean    = mean(sat_index, na.rm = TRUE),
+    sat_se      = sd(sat_index, na.rm = TRUE) / sqrt(sum(!is.na(sat_index))),
+    qual_mean   = mean(qual_index, na.rm = TRUE),
+    qual_se     = sd(qual_index, na.rm = TRUE) / sqrt(sum(!is.na(qual_index))),
+    .groups = "drop"
+  ) |>
+  left_join(
+    tibble(wave = 1:6, year = c(2001, 2006, 2010, 2014, 2019, 2022)),
+    by = "wave"
+  )
+
+cat("=== Taiwan: Cluster wave means ===\n")
+print(wave_means_tw)
+```
+
+## Save
+
+```{r save}
+descriptive_results <- list(
+  wave_means_kr = wave_means_kr,
+  wave_means_tw = wave_means_tw,
+  slopes_kr     = slopes_kr
+)
+
+saveRDS(descriptive_results, file.path(results_dir, "descriptive_stats.rds"))
+cat("✓ All descriptive results saved\n")
+```

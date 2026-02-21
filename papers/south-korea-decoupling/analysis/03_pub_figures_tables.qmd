@@ -1,0 +1,395 @@
+---
+title: "03 — Publication Figures and Tables: The Satisfaction Paradox"
+subtitle: "Camera-ready figures and formatted tables for the manuscript"
+format:
+  html:
+    toc: true
+    toc-depth: 3
+    number-sections: true
+    theme: cosmo
+    code-fold: true
+    self-contained: true
+execute:
+  echo: true
+  warning: false
+  message: false
+  cache: true
+---
+
+**Purpose**: Generate camera-ready figures and formatted tables for the
+manuscript. All data comes from results saved by prior scripts.
+
+**Requires**:
+
+- `analysis/results/analysis_data.rds` (from 00)
+- `analysis/results/descriptive_stats.rds` (from 01)
+- `analysis/results/model_results.rds` (from 02)
+
+**Output**: `figures/pub_fig0[1-4]_*.pdf/png`, `tables/tab0[1-4]_*.csv`
+
+```{r setup}
+library(tidyverse)
+library(patchwork)
+
+project_root <- "/Users/jeffreystark/Development/Research/econdev-authpref"
+paper_dir    <- file.path(project_root, "papers/south-korea-decoupling")
+analysis_dir <- file.path(paper_dir, "analysis")
+results_dir  <- file.path(analysis_dir, "results")
+fig_dir      <- file.path(analysis_dir, "figures")
+table_dir    <- file.path(analysis_dir, "tables")
+
+dir.create(table_dir, showWarnings = FALSE, recursive = TRUE)
+
+dat   <- readRDS(file.path(results_dir, "analysis_data.rds"))
+desc  <- readRDS(file.path(results_dir, "descriptive_stats.rds"))
+mods  <- readRDS(file.path(results_dir, "model_results.rds"))
+
+wave_df     <- mods$wave_by_wave
+pooled_df   <- mods$pooled_interaction
+xc_df       <- mods$cross_country
+subgroup_df <- mods$subgroups
+
+# Common publication theme
+theme_pub <- theme_minimal(base_size = 11) +
+  theme(
+    plot.title         = element_text(size = 11, face = "bold", margin = margin(b = 6)),
+    plot.subtitle      = element_text(size = 9, color = "grey30", margin = margin(b = 10)),
+    plot.caption       = element_text(size = 7.5, color = "grey50", hjust = 0,
+                                      margin = margin(t = 8)),
+    legend.position    = "bottom",
+    legend.text        = element_text(size = 9),
+    legend.title       = element_blank(),
+    panel.grid.minor   = element_blank(),
+    panel.grid.major.x = element_blank(),
+    strip.text         = element_text(face = "bold", size = 10),
+    axis.title         = element_text(size = 9),
+    axis.text          = element_text(size = 8.5)
+  )
+
+pal2       <- c("Satisfaction" = "#2166AC", "Democratic quality" = "#B2182B")
+pal3       <- c("Satisfaction" = "#2166AC", "Democratic quality" = "#B2182B",
+                "Economic evaluations" = "#4DAF4A")
+pal_country <- c("Korea" = "#2166AC", "Taiwan" = "#D55E00")
+
+survey_years_kr <- c(2003, 2006, 2011, 2015, 2019, 2022)
+survey_years_tw <- c(2001, 2006, 2010, 2014, 2019, 2022)
+```
+
+## Figure 1: Core dissociation (Korea) {#sec-fig1}
+
+```{r figure1}
+wm_kr <- desc$wave_means_kr
+
+fig01_data <- wm_kr |>
+  select(wave, year, sat_mean, sat_se, qual_mean, qual_se) |>
+  pivot_longer(
+    cols = c(sat_mean, qual_mean),
+    names_to = "cluster", values_to = "mean"
+  ) |>
+  mutate(
+    se = if_else(cluster == "sat_mean", sat_se, qual_se),
+    cluster_label = if_else(cluster == "sat_mean",
+                            "Satisfaction", "Democratic quality"),
+    cluster_label = factor(cluster_label,
+                           levels = c("Satisfaction", "Democratic quality"))
+  )
+
+pub_fig01 <- fig01_data |>
+  ggplot(aes(x = year, y = mean, color = cluster_label, fill = cluster_label)) +
+  geom_ribbon(aes(ymin = mean - 1.96 * se, ymax = mean + 1.96 * se),
+              alpha = 0.12, color = NA) +
+  geom_line(linewidth = 0.9) +
+  geom_point(size = 2.2) +
+  geom_vline(xintercept = 2017, linetype = "dashed", color = "grey60",
+             linewidth = 0.4) +
+  annotate("text", x = 2017.5, y = 0.76, label = "Park\nimpeachment",
+           hjust = 0, size = 2.8, color = "grey40", lineheight = 0.9) +
+  scale_color_manual(values = pal2) +
+  scale_fill_manual(values = pal2) +
+  scale_y_continuous(limits = c(0, 1), labels = scales::percent_format(),
+                     breaks = seq(0, 1, 0.25)) +
+  scale_x_continuous(breaks = survey_years_kr) +
+  labs(
+    x = NULL,
+    y = "Mean (normalized scale, 0-1)",
+    title = "The satisfaction paradox: diverging trends in democratic satisfaction\nand democratic quality perception, South Korea 2003-2022",
+    caption = paste0(
+      "Wave means with 95% CIs. Satisfaction: mean of sat_democracy + sat_govt. ",
+      "Quality: mean of dem_always_preferable + dem_extent_current.\n",
+      "All variables normalized 0-1. Source: Asian Barometer Survey, Korea, waves 1-6."
+    )
+  ) +
+  theme_pub
+
+ggsave(file.path(fig_dir, "pub_fig01_dissociation.pdf"), pub_fig01,
+       width = 6.5, height = 4.5)
+ggsave(file.path(fig_dir, "pub_fig01_dissociation.png"), pub_fig01,
+       width = 6.5, height = 4.5, dpi = 300)
+
+pub_fig01
+cat("✓ Figure 1\n")
+```
+
+## Figure 2: Three-cluster co-movement (Korea) {#sec-fig2}
+
+```{r figure2}
+fig02_data <- wm_kr |>
+  select(wave, year, sat_mean, sat_se, qual_mean, qual_se, econ_mean, econ_se) |>
+  pivot_longer(
+    cols = c(sat_mean, qual_mean, econ_mean),
+    names_to = "cluster", values_to = "mean"
+  ) |>
+  mutate(
+    se = case_when(
+      cluster == "sat_mean"  ~ sat_se,
+      cluster == "qual_mean" ~ qual_se,
+      cluster == "econ_mean" ~ econ_se
+    ),
+    cluster_label = case_when(
+      cluster == "sat_mean"  ~ "Satisfaction",
+      cluster == "qual_mean" ~ "Democratic quality",
+      cluster == "econ_mean" ~ "Economic evaluations"
+    ),
+    cluster_label = factor(cluster_label,
+                           levels = c("Satisfaction", "Democratic quality",
+                                      "Economic evaluations"))
+  )
+
+pub_fig02 <- fig02_data |>
+  ggplot(aes(x = year, y = mean, color = cluster_label, fill = cluster_label)) +
+  geom_ribbon(aes(ymin = mean - 1.96 * se, ymax = mean + 1.96 * se),
+              alpha = 0.10, color = NA) +
+  geom_line(linewidth = 0.9) +
+  geom_point(size = 2.2) +
+  geom_vline(xintercept = 2017, linetype = "dashed", color = "grey60",
+             linewidth = 0.4) +
+  annotate("text", x = 2017.5, y = 0.82, label = "Impeachment",
+           hjust = 0, size = 2.8, color = "grey40") +
+  scale_color_manual(values = pal3) +
+  scale_fill_manual(values = pal3) +
+  scale_y_continuous(limits = c(0, 1), labels = scales::percent_format(),
+                     breaks = seq(0, 1, 0.25)) +
+  scale_x_continuous(breaks = survey_years_kr) +
+  labs(
+    x = NULL,
+    y = "Mean (normalized scale, 0-1)",
+    title = "Output legitimacy: economic evaluations track satisfaction,\nnot democratic quality perception",
+    caption = paste0(
+      "Weighted wave means with 95% CIs. Cluster indices are means of ",
+      "normalized component variables.\n",
+      "Source: Asian Barometer Survey, Korea, waves 1-6."
+    )
+  ) +
+  theme_pub
+
+ggsave(file.path(fig_dir, "pub_fig02_three_cluster.pdf"), pub_fig02,
+       width = 6.5, height = 4.5)
+ggsave(file.path(fig_dir, "pub_fig02_three_cluster.png"), pub_fig02,
+       width = 6.5, height = 4.5, dpi = 300)
+
+pub_fig02
+cat("✓ Figure 2\n")
+```
+
+## Figure 3: Wave-by-wave coefficient plot (Korea vs Taiwan) {#sec-fig3}
+
+```{r figure3}
+survey_years_lookup <- tibble(
+  wave    = rep(1:6, 2),
+  country = rep(c("Korea", "Taiwan"), each = 6),
+  year    = c(survey_years_kr, survey_years_tw)
+)
+
+fig03_data <- wave_df |>
+  left_join(survey_years_lookup, by = c("country", "wave")) |>
+  mutate(dv = factor(dv, levels = c("Satisfaction", "Democratic quality")))
+
+pub_fig03 <- fig03_data |>
+  ggplot(aes(x = year, y = estimate, color = country, shape = country)) +
+  geom_hline(yintercept = 0, linetype = "solid", color = "grey75", linewidth = 0.3) +
+  geom_pointrange(aes(ymin = conf.low, ymax = conf.high),
+                  position = position_dodge(width = 1),
+                  size = 0.4, linewidth = 0.5) +
+  facet_wrap(~ dv) +
+  scale_color_manual(values = pal_country) +
+  scale_shape_manual(values = c("Korea" = 16, "Taiwan" = 17)) +
+  scale_x_continuous(breaks = c(2003, 2011, 2019)) +
+  labs(
+    x = NULL,
+    y = expression(beta ~ "(economic evaluations" %->% "DV)"),
+    title = "Economic evaluations predict satisfaction universally\nbut quality perceptions only in Taiwan",
+    subtitle = "OLS coefficients by wave, with 95% confidence intervals",
+    caption = paste0(
+      "Controls: age, gender, education, urban/rural, political interest. ",
+      "Source: ABS waves 1-6."
+    )
+  ) +
+  theme_pub
+
+ggsave(file.path(fig_dir, "pub_fig03_coefficients.pdf"), pub_fig03,
+       width = 7.5, height = 4.5)
+ggsave(file.path(fig_dir, "pub_fig03_coefficients.png"), pub_fig03,
+       width = 7.5, height = 4.5, dpi = 300)
+
+pub_fig03
+cat("✓ Figure 3\n")
+```
+
+## Figure 4: Subgroup coefficient plot (Korea) {#sec-fig4}
+
+```{r figure4}
+fig04_data <- subgroup_df |>
+  mutate(
+    split_label = case_when(
+      split == "age_group"    ~ "Age",
+      split == "edu_group"    ~ "Education",
+      split == "polint_group" ~ "Political interest"
+    ),
+    split_label = factor(split_label,
+                         levels = c("Age", "Education", "Political interest")),
+    dv = factor(dv, levels = c("Satisfaction", "Quality"),
+                labels = c("Satisfaction", "Democratic quality"))
+  )
+
+pub_fig04 <- fig04_data |>
+  ggplot(aes(x = group, y = estimate, color = dv, shape = dv)) +
+  geom_hline(yintercept = 0, linetype = "solid", color = "grey75", linewidth = 0.3) +
+  geom_pointrange(aes(ymin = conf.low, ymax = conf.high),
+                  position = position_dodge(width = 0.4),
+                  size = 0.4, linewidth = 0.5) +
+  facet_wrap(~ split_label, scales = "free_x") +
+  scale_color_manual(values = pal2) +
+  scale_shape_manual(values = c("Satisfaction" = 16, "Democratic quality" = 17)) +
+  labs(
+    x = NULL,
+    y = expression(beta ~ "(economic evaluations" %->% "DV)"),
+    title = "The decoupling pattern holds across demographic subgroups",
+    subtitle = "Korea: economic evaluations predict satisfaction but not quality in all groups",
+    caption = "Pooled waves 1-6 with wave fixed effects. 95% CIs. Source: ABS Korea."
+  ) +
+  theme_pub +
+  theme(axis.text.x = element_text(size = 8, angle = 15, hjust = 1))
+
+ggsave(file.path(fig_dir, "pub_fig04_subgroups.pdf"), pub_fig04,
+       width = 8, height = 4.5)
+ggsave(file.path(fig_dir, "pub_fig04_subgroups.png"), pub_fig04,
+       width = 8, height = 4.5, dpi = 300)
+
+pub_fig04
+cat("✓ Figure 4\n")
+```
+
+## Table 1: Wave-by-wave results, Korea {#sec-tab1}
+
+```{r table1}
+tab01 <- wave_df |>
+  filter(country == "Korea") |>
+  mutate(
+    sig = case_when(
+      p.value < 0.001 ~ "***",
+      p.value < 0.01  ~ "**",
+      p.value < 0.05  ~ "*",
+      TRUE            ~ ""
+    ),
+    beta_display = sprintf("%.3f%s", estimate, sig),
+    se_display   = sprintf("(%.3f)", std.error),
+    r2_display   = sprintf("%.3f", r_sq),
+    year         = survey_years_kr[wave]
+  ) |>
+  select(wave, year, dv, beta_display, se_display, r2_display, n)
+
+write_csv(tab01, file.path(table_dir, "tab01_wave_korea.csv"))
+knitr::kable(tab01, caption = "Wave-by-wave OLS: Korea")
+cat("✓ Table 1\n")
+```
+
+## Table 2: Wave-by-wave results, Taiwan {#sec-tab2}
+
+```{r table2}
+tab02 <- wave_df |>
+  filter(country == "Taiwan") |>
+  mutate(
+    sig = case_when(
+      p.value < 0.001 ~ "***",
+      p.value < 0.01  ~ "**",
+      p.value < 0.05  ~ "*",
+      TRUE            ~ ""
+    ),
+    beta_display = sprintf("%.3f%s", estimate, sig),
+    se_display   = sprintf("(%.3f)", std.error),
+    r2_display   = sprintf("%.3f", r_sq),
+    year         = survey_years_tw[wave]
+  ) |>
+  select(wave, year, dv, beta_display, se_display, r2_display, n)
+
+write_csv(tab02, file.path(table_dir, "tab02_wave_taiwan.csv"))
+knitr::kable(tab02, caption = "Wave-by-wave OLS: Taiwan")
+cat("✓ Table 2\n")
+```
+
+## Table 3: Cross-country interaction {#sec-tab3}
+
+```{r table3}
+tab03 <- xc_df |>
+  mutate(
+    sig = case_when(
+      p.value < 0.001 ~ "***",
+      p.value < 0.01  ~ "**",
+      p.value < 0.05  ~ "*",
+      TRUE            ~ ""
+    ),
+    beta_display = sprintf("%.3f%s", estimate, sig),
+    se_display   = sprintf("(%.3f)", std.error),
+    term_label   = case_when(
+      term == "econ_index"          ~ "Economic evaluations (Taiwan baseline)",
+      term == "is_korea"            ~ "Korea indicator",
+      term == "econ_index:is_korea" ~ "Economic evaluations x Korea"
+    )
+  ) |>
+  select(dv, term_label, beta_display, se_display)
+
+write_csv(tab03, file.path(table_dir, "tab03_cross_country.csv"))
+knitr::kable(tab03, caption = "Cross-country interaction test (H4)")
+cat("✓ Table 3\n")
+```
+
+## Table 4: Robustness summary {#sec-tab4}
+
+```{r table4}
+tab04a <- mods$indiv_dvs |>
+  mutate(
+    sig = case_when(
+      p.value < 0.001 ~ "***",
+      p.value < 0.01  ~ "**",
+      p.value < 0.05  ~ "*",
+      TRUE            ~ ""
+    ),
+    check = "Individual DVs"
+  ) |>
+  select(check, dv, estimate, std.error, p.value, sig, r_sq, n)
+
+tab04b <- mods$trust_robustness |>
+  mutate(
+    sig = case_when(
+      p.value < 0.001 ~ "***",
+      p.value < 0.01  ~ "**",
+      p.value < 0.05  ~ "*",
+      TRUE            ~ ""
+    ),
+    check = paste("Trust control:", model)
+  ) |>
+  select(check, dv, estimate, std.error, p.value, sig, r_sq)
+
+write_csv(tab04a, file.path(table_dir, "tab04a_robustness_dvs.csv"))
+write_csv(tab04b, file.path(table_dir, "tab04b_robustness_trust.csv"))
+
+knitr::kable(tab04a, caption = "Robustness: Individual DVs")
+knitr::kable(tab04b, caption = "Robustness: Trust control")
+cat("✓ Table 4\n")
+```
+
+```{r done}
+cat("\n✓ All publication figures and tables saved\n")
+cat("  Figures:", fig_dir, "\n")
+cat("  Tables:", table_dir, "\n")
+```

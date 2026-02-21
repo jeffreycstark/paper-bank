@@ -82,7 +82,7 @@ econdev-authpref/
 4. `analysis/03_hypothesis_tests.R` — formal hypothesis tests, piecewise/quadratic specs, subgroup models
 5. `analysis/04_attitudinal_mechanisms.R` — H3–H5 attitudinal models (democratic expectations, engagement, satisfaction)
 6. `analysis/05_new_analyses.R` — DiD, Philippines H3 formal test, ordered logit predicted probs, weighted comparison, IB sensitivity-gradient, scale reliability
-**Manuscript**: `manuscript/tt-manuscript.qmd`, `manuscript/tt-online-appendix.qmd`
+**Manuscript**: `manuscript/tta-manuscript.qmd`, `manuscript/tta-online-appendix.qmd`
 
 ### trust-dynamics
 **Topic**: Institutional trust dynamics across Asian democracies.
@@ -93,6 +93,18 @@ econdev-authpref/
 **Topic**: [TBD] South Korea accountability gap.
 **Data**: ABS (country_num == 3, Korea, all waves) + KAMOS (Korean domestic panel survey).
 **Key files**: `analysis/00_data_preparation.R`, `analysis/01_descriptive_analysis.R`, `analysis/02_models.R`, `manuscript/manuscript.qmd`.
+
+### south-korea-decoupling
+**Topic**: The Satisfaction Paradox — economic performance and the decoupling of democratic support in South Korea and Taiwan.
+**Data**: ABS (Korea: country == 3, Taiwan: country == 7, waves 1–6) + KAMOS (Korean domestic panel, W1/W4).
+**Analysis pipeline** (run scripts 00–05 in order):
+1. `analysis/00_data_preparation.qmd` — filter ABS Korea + Taiwan, normalize variables, build indices, save `analysis_data.rds`
+2. `analysis/01_descriptive_analysis.qmd` — wave means, trend slopes, Figures 1–2
+3. `analysis/02_models.qmd` — wave-by-wave OLS, pooled interaction, cross-country H4 test, robustness, Figures 3–4
+4. `analysis/03_pub_figures_tables.qmd` — camera-ready publication figures and tables
+5. `analysis/04_divergence_test.qmd` — divergence test (experiential vs. institutional corruption perceptions)
+6. `analysis/05_kamos_trust_threeway.qmd` — KAMOS LMM, differential trust collapse by accountability function
+**Manuscript**: `manuscript/skd-manuscript.qmd`, `manuscript/skd-online-appendix.qmd`
 
 ---
 

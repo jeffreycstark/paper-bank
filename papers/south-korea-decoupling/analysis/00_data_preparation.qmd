@@ -1,0 +1,274 @@
+---
+title: "00 — Data Preparation: The Satisfaction Paradox"
+subtitle: "ABS Korea + Taiwan, Waves 1–6 (2003–2022)"
+format:
+  html:
+    toc: true
+    toc-depth: 3
+    number-sections: true
+    theme: cosmo
+    code-fold: true
+    self-contained: true
+execute:
+  echo: true
+  warning: false
+  message: false
+  cache: true
+---
+
+**Purpose**: Load harmonized ABS data for Korea and Taiwan, construct analysis
+variables (indices, normalized scales), and save analysis-ready datasets.
+
+- **Input**: `abs_harmonized_path` (via `_data_config.R`)
+- **Output**: `analysis/results/analysis_data.rds`
+
+```{r setup}
+library(tidyverse)
+
+project_root <- "/Users/jeffreystark/Development/Research/econdev-authpref"
+source(file.path(project_root, "_data_config.R"))
+
+paper_dir    <- file.path(project_root, "papers/south-korea-decoupling")
+analysis_dir <- file.path(paper_dir, "analysis")
+results_dir  <- file.path(analysis_dir, "results")
+fig_dir      <- file.path(analysis_dir, "figures")
+
+dir.create(results_dir, showWarnings = FALSE, recursive = TRUE)
+dir.create(fig_dir, showWarnings = FALSE, recursive = TRUE)
+```
+
+## Load ABS harmonized data
+
+```{r load-data}
+abs_all <- readRDS(abs_harmonized_path)
+cat("ABS harmonized:", nrow(abs_all), "obs,",
+    n_distinct(abs_all$country), "countries\n")
+
+# Subset to Korea and Taiwan
+dat <- abs_all |>
+  filter(country %in% c(3, 7)) |>
+  mutate(
+    country_label = case_when(
+      country == 3 ~ "Korea",
+      country == 7 ~ "Taiwan"
+    ),
+    country_label = factor(country_label, levels = c("Korea", "Taiwan"))
+  )
+
+cat("Korea + Taiwan: n =", nrow(dat), "\n")
+cat("  Korea:  n =", sum(dat$country == 3), "\n")
+cat("  Taiwan: n =", sum(dat$country == 7), "\n")
+cat("  Waves:", sort(unique(dat$wave)), "\n\n")
+
+# Survey year lookup
+wave_years <- dat |>
+  distinct(country_label, wave) |>
+  arrange(country_label, wave)
+print(wave_years)
+```
+
+## Normalize helper
+
+```{r normalize-fn}
+normalize_01 <- function(x) {
+  rng <- range(x, na.rm = TRUE)
+  if (rng[2] == rng[1]) return(rep(0, length(x)))
+  (x - rng[1]) / (rng[2] - rng[1])
+}
+```
+
+## Construct analysis variables
+
+Normalize within each country (preserves cross-wave variation).
+
+```{r construct-vars}
+dat <- dat |>
+  group_by(country_label) |>
+  mutate(
+    # --- Satisfaction DVs ---
+    sat_democracy_n    = normalize_01(democracy_satisfaction),
+    sat_govt_n         = normalize_01(gov_sat_national),
+
+    # --- Democratic quality DVs ---
+    qual_pref_dem_n    = normalize_01(dem_always_preferable),
+    qual_extent_n      = normalize_01(dem_extent_current),
+    qual_sys_support_n = normalize_01(system_deserves_support),
+    qual_sys_change_n  = normalize_01(system_needs_change),
+
+    # --- Economic evaluation IVs ---
+    econ_national_n    = normalize_01(econ_national_now),
+    econ_family_n      = normalize_01(econ_family_now),
+    econ_outlook_n     = normalize_01(econ_outlook_1yr),
+    econ_fam_outlook_n = normalize_01(econ_family_outlook),
+    econ_change_n      = normalize_01(econ_change_1yr),
+    econ_fam_change_n  = normalize_01(econ_family_change),
+
+    # --- Controls ---
+    age_n              = normalize_01(age),
+    edu_n              = normalize_01(education_level),
+    polint_n           = normalize_01(political_interest),
+
+    # --- Trust (for robustness) ---
+    trust_govt_n       = normalize_01(trust_national_government),
+    trust_parl_n       = normalize_01(trust_parliament),
+    trust_courts_n     = normalize_01(trust_courts),
+    trust_parties_n    = normalize_01(trust_political_parties),
+
+    # --- System legitimacy DVs (Bucket 3, waves 3-6) ---
+    sys_proud_n        = normalize_01(system_proud),
+    sys_prefer_n       = normalize_01(system_prefer),
+    sys_capable_n      = normalize_01(system_capable),
+    # system_deserves_support and system_needs_change already normalized above
+    # as qual_sys_support_n and qual_sys_change_n — keep those names for
+    # backward compatibility but note they belong to system legitimacy bucket
+
+    # --- Identity / mechanism probes ---
+    nat_proud_n        = normalize_01(nat_proud_citizen),
+    china_harm_n       = normalize_01(5L - intl_china_asia_goodharm),  # reverse: 1=harmful→4, 4=good→1; higher = more harm
+  ) |>
+  ungroup()
+
+# Binary splits for identity mechanism probes
+dat <- dat |>
+  mutate(
+    # National pride: high vs low (median split within country)
+    nat_proud_high = case_when(
+      nat_proud_citizen > median(nat_proud_citizen, na.rm = TRUE) ~ "High pride",
+      nat_proud_citizen <= median(nat_proud_citizen, na.rm = TRUE) ~ "Low pride"
+    ),
+    # China threat: 1-2 = harmful, 3-4 = beneficial (intl_china_asia_goodharm scale)
+    china_threat = case_when(
+      intl_china_asia_goodharm <= 2 ~ "China harmful",
+      intl_china_asia_goodharm >= 3 ~ "China beneficial"
+    )
+  )
+```
+
+## Construct indices
+
+```{r construct-indices}
+dat <- dat |>
+  rowwise() |>
+  mutate(
+    # Economic evaluation index (6 items)
+    econ_index = mean(c_across(c(econ_national_n, econ_family_n,
+                                  econ_outlook_n, econ_fam_outlook_n,
+                                  econ_change_n, econ_fam_change_n)),
+                      na.rm = TRUE),
+
+    # Satisfaction index (2 items)
+    sat_index  = mean(c_across(c(sat_democracy_n, sat_govt_n)),
+                      na.rm = TRUE),
+
+    # Democratic quality index — core (2 items, available all waves)
+    qual_index = mean(c_across(c(qual_pref_dem_n, qual_extent_n)),
+                      na.rm = TRUE),
+
+    # Democratic quality index — extended (4 items, waves 3–6 only)
+    qual_index_ext = mean(c_across(c(qual_pref_dem_n, qual_extent_n,
+                                      qual_sys_support_n, qual_sys_change_n)),
+                          na.rm = TRUE),
+
+    # Institutional trust index (4 items)
+    trust_index = mean(c_across(c(trust_govt_n, trust_parl_n,
+                                   trust_courts_n, trust_parties_n)),
+                       na.rm = TRUE),
+
+    # System legitimacy index (5 items, waves 3-6 only)
+    sys_legit_index = mean(c_across(c(sys_proud_n, sys_prefer_n, sys_capable_n,
+                                       qual_sys_support_n, qual_sys_change_n)),
+                           na.rm = TRUE)
+  ) |>
+  ungroup()
+```
+
+## Within-wave z-scores (for measurement comparability robustness)
+
+```{r within-wave-zscores}
+# Alternative normalization: z-scores computed within each country-wave
+dat <- dat |>
+  group_by(country_label, wave) |>
+  mutate(
+    sat_democracy_z  = as.numeric(scale(democracy_satisfaction)),
+    sat_govt_z       = as.numeric(scale(gov_sat_national)),
+    qual_pref_dem_z  = as.numeric(scale(dem_always_preferable)),
+    qual_extent_z    = as.numeric(scale(dem_extent_current)),
+    econ_index_z     = as.numeric(scale(econ_index)),
+    age_z            = as.numeric(scale(age)),
+    edu_z            = as.numeric(scale(education_level)),
+    polint_z         = as.numeric(scale(political_interest))
+  ) |>
+  ungroup()
+
+# Z-score indices
+dat <- dat |>
+  rowwise() |>
+  mutate(
+    sat_index_z  = mean(c_across(c(sat_democracy_z, sat_govt_z)), na.rm = TRUE),
+    qual_index_z = mean(c_across(c(qual_pref_dem_z, qual_extent_z)), na.rm = TRUE)
+  ) |>
+  ungroup()
+```
+
+## Subgroup variables
+
+```{r subgroup-vars}
+dat <- dat |>
+  group_by(country_label) |>
+  mutate(
+    age_group = case_when(
+      age <= median(age, na.rm = TRUE) ~ "Younger",
+      age >  median(age, na.rm = TRUE) ~ "Older"
+    ),
+    edu_group = case_when(
+      education_level <= median(education_level, na.rm = TRUE) ~ "Lower education",
+      education_level >  median(education_level, na.rm = TRUE) ~ "Higher education"
+    ),
+    polint_group = case_when(
+      political_interest <= median(political_interest, na.rm = TRUE) ~ "Low interest",
+      political_interest >  median(political_interest, na.rm = TRUE) ~ "High interest"
+    )
+  ) |>
+  ungroup()
+```
+
+## Diagnostics
+
+```{r diagnostics}
+cat("=== Index summary (Korea) ===\n")
+dat |>
+  filter(country_label == "Korea") |>
+  select(sat_index, qual_index, econ_index, trust_index) |>
+  summary() |>
+  print()
+
+cat("\n=== Index summary (Taiwan) ===\n")
+dat |>
+  filter(country_label == "Taiwan") |>
+  select(sat_index, qual_index, econ_index, trust_index) |>
+  summary() |>
+  print()
+
+cat("\n=== Key variable coverage by wave (Korea) ===\n")
+dat |>
+  filter(country_label == "Korea") |>
+  group_by(wave) |>
+  summarise(
+    n         = n(),
+    sat_ok    = sum(!is.na(sat_index)),
+    qual_ok   = sum(!is.na(qual_index)),
+    econ_ok   = sum(!is.na(econ_index)),
+    trust_ok  = sum(!is.na(trust_index)),
+    .groups   = "drop"
+  ) |>
+  print()
+```
+
+## Save
+
+```{r save}
+saveRDS(dat, file.path(results_dir, "analysis_data.rds"))
+cat("\n✓ Saved analysis_data.rds:", nrow(dat), "obs\n")
+cat("  Korea:", sum(dat$country_label == "Korea"), "\n")
+cat("  Taiwan:", sum(dat$country_label == "Taiwan"), "\n")
+```

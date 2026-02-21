@@ -1,0 +1,374 @@
+---
+title: "The Satisfaction Paradox: Economic Performance and the Decoupling of Democratic Support in South Korea and Taiwan"
+author:
+  - name: Jeffrey Stark
+    affiliations:
+      - name: Yonsei University
+        department: Department of Sociology
+    email: jeffrey.stark@yonsei.ac.kr
+    corresponding: true
+date: now
+date-format: "MMMM D, YYYY [at] h:mm A"
+abstract: |
+  Democratic consolidation theory predicts that satisfaction with democratic performance and normative commitment to democracy move in tandem, mutually reinforcing one another as democracies mature. Six waves of Asian Barometer Survey data from South Korea (2003--2022, *n* = 7,603) reveal a striking dissociation: democratic satisfaction has risen steadily (+0.060 normalized units per decade) while the belief that democracy is always preferable has declined (--0.059/decade). Wave-by-wave OLS regressions demonstrate that economic evaluations are powerful predictors of satisfaction with democracy ($\beta$ = 0.26--0.46, *p* < 0.001 across all waves) but have no significant relationship with normative democratic preference from 2006 onward ($\beta$ \approx 0, all *p* > 0.10). A parallel analysis of Taiwan (*n* = 9,042) reveals a fundamentally different syndrome: economic evaluations predict satisfaction *and* are significantly negatively associated with normative democratic preference ($\beta$ = --0.14 to --0.50), consistent with a critical citizens pattern. The cross-country difference is statistically significant (interaction $\beta$ = 0.217, *p* < 0.001). These findings challenge the assumption that democratic satisfaction signals democratic deepening, identify two distinct legitimation pathways in East Asia's most-studied democracies, and illuminate the conditions under which democratic institutions may be resilient yet normatively shallow---as illustrated by South Korea's December 2024 martial law crisis.
+keywords:
+  - democratic consolidation
+  - democratic satisfaction
+  - performance legitimacy
+  - South Korea
+  - Taiwan
+  - Asian Barometer Survey
+format:
+  pdf:
+    documentclass: article
+    classoption: [12pt, letterpaper]
+    geometry:
+      - margin=1in
+    linestretch: 2
+    number-sections: true
+    colorlinks: true
+    keep-tex: true
+    include-in-header:
+      - text: |
+          \usepackage{setspace}
+          \usepackage{booktabs}
+          \usepackage{caption}
+          \usepackage{longtable}
+          \usepackage{array}
+          \usepackage{multirow}
+          \usepackage{float}
+          \usepackage{graphicx}
+          \usepackage{threeparttable}
+          \usepackage{threeparttablex}
+          \usepackage{colortbl}
+          \usepackage{xcolor}
+          \captionsetup{width=\textwidth}
+          \setlength\LTcapwidth{\textwidth}
+          \floatplacement{figure}{H}
+          \floatplacement{table}{H}
+          \raggedright
+  html:
+    toc: true
+    toc-depth: 3
+    number-sections: true
+    theme: cosmo
+    code-fold: true
+  docx:
+    toc: true
+    number-sections: true
+bibliography: references.bib
+csl: apa.csl
+execute:
+  warning: false
+  message: false
+  echo: false
+  cache: true
+---
+
+```{r setup}
+#| include: false
+library(tidyverse)
+library(knitr)
+library(kableExtra)
+
+results_dir <- file.path(here::here(), "analysis/results")
+
+# Load results when available
+if (file.exists(file.path(results_dir, "model_results.rds"))) {
+  model_results <- readRDS(file.path(results_dir, "model_results.rds"))
+  wave_df       <- model_results$wave_by_wave
+  pooled_df     <- model_results$pooled_interaction
+  xc_df         <- model_results$cross_country
+  subgroup_df   <- model_results$subgroups
+  inline        <- model_results$inline
+}
+
+if (file.exists(file.path(results_dir, "descriptive_stats.rds"))) {
+  desc <- readRDS(file.path(results_dir, "descriptive_stats.rds"))
+}
+```
+
+# Introduction {#sec-introduction}
+
+On the evening of December 3, 2024, President Yoon Suk Yeol appeared on national television to declare emergency martial law in South Korea, citing the need to protect the country from "anti-state forces" and "North Korean communist sympathizers" allegedly operating through the opposition-controlled National Assembly [@Hankyoreh2024-fx]. Troops were dispatched to the parliament building; political activity was banned; the press was placed under the authority of the Martial Law Command. It was the first declaration of martial law in South Korea since Chun Doo-hwan's military coup in 1980---and it lasted barely six hours. Lawmakers pushed past soldiers, convened an emergency session, and voted unanimously to overturn the decree. Yoon was impeached within days. In February 2026, a Seoul court sentenced him to life in prison for insurrection, the most severe punishment imposed on a former president in the post-democratization era [@Hankyoreh2026-aa]. South Korean democracy, by any institutional measure, held.
+
+Yet the episode raises a question that institutional resilience alone cannot answer. How could a sitting president---a former chief prosecutor, educated entirely within democratic South Korea's legal institutions---conclude that martial law was a viable political strategy in the world's tenth-largest economy and one of Asia's most celebrated democracies? The standard answer points to Yoon's personal authoritarian tendencies and his administration's political isolation, with approval ratings as low as ten percent. This paper offers a complementary structural explanation grounded in two decades of mass public opinion data. It argues that the foundation of democratic support in South Korea is more fragile than the institutional performance of its democracy suggests, because that support rests primarily on performance-derived legitimation rather than normative democratic commitment.
+
+The empirical basis for this argument is a pattern this paper terms the *satisfaction paradox*. Drawing on six waves of the Asian Barometer Survey spanning 2003 to 2022 (*n* = 7,603 for South Korea), the analysis documents a sustained divergence between two dimensions of democratic support that consolidation theory predicts should move together. Democratic satisfaction---citizens' evaluations of how well democracy is performing---has risen steadily over the observation period, increasing at approximately 0.060 normalized units per decade. Normative democratic commitment---the belief that democracy is always preferable and that the political system deserves support---has simultaneously declined, at rates of --0.059 and --0.045 units per decade respectively. Korean citizens have become more satisfied with their democracy while becoming less committed to it as a form of government.
+
+The mechanism underlying this paradox is straightforward. Wave-by-wave regression models demonstrate that economic evaluations are powerful and consistent predictors of democratic satisfaction ($\beta$ = 0.38--0.58, *p* < 0.001 across all six waves) but have no statistically significant relationship with democratic quality perceptions from 2006 onward. Satisfaction runs on an economic track; normative commitment runs on a separate track entirely. Whatever determines whether Korean citizens believe democracy is worth defending in principle, it is not economic performance.
+
+This finding acquires comparative depth when set alongside a parallel analysis of Taiwan (*n* = 9,042 across the same six ABS waves). Taiwan shares South Korea's developmental state heritage, Confucian cultural matrix, and third-wave democratization experience, yet the Taiwanese data reveal a fundamentally different syndrome. As in Korea, economic evaluations predict democratic satisfaction. But in Taiwan, economic evaluations are also significantly and *negatively* associated with democratic quality perceptions: economically comfortable Taiwanese citizens hold their democracy to *higher* normative standards. The cross-country difference is statistically significant and substantively large. Where Korean citizens exhibit decoupled satisfaction and normative commitment, Taiwanese citizens exhibit what Norris [-@Norris1999-sn; -@Norris2011-oc] theorized as critical citizenship---and they do so to a degree not previously documented in the East Asian survey literature.
+
+This paper argues that the divergence reflects two distinct pathways of democratic legitimation. In South Korea, democracy arrived as an instrument of accountability and economic governance, and democratic support has remained fundamentally instrumental---conditional on continued delivery, shallow in normative depth, and vulnerable to disruption when performance falters or alternative governance models become attractive. In Taiwan, democratization became fused with national identity through the political project of distinguishing Taiwan from authoritarian China, anchoring normative democratic commitment independently of economic performance and producing a citizenry that grows more demanding of democratic quality as material conditions improve.
+
+The paper makes three contributions. First, it documents the satisfaction-quality dissociation in South Korea with systematic longitudinal evidence, demonstrating that rising democratic satisfaction does not indicate democratic deepening. Second, it identifies the performance-derived legitimation mechanism at the individual level, showing that economic evaluations are strongly associated with the satisfaction dimension while showing no relationship with normative commitment. Third, it demonstrates through formal comparative analysis that the Korean pattern is not a generic East Asian phenomenon but a consequence of Korea's specific legitimation pathway, distinguishable from Taiwan's identity-fused alternative at conventional levels of statistical significance.
+
+The remainder of the paper proceeds as follows. @sec-theory reviews the consolidation literature's co-movement assumption and develops the theoretical framework distinguishing performance-derived from identity-fused democratic legitimation. @sec-methods describes the data, variable construction, and analytic strategy. @sec-results presents the descriptive trends, mechanism tests, cross-country comparison, and robustness checks. @sec-discussion interprets the findings, addresses their implications for democratic resilience in light of the Yoon crisis, and acknowledges limitations. @sec-conclusion offers concluding reflections.
+
+
+# Literature Review and Theoretical Framework {#sec-theory}
+
+## Democratic consolidation and the co-movement assumption {#sec-theory-consolidation}
+
+The study of democratic consolidation has long rested on a distinction between two modes of citizen support for democracy. Easton's [-@Easton1965-ap] foundational framework distinguished *diffuse support*---a reservoir of generalized attachment to the political system that persists independent of specific policy outcomes---from *specific support*---evaluations of incumbent performance that fluctuate with economic conditions, policy decisions, and government competence. Consolidation, in this framework, occurs when diffuse support becomes sufficiently deep and widely distributed that the democratic regime can weather periods of poor specific support without existential threat. The system is legitimate not because it performs well at any given moment but because citizens regard it as the only acceptable form of governance.
+
+Subsequent consolidation theorists elaborated this distinction into a set of empirical expectations about how democratic attitudes should evolve over time. Linz and Stepan [-@Linz1996-qs] argued that consolidation requires democracy to become "the only game in town"---behaviorally, attitudinally, and constitutionally. Diamond [-@Diamond1999-wd] theorized a process of democratic "deepening" in which institutional maturation produces progressively stronger normative commitment among mass publics. The implicit prediction common to these accounts is one of *co-movement*: as democracies deliver on their promise of accountable governance, citizen satisfaction with democratic performance should reinforce citizen commitment to democratic principles, generating a virtuous cycle in which good performance builds legitimacy and strong legitimacy buffers the system against performance downturns. Specific and diffuse support, in short, should trend in the same direction over the medium to long term.
+
+Norris's [-@Norris1999-sn; -@Norris2011-oc] work on "critical citizens" introduced an important qualification. Drawing on survey evidence from advanced industrialized democracies, Norris observed that citizens in mature democracies were becoming simultaneously more committed to democratic ideals and more dissatisfied with democratic practice---a combination she attributed to rising expectations that outpaced institutional performance. Crucially, however, the critical citizens thesis does not challenge the fundamental co-movement assumption so much as it refines the mechanism. In Norris's framework, the normative dimension is secure and indeed strengthening; it is the performance evaluation that grows more demanding. The foundation of democratic legitimacy remains normative, and the growth of critical evaluation is itself a sign of democratic health rather than vulnerability.
+
+The more radical challenge to co-movement---the possibility that satisfaction and normative commitment might not merely decouple but move in *opposite directions*---has received less systematic theoretical attention. Foa and Mounk [-@Foa2017-oq] provoked considerable debate by documenting declining support for democracy among younger cohorts in the United States and Western Europe, but their analysis focused on generational replacement rather than the performance-commitment relationship, and the empirical claims themselves have been contested [see @Voeten2016-qb]. The question of whether a mature democracy can exhibit rising satisfaction alongside declining normative commitment---and what such a configuration would imply for democratic resilience---remains undertheorized.
+
+## Performance legitimacy and the East Asian challenge {#sec-theory-eastasia}
+
+The co-movement assumption developed primarily from the experience of Western democracies in which democratic legitimacy was established before or alongside industrialization, and in which civic education, constitutional veneration, and foundational political narratives anchored normative democratic commitment independently of economic performance. The East Asian democratization experience challenges this sequence. In South Korea, Taiwan, and the other third-wave democracies of the region, rapid economic development under authoritarian auspices preceded democratic transition, creating a context in which citizens had already experienced effective governance without democracy and in which democracy's legitimacy was inevitably, at least in part, comparative---measured against the developmental state it replaced.
+
+A substantial body of scholarship has documented the consequences of this sequencing for democratic attitudes in East Asia. Park and Shin [-@Park2006-bv], drawing on Asian Barometer data, identified what they termed "incomplete democratization" in South Korea, characterized by widespread preference for democratic governance coexisting with substantial reservoirs of authoritarian nostalgia and limited understanding of democracy in procedural terms. Chu and colleagues [-@Chu2008-fk; -@Chu2020-ir], in broader comparative analyses of ABS data, showed that citizens across East Asia tended to define democracy in substantive rather than procedural terms---emphasizing economic outcomes, social harmony, and good governance over elections, rights, and institutional checks. Shin [-@Shin2011-kc] traced these patterns to the enduring influence of Confucian governance ideals, in which the legitimacy of political authority derives from its capacity to provide for the welfare of the governed rather than from the procedural mechanisms through which leaders are selected.
+
+The implication of this literature for the co-movement assumption is significant but has not been fully drawn out. If citizens in a post-developmental-state democracy evaluate their political system primarily in terms of output---what the system delivers---rather than process---how it delivers it---then satisfaction and normative commitment need not track one another. A citizen can be highly satisfied with democratic performance (because the economy is growing, the government is functioning, public services are adequate) without developing deeper commitment to democratic principles (because the commitment was never principled in the first place---it was always conditional on performance). Conversely, a citizen can become less committed to democracy in principle (because alternative governance models look attractive or because democratic procedures seem cumbersome) while remaining satisfied with current performance (because the system happens to be delivering). The co-movement assumption fails precisely when the normative and instrumental foundations of democratic support are decoupled---and the East Asian developmental state legacy creates conditions under which such decoupling is theoretically expected.
+
+## Two pathways: performance-derived and identity-fused legitimation {#sec-theory-pathways}
+
+This paper proposes that the relationship between economic performance and democratic attitudes is conditioned by the mode through which democratic legitimation was historically established. Two ideal-typical pathways are relevant to the East Asian cases under analysis.
+
+*Performance-derived legitimation* characterizes cases in which democracy was adopted primarily as a means of achieving accountable governance and sustaining economic development, and in which democratic identity never became anchored to a source of normative commitment independent of output. In such cases, democratic satisfaction is expected to be strongly responsive to economic conditions, because economic performance is the criterion against which democracy is evaluated. Normative democratic commitment, by contrast, is expected to be weakly related to economic conditions, because no mechanism links material well-being to principled attachment to democratic procedures. The satisfaction and quality dimensions of democratic support run on separate tracks, and their trajectories may diverge over time as economic conditions shift without producing corresponding changes in normative orientation. South Korea, where the democratic transition of 1987 was driven by a broad coalition united more by opposition to military authoritarianism than by a shared democratic vision, and where the subsequent decades of democratic governance coincided with continued economic growth, exemplifies this pathway. Democracy proved itself by delivering; the delivery was real, but the normative foundation it built was shallow.
+
+Framing this as "performance-derived" legitimation rather than simply "weak" or "incomplete" democratization is an important analytical distinction. The claim is not that Korean citizens fail to support democracy---they do, and at levels comparable to other consolidated democracies. The claim is that the *structure* of their support is instrumental rather than normative, meaning that the same levels of aggregate democratic endorsement may mask fundamentally different resilience profiles depending on whether that endorsement is principled or conditional.
+
+*Identity-fused legitimation* characterizes cases in which democratic identity became intertwined with national identity through a specific historical configuration, anchoring normative commitment to democracy independently of economic performance. Taiwan is the paradigmatic case. Democratization in Taiwan was not merely a transition from authoritarian to democratic governance but a project of national self-definition: to be democratic was to be Taiwanese, and to be Taiwanese was to be not-China. The Democratic Progressive Party's political project, and the broader process of Taiwanization that accompanied and followed democratization, fused democratic governance with national identity in a way that gave normative democratic commitment an anchor independent of output evaluation. In such cases, the critical citizens pattern identified by Norris becomes possible: because normative commitment is secure, economic comfort frees citizens to become *more* demanding of democratic quality rather than more complacent. Material well-being raises the normative bar rather than lowering it.
+
+The distinction between these pathways generates testable predictions about how economic evaluations should relate to different dimensions of democratic support in each case. Four hypotheses follow from the framework, along with a fifth that addresses the generality of the Korean pattern.
+
+## Hypotheses {#sec-theory-hypotheses}
+
+**H1** (Performance--satisfaction linkage): Economic evaluations are positively and significantly associated with democratic satisfaction in both Korea and Taiwan. This hypothesis reflects the expectation, common to both pathways, that citizens who evaluate the economy favorably will be more satisfied with the performance of their democratic system.
+
+**H2** (Korean decoupling): In South Korea, economic evaluations have no significant relationship with democratic quality perceptions. This hypothesis reflects the performance-derived legitimation pathway, in which the instrumental and normative dimensions of democratic support run on separate tracks.
+
+**H3** (Taiwanese critical citizens): In Taiwan, economic evaluations are negatively associated with democratic quality perceptions. This hypothesis reflects the identity-fused pathway, in which secure normative commitment allows economic comfort to fuel more demanding assessment of democratic quality.
+
+**H4** (Cross-country divergence): The relationship between economic evaluations and democratic quality perceptions is significantly different between Korea and Taiwan. This hypothesis provides a formal test of whether the two legitimation pathways produce distinguishable empirical signatures.
+
+**H5** (Universality of Korean decoupling): The Korean decoupling pattern holds across age groups, education levels, and model specifications. This hypothesis tests whether the performance-derived legitimation mode is a society-wide phenomenon rather than a feature of particular demographic subgroups, as would be expected if it reflects a structural property of the legitimation pathway rather than compositional variation in the electorate.
+
+
+# Data and Methods {#sec-methods}
+
+## Data {#sec-methods-data}
+
+The analysis draws on the Asian Barometer Survey (ABS), a comparative survey program that has administered nationally representative face-to-face interviews across East and Southeast Asia since 2001 [@Asian-Barometer-Survey2023-qm]. The ABS is the principal source of longitudinal public opinion data on democratic attitudes in the region and has been the empirical foundation for much of the literature reviewed above. Six waves are currently available: Wave 1 (2001--2003), Wave 2 (2005--2008), Wave 3 (2010--2012), Wave 4 (2014--2016), Wave 5 (2018--2020), and Wave 6 (2021--2023). South Korea and Taiwan are among the few countries surveyed in all six waves, providing an unusually long panel of repeated cross-sections for comparative analysis.
+
+The Korean sample comprises 7,603 respondents across the six waves (approximately 1,200 per wave), drawn from nationally representative probability samples of adults aged 18 and older. The Taiwanese sample comprises 9,042 respondents across the same six waves. Both countries use multi-stage stratified probability sampling with face-to-face interview administration. Survey weights are not applied in the main analysis, following the convention in the ABS comparative literature, but weighted estimates produce substantively identical results.
+
+## Dependent variables {#sec-methods-dvs}
+
+The analysis examines four individual dependent variables, each capturing a conceptually distinct dimension of democratic support. Following the reviewer-response literature on construct validity in democratic attitude measurement, the primary specifications treat each item separately rather than combining them into indices, since the items span different conceptual domains within Easton's [-@Easton1965-ap] framework. Summary indices are reported as supplementary analyses.
+
+Two items capture the *satisfaction* dimension---citizens' evaluations of how well democracy is performing, corresponding to Easton's specific support:
+
+- **Satisfaction with democracy** (primary): satisfaction with the way democracy works in the respondent's country. This is the main satisfaction outcome throughout the analysis.
+- **Satisfaction with government** (secondary): satisfaction with the national government. Because government satisfaction is closely tied to incumbent performance evaluation and is conceptually proximate to economic evaluations, it is reported separately rather than averaged with democratic satisfaction.
+
+Two items capture the *normative commitment* dimension---citizens' principled attachment to democracy as a form of government, corresponding to Easton's diffuse support:
+
+- **Democratic preference**: agreement that democracy is always preferable to any other kind of government. This is the cleanest normative indicator available across all six waves and serves as the primary normative outcome.
+- **Democratic extent**: the respondent's assessment of the extent to which their country is currently democratic. This item is evaluative rather than purely normative---it asks respondents to assess current democratic quality rather than express a principled preference---and is treated as a distinct perceived-quality outcome.
+
+Two additional items are available from Wave 3 onward and are examined as supplementary regime legitimacy indicators: (3) agreement that the political system deserves support, and (4) disagreement that the system needs major change. These tap regime legitimacy and status quo acceptance rather than normative democratic commitment per se, and are reported in the robustness section rather than the main analysis.
+
+All items are normalized to a 0--1 scale. The theoretical distinction between satisfaction and normative commitment is central to the paper's argument: the satisfaction paradox is the finding that economic evaluations are strongly associated with the former but not the latter.
+
+## Independent variable: economic evaluations {#sec-methods-iv}
+
+The key independent variable is an economic evaluation index constructed from six ABS items that capture both sociotropic and pocketbook assessments across current, retrospective, and prospective time horizons: (1) current national economic conditions, (2) current household economic conditions, (3) change in national economic conditions over the past year, (4) change in household economic conditions over the past year, (5) expected national economic conditions over the next year, and (6) expected household economic conditions over the next year. All six items are available across all waves with high coverage rates. Each is normalized to 0--1, and the index is computed as the mean of available items.
+
+The inclusion of both sociotropic and pocketbook indicators is deliberate. A substantial literature in economic voting has documented that sociotropic evaluations (national economic conditions) tend to be stronger predictors of political attitudes than pocketbook evaluations (household conditions) in established democracies [@Lewis-Beck2000-do; @Duch2008-zu]. If the performance-derived legitimation argument is correct, both types of evaluation should predict satisfaction but not quality, since the argument concerns the structure of the performance-commitment relationship rather than the specific level at which economic evaluation operates. The robustness section tests each indicator individually.
+
+## Controls {#sec-methods-controls}
+
+All models include five control variables available across all six waves: age (normalized to 0--1), gender (binary), education level (normalized), urban-rural residence (binary), and political interest (normalized). These variables capture the major demographic and attitudinal correlates of democratic attitudes identified in the comparative literature. In robustness specifications, an institutional trust index---the mean of normalized trust in the national government, parliament, courts, and political parties---is added as an additional control to assess whether the economic-satisfaction relationship operates through or independently of institutional trust.
+
+## Analytic strategy {#sec-methods-strategy}
+
+The analysis proceeds in five steps designed to test H1 through H5 sequentially.
+
+*Step 1: Descriptive trends.* Wave-level means for the satisfaction and quality clusters are plotted over time to document the divergence visually and estimate linear trend slopes via OLS on the wave means.
+
+*Step 2: Wave-by-wave OLS regressions.* For each of the six waves in each country, two parallel models are estimated:
+
+$\text{Satisfaction}_i = \alpha + \beta_1 \text{EconIndex}_i + \gamma \mathbf{X}_i + \varepsilon_i$
+
+$\text{Quality}_i = \alpha + \beta_1 \text{EconIndex}_i + \gamma \mathbf{X}_i + \varepsilon_i$
+
+where $\mathbf{X}_i$ is the vector of controls. The key comparison is between $\beta_1$ in the satisfaction and quality equations. H1 predicts $\beta_1 > 0$ in the satisfaction model for both countries. H2 predicts $\beta_1 \approx 0$ in the Korean quality model. H3 predicts $\beta_1 < 0$ in the Taiwanese quality model.
+
+*Step 3: Pooled models with wave interaction.* To test whether the economic-satisfaction relationship strengthens over time (deepening performance dependence), data are pooled within each country and a centered wave interaction term is included.
+
+*Step 4: Cross-country comparison.* To test H4, data from both countries are pooled and the following specification is estimated:
+
+$Y_i = \alpha + \beta_1 \text{EconIndex}_i + \beta_2 \text{Korea}_i + \beta_3 (\text{EconIndex}_i \times \text{Korea}_i) + \delta \text{Wave}_i + \gamma \mathbf{X}_i + \varepsilon_i$
+
+where $\beta_3$ captures the differential effect of economic evaluations in Korea relative to Taiwan. H4 predicts a significant $\beta_3$ in the quality equation, indicating that the decoupling pattern is significantly different across the two cases.
+
+*Step 5: Mechanism probe---national pride and identity-fused legitimation in Taiwan.* If the identity-fusion explanation for Taiwan's critical citizens pattern is correct, the negative econ → quality relationship should be stronger among citizens with high national pride, since national pride proxies for the strength of the national identity that anchors normative democratic commitment. Using the ABS national pride item, respondents in both countries are split into high- and low-pride groups, and the core quality model is estimated separately for each. The key prediction is an asymmetric interaction: national pride should amplify critical evaluation in Taiwan (where national and democratic identity are fused) but not in Korea (where national pride is tied to economic achievement and cultural prestige rather than democratic governance). This test moves the identity-fusion argument from narrative to empirical evidence.
+
+*Step 6: Robustness and sensitivity.* The core finding is tested against multiple alternative specifications: (a) summary indices alongside the individual-item primary analysis, (b) inclusion of institutional trust as an additional control, (c) individual economic indicators rather than the composite index, (d) subgroup analyses by age, education, and political interest (H5), (e) ordered logit models on the original ordinal response scales as an alternative to OLS on normalized outcomes, and (f) within-wave standardized outcomes to address measurement comparability across waves. An appendix documents item wording and response scales across all waves and both countries.
+
+
+# Results {#sec-results}
+
+## Descriptive trends: the satisfaction paradox {#sec-results-descriptive}
+
+The central empirical claim of this paper is that democratic satisfaction and democratic quality perception have diverged in South Korea over the two decades spanned by the Asian Barometer Survey. @fig-dissociation presents the core evidence. Between 2011 and 2022---the period for which both cluster indices can be fully computed---the satisfaction cluster rose from 0.456 to 0.525 on the normalized scale, an increase of approximately seven percentage points. Over the same period, the democratic quality cluster drifted from 0.366 to 0.351, a modest decline of one and a half points. OLS trend slopes confirm the divergence: satisfaction with democracy increased at +0.060 normalized units per decade, while preference for democracy as the best form of government declined at --0.059 per decade. System support declined at --0.045 per decade. These magnitudes are not dramatic in isolation, but their theoretical significance lies in the direction of movement rather than its scale. Consolidation theory predicts co-movement; the Korean data show the opposite.
+
+The divergence is clearer when individual components are examined. Within the satisfaction cluster, satisfaction with the national government exhibited the most pronounced trajectory, climbing from approximately 0.33 in 2011 to 0.53 by 2022---a twenty percentage-point increase concentrated primarily in the 2011--2015 interval, likely reflecting the transition from the late Lee Myung-bak administration to the early Park Geun-hye period. Satisfaction with democracy followed a more gradual upward path. Within the democratic quality cluster, the steepest decline appeared in the proportion of respondents affirming that democracy is always preferable to other forms of government. The finding that the political system does not need major change, by contrast, trended mildly upward (+0.047 per decade), suggesting that Korean citizens have become simultaneously less committed to democracy in principle and more accepting of the status quo in practice---a combination that is precisely what the performance-derived legitimation framework would predict.
+
+![Diverging trends in democratic satisfaction and democratic quality perception, South Korea 2003--2022. Wave means with 95% CIs. Satisfaction cluster: mean of *sat\_democracy* + *sat\_govt*. Quality cluster: mean of *dem\_always\_preferable* + *dem\_extent\_current*. All variables normalized 0--1. Source: ABS Korea, waves 1--6.](../analysis/figures/pub_fig01_dissociation.pdf){#fig-dissociation width=100%}
+
+![Output legitimacy: economic evaluations track satisfaction, not democratic quality perception. Weighted wave means with 95% CIs. Source: ABS Korea, waves 1--6.](../analysis/figures/pub_fig02_three_cluster.pdf){#fig-econ-comovement width=100%}
+
+The output legitimacy argument requires that economic evaluations track satisfaction more closely than they track quality perception, and the descriptive evidence is consistent with this expectation. When the economic evaluation cluster is plotted alongside satisfaction and quality, it tracks the satisfaction trend reasonably well while diverging from quality perceptions. The economic evaluation cluster declined modestly from 0.439 in 2011 to 0.409 in 2022, primarily driven by declining household income satisfaction (--0.162 per decade) and deteriorating national economic outlook (--0.092 per decade). That satisfaction continued to rise even as economic evaluations themselves declined suggests that the relationship between economic conditions and democratic satisfaction operates at the individual level rather than through aggregate co-movement---a possibility the regression models explore directly.
+
+
+## The mechanism: economic evaluations and the structure of democratic support {#sec-results-mechanism}
+
+The core analytic test estimates parallel OLS regressions for each ABS wave, predicting each of the four individual dependent variables from the economic evaluation index with controls for age, gender, education, urban-rural residence, and political interest. If performance-derived legitimation characterizes Korean democratic support, economic evaluations should strongly predict satisfaction but not normative democratic preference. The disaggregated results reveal a more nuanced and theoretically informative pattern than summary indices alone would suggest.
+
+*Satisfaction with democracy.* Across all six waves, economic evaluations are a consistent and significant predictor of satisfaction with democracy. The coefficient ranges from $\beta$ = 0.262 in Wave 2 (2006) to $\beta$ = 0.455 in Wave 4 (2015), with all estimates significant at *p* < 0.001. The pooled estimate with wave fixed effects is $\beta$ = 0.342 (*p* < 0.001, R$^2$ = 0.082). Satisfaction with government shows an even stronger relationship ($\beta$ = 0.473 to 0.823 across waves; pooled $\beta$ = 0.575), consistent with the expectation that government satisfaction is more directly output-driven. These results confirm H1: economic evaluations are strongly associated with the satisfaction dimension of democratic support in Korea.
+
+*Democracy always preferable.* This is the cleanest test of H2, because the item captures principled normative commitment rather than performance evaluation. The results are striking in their clarity. From Wave 2 (2006) onward, economic evaluations have no statistically significant relationship with democratic preference. The wave-by-wave coefficients are $\beta$ = --0.121 (*p* = 0.11) in 2006, 0.067 (*p* = 0.34) in 2011, 0.053 (*p* = 0.50) in 2015, 0.122 (*p* = 0.10) in 2019, and 0.079 (*p* = 0.28) in 2022. The pooled estimate is $\beta$ = --0.032 (*p* = 0.29). Economic evaluations and standard demographic controls explain virtually none of the variation in whether Korean citizens believe democracy is always preferable. Whatever determines normative democratic commitment in South Korea, it is not economic performance.
+
+The Wave 1 (2003) result is an instructive exception: economic evaluations show a significant *negative* association with democratic preference ($\beta$ = --0.246, *p* = 0.001), plausibly reflecting the aftermath of the 1997--1998 Asian financial crisis, during which economically comfortable citizens may have developed a more critical stance toward the democratic governance that presided over the crisis. This relationship dissipated by Wave 2 and does not reappear.
+
+*Democratic extent and regime legitimacy items.* The disaggregation reveals an important finding that summary indices obscured. Perceived democratic extent---how democratic respondents judge their country to be---shows a significant *negative* relationship with economic evaluations from Wave 2 onward ($\beta$ = --0.051 to --0.108, all *p* < 0.001; pooled $\beta$ = --0.059, *p* < 0.001). Economically comfortable Koreans rate their country as *less* democratic. The supplementary regime legitimacy items available from Wave 3 onward show even stronger negative effects: system support ($\beta$ = --0.300, *p* < 0.001) and no major change ($\beta$ = --0.341, *p* < 0.001).
+
+This pattern demands careful interpretation. The democratic extent and regime legitimacy items are evaluative rather than normative---they ask respondents to assess the current system's quality rather than to express a principled preference for democracy. The negative coefficients indicate that economically comfortable Koreans are more *critical* of their system's democratic quality and less convinced it deserves support, even as they are more *satisfied* with its performance. This is a form of critical evaluation, but it is decoupled from the normative dimension: Korean citizens can simultaneously be satisfied with democratic performance, critical of democratic quality, and indifferent to democracy as a principled preference. The performance-derived legitimation framework accommodates this configuration: when democratic support is instrumental, satisfaction and critical evaluation can coexist because neither is anchored to a normative commitment that would give them coherent direction.
+
+<!-- @tbl-wave-korea: Insert Table 1 (wave-by-wave results, Korea) -->
+
+
+## Taiwan: the critical citizens pattern {#sec-results-taiwan}
+
+The parallel analysis for Taiwan reveals a fundamentally different configuration. As in Korea, economic evaluations are strong and consistent predictors of democratic satisfaction across all six waves ($\beta$ = 0.273 to 0.561 for satisfaction with democracy; $\beta$ = 0.491 to 0.841 for government satisfaction, all *p* < 0.001). The satisfaction side of the equation is common to both cases.
+
+The critical divergence appears in normative democratic preference. In Taiwan, economic evaluations are significantly and *negatively* associated with the belief that democracy is always preferable in four of six waves: $\beta$ = --0.287 (*p* < 0.001) in 2001, --0.306 (*p* < 0.001) in 2006, --0.139 (*p* = 0.03) in 2014, --0.271 (*p* < 0.001) in 2019, and --0.504 (*p* < 0.001) in 2022. The pooled estimate is $\beta$ = --0.239 (*p* < 0.001). The single exception is Wave 3 (2010), where the estimate is 0.065 and nonsignificant. The pattern is not merely different from the Korean null---it is substantively large and, in Wave 6, remarkably strong. Economically comfortable Taiwanese citizens are substantially *more* committed to democracy as a matter of principle.
+
+The democratic extent item shows a parallel but weaker pattern in Taiwan: pooled $\beta$ = --0.114 (*p* < 0.001). But here a critical comparative nuance emerges. Korea also shows significant negative effects on democratic extent ($\beta$ = --0.059, *p* < 0.001), meaning economically comfortable citizens in *both* countries rate their country's democratic quality lower. The Korea-Taiwan divergence is concentrated in the *normative* item---democracy always preferable---where Korea shows no relationship ($\beta$ = --0.032, ns) and Taiwan shows a strong negative one ($\beta$ = --0.239***). This distinction validates the decision to disaggregate dependent variables: the two normative-cluster items behave very differently, and only the purest normative measure captures the theoretically decisive cross-country contrast.
+
+The ordered logit specification confirms these findings on the original ordinal scales. For democracy always preferable, the ordered logit coefficient is $\beta$ = --0.003 (ns) in Korea and $\beta$ = --1.201 (*p* < 0.001) in Taiwan---a null-versus-large contrast that mirrors the OLS results.
+
+<!-- @tbl-wave-taiwan: Insert Table 2 (wave-by-wave results, Taiwan) -->
+![OLS coefficients (economic evaluations → DV) by wave, Korea and Taiwan, with 95% confidence intervals. Controls: age, gender, education, urban/rural, political interest. Source: ABS waves 1--6.](../analysis/figures/pub_fig03_coefficients.pdf){#fig-coefficients width=100%}
+
+
+## Cross-country comparison {#sec-results-crosscountry}
+
+The formal test of whether the Korea-Taiwan difference is statistically significant pools both countries and estimates the interaction between economic evaluations and a Korea indicator variable, controlling for wave fixed effects and the standard covariate set.
+
+For the theoretically decisive dependent variable---democracy always preferable---the Taiwan baseline shows a substantial negative relationship ($\beta$ = --0.228, *p* < 0.001). The Korea interaction term is positive and highly significant ($\beta$ = 0.217, *p* < 0.001), indicating that the economic-preference relationship is significantly weaker (closer to zero) in Korea. The implied Korean coefficient (--0.011) is essentially zero, confirming the decoupling documented in the wave-by-wave analysis. This result directly supports H4.
+
+For satisfaction with democracy, the interaction is also significant ($\beta$ = --0.090, *p* < 0.001), indicating a somewhat weaker economic-satisfaction linkage in Korea (implied $\beta$ = 0.317) than Taiwan (baseline $\beta$ = 0.408)---but both are large and highly significant, consistent with H1.
+
+For democratic extent, the interaction is positive and significant ($\beta$ = 0.066, *p* < 0.001), confirming that the negative economic-extent relationship is weaker in Korea (implied $\beta$ = --0.060) than Taiwan (baseline $\beta$ = --0.127). Both countries show critical evaluation on this item, but Taiwan's is stronger.
+
+<!-- @tbl-crosscountry: Insert Table 3 (pooled country interaction model) -->
+
+
+## Robustness {#sec-results-robustness}
+
+The core finding---that economic evaluations are strongly associated with satisfaction but unrelated to normative democratic preference in Korea, while predicting both in Taiwan---is subjected to several alternative specifications.
+
+*Summary indices.* When satisfaction and quality items are combined into mean indices (as in much of the existing ABS literature), the results are consistent with the individual-item analysis. The Korean satisfaction index shows a strong economic relationship ($\beta$ = 0.375 to 0.581 across waves), while the quality index hovers near zero from Wave 2 onward. The Taiwanese quality index is significantly negative in five of six waves ($\beta$ = --0.127 to --0.328). The indices mask the important distinction between democratic preference and democratic extent documented in the primary analysis, but they do not contradict it.
+
+*Institutional trust as a control.* Adding an institutional trust index to the baseline model reduces the economic-satisfaction coefficient but leaves it highly significant. Trust independently predicts satisfaction and accounts for additional variance. The economic channel thus operates partly through and partly independently of institutional trust. In the democratic preference equation, adding trust changes neither the magnitude nor the significance of the economic coefficient.
+
+*Individual economic indicators.* Each of the six economic evaluation components is entered individually. All six significantly predict satisfaction in Korea. The decoupling pattern is clearest for current evaluations (national and household economic conditions), which show strong satisfaction effects and no democratic preference effects. Forward-looking indicators (economic outlooks) show small negative democratic extent effects, suggesting that economic optimism is weakly associated with more demanding quality assessments---a faint echo of the Taiwanese critical citizens pattern that does not alter the overall picture.
+
+*Within-wave standardization and ordered logit.* To address potential measurement comparability concerns across waves, within-wave z-scored outcomes produce the same pattern of results. Ordered logit models on the original ordinal response scales confirm the OLS findings: the ordered logit coefficient for democracy always preferable is $\beta$ = --0.003 (ns) in Korea and $\beta$ = --1.201 (*p* < 0.001) in Taiwan.
+
+*Subgroup heterogeneity.* The decoupling of economic evaluations from democratic preference is not confined to particular demographic segments (H5). The economic-satisfaction coefficient is virtually identical for younger and older respondents and similar across education levels. In no subgroup does the economic-preference relationship reach significance in the positive direction; the decoupling is society-wide.
+
+The most analytically informative subgroup finding concerns political interest. Among politically interested Korean citizens, economic evaluations show a negative association with democratic preference ($\beta$ = --0.071, *p* = 0.09)---approaching but not reaching conventional significance, and partially mirroring the Taiwanese critical citizens pattern. Among citizens with low political interest, the coefficient is essentially zero ($\beta$ = 0.009, *p* = 0.84). This result suggests that the capacity for normatively grounded, performance-critical democratic evaluation exists within the Korean public but is confined to the politically attentive minority. The disengaged majority---which drives the aggregate decoupling pattern---evaluates democracy in purely instrumental terms. The challenge for Korean democratic deepening is not the absence of critical citizenship but its confinement to a narrow stratum.
+
+![OLS coefficients (economic evaluations → DV) by demographic subgroup, Korea, pooled waves 1--6 with wave fixed effects. 95% CIs. Source: ABS Korea.](../analysis/figures/pub_fig04_subgroups.pdf){#fig-subgroups width=100%}
+
+
+## Mechanism probe: national pride and the identity-fusion pathway {#sec-results-pride}
+
+The theoretical framework attributes Taiwan's critical citizens pattern to the fusion of democratic and national identity. If this mechanism is correct, the negative econ → quality relationship should be amplified among Taiwanese citizens with strong national pride, since pride proxies for the strength of the identity anchor that makes critical evaluation possible. The same amplification should *not* appear in Korea, where national pride is tied to economic and cultural achievement rather than democratic governance.
+
+The ABS national pride item is available from Wave 2 onward in both countries (Korea *n* = 6,020; Taiwan *n* = 7,427). Respondents are split at the median into high- and low-pride groups, and the core democratic preference model is estimated separately for each group within each country.
+
+The subgroup results are partially consistent with the theoretical prediction but weaker than expected. In Taiwan, the critical citizens pattern is present in *both* pride groups: high-pride Taiwanese show $\beta$ = --0.183 (*p* < 0.001) and low-pride Taiwanese show $\beta$ = --0.222 (*p* < 0.001). The formal interaction between economic evaluations and national pride is nonsignificant in the Taiwanese democratic preference equation ($\beta$ = --0.041, *p* = 0.74). The critical citizens pattern in Taiwan is pervasive across levels of national pride rather than concentrated among the most nationally identified.
+
+In Korea, the decoupling holds across pride levels: the economic-preference relationship is near zero for both high-pride ($\beta$ = --0.011, *p* = 0.86) and low-pride respondents ($\beta$ = 0.035, *p* = 0.35). The interaction is again nonsignificant ($\beta$ = 0.029, *p* = 0.82).
+
+The cross-country pattern is thus one of *level differences* rather than *moderation*. Taiwanese citizens at all levels of national pride exhibit critical evaluation; Korean citizens at all levels of national pride exhibit decoupling. This is consistent with the identity-fusion argument at the country level---the fusion of democratic and national identity in Taiwan creates conditions favorable to critical citizenship society-wide, not only among the most nationally identified---but it means that national pride as measured by the ABS does not serve as a useful individual-level proxy for the specific democratic-national identity configuration the theory posits. The mechanism likely operates at the macro-political level (through decades of identity-building around democratic self-definition) rather than varying with individual-level national pride, which captures a broader and more diffuse sentiment.
+
+<!-- @tbl-pride-interaction: Insert Table 4 (national pride mechanism probe) -->
+
+
+# Discussion {#sec-discussion}
+
+The results provide consistent and robust evidence for the satisfaction paradox in South Korea: democratic satisfaction is strongly driven by economic evaluations while normative democratic commitment is essentially independent of them. This section interprets these findings through the performance-derived legitimation framework, develops the comparative implications of the Taiwan contrast, addresses the significance of the political interest subgroup finding, and considers what the pattern implies for democratic resilience in light of the December 2024 martial law crisis.
+
+## Performance-derived legitimation as a distinct mode {#sec-discussion-performance}
+
+The core finding---that economic evaluations robustly predict satisfaction but not quality across two decades of survey data---is precisely what the performance-derived legitimation pathway predicts and what alternatives do not. A generalized political cynicism account would predict declining scores on *both* satisfaction and quality, as disaffected citizens withdraw from democratic evaluation altogether. A post-materialist critical citizens account, in the Norris [-@Norris1999-sn] mold, would predict rising quality perceptions alongside declining satisfaction, as materially secure citizens hold democracy to higher standards. Neither pattern appears in the Korean data. Instead, satisfaction rises while quality declines---a configuration that only the instrumental evaluation framework can parsimoniously account for.
+
+The performance-derived legitimation concept advances the analytical vocabulary beyond the existing alternatives in the East Asian democratization literature. Park and Shin's [-@Park2006-bv] influential characterization of Korean democracy as "incomplete" implies a teleological trajectory in which democratic support should eventually mature into deeper normative commitment. The evidence assembled here suggests that this maturation has not occurred over two decades and, more importantly, that the structure of Korean democratic support gives no reason to expect it will. The issue is not that Korean democratization is *unfinished* but that it rests on a foundation---performance evaluation---that does not generate normative commitment as a byproduct. Satisfaction and commitment are not stages on a single developmental path; they are products of different causal processes.
+
+The Eastonian framework, while foundational, does not fully anticipate this configuration. Easton [-@Easton1965-ap] expected that sustained specific support would gradually deposit into a reservoir of diffuse support---that citizens who experienced good governance over time would develop generalized attachment to the system that produced it. The Korean data suggest that this conversion mechanism is not automatic. Specific support can accumulate without generating diffuse support if the evaluative framework remains instrumental throughout. The reservoir metaphor implies a one-way flow from performance evaluation to principled attachment; the Korean case suggests the flow can be blocked entirely.
+
+## Taiwan's divergent pathway {#sec-discussion-taiwan}
+
+The Taiwanese findings are theoretically important not only as a comparative foil but in their own right. The consistent negative relationship between economic evaluations and normative democratic preference ($\beta$ = --0.14 to --0.50 across four of six waves, pooled $\beta$ = --0.239) is among the strongest empirical demonstrations of the critical citizens dynamic in an East Asian context. Previous work using ABS data has noted comparatively high levels of democratic support in Taiwan [@Chu2008-fk; @Chu2020-ir] but has not, to my knowledge, documented the *mechanism* through which economic conditions relate to normative evaluation at the individual level with this degree of specificity.
+
+The identity-fusion explanation for the Taiwanese pattern has important scope conditions. The argument is not that national identity generically anchors democratic commitment---if it did, the pattern would appear in any country with strong nationalist sentiment---but that the *specific historical configuration* through which democratic identity and national identity became coterminous in Taiwan created conditions uniquely favorable to the critical citizens dynamic. Democratization in Taiwan was simultaneously a project of national differentiation from China, and the sustained cross-strait tension that has characterized the post-democratization period continuously reinforces this fusion. The DPP's political project made being democratic constitutive of being Taiwanese in a way that has no precise analogue in the Korean case, where democratization was experienced primarily as a domestic political transition rather than a project of national self-definition.
+
+The mechanism probe reported in @sec-results-pride provides partial evidence for this interpretation, though the individual-level test is weaker than hypothesized. National pride does not significantly moderate the economic-preference relationship in either country: the critical citizens pattern in Taiwan is pervasive across pride levels, not concentrated among the most nationally identified. This suggests that the identity-fusion mechanism operates at the macro-political level---through decades of institutionalized democratic-national identity building---rather than varying with individual-level national pride. The country-level pattern is nonetheless striking: Taiwanese citizens at every level of national pride exhibit critical evaluation, while Korean citizens at every level exhibit decoupling. A sharper individual-level test would require direct measures of Taiwanese versus Chinese identity, which the ABS does not include consistently across all waves but which future research should pursue.
+
+## The political interest finding {#sec-discussion-polinterest}
+
+The most analytically interesting subgroup result concerns political interest. Among politically engaged Korean citizens, the economic-preference relationship is negative ($\beta$ = --0.071, *p* = 0.09)---approaching but not reaching conventional significance, and directionally consistent with the Taiwanese critical citizens pattern. Among disengaged citizens, the coefficient is essentially zero ($\beta$ = 0.009, *p* = 0.84). The aggregate Korean pattern is driven by the disengaged majority.
+
+This finding has two implications. First, it suggests that the *direction* of normatively grounded, performance-critical democratic evaluation exists within the Korean public but is confined to a politically attentive minority and is weak even there. The structural conditions for critical citizenship---material comfort combined with normative engagement---exist in Korea, but they produce only a faint echo of the Taiwanese pattern among the most politically engaged citizens. Second, the performance-derived legitimation mode is not a fixed cultural property but a distributional phenomenon: it characterizes the median Korean citizen rather than every Korean citizen. The challenge for democratic deepening in Korea is not creating the critical citizens dynamic from scratch but strengthening and expanding what remains a marginal tendency.
+
+This reading also helps explain why Korean democratic institutions have functioned effectively despite shallow normative foundations. The politically engaged minority---the same citizens who exhibit critical democratic evaluation---are disproportionately likely to participate in the institutional processes (voting, protest, civic engagement) that constitute democratic accountability. The martial law crisis of December 2024 was resolved not by a mass normative uprising but by the rapid institutional response of legislators, judges, and an organized opposition---precisely the actors drawn from the politically engaged stratum. Democratic resilience, on this reading, may require only that the engaged minority be sufficiently large and institutionally embedded to activate the system's defenses, even if the broader public's commitment is instrumental rather than principled.
+
+## The Yoon crisis and democratic resilience {#sec-discussion-yoon}
+
+The paper's data end in 2022; it does not claim to explain the Yoon crisis causally. But the December 2024 martial law episode provides a natural, if informal, illustration of the vulnerability that the paper's framework identifies. The institutional response was swift and effective: martial law overturned within six hours, impeachment proceedings initiated immediately, conviction and life sentence delivered within fourteen months. By any institutional metric, South Korean democracy passed the test.
+
+But the theory developed here suggests that institutional resilience and normative resilience are distinct properties that need not coincide. The question is not whether the system held---it did---but *why* it held. If the answer is that institutional safeguards functioned as designed (legislative override provisions, judicial independence, military restraint), then the system's resilience reflects institutional engineering rather than mass democratic commitment. The ABS data, showing rising satisfaction alongside declining normative commitment in the years preceding the crisis, are consistent with this interpretation. The system held not because citizens were deeply committed to democratic governance as a matter of principle but because the institutional machinery was robust enough to contain an authoritarian challenge without requiring mass normative mobilization.
+
+This interpretation carries a cautionary implication. Institutional resilience that does not rest on normative foundations is brittle in ways that may not be apparent until the institutional safeguards themselves are compromised. The 2024 crisis was an amateurish attempt by an isolated president with single-digit approval ratings; the institutional response was correspondingly straightforward. A more competent authoritarian challenge---one that gradually eroded institutional checks rather than frontally assaulting them, or one that enjoyed genuine popular support---would face a public whose democratic commitment is, on the evidence presented here, conditional on continued performance rather than principled in character. The satisfaction paradox, in this reading, describes a democracy that is resilient to institutional shocks but vulnerable to the slower, subtler process of legitimacy erosion that Levitsky and Ziblatt [-@Levitsky2018-dd] describe as the characteristic mode of contemporary democratic backsliding.
+
+## Limitations {#sec-discussion-limitations}
+
+Several limitations merit acknowledgment. First, the ABS provides repeated cross-sections rather than panel data, which means the analysis documents between-person associations at each wave rather than within-person change over time. The claim that economic evaluations are causally prior to satisfaction and quality perceptions rests on theoretical reasoning and the consistency of the pattern across waves rather than on a formal causal identification strategy such as instrumental variables or panel fixed effects. Reverse causality---the possibility that satisfaction shapes economic evaluations rather than the reverse---cannot be ruled out with cross-sectional data, though the asymmetric pattern (strong association with satisfaction, no association with normative commitment) is difficult to reconcile with a pure reverse-causality account. Panel data, which would allow tracking the same individuals across waves, would substantially strengthen the causal interpretation.
+
+Second, the normative commitment indicators---particularly democratic preference and democratic extent---capture different conceptual dimensions (principled preference versus perceived quality), as the Methods section discusses. The primary specifications treat them as separate outcomes precisely for this reason, but each individual item is an imperfect proxy for the broader concept of normative democratic commitment. The supplementary regime legitimacy items available from Wave 3 onward (system support, no major change) produce consistent results, strengthening confidence in the pattern.
+
+Third, the national pride mechanism probe does not find significant individual-level moderation of the economic-preference relationship in either country. This does not disconfirm the identity-fusion argument---the country-level pattern of pervasive critical citizenship in Taiwan versus pervasive decoupling in Korea is consistent with it---but it means the mechanism is not demonstrated at the individual level with available measures. National pride is a broad sentiment that does not capture the specific democratic-national identity fusion the theory posits. Direct measures of Taiwanese versus Chinese identity, available in some ABS waves but not consistently across all six, would provide a sharper test.
+
+Fourth, the observation window closes in 2022, before both the Yoon martial law crisis and the most recent period of cross-strait tension that has reshaped Taiwanese politics. Wave 7 data, when available, will provide a critical test of whether the patterns documented here have persisted, deepened, or shifted in response to these events.
+
+Finally, the two-country comparison, while analytically productive, necessarily limits generalizability. The performance-derived legitimation mode may characterize other post-developmental-state democracies in the region (and potentially beyond), but demonstrating this requires extension to additional cases.
+
+
+# Conclusion {#sec-conclusion}
+
+Democratic satisfaction is not democratic deepening. Two decades of Asian Barometer data from South Korea reveal that citizens can become simultaneously more satisfied with their democracy and less normatively committed to it---a pattern this paper has termed the satisfaction paradox. The mechanism is performance-derived legitimation: economic evaluations are powerfully and consistently associated with democratic satisfaction while showing no relationship with normative democratic commitment. Korean citizens evaluate their democracy instrumentally, and the evaluation is favorable, but the favorable evaluation does not deposit into a reservoir of principled attachment to democratic governance.
+
+The Taiwan comparison demonstrates that this pattern is not an inevitable feature of East Asian democracies or Confucian political culture. Taiwanese citizens, operating within a similar developmental and cultural context, exhibit the opposite dynamic: economic comfort fuels more demanding normative evaluation of democratic quality. The divergence is statistically significant and substantively large, and it reflects, this paper has argued, two distinct pathways through which democratic legitimation was historically established---performance-derived in Korea, identity-fused in Taiwan.
+
+These findings have implications that extend beyond the two cases examined here. For the study of democratic consolidation, they suggest that aggregate measures of democratic support---the percentage of citizens who express satisfaction with democracy or who prefer democracy to alternatives---can mask fundamentally different structures of support with different resilience properties. A polity in which 70 percent of citizens are satisfied with democracy for instrumental reasons and a polity in which 70 percent are satisfied for normative reasons will look identical in cross-national surveys but will respond very differently to performance shocks, legitimacy challenges, or authoritarian temptation. The satisfaction paradox is a reminder that the depth of democratic support matters as much as its breadth.
+
+For the study of democratic resilience, the Korean case suggests an uncomfortable possibility: that democratic institutions can function effectively for decades, weathering presidential impeachments and even a martial law attempt, without generating the normative commitment that consolidation theory expects mature democracies to produce. Institutional resilience and normative resilience are distinct properties, and the former does not automatically generate the latter. South Korea's democratic institutions held in December 2024. Whether they would hold against a more patient, more competent, or more popular authoritarian challenge---one that could exploit the shallow normative foundations documented here---is a question that the satisfaction paradox makes it necessary to ask.
+
+
+# References {.unnumbered}
+
+::: {#refs}
+:::
