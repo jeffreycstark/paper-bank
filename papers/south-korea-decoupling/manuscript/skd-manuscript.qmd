@@ -241,6 +241,26 @@ sp_n_kr <- sp$interaction |> filter(country == "Korea",  dv == "Democracy always
   .p_str(p)
 }
 
+# Alternative normative DV results (Appendix H)
+alt_norm <- readRDS(file.path(results_dir, "alt_normative_dvs.rds"))
+
+.alt_b <- function(country, dv_var, d = 3) {
+  row <- alt_norm$pooled |> filter(country == !!country, dv_var == !!dv_var)
+  round(row$estimate, d)
+}
+.alt_p <- function(country, dv_var) {
+  p <- alt_norm$pooled |> filter(country == !!country, dv_var == !!dv_var) |> pull(p.value)
+  .p_str(p)
+}
+.alt_xc_b <- function(dv_var, d = 3) {
+  row <- alt_norm$cross_country |> filter(dv_var == !!dv_var, term == "econ_index:is_korea")
+  round(row$estimate, d)
+}
+.alt_xc_p <- function(dv_var) {
+  p <- alt_norm$cross_country |> filter(dv_var == !!dv_var, term == "econ_index:is_korea") |> pull(p.value)
+  .p_str(p)
+}
+
 # NEW helpers for national pride
 .np_sub_b <- function(country, group, d = 3) {
   row <- np$subgroup |> filter(country == !!country, group == !!group)
@@ -574,13 +594,13 @@ The main analysis identifies a decoupling between economic evaluations and norma
 
 Four alternative measures from the ABS are tested. Each captures a different facet of pro-democratic attitudes, and each is available across multiple waves in both countries:
 
-(1) *Democracy is the best form of government* (Waves 3--6). This item asks respondents whether they agree that "democracy may have its problems, but it is still the best form of government." Despite its surface similarity to "democracy is always preferable," the two items differ in an analytically important way: the "best form" framing invites a comparative evaluation (best relative to available alternatives), while the "always preferable" framing demands an unconditional commitment (preferable regardless of circumstances). The pooled economic evaluation coefficient is positive and significant in both Korea ($\beta$ = 0.072, *p* < 0.01) and Taiwan ($\beta$ = 0.112, *p* < 0.001). Economically comfortable citizens in both countries are more likely to agree that democracy is the best available system---but in Korea this comparative endorsement does not extend to unconditional commitment.
+(1) *Democracy is the best form of government* (Waves 3--6). This item asks respondents whether they agree that "democracy may have its problems, but it is still the best form of government." Despite its surface similarity to "democracy is always preferable," the two items differ in an analytically important way: the "best form" framing invites a comparative evaluation (best relative to available alternatives), while the "always preferable" framing demands an unconditional commitment (preferable regardless of circumstances). The pooled economic evaluation coefficient is positive and significant in both Korea ($\beta$ = `r .alt_b("Korea", "norm_best_form")`, *p* `r .alt_p("Korea", "norm_best_form")`) and Taiwan ($\beta$ = `r .alt_b("Taiwan", "norm_best_form")`, *p* `r .alt_p("Taiwan", "norm_best_form")`). Economically comfortable citizens in both countries are more likely to agree that democracy is the best available system---but in Korea this comparative endorsement does not extend to unconditional commitment.
 
-(2) *Democracy versus economic development* (Waves 1--6). Respondents are asked to choose between democracy and economic development as the more important priority. After excluding the "both equally important" category (which does not lie on the democracy--economy continuum), the remaining four-point scale runs from economic development definitely more important to democracy definitely more important. The pooled coefficient is positive and significant in both countries (Korea $\beta$ = 0.196, *p* < 0.001; Taiwan $\beta$ = 0.192, *p* < 0.001), with no meaningful cross-country difference. When asked to prioritize democracy against economic development specifically, economically comfortable citizens in both countries favor democracy---consistent with the logic that material security frees citizens from prioritizing economic concerns.
+(2) *Democracy versus economic development* (Waves 1--6). Respondents are asked to choose between democracy and economic development as the more important priority. After excluding the "both equally important" category (which does not lie on the democracy--economy continuum), the remaining four-point scale runs from economic development definitely more important to democracy definitely more important. The pooled coefficient is positive and significant in both countries (Korea $\beta$ = `r .alt_b("Korea", "norm_dem_vs_econ")`, *p* `r .alt_p("Korea", "norm_dem_vs_econ")`; Taiwan $\beta$ = `r .alt_b("Taiwan", "norm_dem_vs_econ")`, *p* `r .alt_p("Taiwan", "norm_dem_vs_econ")`), with no meaningful cross-country difference. When asked to prioritize democracy against economic development specifically, economically comfortable citizens in both countries favor democracy---consistent with the logic that material security frees citizens from prioritizing economic concerns.
 
-(3) *Democracy is suitable for our country* (Waves 1--6). This 10-point item captures perceived fit between democracy and the respondent's national context. The pooled coefficient is positive and significant in both countries (Korea $\beta$ = 0.172, *p* < 0.001; Taiwan $\beta$ = 0.308, *p* < 0.001). The cross-country interaction is significant ($\beta$ = --0.160, *p* < 0.001), indicating a weaker positive effect in Korea than Taiwan---consistent with the broader pattern that economic evaluations are less tightly linked to democratic assessment in Korea---but notably the Korean coefficient is still positive and significant, not null. Economically comfortable Koreans do consider democracy more suitable; they simply do not translate this judgment into unconditional normative commitment.
+(3) *Democracy is suitable for our country* (Waves 1--6). This 10-point item captures perceived fit between democracy and the respondent's national context. The pooled coefficient is positive and significant in both countries (Korea $\beta$ = `r .alt_b("Korea", "norm_suitability")`, *p* `r .alt_p("Korea", "norm_suitability")`; Taiwan $\beta$ = `r .alt_b("Taiwan", "norm_suitability")`, *p* `r .alt_p("Taiwan", "norm_suitability")`). The cross-country interaction is significant ($\beta$ = `r .alt_xc_b("norm_suitability")`, *p* `r .alt_xc_p("norm_suitability")`), indicating a weaker positive effect in Korea than Taiwan---consistent with the broader pattern that economic evaluations are less tightly linked to democratic assessment in Korea---but notably the Korean coefficient is still positive and significant, not null. Economically comfortable Koreans do consider democracy more suitable; they simply do not translate this judgment into unconditional normative commitment.
 
-(4) *Democracy is capable of solving society's problems* (Waves 1--6). This binary item captures perceived democratic efficacy. The pooled coefficient is positive and significant in both countries (Korea $\beta$ = 0.150, *p* < 0.001; Taiwan $\beta$ = 0.369, *p* < 0.001). As with suitability, the effect is substantially larger in Taiwan, but it is clearly present in Korea.
+(4) *Democracy is capable of solving society's problems* (Waves 1--6). This binary item captures perceived democratic efficacy. The pooled coefficient is positive and significant in both countries (Korea $\beta$ = `r .alt_b("Korea", "norm_efficacy")`, *p* `r .alt_p("Korea", "norm_efficacy")`; Taiwan $\beta$ = `r .alt_b("Taiwan", "norm_efficacy")`, *p* `r .alt_p("Taiwan", "norm_efficacy")`). As with suitability, the effect is substantially larger in Taiwan, but it is clearly present in Korea.
 
 The pattern across all four measures is consistent. Economic evaluations are positively associated with conditional democratic endorsement in both countries. The Korea--Taiwan divergence appears exclusively on the "democracy is always preferable" item---the one measure that demands unconditional normative commitment rather than contingent assessment of democracy's merits, fit, or capacity. This result validates the theoretical distinction between diffuse and specific support that structures the paper's argument. Performance-derived legitimation, as theorized here, does not produce citizens who are hostile to democracy or who fail to recognize its merits; it produces citizens who endorse democracy instrumentally without developing the principled attachment that Easton's [-@Easton1965-ap] framework identified as the foundation of long-term regime stability.
 
