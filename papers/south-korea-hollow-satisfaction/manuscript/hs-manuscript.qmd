@@ -1,0 +1,177 @@
+---
+title: "The Satisfaction Paradox: Economic Performance, Institutional Trust, and Democratic Attitudes in South Korea, 2001–2019"
+author:
+  - name: Jeffrey Stark
+    affiliations:
+      - name: Yonsei University
+        department: Department of Sociology
+    email: jeffrey.stark@yonsei.ac.kr
+    corresponding: true
+date: now
+date-format: "MMMM D, YYYY [at] h:mm A"
+abstract: |
+  [PLACEHOLDER — draft once theory and findings are settled.]
+  A well-established proposition in comparative politics holds that citizens reward governments for economic performance with heightened institutional trust and democratic satisfaction. Yet South Korea between 2001 and 2019 presents a puzzle: despite sustained economic growth and rising living standards, mass satisfaction with democracy declined, institutional trust eroded, and the link between favorable economic assessments and democratic support weakened markedly over time. This paper documents and explains this satisfaction paradox using five waves of the Asian Barometer Survey (2001–2019). We argue that institutional trust operates as a necessary intermediary in the performance–satisfaction chain: when trust in political institutions collapses, positive economic evaluations can no longer be converted into democratic satisfaction—even when economic conditions are objectively favorable. This decoupling mechanism is specific to accountability-relevant institutions (legislature, political parties, electoral management) and does not extend to civil service or courts, consistent with a politics-centered, rather than diffuse-cynicism, account. Cross-national comparisons with Taiwan and Japan corroborate the Korea-specificity of the pattern. The findings have implications for theories of performance legitimacy and for understanding democratic attitudes in consolidating democracies experiencing institutional credibility crises.
+keywords:
+  - South Korea
+  - economic performance
+  - institutional trust
+  - democratic satisfaction
+  - performance legitimacy
+  - Asian Barometer Survey
+format:
+  pdf:
+    documentclass: article
+    classoption: [12pt, letterpaper]
+    geometry:
+      - margin=1in
+    linestretch: 2
+    number-sections: true
+    colorlinks: true
+    keep-tex: true
+    include-in-header:
+      - text: |
+          \usepackage{setspace}
+          \usepackage{booktabs}
+          \usepackage{caption}
+          \usepackage{longtable}
+          \usepackage{array}
+          \usepackage{multirow}
+          \usepackage{float}
+          \usepackage{graphicx}
+          \usepackage{threeparttable}
+          \usepackage{threeparttablex}
+          \usepackage{colortbl}
+          \usepackage{xcolor}
+          \captionsetup{width=\textwidth}
+          \setlength\LTcapwidth{\textwidth}
+          \floatplacement{figure}{H}
+          \floatplacement{table}{H}
+          \raggedright
+          \newfontfamily\koreanfont{Noto Sans KR}[Script=Hangul]
+          \DeclareTextFontCommand{\textkorean}{\koreanfont}
+  html:
+    toc: true
+    toc-depth: 3
+    number-sections: true
+    theme: cosmo
+bibliography: references.bib
+csl: apa.csl
+execute:
+  echo: false
+  warning: false
+  message: false
+---
+
+```{r setup}
+library(tidyverse)
+library(kableExtra)
+
+# Rewrite kableExtra's tab: labels to tbl- so Quarto crossref filter
+# recognises them and suppresses the "non-tbl label" warnings.
+knitr::knit_hooks$set(document = function(x) {
+  gsub("\\\\label\\{tab:", "\\\\label\\{tbl-", x)
+})
+
+project_root <- "/Users/jeffreystark/Development/Research/econdev-authpref"
+paper_dir    <- file.path(project_root, "papers/south-korea-hollow-satisfaction")
+analysis_dir <- file.path(paper_dir, "analysis")
+fig_dir      <- file.path(analysis_dir, "figures")
+results_dir  <- file.path(analysis_dir, "results")
+
+# Uncomment as results become available:
+# inline <- readRDS(file.path(results_dir, "inline_stats.RData"))
+# m1     <- readRDS(file.path(results_dir, "m1_pooled.rds"))
+# m2     <- readRDS(file.path(results_dir, "m2_trust_mediated.rds"))
+# m3     <- readRDS(file.path(results_dir, "m3_interaction.rds"))
+# hyp    <- readRDS(file.path(results_dir, "hypothesis_tests.rds"))
+```
+
+# Introduction
+
+[TBD]
+
+Performance legitimacy theory predicts that citizens support democratic institutions when governments deliver economic goods [@Lipset1959; @Easton1965].
+South Korea between 2001 and 2019 complicates this prediction.
+
+<!-- Paragraph outline:
+     1. Hook — the paradox: growth + declining satisfaction
+     2. Why this matters — performance legitimacy is a foundational assumption
+     3. What we do — ABS waves 1–5, Korea; comparators Taiwan + Japan
+     4. What we find — decoupling, trust mediation, institutional specificity
+     5. Contribution to literature
+     6. Road map
+-->
+
+# Theoretical Framework
+
+## Performance Legitimacy and Its Limits
+
+[TBD]
+
+## Institutional Trust as an Intermediary
+
+[TBD]
+
+## The Decoupling Hypothesis
+
+[TBD]
+
+# Data and Measures
+
+## Asian Barometer Survey
+
+The analysis draws on five waves of the Asian Barometer Survey (ABS) collected in South Korea between 2001 and 2019 (Wave 1: [year]; Wave 2: [year]; Wave 3: [year]; Wave 4: [year]; Wave 5: [year]).
+Each wave provides a nationally representative cross-section of Korean adults (N ≈ [XXX] per wave; pooled N ≈ [XXX]).
+The 2019 endpoint is chosen to avoid confounding from COVID-19 disruptions that affected Wave 6 fieldwork.
+
+## Key Variables
+
+**Democratic satisfaction** is measured by a four-point item asking respondents how satisfied they are with the way democracy works in their country (1 = not at all satisfied, 4 = very satisfied).
+
+**Economic performance perceptions** are captured by retrospective personal and national economic evaluations (five-point scales; higher = better).
+
+**Institutional trust** is measured by a four-point battery asking respondents how much they trust [institution] (1 = not at all, 4 = a great deal).
+We analyze trust in the president/government, legislature, courts, political parties, and election commission separately and as a composite index.
+
+**Controls**: age, gender, education (years or ordinal), urban residence, and income quintile.
+Wave fixed effects capture secular trends and cross-wave composition differences.
+
+# Results
+
+## Trends in Economic Assessments and Democratic Satisfaction
+
+[TBD — Figure 1: parallel trends]
+
+## Institutional Trust Collapse
+
+[TBD — Figure 2: trust trajectories by institution type]
+
+## Performance–Satisfaction Decoupling
+
+[TBD — Table 1: main models; Figure 3: marginal effects by wave]
+
+## Trust as Mediator
+
+[TBD — Table 2: mediation models]
+
+## Institutional Specificity
+
+[TBD — accountability vs. non-accountability institutions]
+
+## Cross-National Comparators
+
+[TBD — Figure 4: Korea vs Taiwan vs Japan]
+
+# Discussion
+
+[TBD]
+
+# Conclusion
+
+[TBD]
+
+# References {.unnumbered}
+
+::: {#refs}
+:::
