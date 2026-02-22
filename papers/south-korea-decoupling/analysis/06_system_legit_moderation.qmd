@@ -50,13 +50,7 @@ fig_dir      <- file.path(analysis_dir, "figures")
 
 dat <- readRDS(file.path(results_dir, "analysis_data.rds"))
 
-extract_econ_coef <- function(model) {
-  tidy(model, conf.int = TRUE) |>
-    filter(term == "econ_index") |>
-    dplyr::select(estimate, std.error, statistic, p.value, conf.low, conf.high)
-}
-
-controls <- "age_n + gender + edu_n + urban_rural + polint_n"
+source(file.path(paper_dir, "R", "helpers.R"))
 ```
 
 ## Data preparation: system legitimacy median splits

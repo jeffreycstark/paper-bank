@@ -49,30 +49,7 @@ pooled_df   <- mods$pooled_interaction
 xc_df       <- mods$cross_country
 subgroup_df <- mods$subgroups
 
-# Common publication theme
-theme_pub <- theme_minimal(base_size = 11) +
-  theme(
-    plot.title         = element_text(size = 11, face = "bold", margin = margin(b = 6)),
-    plot.subtitle      = element_text(size = 9, color = "grey30", margin = margin(b = 10)),
-    plot.caption       = element_text(size = 7.5, color = "grey50", hjust = 0,
-                                      margin = margin(t = 8)),
-    legend.position    = "bottom",
-    legend.text        = element_text(size = 9),
-    legend.title       = element_blank(),
-    panel.grid.minor   = element_blank(),
-    panel.grid.major.x = element_blank(),
-    strip.text         = element_text(face = "bold", size = 10),
-    axis.title         = element_text(size = 9),
-    axis.text          = element_text(size = 8.5)
-  )
-
-pal2       <- c("Satisfaction" = "#2166AC", "Democratic quality" = "#B2182B")
-pal3       <- c("Satisfaction" = "#2166AC", "Democratic quality" = "#B2182B",
-                "Economic evaluations" = "#4DAF4A")
-pal_country <- c("Korea" = "#2166AC", "Taiwan" = "#D55E00")
-
-survey_years_kr <- c(2003, 2006, 2011, 2015, 2019, 2022)
-survey_years_tw <- c(2001, 2006, 2010, 2014, 2019, 2022)
+source(file.path(paper_dir, "R", "helpers.R"))
 ```
 
 ## Figure 1: Core dissociation (Korea) {#sec-fig1}
@@ -194,12 +171,6 @@ cat("✓ Figure 2\n")
 ## Figure 3: Wave-by-wave coefficient plot (Korea vs Taiwan) {#sec-fig3}
 
 ```{r figure3}
-survey_years_lookup <- tibble(
-  wave    = rep(1:6, 2),
-  country = rep(c("Korea", "Taiwan"), each = 6),
-  year    = c(survey_years_kr, survey_years_tw)
-)
-
 fig03_data <- wave_df |>
   left_join(survey_years_lookup, by = c("country", "wave")) |>
   mutate(dv = factor(dv, levels = c("Satisfaction", "Democratic quality")))

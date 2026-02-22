@@ -35,6 +35,8 @@ fig_dir      <- file.path(analysis_dir, "figures")
 
 dir.create(results_dir, showWarnings = FALSE, recursive = TRUE)
 dir.create(fig_dir, showWarnings = FALSE, recursive = TRUE)
+
+source(file.path(paper_dir, "R", "helpers.R"))
 ```
 
 ## Load ABS harmonized data
@@ -65,16 +67,6 @@ wave_years <- dat |>
   distinct(country_label, wave) |>
   arrange(country_label, wave)
 print(wave_years)
-```
-
-## Normalize helper
-
-```{r normalize-fn}
-normalize_01 <- function(x) {
-  rng <- range(x, na.rm = TRUE)
-  if (rng[2] == rng[1]) return(rep(0, length(x)))
-  (x - rng[1]) / (rng[2] - rng[1])
-}
 ```
 
 ## Construct analysis variables

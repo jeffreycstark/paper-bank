@@ -35,6 +35,8 @@ fig_dir      <- file.path(analysis_dir, "figures")
 
 dat <- readRDS(file.path(results_dir, "analysis_data.rds"))
 
+source(file.path(paper_dir, "R", "helpers.R"))
+
 # Palette
 pal <- c("Satisfaction" = "#2166AC", "Democratic quality" = "#B2182B",
          "Economic evaluations" = "#4DAF4A")
@@ -73,17 +75,6 @@ wave_means_kr <- wave_means_kr |> left_join(survey_years, by = "wave")
 ## OLS trend slopes (Korea)
 
 ```{r trend-slopes}
-calc_slope <- function(data, yvar, year_var = "year") {
-  d <- data |> select(y = all_of(yvar), x = all_of(year_var)) |> drop_na()
-  if (nrow(d) < 3) return(tibble(slope = NA_real_, slope_decade = NA_real_, n_waves = nrow(d)))
-  m <- lm(y ~ x, data = d)
-  tibble(
-    slope        = coef(m)["x"],
-    slope_decade = coef(m)["x"] * 10,
-    n_waves      = nrow(d)
-  )
-}
-
 slopes_kr <- bind_rows(
   calc_slope(wave_means_kr, "sat_mean")    |> mutate(cluster = "Satisfaction"),
   calc_slope(wave_means_kr, "qual_mean")   |> mutate(cluster = "Democratic quality"),

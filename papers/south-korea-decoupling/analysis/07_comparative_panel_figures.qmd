@@ -42,29 +42,7 @@ fig_dir      <- file.path(analysis_dir, "figures")
 
 dat <- readRDS(file.path(results_dir, "analysis_data.rds"))
 
-# Publication theme
-theme_pub <- theme_minimal(base_size = 11) +
-  theme(
-    plot.title         = element_text(size = 11, face = "bold", margin = margin(b = 6)),
-    plot.subtitle      = element_text(size = 9, color = "grey30", margin = margin(b = 10)),
-    plot.caption       = element_text(size = 7.5, color = "grey50", hjust = 0,
-                                      margin = margin(t = 8)),
-    legend.position    = "bottom",
-    legend.text        = element_text(size = 9),
-    legend.title       = element_blank(),
-    panel.grid.minor   = element_blank(),
-    panel.grid.major.x = element_blank(),
-    strip.text         = element_text(face = "bold", size = 10),
-    axis.title         = element_text(size = 9),
-    axis.text          = element_text(size = 8.5)
-  )
-
-pal2 <- c("Satisfaction" = "#2166AC", "Democratic quality" = "#B2182B")
-pal3 <- c("Satisfaction" = "#2166AC", "Democratic quality" = "#B2182B",
-           "Economic evaluations" = "#4DAF4A")
-
-survey_years_kr <- c(2003, 2006, 2011, 2015, 2019, 2022)
-survey_years_tw <- c(2001, 2006, 2010, 2014, 2019, 2022)
+source(file.path(paper_dir, "R", "helpers.R"))
 ```
 
 ## Compute wave means for both countries
@@ -260,18 +238,6 @@ cat("✓ Figure 2 (panel) saved\n")
 ## Taiwan trend slopes (for inline reporting) {#sec-tw-slopes}
 
 ```{r taiwan-slopes}
-calc_slope <- function(wm, var) {
-  d <- wm[!is.na(wm[[var]]) & !is.na(wm$year), ]
-  if (nrow(d) < 3) {
-    return(tibble(term = "year", estimate = NA_real_, std.error = NA_real_,
-                  p.value = NA_real_, per_decade = NA_real_))
-  }
-  m <- lm(as.formula(paste(var, "~ year")), data = d)
-  tidy(m) |>
-    filter(term == "year") |>
-    mutate(per_decade = estimate * 10)
-}
-
 slopes_tw <- bind_rows(
   calc_slope(wm_tw, "sat_mean")  |> mutate(cluster = "Satisfaction"),
   calc_slope(wm_tw, "qual_mean") |> mutate(cluster = "Democratic quality"),

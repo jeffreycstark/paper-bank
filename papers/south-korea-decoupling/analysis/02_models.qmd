@@ -42,22 +42,7 @@ fig_dir      <- file.path(analysis_dir, "figures")
 
 dat <- readRDS(file.path(results_dir, "analysis_data.rds"))
 
-# Normalize helper (mirrors 00_data_preparation.qmd)
-normalize_01 <- function(x) {
-  rng <- range(x, na.rm = TRUE)
-  if (rng[2] == rng[1]) return(rep(0, length(x)))
-  (x - rng[1]) / (rng[2] - rng[1])
-}
-
-# Helper: extract econ_index coefficient
-extract_econ_coef <- function(model) {
-  tidy(model, conf.int = TRUE) |>
-    filter(term == "econ_index") |>
-    dplyr::select(estimate, std.error, statistic, p.value, conf.low, conf.high)
-}
-
-# Control formula (RHS, excluding econ_index)
-controls <- "age_n + gender + edu_n + urban_rural + polint_n"
+source(file.path(paper_dir, "R", "helpers.R"))
 ```
 
 ## Wave-by-wave OLS — Econ → Satisfaction vs. Quality {#sec-wave-ols}
@@ -319,15 +304,8 @@ subgroup_df |>
 ### Figure 3: Wave-by-wave coefficient plot (Korea vs Taiwan)
 
 ```{r figure3}
-survey_years_both <- tibble(
-  wave = rep(1:6, 2),
-  country = rep(c("Korea", "Taiwan"), each = 6),
-  year = c(2003, 2006, 2011, 2015, 2019, 2022,
-           2001, 2006, 2010, 2014, 2019, 2022)
-)
-
 fig03_data <- wave_df |>
-  left_join(survey_years_both, by = c("country", "wave"))
+  left_join(survey_years_lookup, by = c("country", "wave"))
 
 fig03 <- fig03_data |>
   ggplot(aes(x = year, y = estimate, color = country, shape = country)) +
