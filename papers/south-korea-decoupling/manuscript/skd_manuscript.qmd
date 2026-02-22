@@ -425,6 +425,8 @@ where $\beta_3$ captures the differential effect of economic evaluations in Kore
 
 *Step 6: Robustness and sensitivity.* The core finding is tested against: (a) summary indices, (b) institutional trust as an additional control, (c) individual economic indicators, (d) subgroup analyses by age, education, and political interest (H5), (e) ordered logit models on original ordinal scales, (f) within-wave standardized outcomes, and (g) a winner/loser analysis testing whether Korean decoupling reflects electoral position rather than a structural property. An appendix documents item wording and response scales.
 
+*AI assistance disclosure.* The author used Claude (Anthropic, version 3.5 Sonnet) to assist with R programming and debugging of analysis scripts. All analytical decisions, code logic, and interpretation of results are the author's own.
+
 
 # Results {#sec-results}
 
