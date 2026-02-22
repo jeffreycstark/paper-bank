@@ -40,15 +40,7 @@ out_figures  <- file.path(paper_dir, "outputs", "figures")
 dir.create(out_tables,  recursive = TRUE, showWarnings = FALSE)
 dir.create(out_figures, recursive = TRUE, showWarnings = FALSE)
 
-# Colour palette — consistent with existing analysis
-col_pre      <- "#2166AC"
-col_post     <- "#D6604D"
-col_exec     <- "#4393C3"
-col_intermed <- "#D73027"
-col_rising   <- "#D73027"
-col_stable   <- "#878787"
-
-wave_years <- c("1"=2003,"2"=2006,"3"=2011,"4"=2015,"5"=2019,"6"=2022)
+source(file.path(paper_dir, "R", "helpers.R"))
 
 # ─── 0. Load data ──────────────────────────────────────────────────────────────
 cat("Loading data...\n")

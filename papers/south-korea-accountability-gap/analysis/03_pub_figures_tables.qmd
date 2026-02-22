@@ -58,10 +58,7 @@ fig_dir      <- file.path(analysis_dir, "figures")
 table_dir    <- file.path(analysis_dir, "tables")
 results_dir  <- file.path(analysis_dir, "results")
 
-# ── Wave year lookup ───────────────────────────────────────────────────────────
-# W1/W2: int_year not recorded in harmonized data; approximate fieldwork midpoints
-wave_years <- c("1" = 2003, "2" = 2006, "3" = 2011,
-                "4" = 2015, "5" = 2019, "6" = 2022)
+source(file.path(paper_dir, "R", "helpers.R"))
 
 # ── Political event reference lines ───────────────────────────────────────────
 ref_kyr  <- 2016 + 8/12   # Kim Young-ran Act: September 2016
