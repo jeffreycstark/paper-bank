@@ -87,7 +87,6 @@ extract_econ_coef <- function(model) {
 @tbl-instruments lists all variables drawn from the Asian Barometer Survey (ABS) used in the analysis, including item wording, scale coding, and wave availability.
 
 ```{r tbl-instruments}
-#| label: tbl-instruments
 #| tbl-cap: "ABS survey items used in the analysis"
 
 instruments <- tribble(
@@ -175,7 +174,6 @@ The main text reports results using the primary conceptual distinction between s
 Items in this cluster capture evaluations of how well the current democratic system is performing. Both items are available across all six waves.
 
 ```{r tbl-b1}
-#| label: tbl-b1
 #| tbl-cap: "Wave-by-wave OLS: economic evaluations predicting individual satisfaction items (Korea and Taiwan)"
 
 sat_items <- c("sat_democracy_n" = "Sat. with democracy",
@@ -221,7 +219,6 @@ Government satisfaction consistently shows larger economic coefficients than sat
 Items in this cluster capture principled commitment to democracy as a form of government. Both items are available across all six waves.
 
 ```{r tbl-b2}
-#| label: tbl-b2
 #| tbl-cap: "Wave-by-wave OLS: economic evaluations predicting normative preference items (Korea and Taiwan)"
 
 norm_items <- c("qual_pref_dem_n" = "Dem. always preferable",
@@ -267,7 +264,6 @@ The theoretically decisive contrast is between these two items: "democracy alway
 Items in this cluster capture diffuse affect toward the existing system of government---pride, preference, confidence in its problem-solving capacity, and belief that it deserves support. All items are available Waves 3–6 only.
 
 ```{r tbl-b3}
-#| label: tbl-b3
 #| tbl-cap: "Wave-by-wave OLS: economic evaluations predicting system legitimacy items (Waves 3–6)"
 
 sys_items <- c(
@@ -320,7 +316,6 @@ System legitimacy items show mixed patterns. Some items (system capable, system 
 The core dependent variable items use consistent wording across all six ABS waves in both Korea and Taiwan. @tbl-c1 documents availability and any notable variation.
 
 ```{r tbl-c1}
-#| label: tbl-c1
 #| tbl-cap: "Item wording stability and availability across ABS waves"
 
 wording_stability <- tribble(
@@ -353,7 +348,6 @@ No wording changes were detected across waves for the core satisfaction, normati
 To address the possibility that 0–1 normalization obscures distribution shifts across waves, the core models are re-estimated using within-wave z-scored outcomes. Within each country-wave cell, dependent variables are standardized to mean = 0 and SD = 1, so that coefficients represent within-wave standard deviation units.
 
 ```{r tbl-c2}
-#| label: tbl-c2
 #| tbl-cap: "Core models re-estimated with within-wave z-scored outcomes (pooled waves 1–6 with wave FE)"
 
 zscore_results <- list()
@@ -395,7 +389,6 @@ Within-wave standardization produces substantively identical results: economic e
 Because the original ABS items use ordinal response scales, the OLS specification treats ordinal data as continuous. Ordered logit models on the original scales confirm that the linear approximation is adequate.
 
 ```{r tbl-c3}
-#| label: tbl-c3
 #| tbl-cap: "Ordered logit models on original ordinal response scales (pooled waves with wave FE)"
 
 ologit_results <- list()
@@ -447,7 +440,6 @@ Ordered logit results confirm the OLS findings. The Korea–Taiwan contrast on "
 The main analysis follows the convention in the ABS comparative literature of presenting unweighted estimates. This appendix confirms that the core findings are not sensitive to the weighting decision.
 
 ```{r tbl-d}
-#| label: tbl-d
 #| tbl-cap: "Core models re-estimated with ABS survey weights (pooled waves with wave FE)"
 
 weighted_results <- list()
@@ -492,7 +484,6 @@ Weighted and unweighted estimates are substantively identical across all depende
 Adding an institutional trust index (mean of normalized trust in national government, parliament, courts, and political parties) tests whether the economic channel operates through or independently of institutional trust.
 
 ```{r tbl-e1}
-#| label: tbl-e1
 #| tbl-cap: "Core models with institutional trust index as additional control (pooled waves with wave FE)"
 
 trust_results <- list()
@@ -541,7 +532,6 @@ Adding institutional trust attenuates the economic–satisfaction coefficient mo
 The composite economic evaluation index aggregates six items. This appendix tests whether the core pattern holds for each component indicator entered individually.
 
 ```{r tbl-e2}
-#| label: tbl-e2
 #| tbl-cap: "Individual economic indicators predicting satisfaction and democratic preference (Korea, pooled waves)"
 
 econ_vars <- c(
@@ -591,7 +581,6 @@ All six economic evaluation components significantly predict satisfaction in Kor
 The baseline models control for age, gender, education, urban–rural residence, and political interest. This appendix tests robustness to the inclusion of household income.
 
 ```{r tbl-e3}
-#| label: tbl-e3
 #| tbl-cap: "Core models with household income control (Korea)"
 
 extra_ctrl <- list()
@@ -635,7 +624,6 @@ Adding income quintile controls does not alter the core pattern: economic evalua
 If economic evaluations operate through a diffuse halo effect rather than through the specific performance–satisfaction channel, they should predict a range of political and social attitudes indiscriminately. This appendix tests two theoretically unrelated outcomes to establish discriminant validity.
 
 ```{r tbl-e4}
-#| label: tbl-e4
 #| tbl-cap: "Placebo tests: economic evaluations predicting theoretically unrelated outcomes (Korea, pooled waves)"
 
 placebo_dvs <- c(
@@ -685,7 +673,6 @@ Economic evaluations do not significantly predict generalized trust or national 
 The theoretical framework attributes Taiwan's critical citizens pattern to the fusion of democratic and national identity. If this mechanism operates at the individual level, the negative econ → democratic preference relationship should be amplified among Taiwanese citizens with strong national pride. The same amplification should not appear in Korea, where national pride is tied to economic achievement rather than democratic governance.
 
 ```{r tbl-f1}
-#| label: tbl-f1
 #| tbl-cap: "National pride moderation of the econ → democratic preference relationship (Waves 2–6)"
 
 pride_results <- list()
@@ -733,7 +720,6 @@ National pride does not significantly moderate the economic–preference relatio
 National pride may be too diffuse a proxy for democratic-national identity fusion. The system legitimacy items---"I am proud of our system of government," "I would rather live under our system"---are more targeted indicators of attachment to the specific democratic political system. In Taiwan, where "our system" constitutes national distinctiveness from China, high system identification should amplify critical citizenship. In Korea, system attachment is expected to reflect performance satisfaction rather than identity-fused democratic commitment.
 
 ```{r tbl-f1b}
-#| label: tbl-f1b
 #| tbl-cap: "System legitimacy moderation of the econ → democratic preference relationship (Waves 3–6)"
 
 dat_sys <- dat |> filter(wave >= 3)
@@ -782,7 +768,6 @@ bind_rows(syslegit_results) |>
 ```
 
 ```{r tbl-f1b-items}
-#| label: tbl-f1b-items
 #| tbl-cap: "Individual system legitimacy items as moderators of econ → democratic preference (Waves 3–6)"
 
 sys_items_mod <- c(
@@ -824,7 +809,6 @@ bind_rows(item_int_results) |>
 If the identity-fusion mechanism is driven by cross-strait threat activating the link between Taiwanese national identity and democratic commitment, the critical citizens pattern should be stronger among Taiwanese citizens who perceive China as threatening. China threat perception is available Waves 3–6 for Taiwan.
 
 ```{r tbl-f2}
-#| label: tbl-f2
 #| tbl-cap: "China threat moderation of the econ → democratic preference relationship (Taiwan, Waves 3–6)"
 
 tw_china <- dat |> filter(country_label == "Taiwan", !is.na(china_threat))
@@ -869,7 +853,6 @@ bind_rows(china_results) |>
 The Korean counterpart to @tbl-f1 tests whether national pride moderates the economic–preference relationship in Korea. The theoretical framework predicts no moderation in Korea, because Korean national pride is tied to economic achievement and cultural prestige rather than to democratic governance per se.
 
 ```{r tbl-f3}
-#| label: tbl-f3
 #| tbl-cap: "National pride moderation in Korea vs. Taiwan: subgroup and interaction results (Waves 2–6)"
 
 kr_tw_pride <- list()
@@ -918,7 +901,6 @@ The main text reports the politically interested subgroup finding. This appendix
 ## G.1–G.3 Age, education, and political interest {#sec-app-g}
 
 ```{r tbl-g}
-#| label: tbl-g
 #| tbl-cap: "Subgroup heterogeneity: economic evaluations predicting satisfaction and democratic preference (pooled waves with wave FE)"
 
 subgroup_full <- list()
@@ -971,3 +953,4 @@ The decoupling pattern in Korea holds across all demographic subgroups: economic
 
 ::: {#refs}
 :::
+

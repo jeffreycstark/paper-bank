@@ -241,6 +241,18 @@ sp_n_kr <- sp$interaction |> filter(country == "Korea",  dv == "Democracy always
   .p_str(p)
 }
 
+# Authoritarian nostalgia mechanism probe results
+auth_nos <- readRDS(file.path(results_dir, "auth_nostalgia_results.rds"))
+
+.auth_comp_b <- function(country, moderator, d = 3) {
+  row <- auth_nos$triple_comp |> filter(country == !!country, moderator == !!moderator)
+  round(row$estimate, d)
+}
+.auth_comp_p <- function(country, moderator) {
+  p <- auth_nos$triple_comp |> filter(country == !!country, moderator == !!moderator) |> pull(p.value)
+  .p_str(p)
+}
+
 # Alternative normative DV results (Appendix H)
 alt_norm <- readRDS(file.path(results_dir, "alt_normative_dvs.rds"))
 
@@ -518,7 +530,7 @@ The median-split results reinforce this finding. Among high-system-pride Taiwane
 
 In Korea, the system pride interaction is nonsignificant for democratic preference ($\beta$ near zero, *p* > 0.80), and the decoupling holds across pride levels. Korean citizens who express pride in their system of government are no more likely to convert economic comfort into normative democratic commitment than those who do not. This asymmetry---significant moderation in Taiwan, null in Korea---is consistent with the argument that system pride carries different content in the two countries: in Taiwan, it indexes democratic identification; in Korea, it indexes satisfaction with governance performance, which is already captured by the economic evaluation variable.
 
-An alternative moderator---an index of authoritarian nostalgia constructed from endorsement of strongman, military, expert, and single-party rule---shows no significant interaction with economic evaluations in either country. In a direct comparison of all three candidate moderators on the same restricted sample, only system pride produces a significant interaction in Taiwan ($\beta$ = `r .sp_comp_b("Taiwan", "System pride")`, *p* `r .sp_comp_p("Taiwan", "System pride")`); authoritarian nostalgia ($\beta$ = --0.086, ns) and generic national pride ($\beta$ = `r .sp_comp_b("Taiwan", "National pride")`, ns) do not. The identity-fusion mechanism, as captured by system pride, is the only individual-level moderator that discriminates between the two legitimation pathways.
+An alternative moderator---an index of authoritarian nostalgia constructed from endorsement of strongman, military, expert, and single-party rule---shows no significant interaction with economic evaluations in either country. In a direct comparison of all three candidate moderators on the same restricted sample, only system pride produces a significant interaction in Taiwan ($\beta$ = `r .sp_comp_b("Taiwan", "System pride")`, *p* `r .sp_comp_p("Taiwan", "System pride")`); authoritarian nostalgia ($\beta$ = `r .auth_comp_b("Taiwan", "Auth nostalgia (index)")`, *p* `r .auth_comp_p("Taiwan", "Auth nostalgia (index)")`) and generic national pride ($\beta$ = `r .sp_comp_b("Taiwan", "National pride")`, ns) do not. The identity-fusion mechanism, as captured by system pride, is the only individual-level moderator that discriminates between the two legitimation pathways.
 
 <!-- @tbl-pride-interaction: Insert Table 4 (system pride mechanism probe) -->
 
