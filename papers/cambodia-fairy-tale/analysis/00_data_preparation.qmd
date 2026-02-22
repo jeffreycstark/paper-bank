@@ -1,0 +1,112 @@
+---
+title: "00 — Data Preparation: Cambodia Fairy Tale"
+subtitle: "ABS Cambodia (country == 12), Waves 2, 3, 4, 6 (2008–2022)"
+format:
+  html:
+    toc: true
+    toc-depth: 3
+    number-sections: true
+    theme: cosmo
+    code-fold: true
+    self-contained: true
+execute:
+  echo: true
+  warning: false
+  message: false
+  cache: true
+---
+
+**Purpose**: Load harmonized ABS data for Cambodia, construct analysis
+variables, and save analysis-ready datasets.
+
+- **Input**: `abs_harmonized_path` (via `_data_config.R`)
+- **Output**: `analysis/results/analysis_data.rds`
+
+```{r setup}
+library(tidyverse)
+library(broom)
+
+project_root <- "/Users/jeffreystark/Development/Research/paper-bank"
+source(file.path(project_root, "_data_config.R"))
+
+paper_dir    <- file.path(project_root, "papers/cambodia-fairy-tale")
+analysis_dir <- file.path(paper_dir, "analysis")
+results_dir  <- file.path(analysis_dir, "results")
+fig_dir      <- file.path(analysis_dir, "figures")
+tbl_dir      <- file.path(analysis_dir, "tables")
+
+dir.create(results_dir, showWarnings = FALSE, recursive = TRUE)
+dir.create(fig_dir, showWarnings = FALSE, recursive = TRUE)
+dir.create(tbl_dir, showWarnings = FALSE, recursive = TRUE)
+
+source(file.path(paper_dir, "R", "helpers.R"))
+```
+
+## Load ABS harmonized data
+
+```{r load-data}
+abs_all <- readRDS(abs_harmonized_path)
+cat("ABS harmonized:", nrow(abs_all), "obs,",
+    n_distinct(abs_all$country), "countries\n")
+
+# Subset to Cambodia (country == 12), available waves: 2, 3, 4, 6
+dat <- abs_all |>
+  filter(country == 12, wave %in% c(2, 3, 4, 6)) |>
+  mutate(
+    country_label = "Cambodia",
+    year = case_when(
+      wave == 2 ~ 2008,
+      wave == 3 ~ 2012,
+      wave == 4 ~ 2015,
+      wave == 6 ~ 2022
+    )
+  )
+
+cat("Cambodia subset: n =", nrow(dat), "\n")
+cat("Waves:", sort(unique(dat$wave)), "\n")
+cat("Years:", sort(unique(dat$year)), "\n")
+```
+
+## Construct analysis variables
+
+```{r construct-vars}
+# TODO: Define key DVs and IVs specific to this paper's argument.
+# Template below — replace with actual variable names from the harmonized data.
+
+dat <- dat |>
+  mutate(
+    # Normalize continuous predictors to [0, 1]
+    age_n    = normalize_01(age),
+    edu_n    = normalize_01(edu),
+    polint_n = normalize_01(polint),
+
+    # Outcome variables (adjust names to match harmonized codebook)
+    # dem_support_n   = normalize_01(dem_support),
+    # regime_pref_n   = normalize_01(regime_pref),
+    # econ_eval_n     = normalize_01(econ_eval),
+  )
+```
+
+## Variable coverage by wave
+
+```{r coverage}
+# Quick coverage check for key variables
+key_vars <- c("wave", "year", "age_n", "edu_n", "polint_n")
+
+dat |>
+  group_by(wave, year) |>
+  summarise(
+    n = n(),
+    across(all_of(key_vars[3:length(key_vars)]),
+           ~ mean(!is.na(.x)), .names = "pct_{.col}"),
+    .groups = "drop"
+  ) |>
+  knitr::kable(digits = 2, caption = "Coverage by wave")
+```
+
+## Save analysis data
+
+```{r save}
+saveRDS(dat, file.path(results_dir, "analysis_data.rds"))
+cat("Saved analysis_data.rds:", nrow(dat), "rows\n")
+```

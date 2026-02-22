@@ -1,0 +1,82 @@
+---
+title: "02 — Models: Cambodia Fairy Tale"
+subtitle: "Wave-by-wave OLS, pooled interactions, robustness checks"
+format:
+  html:
+    toc: true
+    toc-depth: 3
+    number-sections: true
+    theme: cosmo
+    code-fold: true
+    self-contained: true
+execute:
+  echo: true
+  warning: false
+  message: false
+  cache: true
+---
+
+**Purpose**: Estimate primary regression models for the paper's hypotheses.
+
+- **Input**: `analysis/results/analysis_data.rds`
+- **Output**: model objects → `analysis/results/`, tables → `analysis/tables/`
+
+```{r setup}
+library(tidyverse)
+library(broom)
+library(estimatr)   # lm_robust for clustered SEs
+
+project_root <- "/Users/jeffreystark/Development/Research/paper-bank"
+paper_dir    <- file.path(project_root, "papers/cambodia-fairy-tale")
+analysis_dir <- file.path(paper_dir, "analysis")
+results_dir  <- file.path(analysis_dir, "results")
+fig_dir      <- file.path(analysis_dir, "figures")
+tbl_dir      <- file.path(analysis_dir, "tables")
+
+source(file.path(paper_dir, "R", "helpers.R"))
+
+dat <- readRDS(file.path(results_dir, "analysis_data.rds"))
+```
+
+## Wave-by-wave OLS
+
+```{r wave-ols}
+# TODO: Replace formula with actual DV and IV names.
+# Template — run separate OLS for each wave:
+#
+# waves <- sort(unique(dat$wave))
+#
+# wave_models <- map(waves, function(w) {
+#   d <- filter(dat, wave == w)
+#   lm(as.formula(paste("dem_support_n ~", controls)), data = d)
+# }) |>
+#   set_names(paste0("wave", waves))
+#
+# map_dfr(wave_models, tidy, conf.int = TRUE, .id = "wave") |>
+#   filter(term == "econ_eval_n")
+```
+
+## Pooled model with wave fixed effects
+
+```{r pooled}
+# TODO:
+# m_pooled <- lm(
+#   dem_support_n ~ econ_eval_n + wave_f + age_n + gender + edu_n + urban_rural + polint_n,
+#   data = mutate(dat, wave_f = factor(wave))
+# )
+# tidy(m_pooled, conf.int = TRUE)
+```
+
+## Robustness checks
+
+```{r robustness}
+# TODO: Add robustness specifications (e.g., ordered logit, alternative DVs,
+# subgroup models by urban/rural or education).
+```
+
+## Save results
+
+```{r save-results}
+# TODO: Save model objects and coefficient tables.
+# saveRDS(wave_models, file.path(results_dir, "wave_models.rds"))
+```

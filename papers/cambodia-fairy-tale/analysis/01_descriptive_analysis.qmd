@@ -1,0 +1,92 @@
+---
+title: "01 — Descriptive Analysis: Cambodia Fairy Tale"
+subtitle: "Trends, distributions, and wave-by-wave summaries"
+format:
+  html:
+    toc: true
+    toc-depth: 3
+    number-sections: true
+    theme: cosmo
+    code-fold: true
+    self-contained: true
+execute:
+  echo: true
+  warning: false
+  message: false
+  cache: true
+---
+
+**Purpose**: Descriptive trends across waves — wave means, distributions,
+and publication-ready Figure 1.
+
+- **Input**: `analysis/results/analysis_data.rds`
+- **Output**: figures to `analysis/figures/`
+
+```{r setup}
+library(tidyverse)
+library(broom)
+
+project_root <- "/Users/jeffreystark/Development/Research/paper-bank"
+paper_dir    <- file.path(project_root, "papers/cambodia-fairy-tale")
+analysis_dir <- file.path(paper_dir, "analysis")
+results_dir  <- file.path(analysis_dir, "results")
+fig_dir      <- file.path(analysis_dir, "figures")
+
+source(file.path(paper_dir, "R", "helpers.R"))
+
+dat <- readRDS(file.path(results_dir, "analysis_data.rds"))
+cat("Loaded:", nrow(dat), "obs\n")
+```
+
+## Wave-level means
+
+```{r wave-means}
+# TODO: Replace variable names with actual DVs.
+wave_means <- dat |>
+  group_by(wave, year) |>
+  summarise(
+    n = n(),
+    # mean_dem_support = mean(dem_support_n, na.rm = TRUE),
+    # mean_regime_pref = mean(regime_pref_n, na.rm = TRUE),
+    # mean_econ_eval   = mean(econ_eval_n, na.rm = TRUE),
+    .groups = "drop"
+  )
+
+wave_means
+```
+
+## Figure 1 — Trend over time
+
+```{r fig1-trends}
+# TODO: Build Figure 1 once variables are defined.
+# Template:
+#
+# p <- wave_means |>
+#   pivot_longer(starts_with("mean_"), names_to = "variable", values_to = "mean") |>
+#   mutate(variable = recode(variable,
+#     "mean_dem_support" = "Democratic support",
+#     "mean_regime_pref" = "Regime preference",
+#     "mean_econ_eval"   = "Economic evaluation"
+#   )) |>
+#   ggplot(aes(x = year, y = mean, colour = variable)) +
+#   geom_line(linewidth = 0.8) +
+#   geom_point(size = 2) +
+#   scale_colour_manual(values = pal_main) +
+#   labs(
+#     title = "Figure 1. [Title TBD]",
+#     x = NULL, y = "Mean (0–1 scale)"
+#   ) +
+#   theme_pub
+#
+# ggsave(file.path(fig_dir, "fig1_trends.pdf"), p, width = 7, height = 4)
+# ggsave(file.path(fig_dir, "fig1_trends.png"), p, width = 7, height = 4, dpi = 300)
+# p
+```
+
+## Trend slopes
+
+```{r slopes}
+# TODO: Compute trend slopes for each outcome variable.
+# Example:
+# calc_slope(wave_means, "mean_dem_support", "year")
+```

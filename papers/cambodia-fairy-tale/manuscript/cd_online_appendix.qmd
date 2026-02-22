@@ -1,0 +1,82 @@
+---
+title: "Online Appendix: [TITLE TBD]"
+author:
+  - name: Jeffrey Stark
+date: now
+date-format: "MMMM D, YYYY [at] h:mm A"
+format:
+  pdf:
+    documentclass: article
+    classoption: [12pt, letterpaper]
+    geometry:
+      - margin=1in
+    linestretch: 2
+    number-sections: true
+    colorlinks: true
+    keep-tex: true
+    include-in-header:
+      - text: |
+          \usepackage{setspace}
+          \usepackage{booktabs}
+          \usepackage{caption}
+          \usepackage{longtable}
+          \usepackage{array}
+          \usepackage{multirow}
+          \usepackage{float}
+          \usepackage{graphicx}
+          \usepackage{threeparttable}
+          \usepackage{threeparttablex}
+          \usepackage{colortbl}
+          \usepackage{xcolor}
+          \captionsetup{width=\textwidth}
+          \setlength\LTcapwidth{\textwidth}
+          \floatplacement{figure}{H}
+          \floatplacement{table}{H}
+          \raggedright
+  html:
+    toc: true
+    toc-depth: 3
+    number-sections: true
+    theme: cosmo
+    code-fold: true
+bibliography: references.bib
+csl: apa.csl
+execute:
+  echo: false
+  warning: false
+  message: false
+  cache: true
+---
+
+```{r setup}
+#| include: false
+library(tidyverse)
+library(kableExtra)
+
+project_root <- "/Users/jeffreystark/Development/Research/paper-bank"
+paper_dir    <- file.path(project_root, "papers/cambodia-fairy-tale")
+results_dir  <- file.path(paper_dir, "analysis/results")
+fig_dir      <- file.path(paper_dir, "analysis/figures")
+tbl_dir      <- file.path(paper_dir, "analysis/tables")
+
+source(file.path(paper_dir, "R", "helpers.R"))
+```
+
+# Appendix A — Variable Descriptions and Coding {.unnumbered}
+
+[Variable descriptions TBD]
+
+# Appendix B — Robustness Checks {.unnumbered}
+
+[Robustness checks TBD]
+
+# Appendix C — Full Regression Tables {.unnumbered}
+
+[Full tables TBD]
+
+\newpage
+
+# References {.unnumbered}
+
+::: {#refs}
+:::
