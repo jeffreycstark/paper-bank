@@ -5,6 +5,7 @@
 *.pdf
 *.tex
 *.docx
+!manuscript/reference.docx
 **/*.png
 **/*.pdf
 _output/
