@@ -608,6 +608,10 @@ These findings have implications that extend beyond the two cases examined here.
 For the study of democratic resilience, the Korean case suggests an uncomfortable possibility: that democratic institutions can function effectively for decades, weathering presidential impeachments and even a martial law attempt, without generating the normative commitment that consolidation theory expects mature democracies to produce. Institutional resilience and normative resilience are distinct properties, and the former does not automatically generate the latter. South Korea's democratic institutions held in December 2024. Whether they would hold against a more patient, more competent, or more popular authoritarian challenge---one that could exploit the shallow normative foundations documented here---is a question that the satisfaction paradox makes it necessary to ask.
 
 
+# Competing interests {.unnumbered}
+
+The author has no relevant financial or non-financial competing interests to report.
+
 # References {.unnumbered}
 
 ::: {#refs}
