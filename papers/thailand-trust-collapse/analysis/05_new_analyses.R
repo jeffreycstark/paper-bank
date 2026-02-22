@@ -29,18 +29,7 @@ fig_dir       <- file.path(analysis_dir, "figures")
 d <- readRDS(file.path(analysis_dir, "thailand_panel.rds"))
 cat("Loaded:", nrow(d), "obs\n")
 
-# ── Helper ────────────────────────────────────────────────────────────────────
-tidy_clustered <- function(model, cluster_var) {
-  vcov_cl <- vcovCL(model, cluster = cluster_var)
-  ct <- coeftest(model, vcov. = vcov_cl)
-  tibble(
-    term      = rownames(ct),
-    estimate  = ct[, "Estimate"],
-    std.error = ct[, "Std. Error"],
-    statistic = ct[, "t value"],
-    p.value   = ct[, "Pr(>|t|)"]
-  )
-}
+source(file.path(project_root, "papers/thailand-trust-collapse/R/helpers.R"))
 
 # =============================================================================
 # (1) H3 formal test: Philippines coercive vs. non-coercive trust, Waves 4–6

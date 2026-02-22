@@ -27,18 +27,7 @@ results_dir <- file.path(analysis_dir, "results")
 dir.create(results_dir, showWarnings = FALSE, recursive = TRUE)
 set.seed(2025)
 
-# ── Helper: clustered SEs for stacked models ─────────────────────────────────
-tidy_clustered <- function(model, cluster_var) {
-  vcov_cl <- vcovCL(model, cluster = cluster_var)
-  ct <- coeftest(model, vcov. = vcov_cl)
-  tibble(
-    term = rownames(ct),
-    estimate = ct[, "Estimate"],
-    std.error = ct[, "Std. Error"],
-    statistic = ct[, "t value"],
-    p.value = ct[, "Pr(>|t|)"]
-  )
-}
+source(file.path(project_root, "papers/thailand-trust-collapse/R/helpers.R"))
 
 # Load panel data
 d <- readRDS(file.path(analysis_dir, "thailand_panel.rds"))
@@ -100,8 +89,6 @@ d <- d %>%
     ),
     democratic_commitment = if_else(is.nan(democratic_commitment), NA_real_, democratic_commitment)
   )
-
-controls <- "age_centered + female + education_z + is_urban"
 
 # =============================================================================
 # H4: Democratic Expectation Updating

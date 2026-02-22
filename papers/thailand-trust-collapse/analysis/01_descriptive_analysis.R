@@ -20,11 +20,7 @@ dir.create(results_dir, showWarnings = FALSE, recursive = TRUE)
 set.seed(2025)
 theme_set(theme_minimal(base_size = 12))
 
-country_colors <- c(
-  "Thailand" = "#e67e22",
-  "Philippines" = "#e74c3c",
-  "Taiwan" = "#2ecc71"
-)
+source(file.path(project_root, "papers/thailand-trust-collapse/R/helpers.R"))
 
 d <- readRDS(file.path(analysis_dir, "thailand_panel.rds"))
 cat("Loaded:", nrow(d), "obs\n")

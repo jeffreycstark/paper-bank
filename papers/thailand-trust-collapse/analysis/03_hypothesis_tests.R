@@ -29,22 +29,7 @@ cat("Loaded:", format(nrow(d), big.mark = ","), "obs across",
     length(unique(d$country_name)), "countries,",
     length(unique(d$wave_num)), "waves\n\n")
 
-controls <- "age_centered + female + education_z + is_urban"
-
-# ── Helper: clustered SEs for stacked models ─────────────────────────────────
-# Stacked models have 2 rows per respondent (military + government trust).
-# Use sandwich::vcovCL to cluster SEs by respondent_id.
-tidy_clustered <- function(model, cluster_var) {
-  vcov_cl <- vcovCL(model, cluster = cluster_var)
-  ct <- coeftest(model, vcov. = vcov_cl)
-  tibble(
-    term = rownames(ct),
-    estimate = ct[, "Estimate"],
-    std.error = ct[, "Std. Error"],
-    statistic = ct[, "t value"],
-    p.value = ct[, "Pr(>|t|)"]
-  )
-}
+source(file.path(project_root, "papers/thailand-trust-collapse/R/helpers.R"))
 
 # =============================================================================
 # H1: Thailand Exceptionalism
