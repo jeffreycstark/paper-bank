@@ -4,7 +4,7 @@ library(haven)
 library(tidyverse)
 library(broom)
 
-data_dir <- "/Users/jeffreystark/Development/Research/econdev-authpref/data/processed"
+data_dir <- "/Users/jeffreystark/Development/Research/paper-bank/data/processed"
 
 cat("=============================================================\n")
 cat("WINNER/LOSER × PROCEDURAL ORIENTATION: W3, W4, W6 (2010-2022)\n")
@@ -269,7 +269,7 @@ combined %>%
 # Save
 # ============================================================================
 cat("\n\n--- Saving results ---\n")
-output_dir <- "/Users/jeffreystark/Development/Research/econdev-authpref/papers/meaning-of-democracy/analysis"
+output_dir <- "/Users/jeffreystark/Development/Research/paper-bank/papers/meaning-of-democracy/analysis"
 saveRDS(combined, file.path(output_dir, "winner_loser_3waves.rds"))
 write_csv(by_country_wave, file.path(output_dir, "loser_effect_by_country_wave.csv"))
 write_csv(trajectory, file.path(output_dir, "loser_effect_trajectory.csv"))

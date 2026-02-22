@@ -2,7 +2,7 @@
 library(tidyverse)
 library(haven)
 
-data_dir <- "/Users/jeffreystark/Development/Research/econdev-authpref/data/processed"
+data_dir <- "/Users/jeffreystark/Development/Research/paper-bank/data/processed"
 
 w3 <- readRDS(file.path(data_dir, "w3.rds"))
 w4 <- readRDS(file.path(data_dir, "w4.rds"))

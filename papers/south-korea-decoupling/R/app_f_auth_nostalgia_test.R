@@ -20,7 +20,7 @@ library(tidyverse)
 library(broom)
 
 # --- Setup ---
-project_root <- "/Users/jeffreystark/Development/Research/econdev-authpref"
+project_root <- "/Users/jeffreystark/Development/Research/paper-bank"
 paper_dir    <- file.path(project_root, "papers/south-korea-decoupling")
 results_dir  <- file.path(paper_dir, "analysis/results")
 
@@ -256,8 +256,23 @@ for (cntry in c("Korea", "Taiwan")) {
   }
 }
 
-bind_rows(triple) |>
+triple_df <- bind_rows(triple)
+
+triple_df |>
   mutate(sig = case_when(p.value < 0.001 ~ "***", p.value < 0.01 ~ "**",
                          p.value < 0.05  ~ "*",   TRUE ~ "")) |>
   select(country, moderator, estimate, std.error, p.value, sig, n) |>
   print()
+
+# =============================================================================
+# 5. Save results for manuscript wiring
+# =============================================================================
+auth_results <- list(
+  interaction  = bind_rows(auth_interaction),
+  subgroup     = bind_rows(auth_subgroup),
+  indiv_items  = bind_rows(indiv_auth),
+  triple_comp  = triple_df
+)
+
+saveRDS(auth_results, file.path(results_dir, "auth_nostalgia_results.rds"))
+cat("\n✓ Saved to", file.path(results_dir, "auth_nostalgia_results.rds"), "\n")

@@ -20,7 +20,7 @@ library(arrow)
 
 # ─── 1. Load data ────────────────────────────────────────────────────────────
 
-project_root <- "/Users/jeffreystark/Development/Research/econdev-authpref"
+project_root <- "/Users/jeffreystark/Development/Research/paper-bank"
 source(file.path(project_root, "_data_config.R"))
 
 abs_data <- readRDS(abs_harmonized_path)

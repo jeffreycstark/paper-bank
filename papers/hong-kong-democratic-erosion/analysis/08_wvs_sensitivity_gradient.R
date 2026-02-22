@@ -22,7 +22,7 @@ library(kableExtra)
 
 # ─── 1. Load data ────────────────────────────────────────────────────────────
 
-project_root <- "/Users/jeffreystark/Development/Research/econdev-authpref"
+project_root <- "/Users/jeffreystark/Development/Research/paper-bank"
 source(file.path(project_root, "_data_config.R"))
 wvs_path <- wvs_harmonized_path
 

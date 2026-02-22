@@ -1,7 +1,7 @@
 # Get complete question text from W3 (which has labels)
 library(haven)
 
-w3 <- readRDS("/Users/jeffreystark/Development/Research/econdev-authpref/data/processed/w3.rds")
+w3 <- readRDS("/Users/jeffreystark/Development/Research/paper-bank/data/processed/w3.rds")
 
 cat("=== MEANING OF DEMOCRACY BATTERY ===\n")
 cat("Question: 'Many things may be desirable, but not all of them are essential\n")

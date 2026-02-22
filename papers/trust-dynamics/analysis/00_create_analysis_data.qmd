@@ -34,7 +34,7 @@ This script creates analysis-ready datasets for examining trust dynamics and dem
 library(tidyverse)
 library(gt)
 
-project_root <- "/Users/jeffreystark/Development/Research/econdev-authpref"
+project_root <- "/Users/jeffreystark/Development/Research/paper-bank"
 analysis_dir <- file.path(project_root, "papers/trust-dynamics/analysis")
 set.seed(2025)
 ```

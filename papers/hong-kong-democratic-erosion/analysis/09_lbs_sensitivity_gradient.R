@@ -21,7 +21,7 @@ library(tidyverse)
 
 # ─── 1. Load data ────────────────────────────────────────────────────────────
 
-project_root <- "/Users/jeffreystark/Development/Research/econdev-authpref"
+project_root <- "/Users/jeffreystark/Development/Research/paper-bank"
 source(file.path(project_root, "_data_config.R"))
 lbs_path <- lbs_harmonized_path
 

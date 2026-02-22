@@ -3,7 +3,7 @@ library(lme4)
 library(marginaleffects)
 library(broom.mixed)
 
-project_root <- "/Users/jeffreystark/Development/Research/econdev-authpref"
+project_root <- "/Users/jeffreystark/Development/Research/paper-bank"
 source(file.path(project_root, "_data_config.R"))
 
 paper_dir    <- file.path(project_root, "papers/south-korea-accountability-gap")

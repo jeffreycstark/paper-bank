@@ -2,7 +2,7 @@
 library(haven)
 library(tidyverse)
 
-data_dir <- "/Users/jeffreystark/Development/Research/econdev-authpref/data/processed"
+data_dir <- "/Users/jeffreystark/Development/Research/paper-bank/data/processed"
 
 waves <- c("w1", "w2", "w3", "w4", "w5", "w6")
 

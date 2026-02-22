@@ -13,7 +13,7 @@
 library(tidyverse)
 library(broom)
 
-project_root <- "/Users/jeffreystark/Development/Research/econdev-authpref"
+project_root <- "/Users/jeffreystark/Development/Research/paper-bank"
 paper_dir    <- file.path(project_root, "papers/south-korea-decoupling")
 results_dir  <- file.path(paper_dir, "analysis/results")
 

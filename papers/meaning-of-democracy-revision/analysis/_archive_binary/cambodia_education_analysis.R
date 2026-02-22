@@ -2,7 +2,7 @@ library(tidyverse)
 library(haven)
 
 # Load data
-d <- readRDS("/Users/jeffreystark/Development/Research/econdev-authpref/data/processed/w6_cambodia_only.rds")
+d <- readRDS("/Users/jeffreystark/Development/Research/paper-bank/data/processed/w6_cambodia_only.rds")
 
 # Convert haven_labelled to numeric and recode
 df <- d %>%

@@ -1,7 +1,7 @@
 # Quick debug of W6 country variable
 library(haven)
 
-w6 <- readRDS("/Users/jeffreystark/Development/Research/econdev-authpref/data/processed/w6.rds")
+w6 <- readRDS("/Users/jeffreystark/Development/Research/paper-bank/data/processed/w6.rds")
 
 cat("W6 country variable structure:\n")
 cat("Class:", class(w6$country), "\n")

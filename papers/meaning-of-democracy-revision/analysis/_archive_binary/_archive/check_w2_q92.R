@@ -2,7 +2,7 @@
 library(haven)
 library(tidyverse)
 
-data_dir <- "/Users/jeffreystark/Development/Research/econdev-authpref/data/processed"
+data_dir <- "/Users/jeffreystark/Development/Research/paper-bank/data/processed"
 w2 <- readRDS(file.path(data_dir, "w2.rds"))
 
 cat("=== W2 Q92 CHECK ===\n\n")

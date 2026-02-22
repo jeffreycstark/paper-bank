@@ -5,7 +5,7 @@ library(tidyverse)
 library(haven)
 library(broom)
 
-project_root <- "/Users/jeffreystark/Development/Research/econdev-authpref"
+project_root <- "/Users/jeffreystark/Development/Research/paper-bank"
 data_dir <- file.path(project_root, "data/processed")
 output_dir <- file.path(project_root, "papers/meaning-of-democracy/analysis")
 

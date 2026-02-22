@@ -35,7 +35,7 @@ library(broom.mixed)
 library(gt)
 library(patchwork)
 
-project_root <- "/Users/jeffreystark/Development/Research/econdev-authpref"
+project_root <- "/Users/jeffreystark/Development/Research/paper-bank"
 analysis_dir <- file.path(project_root, "papers/trust-dynamics/analysis")
 figures_dir <- file.path(analysis_dir, "figures")
 

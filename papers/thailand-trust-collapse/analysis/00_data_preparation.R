@@ -11,7 +11,7 @@ library(tidyverse)
 
 # ── Load source data ──────────────────────────────────────────────────────────
 
-project_root <- "/Users/jeffreystark/Development/Research/econdev-authpref"
+project_root <- "/Users/jeffreystark/Development/Research/paper-bank"
 analysis_dir <- file.path(project_root, "papers/thailand-trust-collapse/analysis")
 
 source(file.path(project_root, "_data_config.R"))

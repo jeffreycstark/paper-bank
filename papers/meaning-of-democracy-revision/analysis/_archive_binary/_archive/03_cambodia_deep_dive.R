@@ -4,7 +4,7 @@
 library(tidyverse)
 library(haven)
 
-project_root <- "/Users/jeffreystark/Development/Research/econdev-authpref"
+project_root <- "/Users/jeffreystark/Development/Research/paper-bank"
 data_dir <- file.path(project_root, "data/processed")
 
 # Load all waves

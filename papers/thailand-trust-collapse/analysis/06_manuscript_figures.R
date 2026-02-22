@@ -15,7 +15,7 @@
 library(tidyverse)
 library(patchwork)
 
-project_root <- "/Users/jeffreystark/Development/Research/econdev-authpref"
+project_root <- "/Users/jeffreystark/Development/Research/paper-bank"
 analysis_dir <- file.path(project_root, "papers/thailand-trust-collapse/analysis")
 results_dir  <- file.path(analysis_dir, "results")
 fig_dir      <- file.path(analysis_dir, "figures")
