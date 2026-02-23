@@ -266,7 +266,7 @@ t3 |>
     escape    = FALSE
   ) |>
   kable_styling(
-    latex_options = c("hold_position"),
+    latex_options = c("hold_position", "scale_down"),
     font_size = 10,
     full_width = FALSE
   ) |>
@@ -285,7 +285,7 @@ t3 |>
   )
 ```
 
-```{r figure1, fig.cap="Political Orientations in Cambodia by Domain, 2008--2021. Wave means for selected indicators across five thematic domains. Dashed vertical line marks 2017 CNRP dissolution. Y-axes are free-scaled; each panel uses its own metric range. Source: Asian Barometer Survey, Waves 2, 3, 4, 6.", out.width="100%"}
+```{r figure1, fig.cap="Political Orientations in Cambodia by Domain, 2008--2021. Wave means for selected indicators across five thematic domains. Dashed vertical line marks 2017 CNRP dissolution. Y-axes are free-scaled; each panel uses its own metric range. Source: Asian Barometer Survey, Waves 2, 3, 4, 6.", out.width="100%", fig.pos="!htbp"}
 knitr::include_graphics(file.path(fig_dir, "fig1_trend_panels.pdf"))
 ```
 
