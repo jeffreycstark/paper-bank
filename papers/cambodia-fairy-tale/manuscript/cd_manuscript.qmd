@@ -119,9 +119,37 @@ The CPP's dominance by 2008 rested on institutional foundations that went far be
 
 The opposition landscape was fragmented and demoralized. The Sam Rainsy Party (SRP), the most prominent non-CPP formation, commanded a loyal but limited urban constituency and suffered from periodic leadership crises as Sam Rainsy himself cycled between exile and return. The Human Rights Party, led by Kem Sokha, drew support from a distinct base but lacked the organizational reach to challenge the CPP's rural dominance. Neither party, operating independently, presented a credible threat to CPP hegemony—a structural condition that would change dramatically with their merger four years later.^[@Noren-Nilsson2015-yi provides the most detailed account of the opposition landscape in this period and the narratives that would eventually fuel the CNRP's formation.]
 
-The Wave 2 Asian Barometer data from this period paint a portrait of a population that was neither enthusiastic nor resistant, but simply quiet. Political participation measures hovered at modest levels: contacting elected officials averaged 3.44 on a five-point scale (where 5 represents frequent contact), and contacting civil servants registered at 3.43—neither disengaged nor actively engaged, but somewhere in the unremarkable middle. Community leader contact stood at 1.53, suggesting that local political networks, while present, were not sites of intensive citizen activity.
+The Wave 2 Asian Barometer data from this period paint a portrait of a population that was neither enthusiastic nor resistant, but simply quiet.^[Unless otherwise noted, the following scale conventions apply throughout: political participation items are measured on a 1–5 scale (1 = never, 5 = often); authoritarian governance preferences on a 1–4 scale (1 = very bad, 4 = very good); democratic assessments on a 1–10 scale; corruption perceptions on a 1–4 scale (1 = hardly anyone, 4 = almost everyone); and media and political interest items on a 1–4 scale (1 = none, 4 = a great deal). Internet news frequency is harmonized to a 1–6 scale (1 = never, 6 = daily or more) across waves with differing original response categories; see the dedicated footnote in the Wave 3 discussion for details. Witnessed corruption is reported as a binary proportion. Voter turnout is self-reported and expressed as a percentage.] Political participation measures hovered at modest levels: contacting elected officials averaged 3.44 and contacting civil servants registered at 3.43—neither disengaged nor actively engaged, but somewhere in the unremarkable middle. Community leader contact stood at 1.53, suggesting that local political networks, while present, were not sites of intensive citizen activity.
 
-\[STUB: Table 1 — Wave 2 baseline values across all five thematic domains: participation, authoritarian attitudes, democratic expectations, corruption, media/political interest.\]
+```{r table1}
+t1 <- readRDS(file.path(tbl_dir, "table1_w2_baseline.rds"))
+
+t1 |>
+  dplyr::select(label, w2_mean_fmt, n_fmt) |>
+  kbl(
+    col.names = c("Variable", "Mean", "N"),
+    align     = "lcc",
+    caption   = "Wave 2 (2008) Baseline: Political Orientations in Cambodia",
+    booktabs  = TRUE,
+    linesep   = ""
+  ) |>
+  kable_styling(
+    latex_options = c("hold_position"),
+    font_size = 10,
+    full_width = FALSE
+  ) |>
+  pack_rows("Political Participation (1–5: never to often)", 1, 6) |>
+  pack_rows("Authoritarian Preferences (1–4: very bad to very good)", 7, 10) |>
+  pack_rows("Democratic Expectations (0–10 scale)", 11, 13) |>
+  pack_rows("Corruption", 14, 16) |>
+  pack_rows("Media & Political Interest", 17, 20) |>
+  footnote(
+    general = "N = 1,000. Means shown for items fielded in Wave 2; '—' indicates variable not included in this wave. Corruption witnessed is a binary proportion. National and local government corruption rated 1 (not at all corrupt) to 4 (extremely corrupt).",
+    general_title = "Note:",
+    footnote_as_chunk = TRUE,
+    threeparttable = TRUE
+  )
+```
 
 The authoritarian attitude measures are perhaps the most telling. Single-party rule was rated at 1.79 on a four-point scale (where 4 represents "very good"), strongman rule at 1.60, and military rule at 2.19. These are not the numbers of a population that embraces authoritarianism as an ideal; they are the numbers of a population that has learned to live within it. The slightly elevated tolerance for military rule is consistent with the CPP's own origins in Vietnamese-backed military intervention and the residual security anxieties of a post-genocide society, but even this measure sits below the scale midpoint.
 
@@ -153,7 +181,7 @@ Even the corruption data reflect the mobilization moment. Witnessed corruption s
 
 There are also subtler patterns in the Wave 3 data that resist easy interpretation. Traditional values measures—obedience to parents, deference to teacher authority—also peaked in this wave, an unexpected finding given that the broader mobilization was associated with youth activism and challenges to established authority. One possibility is that the CNRP's own messaging, which blended democratic aspiration with Khmer cultural conservatism and Buddhist moral frameworks, activated traditional values alongside rather than in opposition to democratic ones. Another is that the elevated values reflect a general intensification of political and social engagement in which all expressed attitudes, whether progressive or traditional, registered at higher levels. A third possibility, which cannot be ruled out, is survey context effects: the charged political environment of 2012 may have produced a general social desirability bias toward expressing strong opinions of any kind.
 
-The media and political engagement measures complete the portrait of a mobilized citizenry. Political interest stood at 2.57 on a four-point scale, and following political news registered at 3.07—both the highest values in the Cambodian ABS series. Political discussion, at 1.45, remained modest, suggesting that the activation captured in 2012 was more a matter of individual attention and institutional engagement than of deliberative civic culture. The internet news measure presents a methodological puzzle: at 5.78, it sits far above any subsequent wave (W4 and W6 both register 2.17), a gap too large to reflect real-world change alone. The most likely explanation is a shift in question wording or response scale between Waves 3 and 4, and this variable should be interpreted with caution in cross-wave comparisons.^[The ABS questionnaire underwent revisions between Waves 3 and 4 that affected several media consumption items. The original questionnaires should be consulted to verify whether the internet news variable reflects a genuine scale change. [NOTE: Jeff, you flagged this in the prospecting memo — worth a footnote to the ABS codebook here.]]
+The media and political engagement measures complete the portrait of a mobilized citizenry. Political interest stood at 2.57 on a four-point scale, and following political news registered at 3.07—both the highest values in the Cambodian ABS series. Political discussion, at 1.45, remained modest, suggesting that the activation captured in 2012 was more a matter of individual attention and institutional engagement than of deliberative civic culture. Internet news consumption, harmonized to a common six-point frequency scale across waves, stood at 1.22—in the "never to hardly ever" range, consistent with the still very limited internet penetration of Cambodia in 2012.^[The ABS internet news item underwent substantial changes in response scale across waves (6-point in W2/W3, 8-point in W4, 9-point in W5/W6). The values reported here reflect harmonization to a common 1–6 frequency scale (1 = never, 6 = daily or more). The coarser W2/W3 scale cannot distinguish within-daily usage patterns available in later waves, but the harmonized values are comparable at the level of weekly, monthly, and annual frequency.]
 
 The 2012 data, taken together, present a portrait of a political community at its moment of maximum activation. Every dimension the Asian Barometer measures—participation, aspiration, attention, even the willingness to name corruption—points in the same direction. It is tempting, with the knowledge of what came after, to read this as the high-water mark of Cambodian democracy, the moment before the tide turned. But that reading, while emotionally satisfying, may be too simple. What the Wave 3 data actually capture is something rarer and more theoretically interesting: the exact moment a population collectively updated its beliefs about what was politically possible, right before the regime demonstrated, with devastating effectiveness, that those beliefs were wrong.
 
@@ -165,7 +193,37 @@ The "Culture of Dialogue" that emerged from the July 2014 agreement between Sam 
 
 The Wave 4 data from 2015 capture a population in the midst of this reckoning—no longer at the peak of mobilization but not yet in the trough of withdrawal. The numbers tell a story of selective retreat. Contacting elected officials fell from 4.31 to 3.08. Contacting civil servants dropped from 4.33 to 3.19. Demonstration attendance declined from 4.48 to 3.07, and petition activity from 4.34 to 3.23. Community leader contact, however, held relatively steady at 2.00, suggesting that local-level political networks remained more resilient than national-level civic action.
 
-\[STUB: Table 2 — Wave 3 to Wave 4 comparison across all domains, with change values.\]
+```{r table2}
+t2 <- readRDS(file.path(tbl_dir, "table2_w3w4_comparison.rds"))
+
+t2 |>
+  dplyr::select(label, w3_fmt, w4_fmt, delta_fmt) |>
+  kbl(
+    col.names = c("Variable", "W3 (2012)", "W4 (2015)", "\\Delta (W4\u2212W3)"),
+    align     = "lccc",
+    caption   = "Selective Retreat, 2012--2015: Wave 3 to Wave 4 Comparison",
+    booktabs  = TRUE,
+    linesep   = "",
+    escape    = FALSE
+  ) |>
+  kable_styling(
+    latex_options = c("hold_position"),
+    font_size = 10,
+    full_width = FALSE
+  ) |>
+  pack_rows("Political Participation (1–5)", 1, 6) |>
+  pack_rows("Authoritarian Preferences (1–4)", 7, 10) |>
+  pack_rows("Democratic Expectations (0–10)", 11, 13) |>
+  pack_rows("Corruption", 14, 16) |>
+  pack_rows("Media & Political Interest", 17, 20) |>
+  footnote(
+    general = "N = 1,200 per wave. Cell entries are wave means. $\\\\Delta$ = W4 mean minus W3 mean; negative values indicate decline. '—' indicates variable not fielded. Internet news values reflect harmonization to a common frequency scale; see manuscript footnote for scale details.",
+    general_title = "Note:",
+    footnote_as_chunk = TRUE,
+    threeparttable = TRUE,
+    escape = FALSE
+  )
+```
 
 The retreat from participation was not yet accompanied by a corresponding rise in authoritarian acceptance. Single-party rule actually dipped slightly from 1.97 to 1.78, and military rule fell from 2.19 to 1.98. Expert rule and strongman rule edged up marginally but remained below 2.0. This pattern is analytically important: it suggests that the demobilization observed between 2012 and 2015 was driven more by disillusionment and tactical withdrawal than by a genuine reorientation toward authoritarian preferences. Cambodians were pulling back from political action, but they had not yet accepted the authoritarian order as normatively appropriate.
 
@@ -173,7 +231,7 @@ The democratic expectation measures, however, had already begun their descent. T
 
 The corruption data from Wave 4 introduce a striking counterpoint. Witnessed corruption surged to its highest level in the dataset: 62.8 percent of respondents reported having personally encountered corruption. This was not an artifact of increased willingness to report; the political environment of 2015 was, if anything, less permissive of anti-government speech than 2012. The more likely explanation is that the post-2013 period, with its political bargaining, institutional jockeying, and expanded CNRP presence in parliament, created more visible sites of corruption—more interactions between citizens and competing political actors, more opportunities to observe the transactional nature of Cambodian governance up close.
 
-The informational dimensions of political life registered the earliest signs of the withdrawal that would accelerate dramatically by 2021. Political interest declined from 2.57 to 2.29, and following political news fell from 3.07 to 2.86—modest drops in absolute terms, but significant as the leading edge of a trend that would deepen sharply. Political discussion held essentially flat at 1.47, suggesting that Cambodians were beginning to disengage from formal political information channels while maintaining informal conversational patterns. The internet news measure, as noted, dropped precipitously from 5.78 to 2.17, but the probable methodological discontinuity between waves makes this variable unreliable as an indicator of real-world change in this specific transition.
+The informational dimensions of political life registered the earliest signs of the withdrawal that would accelerate dramatically by 2021. Political interest declined from 2.57 to 2.29, and following political news fell from 3.07 to 2.86—modest drops in absolute terms, but significant as the leading edge of a trend that would deepen sharply. Political discussion held essentially flat at 1.47, suggesting that Cambodians were beginning to disengage from formal political information channels while maintaining informal conversational patterns. Internet news consumption, meanwhile, continued its modest climb from 1.22 to 1.82, reflecting the early stages of broadening internet access even as political engagement with that access was beginning to wane.
 
 The 2015 wave, viewed within the larger narrative, represents the hinge point—the moment when the trajectory could still have gone either way. The CNRP was weakened but present, its leaders alternately accommodated and harassed, its supporters disillusioned but not yet defeated. The data register this ambiguity: down from the peaks of 2012 but not yet at the floor. Participation was retreating but authoritarian acceptance had not yet risen. Democratic hope was falling but had not crashed. Corruption was more visible than ever. It was a moment of unstable equilibrium, poised between the democratic aspiration of 2012 and the authoritarian normalization that was about to descend.
 
@@ -189,7 +247,43 @@ The Wave 6 data from 2021 record the consequences.
 
 The participation collapse is the most dramatic finding. Contacting elected officials fell to 1.74—a drop from 4.31 in 2012 and 3.08 in 2015, representing one of the steepest declines in civic participation recorded in the Asian Barometer dataset. Demonstration attendance crashed to 1.29, barely above the theoretical floor. Petition activity fell to 2.14. Contacting civil servants dropped to 2.47. Even community leader contact, which had been the most resilient participation measure, fell to 1.39. Political discussion, already low, declined to 1.26—a population that had largely stopped talking about politics with one another.
 
-\[STUB: Table 3 — Full four-wave trajectory across all domains. This is the key empirical table of the paper.\]
+```{r table3}
+t3 <- readRDS(file.path(tbl_dir, "table3_four_wave_trajectory.rds"))
+
+t3 |>
+  dplyr::select(label, w2_fmt, w3_fmt, w4_fmt, w6_fmt, delta_fmt) |>
+  kbl(
+    col.names = c("Variable", "W2 (2008)", "W3 (2012)", "W4 (2015)",
+                  "\\textbf{W6 (2021)}", "\\Delta W3{\\textrightarrow}W6"),
+    align     = "lccccc",
+    caption   = "Four-Wave Trajectory of Political Orientations in Cambodia, 2008--2021",
+    booktabs  = TRUE,
+    linesep   = "",
+    escape    = FALSE
+  ) |>
+  kable_styling(
+    latex_options = c("hold_position"),
+    font_size = 10,
+    full_width = FALSE
+  ) |>
+  column_spec(5, bold = TRUE) |>
+  pack_rows("Political Participation (1–5: never to often)", 1, 6) |>
+  pack_rows("Authoritarian Preferences (1–4: very bad to very good)", 7, 10) |>
+  pack_rows("Democratic Expectations (0–10 scale)", 11, 13) |>
+  pack_rows("Corruption", 14, 16) |>
+  pack_rows("Media & Political Interest", 17, 20) |>
+  footnote(
+    general = "N per wave: W2 = 1,000; W3 = 1,200; W4 = 1,200; W6 = 1,242. Cell entries are unweighted wave means. '—' indicates variable not fielded in that wave. $\\\\Delta$ W3$\\\\rightarrow$W6 = W6 mean minus W3 mean (peak-to-trough change). W6 column in bold marks the endpoint of the trajectory. Voted last election is a binary proportion. Corruption witnessed is a binary proportion.",
+    general_title = "Note:",
+    footnote_as_chunk = TRUE,
+    threeparttable = TRUE,
+    escape = FALSE
+  )
+```
+
+```{r figure1, fig.cap="Political Orientations in Cambodia by Domain, 2008--2021. Wave means for selected indicators across five thematic domains. Dashed vertical line marks 2017 CNRP dissolution. Y-axes are free-scaled; each panel uses its own metric range. Source: Asian Barometer Survey, Waves 2, 3, 4, 6.", out.width="100%"}
+knitr::include_graphics(file.path(fig_dir, "fig1_trend_panels.pdf"))
+```
 
 The authoritarian acceptance measures moved in mirror image. All four alternative governance indicators rose to their highest levels: expert rule to 2.11, single-party rule to 2.21, strongman rule to 2.17, and military rule to 2.21. The jump was concentrated entirely in the W4-to-W6 period—the six years that encompassed the CNRP's destruction and the subsequent one-party election. What had been stable or declining through 2015 now surged.
 
@@ -203,13 +297,13 @@ The corruption data offer perhaps the most unsettling evidence of normalization.
 
 The more parsimonious explanation is that the corruption decline reflects the same demobilization process visible in the participation data. When citizens withdraw from political life—when they stop contacting officials, stop attending meetings, stop engaging with governance institutions—they also reduce their exposure to the sites where corruption is experienced and observed. A population that does not petition, does not demonstrate, and does not contact civil servants is also a population that has fewer occasions to witness a bribe demanded or a favor exchanged. Demobilization, in this reading, does not merely reduce political action; it reduces the perceptual evidence that political action might address. The regime becomes less corrupt not because it has reformed but because citizens have stopped looking.
 
-An alternative, and not mutually exclusive, explanation for the corruption decline invokes the survey environment itself. In a political climate where the opposition has been criminalized and independent media shuttered, respondents may reasonably calculate that acknowledging witnessed corruption—even in a nominally confidential survey—carries risks of self-incrimination or unwanted official attention. The social desirability bias literature has long recognized that survey responses on sensitive topics shift in predictable directions under conditions of political constraint, with respondents offering answers that align with perceived official expectations.^[On social desirability bias in authoritarian survey contexts, see Schedler and Sarsfield's work on survey reliability under electoral authoritarianism [@Schedler2007-pv]. [NOTE: Jeff, you might also cite Frye et al. (2017) "Is Putin's Popularity Real?" or similar — check your bib for survey methodology under authoritarianism references.]] The post-2017 Cambodian environment, in which public criticism of the government carried tangible legal consequences, represents precisely the conditions under which such bias would be expected to intensify. The two explanations—reduced exposure through demobilization and increased reticence through social desirability pressure—likely operate in tandem, each reinforcing the other to produce the dramatic decline observed in the data.
+An alternative, and not mutually exclusive, explanation for the corruption decline invokes the survey environment itself. In a political climate where the opposition has been criminalized and independent media shuttered, respondents may reasonably calculate that acknowledging witnessed corruption—even in a nominally confidential survey—carries risks of self-incrimination or unwanted official attention. The social desirability bias literature has long recognized that survey responses on sensitive topics shift in predictable directions under conditions of political constraint, with respondents offering answers that align with perceived official expectations.^[On social desirability bias in authoritarian survey contexts, see Schedler and Sarsfield's work on survey reliability under electoral authoritarianism [@Schedler2007-pv; @Frye2016-zm].] The post-2017 Cambodian environment, in which public criticism of the government carried tangible legal consequences, represents precisely the conditions under which such bias would be expected to intensify. The two explanations—reduced exposure through demobilization and increased reticence through social desirability pressure—likely operate in tandem, each reinforcing the other to produce the dramatic decline observed in the data.
 
 The voter turnout paradox completes the portrait. Despite the collapse of all other forms of political participation, self-reported voting in the last election rose from 78.7 percent in 2012 to 83.2 percent in 2015 to 88.1 percent in 2021. This pattern—rising electoral participation amid collapsing civic participation—is a well-documented feature of hegemonic authoritarian systems, where elections serve not as mechanisms of political choice but as rituals of regime affirmation. Voting in a one-party election is not a political act in the same sense as voting in a competitive one; it is closer to a demonstration of compliance, a public performance of belonging to the political community as the regime defines it. The fact that turnout rises precisely as meaningful participation collapses suggests that Cambodians understand the distinction even as they perform the ritual.
 
-The international orientation data add a final dimension to the normalization portrait. Cambodian assessments of Chinese influence in the region grew more positive between Waves 4 and 6, rising from 2.69 to 2.88 on a four-point scale measuring perceived benefit versus harm. More striking still, expectations of future Asian—implicitly Chinese—regional influence climbed from 2.74 in Wave 4 to 3.30 in Wave 6, a trajectory that places Cambodia among the most China-positive publics in the ABS dataset. This is consistent with Cambodia's deepening alignment with Beijing during this period, visible in Belt and Road infrastructure investment, the Ream Naval Base controversy, and Cambodia's consistent support for Chinese positions within ASEAN. But it also fits the normalization logic: as democratic futures recede and Western-aligned political alternatives are eliminated, alignment with the ascendant authoritarian power in the region becomes the natural orientation of a population adjusting to the available political reality. A paired comparison with Vietnam or the Philippines—where territorial disputes drive China perceptions in sharply negative directions despite similar economic interdependence—would sharpen this point considerably.^[@Strangio2020-gw provides the most comprehensive account of Cambodia's positioning within China's Southeast Asian strategy. On the divergent China perception trajectories across ASEAN, the ABS cross-national data offer direct comparative evidence. [NOTE: Jeff, this could connect to your Vietnam Paradox paper — worth a forward reference if you're comfortable signaling the broader research agenda.]]
+The international orientation data add a final dimension to the normalization portrait. Cambodian assessments of Chinese influence in the region grew more positive between Waves 4 and 6, rising from 2.69 to 2.88 on a four-point scale measuring perceived benefit versus harm. More striking still, expectations of future Asian—implicitly Chinese—regional influence climbed from 2.74 in Wave 4 to 3.30 in Wave 6, a trajectory that places Cambodia among the most China-positive publics in the ABS dataset. This is consistent with Cambodia's deepening alignment with Beijing during this period, visible in Belt and Road infrastructure investment, the Ream Naval Base controversy, and Cambodia's consistent support for Chinese positions within ASEAN. But it also fits the normalization logic: as democratic futures recede and Western-aligned political alternatives are eliminated, alignment with the ascendant authoritarian power in the region becomes the natural orientation of a population adjusting to the available political reality. A paired comparison with Vietnam or the Philippines—where territorial disputes drive China perceptions in sharply negative directions despite similar economic interdependence—would sharpen this point considerably.^[@Strangio2020-gw provides the most comprehensive account of Cambodia's positioning within China's Southeast Asian strategy. On the divergent China perception trajectories across ASEAN, the ABS cross-national data offer direct comparative evidence.
 
-The informational withdrawal that began tentatively in 2015 reached its full expression by 2021. Following political news fell to 2.04, political interest declined to 2.06, and political discussion dropped to 1.26—the lowest values recorded across all four waves. These figures describe a population that has not merely withdrawn from political action but has largely ceased to attend to political information at all. The self-reinforcing logic is straightforward: citizens who do not participate have less reason to follow political developments; citizens who do not follow political developments have less basis on which to participate. Demobilization, once initiated through the removal of the political alternative, generates its own sustaining momentum through this informational feedback loop—a dynamic that suggests the effects of the CNRP's dissolution may prove more durable than the act itself.
+The informational withdrawal that began tentatively in 2015 reached its full expression by 2021. Following political news fell to 2.04, political interest declined to 2.06, and political discussion dropped to 1.26—the lowest values recorded across all four waves. These figures describe a population that has not merely withdrawn from political action but has largely ceased to attend to political information at all. The internet news variable throws this withdrawal into particularly sharp relief: harmonized internet news consumption rose to 4.66 by Wave 6—approaching "at least once a week"—reflecting the rapid expansion of internet infrastructure and smartphone penetration across Cambodia. Cambodians in 2021 had far greater access to online information than at any previous survey wave, yet their political interest, news following, and willingness to discuss politics all fell to historic lows. The infrastructure for engagement had expanded; the will to use it for political purposes had collapsed. The self-reinforcing logic is straightforward: citizens who do not participate have less reason to follow political developments; citizens who do not follow political developments have less basis on which to participate. Demobilization, once initiated through the removal of the political alternative, generates its own sustaining momentum through this informational feedback loop—a dynamic that suggests the effects of the CNRP's dissolution may prove more durable than the act itself.
 
 The Cambodia of 2021 is, in a sense, the inverse of the Cambodia of 2012. Where the earlier moment was characterized by activation across all dimensions—participation, aspiration, attention, even the willingness to name corruption—the later moment is characterized by withdrawal across all the same dimensions. The symmetry is striking and, for the theoretical argument, essential. It suggests that what changed between the two moments was not any single attitude or behavior but the underlying orientation from which attitudes and behaviors derive—what might be called the perceived horizon of political possibility. When that horizon expanded, everything expanded with it. When it contracted, everything contracted.
 
