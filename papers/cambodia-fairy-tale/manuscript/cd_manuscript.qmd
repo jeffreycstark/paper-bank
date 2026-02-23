@@ -169,7 +169,7 @@ t1 |>
   pack_rows("Corruption", 16, 18) |>
   pack_rows("Media & Political Interest", 19, 22) |>
   footnote(
-    general = "Wave 2 N = 1,000. Participation rows 1–6 report the percentage of respondents who ever engaged in each activity (gate question); valid N shown in parentheses. Rows 7–8 report means (community leader contact: 1–5 scale) or proportions (voted). '—' indicates item not fielded in this wave. Authoritarian preferences: 1 = very bad, 4 = very good. Democratic expectations: 0–10. Corruption witnessed: binary proportion. National/local corruption: 1 = not at all, 4 = extremely.",
+    general = "Wave 2 N = 1,000. Participation rows 1–6 report the percentage of respondents who ever engaged in each activity (gate question); 95\\\\% CI (Wilson interval) in parentheses. Rows 7–8 report means (community leader contact: 1–5 scale) or proportions (voted); 95\\\\% CI in parentheses. '—' indicates item not fielded in this wave. Authoritarian preferences: 1 = very bad, 4 = very good. Democratic expectations: 0–10. Corruption witnessed: binary proportion. National/local corruption: 1 = not at all, 4 = extremely.",
     general_title = "Note:",
     footnote_as_chunk = TRUE,
     threeparttable = TRUE
@@ -216,7 +216,7 @@ That demonstration began at the ballot box and ended in the streets.^[Unless oth
 
 The "Culture of Dialogue" that emerged from the July 2014 agreement between Sam Rainsy and Hun Sen was, in retrospect, less a genuine political opening than a controlled decompression. The CNRP entered parliament and gained access to committee chairmanships, lending the arrangement a veneer of power-sharing. But the underlying dynamics had not changed: the CPP retained control of the security forces, the judiciary, and the National Election Committee, while the CNRP's capacity for mass mobilization—its primary source of leverage—was progressively constrained through targeted legal harassment of its leaders and selective restrictions on public assembly.^[@Morgenbesser2017-cu; @Noren-Nilsson2019-ck. On the broader pattern of managed political openings in dominant-party systems, see @Schedler2013-qn.] By 2015, the dialogue had largely stalled, and the political atmosphere had shifted from the hopeful if chaotic energy of 2013 to something more wary and uncertain. It was in this atmosphere that the Wave 4 Asian Barometer survey entered the field.
 
-The Wave 4 data from 2015 capture a population in the midst of this reckoning—no longer at the peak of mobilization but not yet in the trough of withdrawal. The behavioral participation measures tell a more ambiguous story than might be expected. Contact with influential persons held essentially steady at `r round(stats$gate_influential_w4, 1)` percent, and demonstration attendance, petition-signing, and civil servant contact all edged slightly upward from their Wave 3 levels. Community leader contact averaged `r round(stats$community_leader_w4, 2)` on a five-point frequency scale, essentially unchanged from 2012. The "selective retreat" of 2015 is not, in other words, a story written primarily in the behavioral data. It is written instead in the attitudinal record.
+The Wave 4 data from 2015 capture a population in the midst of this reckoning—no longer at the peak of mobilization but not yet in the trough of withdrawal. The behavioral participation measures tell a more ambiguous story than might be expected. Contact with influential persons held essentially steady at `r round(stats$gate_influential_w4, 1)` percent (the 3.3 percentage-point increase from Wave 3 is not statistically significant; *p* = 0.11), and demonstration attendance, petition-signing, and civil servant contact all edged slightly upward from their Wave 3 levels. Community leader contact averaged `r round(stats$community_leader_w4, 2)` on a five-point frequency scale, essentially unchanged from 2012. The "selective retreat" of 2015 is not, in other words, a story written primarily in the behavioral data. It is written instead in the attitudinal record.
 
 ```{r table2}
 t2 <- readRDS(file.path(tbl_dir, "table2_w3w4_comparison.rds"))
@@ -242,7 +242,7 @@ t2 |>
   pack_rows("Corruption", 16, 18) |>
   pack_rows("Media & Political Interest", 19, 22) |>
   footnote(
-    general = "W3 N = 1,200; W4 N = 1,200. Participation rows 1–6 report percentages (gate question); valid N shown in parentheses. $\\\\Delta$ for participation rows is in percentage points (pp); for other rows, in scale units. '—' indicates item not fielded. Internet news harmonized to 1–6 frequency scale (1 = never, 6 = daily or more).",
+    general = "W3 N = 1,200; W4 N = 1,200. Participation rows 1–6 report percentages (gate question); 95\\\\% CI (Wilson interval) in parentheses. All other rows report means or binary proportions with 95\\\\% CI (t-based) in parentheses. $\\\\Delta$ for participation rows is in percentage points (pp); for other rows, in scale units. '—' indicates item not fielded. Internet news harmonized to 1–6 frequency scale (1 = never, 6 = daily or more).",
     general_title = "Note:",
     footnote_as_chunk = TRUE,
     threeparttable = TRUE,
@@ -252,7 +252,7 @@ t2 |>
 
 This attitudinal disengagement was not yet accompanied by a corresponding rise in authoritarian acceptance. Single-party rule actually dipped slightly from `r round(stats$single_party_w3, 2)` to `r round(stats$single_party_w4, 2)`, and military rule fell from `r round(stats$military_w3, 2)` to `r round(stats$military_w4, 2)`. Expert rule and strongman rule edged up marginally but remained below 2.0. This pattern is analytically important: it suggests that the demobilization observed between 2012 and 2015 was driven more by disillusionment and tactical withdrawal than by a genuine reorientation toward authoritarian preferences. Cambodians were pulling back from political action, but they had not yet accepted the authoritarian order as normatively appropriate.
 
-The democratic expectation measures, however, had already begun their descent. The democratic future rating fell from `r round(stats$dem_future_w3, 2)` to `r round(stats$dem_future_w4, 2)`—a drop of nearly two full points on the ten-point scale. The democratic present, as assessed through government performance, declined from `r round(stats$dem_present_w3, 2)` to `r round(stats$dem_present_w4, 2)`. Only the democratic past held relatively steady at `r round(stats$dem_past_w4, 2)`. What this configuration suggests is that the hope that had animated the 2012 moment was already eroding, not because Cambodians had embraced an alternative vision, but because the events of 2013-2014—the election that changed nothing, the protests that were suppressed, the deal that left the CPP in power—had begun to teach a lesson about the limits of popular mobilization within a dominant-party system.
+The democratic expectation measures, however, had already begun their descent. The democratic future rating fell from `r round(stats$dem_future_w3, 2)` to `r round(stats$dem_future_w4, 2)`—a drop of nearly two full points on the ten-point scale (*p* < 0.001). The democratic present, as assessed through government performance, declined from `r round(stats$dem_present_w3, 2)` to `r round(stats$dem_present_w4, 2)`. Only the democratic past held relatively steady at `r round(stats$dem_past_w4, 2)`. What this configuration suggests is that the hope that had animated the 2012 moment was already eroding, not because Cambodians had embraced an alternative vision, but because the events of 2013-2014—the election that changed nothing, the protests that were suppressed, the deal that left the CPP in power—had begun to teach a lesson about the limits of popular mobilization within a dominant-party system.
 
 The corruption data from Wave 4 introduce a striking counterpoint. Witnessed corruption surged to its highest level in the dataset: `r round(stats$corrupt_witnessed_w4, 1)` percent of respondents reported having personally encountered corruption. This is unlikely to reflect merely increased willingness to report; the political environment of 2015 was, if anything, less permissive of anti-government speech than 2012. The more likely explanation is that the post-2013 period, with its political bargaining, institutional jockeying, and expanded CNRP presence in parliament, created more visible sites of corruption—more interactions between citizens and competing political actors, more opportunities to observe the transactional nature of Cambodian governance up close.
 
@@ -270,7 +270,7 @@ The combined effect was the elimination not merely of the political opposition b
 
 The Wave 6 data from 2021 record the consequences.
 
-The participation data from 2021 present a more differentiated picture than a simple collapse narrative would suggest. Contact with influential persons—the item most directly measuring independent civic engagement—fell sharply, from `r round(stats$gate_influential_w4, 1)` percent in 2015 to `r round(stats$gate_influential_w6, 1)` percent, representing the steepest single-item decline in the dataset. Community leader contact fell to a mean of `r round(stats$community_leader_w6, 2)` on the frequency scale, and political discussion dropped to `r round(stats$pol_discuss_w6, 2)` on a four-point scale—a population that had largely stopped talking about politics with one another. Demonstration attendance held near its 2015 level at `r round(stats$gate_demo_w6, 1)` percent.
+The participation data from 2021 present a more differentiated picture than a simple collapse narrative would suggest. Contact with influential persons—the item most directly measuring independent civic engagement—fell sharply, from `r round(stats$gate_influential_w4, 1)` percent in 2015 to `r round(stats$gate_influential_w6, 1)` percent (*p* < 0.001), a 33 percentage-point decline that represents one of the steepest single-item shifts in the dataset. Community leader contact fell to a mean of `r round(stats$community_leader_w6, 2)` on the frequency scale, and political discussion dropped to `r round(stats$pol_discuss_w6, 2)` on a four-point scale—a population that had largely stopped talking about politics with one another. Demonstration attendance held near its 2015 level at `r round(stats$gate_demo_w6, 1)` percent.
 
 What complicates any uniform "participation collapse" characterization is that several formal channel indicators actually rose substantially by 2021: petition-signing reached `r round(stats$gate_petition_w6, 1)` percent, civil servant contact climbed to `r round(stats$gate_civil_w6, 1)` percent, and media contact rose to `r round(stats$gate_media_w6, 1)` percent. These increases likely reflect two overlapping dynamics: the rapid expansion of internet access enabling digital petitions and online contact, and the transformation of formal institutional channels into vehicles for routine patronage interaction under a now-uncontested regime. Participation through officially sanctioned channels rises precisely as independent civic action—contacting influential figures outside the state apparatus, organizing demonstrations, discussing politics—contracts. The divergence between these two trajectories is itself evidence of demobilization by subtraction: what citizens can still do expands; what citizens choose to do in pursuit of genuine political alternatives collapses.
 
@@ -300,7 +300,7 @@ t3 |>
   pack_rows("Corruption", 16, 18) |>
   pack_rows("Media & Political Interest", 19, 22) |>
   footnote(
-    general = "N per wave: W2 = 1,000; W3 = 1,200; W4 = 1,200; W6 = 1,242. Rows 1–6 (Political Participation) report the percentage of respondents who ever engaged in each activity (gate proportion), with per-cell valid N in parentheses; $\\\\Delta$ for these rows is in percentage points. Rows 7–8 and all remaining rows report unweighted wave means with per-cell valid N in parentheses; $\\\\Delta$ is the arithmetic difference. '---' indicates variable not fielded in that wave. $\\\\Delta$ W3$\\\\rightarrow$W6 = W6 value minus W3 value (peak-to-trough change). W6 column in bold marks the endpoint of the trajectory. Voted last election and corruption witnessed are binary proportions.",
+    general = "N per wave: W2 = 1,000; W3 = 1,200; W4 = 1,200; W6 = 1,242. Rows 1–6 (Political Participation) report the percentage of respondents who ever engaged in each activity (gate proportion), with 95\\\\% CI (Wilson interval) in parentheses; $\\\\Delta$ for these rows is in percentage points. Rows 7–8 and all remaining rows report unweighted wave means with 95\\\\% CI (t-based) in parentheses; $\\\\Delta$ is the arithmetic difference. '---' indicates variable not fielded in that wave. $\\\\Delta$ W3$\\\\rightarrow$W6 = W6 value minus W3 value (peak-to-trough change). W6 column in bold marks the endpoint of the trajectory. Voted last election and corruption witnessed are binary proportions.",
     general_title = "Note:",
     footnote_as_chunk = TRUE,
     threeparttable = TRUE,
@@ -338,15 +338,15 @@ The Cambodia of 2021 is, in a sense, the inverse of the Cambodia of 2012. Where 
 
 The preceding narrative has interpreted the synchronized attitudinal and behavioral shifts across ABS waves as evidence of demobilization by subtraction. Before drawing theoretical implications, it is necessary to adjudicate this interpretation against four competing explanations: preference falsification under intensified repression, pandemic-era behavioral disruption, technological channel substitution, and generational replacement. Each generates distinct observable predictions that can be evaluated against the available data.
 
-*Preference falsification.* The most direct challenge to the normalization interpretation holds that the observed shifts do not reflect genuine attitude change but rather increased survey reticence under harsher post-2017 authoritarian conditions. If respondents in 2021 were concealing pro-democratic views and understating civic participation out of fear, the measured declines would overstate actual demobilization. The response-style diagnostics offer partial support for this concern: item nonresponse on democratic expectations items rose substantially between Wave 3 and Wave 6, from 24 percent to 63 percent on the democratic future item, and from 21 to 31 percent on the democratic past item.^[Mean nonresponse across all political items also rose, from approximately 5 percent in Wave 3 to 14 percent in Wave 6. This general pattern is consistent with either increased reluctance to venture political opinions or decreased political engagement reducing the salience of these questions.] This elevated nonresponse is consistent with a political environment in which some respondents feel uncomfortable offering evaluations of their country's democratic trajectory.
+*Preference falsification.* The most direct challenge to the normalization interpretation holds that the observed shifts do not reflect genuine attitude change but rather increased survey reticence under harsher post-2017 authoritarian conditions. If respondents in 2021 were concealing pro-democratic views and understating civic participation out of fear, the measured declines would overstate actual demobilization. The response-style diagnostics offer partial support for this concern: item nonresponse on democratic expectations items rose substantially between Wave 3 and Wave 6, from `r round(stats$na_dem_future_w3, 0)` percent to `r round(stats$na_dem_future_w6, 0)` percent on the democratic future item, and from `r round(stats$na_dem_past_w3, 0)` to `r round(stats$na_dem_past_w6, 0)` percent on the democratic past item.^[Mean nonresponse across all political items also rose, from approximately `r round(stats$mean_na_political_w3, 0)` percent in Wave 3 to `r round(stats$mean_na_political_w6, 0)` percent in Wave 6. This general pattern is consistent with either increased reluctance to venture political opinions or decreased political engagement reducing the salience of these questions.] This elevated nonresponse is consistent with a political environment in which some respondents feel uncomfortable offering evaluations of their country's democratic trajectory.
 
-Three considerations, however, limit the scope of this alternative. First, if survey reticence were the primary driver, one would expect it to manifest broadly—through increased straightlining, elevated "don't know" responses across all political batteries, or systematic acquiescence. The data show a more selective pattern: straightlining rates on the authoritarian preferences battery actually declined from Wave 4 (38 percent) to Wave 6 (35 percent), and acquiescence rates (proportion selecting the most positive response) remained low and stable across waves. Respondents who did answer appear to have engaged substantively with the questions rather than defaulting to safe or formulaic responses. Second, the demobilization pattern began before the most intensive period of political closure: democratic future expectations fell by nearly two points between Wave 3 and Wave 4, and political interest declined between the same waves, well before the CNRP dissolution and its associated repressive apparatus. If fear were the primary mechanism, the timing should concentrate in the post-2017 period rather than emerging incrementally from 2012 onward. Third, the placebo battery provides the strongest evidence of domain specificity. Non-political items that should not be affected by opposition elimination—national pride (3.66 in Wave 3, 3.63 in Wave 4, 3.79 in Wave 6), family economic situation (3.03, 3.05, 2.86), and perceived economic change (3.10, 3.04, 3.27)—show no systematic decline across waves. If generalized survey reticence were suppressing responses, these items would be expected to drift downward as well; they do not.
+Three considerations, however, limit the scope of this alternative. First, if survey reticence were the primary driver, one would expect it to manifest broadly—through increased straightlining, elevated "don't know" responses across all political batteries, or systematic acquiescence. The data show a more selective pattern: straightlining rates on the authoritarian preferences battery actually declined from Wave 4 (`r round(stats$straightline_w4, 0)` percent) to Wave 6 (`r round(stats$straightline_w6, 0)` percent), and acquiescence rates (proportion selecting the most positive response) remained low and stable across waves. Respondents who did answer appear to have engaged substantively with the questions rather than defaulting to safe or formulaic responses. Second, the demobilization pattern began before the most intensive period of political closure: democratic future expectations fell by nearly two points between Wave 3 and Wave 4, and political interest declined between the same waves, well before the CNRP dissolution and its associated repressive apparatus. If fear were the primary mechanism, the timing should concentrate in the post-2017 period rather than emerging incrementally from 2012 onward. Third, the placebo battery provides the strongest evidence of domain specificity. Non-political items that should not be affected by opposition elimination—national pride (`r round(stats$placebo_natpride_w3, 2)` in Wave 3, `r round(stats$placebo_natpride_w4, 2)` in Wave 4, `r round(stats$placebo_natpride_w6, 2)` in Wave 6), family economic situation (`r round(stats$placebo_econFamily_w3, 2)`, `r round(stats$placebo_econFamily_w4, 2)`, `r round(stats$placebo_econFamily_w6, 2)`), and perceived economic change (`r round(stats$placebo_econChange_w3, 2)`, `r round(stats$placebo_econChange_w4, 2)`, `r round(stats$placebo_econChange_w6, 2)`)—show no systematic decline across waves. If generalized survey reticence were suppressing responses, these items would be expected to drift downward as well; they do not.
 
 The most parsimonious reading is that the elevated nonresponse on democratic expectation items reflects a combination of genuine disengagement (respondents who no longer attend to politics and therefore have no opinion to offer) and some degree of reluctance, while the responses that are provided reflect real attitudinal shifts. This interpretation is consistent with Frye et al.'s finding that survey-measured approval in semi-competitive authoritarian contexts can closely track genuine opinion, though the gap between expressed and private attitudes likely widens as political space narrows further.^[@Frye2016-zm.]
 
-*Pandemic-era behavioral disruption.* The Wave 6 data were collected in 2021, during the COVID-19 pandemic. Public health restrictions on gatherings, movement, and face-to-face interaction could independently depress participation measures, particularly those involving physical contact such as community leader visits and demonstration attendance. This concern is legitimate but bounded. The key attitudinal shifts—the decline in democratic future expectations, the rise in authoritarian governance acceptance—are not plausibly explained by pandemic restrictions, which constrain behavior but have no direct mechanism for altering governance preferences. The decline in democratic expectations began in Wave 4 (2015), six years before the pandemic, establishing a trajectory that the 2021 data continue rather than initiate. Moreover, the participation items that most directly involve physical contact do not show the expected pandemic signature: demonstration attendance held essentially constant between Wave 4 and Wave 6 (4.5 to 3.3 percent, a non-significant difference), while the sharpest participation decline occurred in contacting influential persons, an activity that need not involve face-to-face interaction. The pandemic may have amplified certain behavioral measures, but it cannot account for the breadth, direction, or temporal onset of the observed pattern.
+*Pandemic-era behavioral disruption.* The Wave 6 data were collected in 2021, during the COVID-19 pandemic. Public health restrictions on gatherings, movement, and face-to-face interaction could independently depress participation measures, particularly those involving physical contact such as community leader visits and demonstration attendance. This concern is legitimate but bounded. The key attitudinal shifts—the decline in democratic future expectations, the rise in authoritarian governance acceptance—are not plausibly explained by pandemic restrictions, which constrain behavior but have no direct mechanism for altering governance preferences. The decline in democratic expectations began in Wave 4 (2015), six years before the pandemic, establishing a trajectory that the 2021 data continue rather than initiate. Moreover, the participation items that most directly involve physical contact do not show the expected pandemic signature: demonstration attendance held essentially constant between Wave 4 and Wave 6 (`r round(stats$gate_demo_w4, 1)` to `r round(stats$gate_demo_w6, 1)` percent, a non-significant difference), while the sharpest participation decline occurred in contacting influential persons, an activity that need not involve face-to-face interaction. The pandemic may have amplified certain behavioral measures, but it cannot account for the breadth, direction, or temporal onset of the observed pattern.
 
-One placebo item does register a notable decline: interpersonal trust fell from 14 percent (Wave 4) to 5 percent (Wave 6) on the binary "most people can be trusted" item. This drop is consistent with the social atomization documented in pandemic-era survey research across multiple countries and may also reflect broader erosion of social cohesion under intensified authoritarianism.^[On the cross-national effects of COVID-19 on generalized trust, see @Aassve2021-dn.] However, the fact that this is the only non-political item showing a substantial decline—while national pride, family economic assessment, and perceived economic change all remain stable—suggests a localized effect rather than a general contamination of the survey environment.
+One placebo item does register a notable decline: interpersonal trust fell from `r round(stats$placebo_trust_binary_w4, 0)` percent (Wave 4) to `r round(stats$placebo_trust_binary_w6, 0)` percent (Wave 6) on the binary "most people can be trusted" item. This drop is consistent with the social atomization documented in pandemic-era survey research across multiple countries and may also reflect broader erosion of social cohesion under intensified authoritarianism.^[On the cross-national effects of COVID-19 on generalized trust, see @Aassve2021-dn.] However, the fact that this is the only non-political item showing a substantial decline—while national pride, family economic assessment, and perceived economic change all remain stable—suggests a localized effect rather than a general contamination of the survey environment.
 
 *Technological channel substitution.* The finding that participation through formal channels rose between Wave 4 and Wave 6—petition-signing, civil servant contact, and media contact all increased—while contact with influential persons outside the state apparatus declined, could reflect a shift in participation modalities driven by smartphone and internet penetration rather than political demobilization. If citizens simply migrated from informal, face-to-face civic engagement to digitally mediated formal channels, the resulting pattern would resemble demobilization even if total civic engagement were unchanged or increasing.
 
@@ -354,7 +354,7 @@ This interpretation is difficult to sustain for two reasons. First, it cannot ex
 
 *Generational replacement.* Cambodia's young population and rapid demographic change raise the possibility that apparent attitudinal shifts across waves reflect cohort replacement rather than within-individual attitude change: the politically activated youth of 2012 aged into their thirties by 2021, while a new cohort with no memory of the CNRP mobilization entered the survey frame. If the post-2017 shifts are concentrated among younger respondents, compositional change rather than demobilization could be driving the aggregate pattern.
 
-The subgroup decompositions do not support this interpretation. The key shifts between Wave 4 and Wave 6 are broad-based across age groups, education levels, and urban/rural residence. Contact with influential persons declined among under-30s (51.5 to 22.5 percent), 30–49 year-olds (55.8 to 24.8 percent), and over-50s (59.9 to 21.5 percent) alike. Single-party rule acceptance rose across all three age groups. Political interest fell uniformly regardless of age, education, or urbanicity. If generational replacement were the primary mechanism, the shifts should concentrate in the youngest cohort or attenuate among older respondents who experienced the CNRP period directly; instead, the pattern is strikingly uniform. This breadth is consistent with a population-wide reorientation rather than a compositional artifact.
+The subgroup decompositions do not support this interpretation. The key shifts between Wave 4 and Wave 6 are broad-based across age groups, education levels, and urban/rural residence. Contact with influential persons declined among under-30s (`r round(stats$sg_influential_under30_w4, 1)` to `r round(stats$sg_influential_under30_w6, 1)` percent), 30–49 year-olds (`r round(stats$sg_influential_3049_w4, 1)` to `r round(stats$sg_influential_3049_w6, 1)` percent), and over-50s (`r round(stats$sg_influential_50plus_w4, 1)` to `r round(stats$sg_influential_50plus_w6, 1)` percent) alike. Single-party rule acceptance rose across all three age groups. Political interest fell uniformly regardless of age, education, or urbanicity. If generational replacement were the primary mechanism, the shifts should concentrate in the youngest cohort or attenuate among older respondents who experienced the CNRP period directly; instead, the pattern is strikingly uniform. This breadth is consistent with a population-wide reorientation rather than a compositional artifact.
 
 Taken together, the adjudication tests support the demobilization-by-subtraction interpretation while acknowledging that the 2021 data likely reflect some degree of pandemic amplification and elevated survey reticence on the most politically sensitive items. The core finding—synchronized, domain-specific shifts in political orientations that began before the pandemic, cut across all demographic subgroups, and leave non-political attitudes largely untouched—is more consistent with genuine attitudinal adjustment to political closure than with any single alternative mechanism.
 
@@ -366,11 +366,11 @@ The first concerns the mechanism itself. Demobilization by subtraction, as the C
 
 The second implication concerns the relationship between hope and democratic attitudes. The Wave 3 data suggest that democratic support in authoritarian contexts may be driven less by abstract normative commitments than by perceived feasibility. When democracy appeared possible in 2012, every democratic indicator in the ABS surged—not only future expectations but participation, political interest, and even the willingness to name corruption. When democracy appeared impossible by 2021, those same indicators collapsed. This pattern challenges a foundational assumption in the democratic values literature: that survey-measured democratic attitudes reflect stable, deeply held orientations that exist independently of political circumstances.^[The canonical formulation of democratic values as a stable cultural attribute is found in the political culture tradition from @Inglehart1997-gw onward. The Cambodian data suggest a more situationally contingent model, closer to what Bratton and Mattes have termed "demand for democracy" as a function of perceived supply [@Bratton2004-ke; @Mattes2007-ej].] The Cambodian evidence suggests instead that measured democratic attitudes may be substantially a function of perceived democratic possibility—that hope is not merely the emotional accompaniment of democratic aspiration but its primary cognitive driver. If this is correct, cross-national surveys that measure democratic support without accounting for the structure of political alternatives available to respondents may be capturing something quite different from what they intend.
 
-The third implication concerns corruption measurement. The finding that witnessed corruption declined precipitously alongside civic participation suggests a troubling methodological artifact: survey-based corruption indicators may systematically understate corruption in demobilized populations. When citizens withdraw from engagement with state institutions, they also withdraw from the sites where corruption is experienced and observed. A regime that successfully demobilizes its population will, by this logic, appear less corrupt on standard survey measures even if actual corruption is unchanged or increasing. This has practical consequences for the evaluation of anti-corruption campaigns in authoritarian contexts. The CPP’s selective anti-corruption efforts during this period may well have had some genuine effect, but the dramatic scale of the decline—from `r round(stats$corrupt_witnessed_w3, 0)` percent to `r round(stats$corrupt_witnessed_w6, 0)` percent—is far more parsimoniously explained by the withdrawal of citizens from the institutional encounters where corruption becomes visible. Transparency International’s Corruption Perception Index and similar instruments may be particularly vulnerable to this dynamic in consolidating authoritarian regimes.
+The third implication concerns corruption measurement. The finding that witnessed corruption declined precipitously alongside civic participation suggests a troubling methodological artifact: survey-based corruption indicators may systematically understate corruption in demobilized populations. When citizens withdraw from engagement with state institutions, they also withdraw from the sites where corruption is experienced and observed. A regime that successfully demobilizes its population will, by this logic, appear less corrupt on standard survey measures even if actual corruption is unchanged or increasing. This has practical consequences for the evaluation of anti-corruption campaigns in authoritarian contexts. The CPP’s selective anti-corruption efforts during this period may well have had some genuine effect, but the dramatic scale of the decline—from `r round(stats$corrupt_witnessed_w3, 0)` percent to `r round(stats$corrupt_witnessed_w6, 0)` percent (*p* < 0.001)—is far more parsimoniously explained by the withdrawal of citizens from the institutional encounters where corruption becomes visible. Transparency International’s Corruption Perception Index and similar instruments may be particularly vulnerable to this dynamic in consolidating authoritarian regimes.
 
 The fourth implication is diagnostic. The divergence between electoral participation and civic participation—turnout rising to `r round(stats$voted_w6, 0)` percent even as independent civic engagement collapsed—may serve as a generalizable indicator of authoritarian normalization. Where elections are maintained as regime rituals rather than competitive mechanisms, rising turnout signals not democratic health but its opposite: the transformation of voting from an act of political choice into an act of political compliance.^[On the ritual function of elections in hegemonic authoritarian systems, see @Schedler2002-eg; @Magaloni2010-wl.] The Cambodian case suggests that this turnout-participation divergence emerges specifically in the wake of opposition elimination, and that its appearance in other contexts—wherever rising turnout coincides with collapsing civic engagement—should be read as evidence that the electoral arena has been substantively emptied even if it remains formally intact.
 
-These findings carry inherent limitations. Four cross-sectional waves across thirteen years provide suggestive but not definitive evidence; the absence of Waves 1 and 5 from the Cambodian ABS series limits the precision with which structural breaks can be identified, and the six-year gap between Wave 4 (2015) and Wave 6 (2021) means the analysis cannot pinpoint whether the sharpest attitudinal shifts occurred immediately following the CNRP dissolution in 2017 or accumulated gradually. The elevated nonresponse on democratic expectation items in Wave 6—reaching 63 percent on the democratic future measure—means the attitudinal estimates from 2021 are based on the subset of respondents willing to venture an opinion, which may disproportionately exclude those with the strongest pro-democratic views or, alternatively, those least engaged with politics. The preceding section on alternative mechanisms has addressed the pandemic, generational, and preference-falsification concerns in detail; the conclusion here is that these factors may amplify specific estimates but cannot account for the overall pattern. Finally, any single-country study faces the inherent limitation of generalizability: the mechanisms identified here may be specific to Cambodia’s particular configuration of post-conflict politics, dominant-party rule, and opposition dynamics.
+These findings carry inherent limitations. Four cross-sectional waves across thirteen years provide suggestive but not definitive evidence; the absence of Waves 1 and 5 from the Cambodian ABS series limits the precision with which structural breaks can be identified, and the six-year gap between Wave 4 (2015) and Wave 6 (2021) means the analysis cannot pinpoint whether the sharpest attitudinal shifts occurred immediately following the CNRP dissolution in 2017 or accumulated gradually. The elevated nonresponse on democratic expectation items in Wave 6—reaching `r round(stats$na_dem_future_w6, 0)` percent on the democratic future measure—means the attitudinal estimates from 2021 are based on the subset of respondents willing to venture an opinion, which may disproportionately exclude those with the strongest pro-democratic views or, alternatively, those least engaged with politics. The preceding section on alternative mechanisms has addressed the pandemic, generational, and preference-falsification concerns in detail; the conclusion here is that these factors may amplify specific estimates but cannot account for the overall pattern. Finally, any single-country study faces the inherent limitation of generalizability: the mechanisms identified here may be specific to Cambodia’s particular configuration of post-conflict politics, dominant-party rule, and opposition dynamics.
 
 The most productive response to this limitation is comparative extension. The demobilization sequence observed in Cambodia—declining democratic expectations, followed by collapsing independent civic engagement, followed by rising authoritarian acceptance—generates a testable temporal ordering that can be examined in other cases of opposition elimination. Turkey after the suppression of the Peoples’ Democratic Party (HDP), Russia following the dismantling of Navalny’s organizational network, and Thailand in the years following the 2014 coup all represent contexts where credible political alternatives were systematically removed from the political field. The Asian Barometer dataset itself offers the most direct comparative leverage: Thailand’s post-coup trajectory and the Philippines under Duterte provide cases where similar dynamics may be observable using identical survey instruments. The turnout-participation divergence identified here—rising electoral compliance amid collapsing civic engagement—offers a particularly tractable diagnostic, as it requires only two commonly available survey measures and generates a clear empirical prediction. Future research should test whether the Cambodian sequence represents a general pattern of authoritarian normalization or a configuration specific to the conditions of this particular case.
 
@@ -422,6 +422,156 @@ comp |>
   column_spec(6, width = "1.4cm") |>
   footnote(
     general = "Status: Full = identical or functionally equivalent wording across all waves used; Partial = minor wording shift or item not fielded in all waves (cross-wave comparison valid with caveats noted in text). No items are classified as Excluded from all comparisons; wave-pair restrictions are noted in the main text.",
+    general_title = "Note:",
+    footnote_as_chunk = TRUE,
+    escape = FALSE
+  )
+```
+
+\newpage
+
+## Table A2: Subgroup Analysis of Key Variables {.unnumbered}
+
+```{r tableA2}
+#| echo: false
+A2 <- readRDS(file.path(tbl_dir, "tableA2_subgroups.rds"))
+
+# Helper: print one panel as kbl
+print_A2_panel <- function(df, title, footnote_txt) {
+  data_cols <- setdiff(names(df), c("label", "wave_label"))
+  df |>
+    dplyr::select(wave_label, all_of(data_cols)) |>
+    kbl(
+      col.names  = c("Wave", data_cols),
+      caption    = title,
+      booktabs   = TRUE,
+      linesep    = "",
+      escape     = FALSE
+    ) |>
+    kable_styling(
+      latex_options = c("hold_position", "scale_down"),
+      font_size     = 8,
+      full_width    = FALSE
+    ) |>
+    pack_rows("Gate: contacted influential person", 1, 4) |>
+    pack_rows("Democratic future (0-10 mean)", 5, 7) |>
+    pack_rows("Witnessed corruption (\\%)", 8, 11) |>
+    pack_rows("Single-party rule (1-4 mean)", 12, 15) |>
+    pack_rows("Voted in last election (\\%)", 16, 18) |>
+    pack_rows("Political interest (1-4 mean)", 19, 22) |>
+    footnote(
+      general           = footnote_txt,
+      general_title     = "Note:",
+      footnote_as_chunk = TRUE,
+      escape            = FALSE
+    )
+}
+
+ci_note <- "Estimates shown with 95\\\\% CI in parentheses (Wilson interval for proportions; t-based for means). Gate proportions and voted/corruption displayed as percentages. '---' = item not fielded in wave. Wave 2 (2008), Wave 3 (2012), Wave 4 (2015), Wave 6 (2021)."
+
+print_A2_panel(A2$urban_rural, "Subgroup Analysis by Urban/Rural Residence", ci_note)
+```
+
+```{r tableA2b}
+#| echo: false
+A2 <- readRDS(file.path(tbl_dir, "tableA2_subgroups.rds"))
+ci_note <- "Estimates shown with 95\\\\% CI in parentheses (Wilson interval for proportions; t-based for means). Gate proportions and voted/corruption displayed as percentages. '---' = item not fielded in wave."
+
+print_A2_panel <- function(df, title, footnote_txt) {
+  data_cols <- setdiff(names(df), c("label", "wave_label"))
+  df |>
+    dplyr::select(wave_label, all_of(data_cols)) |>
+    kbl(
+      col.names  = c("Wave", data_cols),
+      caption    = title,
+      booktabs   = TRUE,
+      linesep    = "",
+      escape     = FALSE
+    ) |>
+    kable_styling(
+      latex_options = c("hold_position", "scale_down"),
+      font_size     = 8,
+      full_width    = FALSE
+    ) |>
+    pack_rows("Gate: contacted influential person", 1, 4) |>
+    pack_rows("Democratic future (0-10 mean)", 5, 7) |>
+    pack_rows("Witnessed corruption (\\%)", 8, 11) |>
+    pack_rows("Single-party rule (1-4 mean)", 12, 15) |>
+    pack_rows("Voted in last election (\\%)", 16, 18) |>
+    pack_rows("Political interest (1-4 mean)", 19, 22) |>
+    footnote(
+      general           = footnote_txt,
+      general_title     = "Note:",
+      footnote_as_chunk = TRUE,
+      escape            = FALSE
+    )
+}
+
+print_A2_panel(A2$age, "Subgroup Analysis by Age Group", ci_note)
+```
+
+```{r tableA2c}
+#| echo: false
+A2 <- readRDS(file.path(tbl_dir, "tableA2_subgroups.rds"))
+ci_note <- "Estimates shown with 95\\\\% CI in parentheses (Wilson interval for proportions; t-based for means). Gate proportions and voted/corruption displayed as percentages. '---' = item not fielded in wave."
+
+print_A2_panel <- function(df, title, footnote_txt) {
+  data_cols <- setdiff(names(df), c("label", "wave_label"))
+  df |>
+    dplyr::select(wave_label, all_of(data_cols)) |>
+    kbl(
+      col.names  = c("Wave", data_cols),
+      caption    = title,
+      booktabs   = TRUE,
+      linesep    = "",
+      escape     = FALSE
+    ) |>
+    kable_styling(
+      latex_options = c("hold_position", "scale_down"),
+      font_size     = 8,
+      full_width    = FALSE
+    ) |>
+    pack_rows("Gate: contacted influential person", 1, 4) |>
+    pack_rows("Democratic future (0-10 mean)", 5, 7) |>
+    pack_rows("Witnessed corruption (\\%)", 8, 11) |>
+    pack_rows("Single-party rule (1-4 mean)", 12, 15) |>
+    pack_rows("Voted in last election (\\%)", 16, 18) |>
+    pack_rows("Political interest (1-4 mean)", 19, 22) |>
+    footnote(
+      general           = footnote_txt,
+      general_title     = "Note:",
+      footnote_as_chunk = TRUE,
+      escape            = FALSE
+    )
+}
+
+print_A2_panel(A2$education, "Subgroup Analysis by Education Level", ci_note)
+```
+
+\newpage
+
+## Table A3: Placebo Battery — Non-Political Variables {.unnumbered}
+
+```{r tableA3}
+#| echo: false
+A3 <- readRDS(file.path(tbl_dir, "tableA3_placebo.rds"))
+
+A3 |>
+  kbl(
+    col.names = names(A3),
+    caption   = "Placebo Battery: Non-Political Variables by Wave",
+    booktabs  = TRUE,
+    linesep   = "",
+    escape    = FALSE
+  ) |>
+  kable_styling(
+    latex_options = c("hold_position", "scale_down"),
+    font_size     = 9,
+    full_width    = TRUE
+  ) |>
+  column_spec(1, width = "4.5cm") |>
+  footnote(
+    general = "Cell format: estimate (SE). Proportions (interpersonal trust) shown as percentage (SE in percentage points). Means shown as raw scale values (SE). '---' = item not fielded in wave. Items are non-political and should not be affected by opposition elimination; stable values support the domain-specificity of observed political attitude shifts.",
     general_title = "Note:",
     footnote_as_chunk = TRUE,
     escape = FALSE
