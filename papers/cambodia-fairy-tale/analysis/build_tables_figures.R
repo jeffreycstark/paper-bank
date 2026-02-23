@@ -541,6 +541,12 @@ inline_stats <- list(
   pol_discuss_w4       = pull_val(other_summary, 4, "pol_discuss__mean"),
   pol_discuss_w6       = pull_val(other_summary, 6, "pol_discuss__mean"),
 
+  # International orientation — China perceptions (means)
+  china_asia_goodharm_w4    = dat |> filter(wave == 4) |> summarise(m = mean(intl_china_asia_goodharm, na.rm=TRUE)) |> pull(m) |> round(2),
+  china_asia_goodharm_w6    = dat |> filter(wave == 6) |> summarise(m = mean(intl_china_asia_goodharm, na.rm=TRUE)) |> pull(m) |> round(2),
+  future_influence_asia_w4  = dat |> filter(wave == 4) |> summarise(m = mean(intl_future_influence_asia, na.rm=TRUE)) |> pull(m) |> round(2),
+  future_influence_asia_w6  = dat |> filter(wave == 6) |> summarise(m = mean(intl_future_influence_asia, na.rm=TRUE)) |> pull(m) |> round(2),
+
   # N per wave
   n_w2                 = gate_summary |> filter(wave == 2) |> pull(wave_n),
   n_w3                 = gate_summary |> filter(wave == 3) |> pull(wave_n),
