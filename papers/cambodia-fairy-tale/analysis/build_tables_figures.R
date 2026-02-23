@@ -411,4 +411,154 @@ valid_ns |>
   arrange(wave, pct_valid) |>
   print(n = 50)
 
+# ── Inline stats for manuscript ───────────────────────────────────────────────
+cat("\n\n=== Computing inline stats for manuscript ===\n")
+
+pull_val <- function(df, wave_num, col_name) {
+  filtered <- df |> filter(wave == wave_num)
+  if (nrow(filtered) == 0) return(NA_real_)
+  if (!col_name %in% names(filtered)) return(NA_real_)
+  v <- filtered[[col_name]]
+  if (length(v) == 0 || all(is.na(v))) NA_real_ else v[[1]]
+}
+
+inline_stats <- list(
+  # Gate participation proportions (% — already ×100 in gate_summary)
+  gate_elected_w2      = pull_val(gate_summary, 2, "gate_contact_elected__pct"),
+  gate_elected_w3      = pull_val(gate_summary, 3, "gate_contact_elected__pct"),
+  gate_elected_w4      = pull_val(gate_summary, 4, "gate_contact_elected__pct"),
+  gate_elected_w6      = pull_val(gate_summary, 6, "gate_contact_elected__pct"),
+
+  gate_civil_w2        = pull_val(gate_summary, 2, "gate_contact_civil_servant__pct"),
+  gate_civil_w3        = pull_val(gate_summary, 3, "gate_contact_civil_servant__pct"),
+  gate_civil_w4        = pull_val(gate_summary, 4, "gate_contact_civil_servant__pct"),
+  gate_civil_w6        = pull_val(gate_summary, 6, "gate_contact_civil_servant__pct"),
+
+  gate_influential_w2  = pull_val(gate_summary, 2, "gate_contact_influential__pct"),
+  gate_influential_w3  = pull_val(gate_summary, 3, "gate_contact_influential__pct"),
+  gate_influential_w4  = pull_val(gate_summary, 4, "gate_contact_influential__pct"),
+  gate_influential_w6  = pull_val(gate_summary, 6, "gate_contact_influential__pct"),
+
+  gate_petition_w2     = pull_val(gate_summary, 2, "gate_petition__pct"),
+  gate_petition_w3     = pull_val(gate_summary, 3, "gate_petition__pct"),
+  gate_petition_w4     = pull_val(gate_summary, 4, "gate_petition__pct"),
+  gate_petition_w6     = pull_val(gate_summary, 6, "gate_petition__pct"),
+
+  gate_demo_w2         = pull_val(gate_summary, 2, "gate_demonstration__pct"),
+  gate_demo_w3         = pull_val(gate_summary, 3, "gate_demonstration__pct"),
+  gate_demo_w4         = pull_val(gate_summary, 4, "gate_demonstration__pct"),
+  gate_demo_w6         = pull_val(gate_summary, 6, "gate_demonstration__pct"),
+
+  gate_media_w2        = pull_val(gate_summary, 2, "gate_contact_media__pct"),
+  gate_media_w3        = pull_val(gate_summary, 3, "gate_contact_media__pct"),
+  gate_media_w4        = pull_val(gate_summary, 4, "gate_contact_media__pct"),
+  gate_media_w6        = pull_val(gate_summary, 6, "gate_contact_media__pct"),
+
+  # Community leader contact (mean, 1–5)
+  community_leader_w2  = pull_val(other_summary, 2, "community_leader_contact__mean"),
+  community_leader_w3  = pull_val(other_summary, 3, "community_leader_contact__mean"),
+  community_leader_w4  = pull_val(other_summary, 4, "community_leader_contact__mean"),
+  community_leader_w6  = pull_val(other_summary, 6, "community_leader_contact__mean"),
+
+  # Voted last election (binary proportion → %)
+  voted_w2             = pull_val(other_summary, 2, "voted_last_election__mean") * 100,
+  voted_w3             = pull_val(other_summary, 3, "voted_last_election__mean") * 100,
+  voted_w4             = pull_val(other_summary, 4, "voted_last_election__mean") * 100,
+  voted_w6             = pull_val(other_summary, 6, "voted_last_election__mean") * 100,
+
+  # Authoritarian preferences (means, 1–4)
+  expert_rule_w2       = pull_val(other_summary, 2, "expert_rule__mean"),
+  expert_rule_w3       = pull_val(other_summary, 3, "expert_rule__mean"),
+  expert_rule_w4       = pull_val(other_summary, 4, "expert_rule__mean"),
+  expert_rule_w6       = pull_val(other_summary, 6, "expert_rule__mean"),
+
+  single_party_w2      = pull_val(other_summary, 2, "single_party_rule__mean"),
+  single_party_w3      = pull_val(other_summary, 3, "single_party_rule__mean"),
+  single_party_w4      = pull_val(other_summary, 4, "single_party_rule__mean"),
+  single_party_w6      = pull_val(other_summary, 6, "single_party_rule__mean"),
+
+  strongman_w2         = pull_val(other_summary, 2, "strongman_rule__mean"),
+  strongman_w3         = pull_val(other_summary, 3, "strongman_rule__mean"),
+  strongman_w4         = pull_val(other_summary, 4, "strongman_rule__mean"),
+  strongman_w6         = pull_val(other_summary, 6, "strongman_rule__mean"),
+
+  military_w2          = pull_val(other_summary, 2, "military_rule__mean"),
+  military_w3          = pull_val(other_summary, 3, "military_rule__mean"),
+  military_w4          = pull_val(other_summary, 4, "military_rule__mean"),
+  military_w6          = pull_val(other_summary, 6, "military_rule__mean"),
+
+  # Democratic expectations (means, 0–10)
+  dem_future_w2        = pull_val(other_summary, 2, "dem_country_future__mean"),
+  dem_future_w3        = pull_val(other_summary, 3, "dem_country_future__mean"),
+  dem_future_w4        = pull_val(other_summary, 4, "dem_country_future__mean"),
+  dem_future_w6        = pull_val(other_summary, 6, "dem_country_future__mean"),
+
+  dem_past_w2          = pull_val(other_summary, 2, "dem_country_past__mean"),
+  dem_past_w3          = pull_val(other_summary, 3, "dem_country_past__mean"),
+  dem_past_w4          = pull_val(other_summary, 4, "dem_country_past__mean"),
+  dem_past_w6          = pull_val(other_summary, 6, "dem_country_past__mean"),
+
+  dem_present_w2       = pull_val(other_summary, 2, "dem_country_present_govt__mean"),
+  dem_present_w3       = pull_val(other_summary, 3, "dem_country_present_govt__mean"),
+  dem_present_w4       = pull_val(other_summary, 4, "dem_country_present_govt__mean"),
+  dem_present_w6       = pull_val(other_summary, 6, "dem_country_present_govt__mean"),
+
+  # Corruption witnessed (binary → %)
+  corrupt_witnessed_w2 = pull_val(other_summary, 2, "corrupt_witnessed__mean") * 100,
+  corrupt_witnessed_w3 = pull_val(other_summary, 3, "corrupt_witnessed__mean") * 100,
+  corrupt_witnessed_w4 = pull_val(other_summary, 4, "corrupt_witnessed__mean") * 100,
+  corrupt_witnessed_w6 = pull_val(other_summary, 6, "corrupt_witnessed__mean") * 100,
+
+  # Corruption national/local (means, 1–4)
+  corrupt_national_w2  = pull_val(other_summary, 2, "corrupt_national_govt__mean"),
+  corrupt_national_w3  = pull_val(other_summary, 3, "corrupt_national_govt__mean"),
+  corrupt_national_w4  = pull_val(other_summary, 4, "corrupt_national_govt__mean"),
+  corrupt_national_w6  = pull_val(other_summary, 6, "corrupt_national_govt__mean"),
+
+  corrupt_local_w2     = pull_val(other_summary, 2, "corrupt_local_govt__mean"),
+  corrupt_local_w3     = pull_val(other_summary, 3, "corrupt_local_govt__mean"),
+  corrupt_local_w4     = pull_val(other_summary, 4, "corrupt_local_govt__mean"),
+  corrupt_local_w6     = pull_val(other_summary, 6, "corrupt_local_govt__mean"),
+
+  # Media & political interest (means)
+  pol_news_w2          = pull_val(other_summary, 2, "pol_news_follow__mean"),
+  pol_news_w3          = pull_val(other_summary, 3, "pol_news_follow__mean"),
+  pol_news_w4          = pull_val(other_summary, 4, "pol_news_follow__mean"),
+  pol_news_w6          = pull_val(other_summary, 6, "pol_news_follow__mean"),
+
+  news_internet_w2     = pull_val(other_summary, 2, "news_internet__mean"),
+  news_internet_w3     = pull_val(other_summary, 3, "news_internet__mean"),
+  news_internet_w4     = pull_val(other_summary, 4, "news_internet__mean"),
+  news_internet_w6     = pull_val(other_summary, 6, "news_internet__mean"),
+
+  pol_interest_w2      = pull_val(other_summary, 2, "political_interest__mean"),
+  pol_interest_w3      = pull_val(other_summary, 3, "political_interest__mean"),
+  pol_interest_w4      = pull_val(other_summary, 4, "political_interest__mean"),
+  pol_interest_w6      = pull_val(other_summary, 6, "political_interest__mean"),
+
+  pol_discuss_w2       = pull_val(other_summary, 2, "pol_discuss__mean"),
+  pol_discuss_w3       = pull_val(other_summary, 3, "pol_discuss__mean"),
+  pol_discuss_w4       = pull_val(other_summary, 4, "pol_discuss__mean"),
+  pol_discuss_w6       = pull_val(other_summary, 6, "pol_discuss__mean"),
+
+  # N per wave
+  n_w2                 = gate_summary |> filter(wave == 2) |> pull(wave_n),
+  n_w3                 = gate_summary |> filter(wave == 3) |> pull(wave_n),
+  n_w4                 = gate_summary |> filter(wave == 4) |> pull(wave_n),
+  n_w6                 = gate_summary |> filter(wave == 6) |> pull(wave_n)
+)
+
+saveRDS(inline_stats, file.path(results_dir, "inline_stats.rds"))
+cat("Saved inline_stats.rds\n")
+cat(sprintf("  dem_future_w3:         %.2f\n", inline_stats$dem_future_w3))
+cat(sprintf("  dem_future_w6:         %.2f\n", inline_stats$dem_future_w6))
+cat(sprintf("  corrupt_witnessed_w3:  %.1f%%\n", inline_stats$corrupt_witnessed_w3))
+cat(sprintf("  corrupt_witnessed_w4:  %.1f%%\n", inline_stats$corrupt_witnessed_w4))
+cat(sprintf("  corrupt_witnessed_w6:  %.1f%%\n", inline_stats$corrupt_witnessed_w6))
+cat(sprintf("  gate_elected_w2:       %.1f%%\n", inline_stats$gate_elected_w2))
+cat(sprintf("  gate_elected_w3:       %.1f%%\n", inline_stats$gate_elected_w3))
+cat(sprintf("  gate_elected_w6:       %.1f%%\n", inline_stats$gate_elected_w6))
+cat(sprintf("  voted_w3:              %.1f%%\n", inline_stats$voted_w3))
+cat(sprintf("  voted_w6:              %.1f%%\n", inline_stats$voted_w6))
+
 cat("\nDONE.\n")
