@@ -315,8 +315,41 @@ stats$nr_p_speech    <- nr_speech$p.value
 stats$nr_OR_org      <- nr_org$OR
 stats$nr_p_org       <- nr_org$p.value
 
+# Attenuation by DV and wave (specific values for inline text)
+get_att <- function(dv_name, wave_name) {
+  v <- attenuation$attenuation_pct[attenuation$dv == dv_name &
+                                     attenuation$wave == wave_name]
+  if (length(v) == 0) return(NA_real_)
+  v
+}
+stats$attenuation_fut_w4  <- get_att("dem_country_future", "4")
+stats$attenuation_fut_w6  <- get_att("dem_country_future", "6")
+stats$attenuation_sat_w4  <- get_att("democracy_satisfaction", "4")
+stats$attenuation_pref_w4 <- get_att("dem_pref_binary", "4")
+stats$attenuation_pref_w6 <- get_att("dem_pref_binary", "6")
+
 # Model B: max attenuation across DVs
 stats$max_wave_attenuation_pct <- max(abs(attenuation$attenuation_pct), na.rm = TRUE)
+
+# Moderator: wave × free_speech_hi interactions for dem_country_future
+get_int <- function(dv_name, mod_name, wave_name) {
+  v <- mod_coefs$estimate[mod_coefs$dv == dv_name &
+                            mod_coefs$moderator == mod_name &
+                            grepl(paste0("wave_f", wave_name, ":"), mod_coefs$term)]
+  if (length(v) == 0) return(NA_real_)
+  v
+}
+get_int_p <- function(dv_name, mod_name, wave_name) {
+  v <- mod_coefs$p.value[mod_coefs$dv == dv_name &
+                           mod_coefs$moderator == mod_name &
+                           grepl(paste0("wave_f", wave_name, ":"), mod_coefs$term)]
+  if (length(v) == 0) return(NA_real_)
+  v
+}
+stats$interact_speech_fut_w4 <- get_int("dem_country_future", "free_speech_hi", "4")
+stats$interact_speech_fut_w6 <- get_int("dem_country_future", "free_speech_hi", "6")
+stats$interact_speech_fut_w4_p <- get_int_p("dem_country_future", "free_speech_hi", "4")
+stats$interact_speech_fut_w6_p <- get_int_p("dem_country_future", "free_speech_hi", "6")
 
 saveRDS(stats, file.path(res_dir, "inline_stats.rds"))
 cat("\ninline_stats.rds updated. Total keys:", length(stats), "\n")
