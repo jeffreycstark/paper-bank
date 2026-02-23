@@ -145,7 +145,8 @@ The opposition landscape was fragmented and demoralized. The Sam Rainsy Party (S
 
 The Wave 2 Asian Barometer data from this period paint a portrait of a population that was neither enthusiastic nor resistant, but simply quiet.^[Unless otherwise noted, the following scale conventions apply throughout: gate participation items are reported as the percentage of respondents who ever engaged in each activity (binary: ever vs. never); community leader contact is reported as a mean on a 1–5 scale (1 = never, 5 = often); authoritarian governance preferences on a 1–4 scale (1 = very bad, 4 = very good); democratic assessments on a 1–10 scale; corruption perceptions on a 1–4 scale (1 = hardly anyone, 4 = almost everyone); and media and political interest items on a 1–4 scale (1 = none, 4 = a great deal). Internet news frequency is harmonized to a 1–6 scale (1 = never, 6 = daily or more) across waves with differing original response categories; see the dedicated footnote in the Wave 3 discussion for details. Witnessed corruption is reported as a binary proportion. Voter turnout is self-reported and expressed as a percentage.] Political participation was present but low in intensity: `r round(stats$gate_influential_w2, 1)` percent of respondents reported ever having contacted a person of influence, yet community leader contact averaged just `r round(stats$community_leader_w2, 2)` on a five-point frequency scale—figures that capture a population with prior exposure to civic channels but with limited ongoing engagement.^[Direct contact with elected officials and civil servants uses a broadly-worded 'at any level' framing in Wave 2 that differs from the narrower, problem-motivated framing in Wave 3 and from the Wave 4 and 6 formulations; these items are not used for cross-wave comparisons involving Wave 2 but are reported in the four-wave tables with appropriate documentation.]
 
-```{r table1}
+```{r tbl-table1}
+#| tbl-cap: "Wave 2 (2008) Baseline: Political Orientations in Cambodia"
 t1 <- readRDS(file.path(tbl_dir, "table1_w2_baseline.rds"))
 
 t1 |>
@@ -153,7 +154,6 @@ t1 |>
   kbl(
     col.names = c("Variable", "W2 (2008)"),
     align     = "lc",
-    caption   = "Wave 2 (2008) Baseline: Political Orientations in Cambodia",
     booktabs  = TRUE,
     linesep   = "",
     escape    = FALSE
@@ -218,7 +218,8 @@ The "Culture of Dialogue" that emerged from the July 2014 agreement between Sam 
 
 The Wave 4 data from 2015 capture a population in the midst of this reckoning—no longer at the peak of mobilization but not yet in the trough of withdrawal. The behavioral participation measures tell a more ambiguous story than might be expected. Contact with influential persons held essentially steady at `r round(stats$gate_influential_w4, 1)` percent (the 3.3 percentage-point increase from Wave 3 is not statistically significant; *p* = 0.11), and demonstration attendance, petition-signing, and civil servant contact all edged slightly upward from their Wave 3 levels. Community leader contact averaged `r round(stats$community_leader_w4, 2)` on a five-point frequency scale, essentially unchanged from 2012. The "selective retreat" of 2015 is not, in other words, a story written primarily in the behavioral data. It is written instead in the attitudinal record.
 
-```{r table2}
+```{r tbl-table2}
+#| tbl-cap: "Selective Retreat, 2012--2015: Wave 3 to Wave 4 Comparison"
 t2 <- readRDS(file.path(tbl_dir, "table2_w3w4_comparison.rds"))
 
 t2 |>
@@ -226,7 +227,6 @@ t2 |>
   kbl(
     col.names = c("Variable", "W3 (2012)", "W4 (2015)", "\\Delta (W4\u2212W3)"),
     align     = "lccc",
-    caption   = "Selective Retreat, 2012--2015: Wave 3 to Wave 4 Comparison",
     booktabs  = TRUE,
     linesep   = "",
     escape    = FALSE
@@ -274,7 +274,8 @@ The participation data from 2021 present a more differentiated picture than a si
 
 What complicates any uniform "participation collapse" characterization is that several formal channel indicators actually rose substantially by 2021: petition-signing reached `r round(stats$gate_petition_w6, 1)` percent, civil servant contact climbed to `r round(stats$gate_civil_w6, 1)` percent, and media contact rose to `r round(stats$gate_media_w6, 1)` percent. These increases likely reflect two overlapping dynamics: the rapid expansion of internet access enabling digital petitions and online contact, and the transformation of formal institutional channels into vehicles for routine patronage interaction under a now-uncontested regime. Participation through officially sanctioned channels rises precisely as independent civic action—contacting influential figures outside the state apparatus, organizing demonstrations, discussing politics—contracts. The divergence between these two trajectories is itself evidence of demobilization by subtraction: what citizens can still do expands; what citizens choose to do in pursuit of genuine political alternatives collapses.
 
-```{r table3}
+```{r tbl-table3}
+#| tbl-cap: "Four-Wave Trajectory of Political Orientations in Cambodia, 2008--2021"
 t3 <- readRDS(file.path(tbl_dir, "table3_four_wave_trajectory.rds"))
 
 t3 |>
@@ -283,7 +284,6 @@ t3 |>
     col.names = c("Variable", "W2 (2008)", "W3 (2012)", "W4 (2015)",
                   "\\textbf{W6 (2021)}", "\\Delta W3{\\textrightarrow}W6"),
     align     = "lccccc",
-    caption   = "Four-Wave Trajectory of Political Orientations in Cambodia, 2008--2021",
     booktabs  = TRUE,
     linesep   = "",
     escape    = FALSE
@@ -395,15 +395,15 @@ The fairy tale has no happy ending. But it has a lesson, and the lesson is not a
 
 ## Table A1: Cross-Wave Comparability of Survey Items {.unnumbered}
 
-```{r tableA1}
+```{r tbl-tableA1}
 #| echo: false
+#| tbl-cap: "Cross-Wave Comparability of Survey Items"
 comp <- read.csv(file.path(rr_dir, "comparability_matrix.csv"), stringsAsFactors = FALSE)
 
 comp |>
   dplyr::select(label, w2_wording, w3_wording, w4_wording, w6_wording, status) |>
   kbl(
     col.names = c("Variable", "W2 (2008)", "W3 (2012)", "W4 (2015)", "W6 (2021)", "Status"),
-    caption   = "Cross-Wave Comparability of Survey Items",
     booktabs  = TRUE,
     linesep   = "",
     longtable = TRUE,
@@ -432,8 +432,9 @@ comp |>
 
 ## Table A2: Subgroup Analysis of Key Variables {.unnumbered}
 
-```{r tableA2}
+```{r tbl-tableA2}
 #| echo: false
+#| tbl-cap: "Subgroup Analysis by Urban/Rural Residence"
 A2 <- readRDS(file.path(tbl_dir, "tableA2_subgroups.rds"))
 
 # Helper: print one panel as kbl
@@ -443,7 +444,6 @@ print_A2_panel <- function(df, title, footnote_txt) {
     dplyr::select(wave_label, all_of(data_cols)) |>
     kbl(
       col.names  = c("Wave", data_cols),
-      caption    = title,
       booktabs   = TRUE,
       linesep    = "",
       escape     = FALSE
@@ -472,8 +472,9 @@ ci_note <- "Estimates shown with 95\\\\% CI in parentheses (Wilson interval for 
 print_A2_panel(A2$urban_rural, "Subgroup Analysis by Urban/Rural Residence", ci_note)
 ```
 
-```{r tableA2b}
+```{r tbl-tableA2b}
 #| echo: false
+#| tbl-cap: "Subgroup Analysis by Age Group"
 A2 <- readRDS(file.path(tbl_dir, "tableA2_subgroups.rds"))
 ci_note <- "Estimates shown with 95\\\\% CI in parentheses (Wilson interval for proportions; t-based for means). Gate proportions and voted/corruption displayed as percentages. '---' = item not fielded in wave."
 
@@ -483,7 +484,6 @@ print_A2_panel <- function(df, title, footnote_txt) {
     dplyr::select(wave_label, all_of(data_cols)) |>
     kbl(
       col.names  = c("Wave", data_cols),
-      caption    = title,
       booktabs   = TRUE,
       linesep    = "",
       escape     = FALSE
@@ -510,8 +510,9 @@ print_A2_panel <- function(df, title, footnote_txt) {
 print_A2_panel(A2$age, "Subgroup Analysis by Age Group", ci_note)
 ```
 
-```{r tableA2c}
+```{r tbl-tableA2c}
 #| echo: false
+#| tbl-cap: "Subgroup Analysis by Education Level"
 A2 <- readRDS(file.path(tbl_dir, "tableA2_subgroups.rds"))
 ci_note <- "Estimates shown with 95\\\\% CI in parentheses (Wilson interval for proportions; t-based for means). Gate proportions and voted/corruption displayed as percentages. '---' = item not fielded in wave."
 
@@ -521,7 +522,6 @@ print_A2_panel <- function(df, title, footnote_txt) {
     dplyr::select(wave_label, all_of(data_cols)) |>
     kbl(
       col.names  = c("Wave", data_cols),
-      caption    = title,
       booktabs   = TRUE,
       linesep    = "",
       escape     = FALSE
@@ -552,14 +552,14 @@ print_A2_panel(A2$education, "Subgroup Analysis by Education Level", ci_note)
 
 ## Table A3: Placebo Battery — Non-Political Variables {.unnumbered}
 
-```{r tableA3}
+```{r tbl-tableA3}
 #| echo: false
+#| tbl-cap: "Placebo Battery: Non-Political Variables by Wave"
 A3 <- readRDS(file.path(tbl_dir, "tableA3_placebo.rds"))
 
 A3 |>
   kbl(
     col.names = names(A3),
-    caption   = "Placebo Battery: Non-Political Variables by Wave",
     booktabs  = TRUE,
     linesep   = "",
     escape    = FALSE
