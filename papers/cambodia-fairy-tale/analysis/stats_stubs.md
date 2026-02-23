@@ -217,3 +217,38 @@ When done, the following should exist:
 All tables should also be renderable in the manuscript qmd via
 kableExtra or gt. Consider saving render-ready table objects as .rds
 so the manuscript can just load and display them.
+
+---
+
+## Task 7: Check valid-N variance across variables within each wave
+
+For each wave, compute the valid (non-missing) N for every variable
+that appears in the tables. Report:
+
+1. The min and max valid N per wave
+2. Which variables, if any, have notably higher missingness
+   (e.g., >10% below the wave-level max)
+3. Whether the internet news variable (news_internet) has
+   substantially different missingness than other variables,
+   given its harmonization changes
+
+**Decision rule for table formatting**:
+- If valid N is tight within each wave (all cells within ~5% of
+  each other), use a single wave-level N in the column header
+  plus a table note: "Valid N ranges from X to Y per wave;
+  full cell-level counts available on request."
+- If any variable has notably higher missingness (>10% gap),
+  report per-cell valid N in parentheses after each mean,
+  OR add a dedicated N row for that variable with a footnote.
+
+Report findings so Jeff can decide which approach to use.
+
+## Updated Output Checklist
+
+- [ ] `analysis/tables/table1_w2_baseline.rds`
+- [ ] `analysis/tables/table2_w3w4_comparison.rds`
+- [ ] `analysis/tables/table3_four_wave_trajectory.rds`
+- [ ] `analysis/figures/fig1_trend_panels.pdf` (and .png)
+- [ ] Verification report (stat mismatches + line numbers)
+- [ ] Variable name mapping
+- [ ] Valid-N variance report per wave (Task 7)

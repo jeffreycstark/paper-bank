@@ -140,6 +140,20 @@
  
 
 
+\usepackage{booktabs}
+\usepackage{longtable}
+\usepackage{array}
+\usepackage{multirow}
+\usepackage{wrapfig}
+\usepackage{float}
+\usepackage{colortbl}
+\usepackage{pdflscape}
+\usepackage{tabu}
+\usepackage{threeparttable}
+\usepackage{threeparttablex}
+\usepackage[normalem]{ulem}
+\usepackage{makecell}
+\usepackage{xcolor}
 \usepackage{setspace}
 \usepackage{booktabs}
 \usepackage{caption}
@@ -218,7 +232,7 @@ authoritarianism, democratic aspirations},
 \title{The Education of a Citizenry: Hope, Demobilization, and
 Authoritarian Normalization in Cambodia, 2008--2021}
 \author{Jeffrey Stark}
-\date{February 23, 2026 at 8:46 AM}
+\date{February 23, 2026 at 11:03 AM}
 \begin{document}
 \maketitle
 \begin{abstract}
@@ -375,7 +389,9 @@ democratic aspiration.
 2008}\label{the-quiet-kingdom-cambodia-in-2008}
 
 The first act of this story is a silence, and it is important to
-understand what kind of silence it was.
+understand what kind of silence it was.\footnote{Unless otherwise noted,
+  the political chronology and electoral data in this section draw on
+  Hughes (2010); Strangio (2014); and Un (2013a).}
 
 By 2008, Cambodia had been under continuous CPP rule for over two
 decades. The Paris Peace Accords of 1991 and the UNTAC-supervised
@@ -443,45 +459,47 @@ while present, were not sites of intensive citizen activity.
 \centering
 \fontsize{10}{12}\selectfont
 \begin{threeparttable}
-\begin{tabular}[t]{lcc}
+\begin{tabular}[t]{lc}
 \toprule
-Variable & Mean & N\\
+Variable & W2 (2008)\\
 \midrule
 \addlinespace[0.3em]
-\multicolumn{3}{l}{\textbf{Political Participation (1–5: never to often)}}\\
-\hspace{1em}Contacted elected official & 3.44 & 1000\\
-\hspace{1em}Contacted civil servant & 3.43 & 1000\\
-\hspace{1em}Contacted community leader & 1.53 & 1000\\
-\hspace{1em}Voted in last election & — & —\\
-\hspace{1em}Attended demonstration & — & —\\
-\hspace{1em}Signed petition & — & —\\
+\multicolumn{2}{l}{\textbf{Political Participation}}\\
+\hspace{1em}Contacted elected official & 32.6\% (998)\\
+\hspace{1em}Contacted civil servant & 31.8\% (999)\\
+\hspace{1em}Contacted influential person & 43.0\% (997)\\
+\hspace{1em}Signed petition & ---\\
+\hspace{1em}Attended demonstration & ---\\
+\hspace{1em}Contacted media & ---\\
+\hspace{1em}Contacted community leader (mean, 1–5) & 1.53 (997)\\
+\hspace{1em}Voted in last election & —\\
 \addlinespace[0.3em]
-\multicolumn{3}{l}{\textbf{Authoritarian Preferences (1–4: very bad to very good)}}\\
-\hspace{1em}Expert rule & — & —\\
-\hspace{1em}Single-party rule & 1.79 & 1000\\
-\hspace{1em}Strongman rule & 1.60 & 1000\\
-\hspace{1em}Military rule & 2.19 & 1000\\
+\multicolumn{2}{l}{\textbf{Authoritarian Preferences (1–4: very bad to very good)}}\\
+\hspace{1em}Expert rule & —\\
+\hspace{1em}Single-party rule & 1.79 (912)\\
+\hspace{1em}Strongman rule & 1.60 (901)\\
+\hspace{1em}Military rule & 2.19 (918)\\
 \addlinespace[0.3em]
-\multicolumn{3}{l}{\textbf{Democratic Expectations (0–10 scale)}}\\
-\hspace{1em}Democratic future (10pt) & — & —\\
-\hspace{1em}Democratic past (10pt) & — & —\\
-\hspace{1em}Democratic present (10pt) & 6.72 & 1000\\
+\multicolumn{2}{l}{\textbf{Democratic Expectations (0–10 scale)}}\\
+\hspace{1em}Democratic future (10pt) & —\\
+\hspace{1em}Democratic past (10pt) & —\\
+\hspace{1em}Democratic present (10pt) & 6.72 (472)\\
 \addlinespace[0.3em]
-\multicolumn{3}{l}{\textbf{Corruption}}\\
-\hspace{1em}Witnessed corruption (binary) & 0.28 & 1000\\
-\hspace{1em}National govt corruption (1–4) & 2.86 & 1000\\
-\hspace{1em}Local govt corruption (1–4) & 2.56 & 1000\\
+\multicolumn{2}{l}{\textbf{Corruption}}\\
+\hspace{1em}Witnessed corruption (binary) & 0.28 (987)\\
+\hspace{1em}National govt corruption (1–4) & 2.86 (776)\\
+\hspace{1em}Local govt corruption (1–4) & 2.56 (940)\\
 \addlinespace[0.3em]
-\multicolumn{3}{l}{\textbf{Media \& Political Interest}}\\
-\hspace{1em}Follows political news & — & —\\
-\hspace{1em}Internet news & — & —\\
-\hspace{1em}Political interest & 2.56 & 1000\\
-\hspace{1em}Discusses politics & 1.65 & 1000\\
+\multicolumn{2}{l}{\textbf{Media \& Political Interest}}\\
+\hspace{1em}Follows political news & —\\
+\hspace{1em}Internet news (1–6) & —\\
+\hspace{1em}Political interest & 2.56 (996)\\
+\hspace{1em}Discusses politics & 1.65 (998)\\
 \bottomrule
 \end{tabular}
 \begin{tablenotes}[para]
 \item \textit{Note:} 
-\item N = 1,000. Means shown for items fielded in Wave 2; '—' indicates variable not included in this wave. Corruption witnessed is a binary proportion. National and local government corruption rated 1 (not at all corrupt) to 4 (extremely corrupt).
+\item Wave 2 N = 1,000. Participation rows 1–6 report the percentage of respondents who ever engaged in each activity (gate question); valid N shown in parentheses. Rows 7–8 report means (community leader contact: 1–5 scale) or proportions (voted). '—' indicates item not fielded in this wave. Authoritarian preferences: 1 = very bad, 4 = very good. Democratic expectations: 0–10. Corruption witnessed: binary proportion. National/local corruption: 1 = not at all, 4 = extremely.
 \end{tablenotes}
 \end{threeparttable}
 \end{table}
@@ -513,7 +531,11 @@ disrupted.
 
 Something extraordinary happened in Cambodia between 2008 and 2012, and
 the Wave 3 Asian Barometer data capture its imprint with unusual
-clarity.
+clarity.\footnote{Unless otherwise noted, the political chronology and
+  electoral data in this section draw on Un (2013b); Um (2014); Strangio
+  (2014); and Noren-Nilsson (2015). On the 2013 election results
+  specifically, see COMFREL (The Committee for Free and Fair Elections
+  in Cambodia) (2013).}
 
 Across nearly every measure of civic engagement and political
 aspiration, Cambodian respondents in 2012 registered at or near the
@@ -549,13 +571,11 @@ absence of a unified organizational infrastructure capable of matching
 the CPP's commune-level reach. The merger of the SRP and the Human
 Rights Party, brokered through extended negotiations between Sam Rainsy
 and Kem Sokha, resolved the coordination problem at a stroke.\footnote{Noren-Nilsson
-  (2015); Kheang Un, ``Cambodia in 2012: Towards Developmental
-  Authoritarianism?'' \emph{Asian Survey} 53, no. 1 (2013): 142--49.}
-The resulting party offered voters something genuinely new in Cambodian
-politics: a single, unified alternative to the CPP with recognizable
-leaders, a coherent platform, and---critically---the organizational
-capacity to mobilize supporters in both urban and peri-urban
-constituencies.
+  (2015); (\textbf{Un2013-ss?}).} The resulting party offered voters
+something genuinely new in Cambodian politics: a single, unified
+alternative to the CPP with recognizable leaders, a coherent platform,
+and---critically---the organizational capacity to mobilize supporters in
+both urban and peri-urban constituencies.
 
 The mobilization dynamics visible in the 2012 survey data intensified
 dramatically in the months that followed. The July 2013 national
@@ -676,19 +696,22 @@ that those beliefs were wrong.
 \subsubsection{The Reckoning: Cambodia in
 2015}\label{the-reckoning-cambodia-in-2015}
 
-That demonstration began at the ballot box and ended in the streets. The
-2013 national election, held just months after the Wave 3 survey
-captured such stratospheric optimism, confirmed the CNRP's mobilization
-power: the opposition won 55 seats to the CPP's 68, the narrowest margin
-in the country's modern history. Yet, the structural ceiling of the
-dominant-party state held firm. Amid widespread allegations of electoral
-fraud, the CNRP boycotted parliament, triggering months of mass
-demonstrations that soon merged with massive garment worker strikes. For
-a brief window, genuine political transformation appeared imminent. It
-did not arrive. Following a lethal state crackdown on protesters in
-January 2014, and a subsequent political compromise that coaxed the
-opposition into the National Assembly under a fragile and temporary
-``Culture of Dialogue,'' the momentum of the streets fractured.
+That demonstration began at the ballot box and ended in the
+streets.\footnote{Unless otherwise noted, the political chronology in
+  this section draws on Chheang (2015); Morgenbesser (2017); and
+  Norén-Nilsson (2019).} The 2013 national election, held just months
+after the Wave 3 survey captured such stratospheric optimism, confirmed
+the CNRP's mobilization power: the opposition won 55 seats to the CPP's
+68, the narrowest margin in the country's modern history. Yet, the
+structural ceiling of the dominant-party state held firm. Amid
+widespread allegations of electoral fraud, the CNRP boycotted
+parliament, triggering months of mass demonstrations that soon merged
+with massive garment worker strikes. For a brief window, genuine
+political transformation appeared imminent. It did not arrive. Following
+a lethal state crackdown on protesters in January 2014, and a subsequent
+political compromise that coaxed the opposition into the National
+Assembly under a fragile and temporary ``Culture of Dialogue,'' the
+momentum of the streets fractured.
 
 The ``Culture of Dialogue'' that emerged from the July 2014 agreement
 between Sam Rainsy and Hun Sen was, in retrospect, less a genuine
@@ -728,40 +751,42 @@ national-level civic action.
 Variable & W3 (2012) & W4 (2015) & \Delta (W4−W3)\\
 \midrule
 \addlinespace[0.3em]
-\multicolumn{4}{l}{\textbf{Political Participation (1–5)}}\\
-\hspace{1em}Contacted elected official & 4.31 & 3.08 & -1.23\\
-\hspace{1em}Contacted civil servant & 4.33 & 3.19 & -1.14\\
-\hspace{1em}Contacted community leader & 1.90 & 2.00 & +0.10\\
-\hspace{1em}Voted in last election & 0.79 & 0.83 & +0.04\\
-\hspace{1em}Attended demonstration & 4.48 & 3.07 & -1.41\\
-\hspace{1em}Signed petition & 4.34 & 3.23 & -1.11\\
+\multicolumn{4}{l}{\textbf{Political Participation}}\\
+\hspace{1em}Contacted elected official & 4.1\% (1197) & 4.5\% (1182) & +0.4 pp\\
+\hspace{1em}Contacted civil servant & 6.6\% (1199) & 11.0\% (1195) & +4.4 pp\\
+\hspace{1em}Contacted influential person & 52.6\% (1196) & 55.9\% (1200) & +3.3 pp\\
+\hspace{1em}Signed petition & 10.5\% (1200) & 14.5\% (1188) & +4.0 pp\\
+\hspace{1em}Attended demonstration & 2.6\% (1200) & 4.5\% (1190) & +1.9 pp\\
+\hspace{1em}Contacted media & 3.2\% (1198) & 3.4\% (1188) & +0.2 pp\\
+\hspace{1em}Contacted community leader (mean, 1–5) & 1.90 (1196) & 2.00 (1200) & +0.10\\
+\hspace{1em}Voted in last election & 0.79 (1196) & 0.83 (1195) & +0.04\\
 \addlinespace[0.3em]
 \multicolumn{4}{l}{\textbf{Authoritarian Preferences (1–4)}}\\
-\hspace{1em}Expert rule & 1.58 & 1.66 & +0.08\\
-\hspace{1em}Single-party rule & 1.97 & 1.78 & -0.19\\
-\hspace{1em}Strongman rule & 1.73 & 1.76 & +0.03\\
-\hspace{1em}Military rule & 2.19 & 1.98 & -0.21\\
+\hspace{1em}Expert rule & 1.58 (1189) & 1.66 (1188) & +0.08\\
+\hspace{1em}Single-party rule & 1.97 (1189) & 1.78 (1193) & -0.19\\
+\hspace{1em}Strongman rule & 1.73 (1194) & 1.76 (1167) & +0.03\\
+\hspace{1em}Military rule & 2.19 (1187) & 1.98 (1181) & -0.21\\
 \addlinespace[0.3em]
 \multicolumn{4}{l}{\textbf{Democratic Expectations (0–10)}}\\
-\hspace{1em}Democratic future (10pt) & 9.58 & 7.72 & -1.86\\
-\hspace{1em}Democratic past (10pt) & 3.97 & 3.87 & -0.10\\
-\hspace{1em}Democratic present (10pt) & 5.85 & 5.06 & -0.80\\
+\hspace{1em}Democratic future (10pt) & 9.58 (910) & 7.72 (552) & -1.86\\
+\hspace{1em}Democratic past (10pt) & 3.97 (951) & 3.87 (938) & -0.10\\
+\hspace{1em}Democratic present (10pt) & 5.85 (738) & 5.06 (760) & -0.79\\
 \addlinespace[0.3em]
 \multicolumn{4}{l}{\textbf{Corruption}}\\
-\hspace{1em}Witnessed corruption (binary) & 0.49 & 0.63 & +0.13\\
-\hspace{1em}National govt corruption (1-4) & 2.67 & 2.90 & +0.23\\
-\hspace{1em}Local govt corruption (1-4) & 2.47 & 2.56 & +0.09\\
+\hspace{1em}Witnessed corruption (binary) & 0.49 (1194) & 0.63 (1114) & +0.14\\
+\hspace{1em}National govt corruption (1–4) & 2.67 (1098) & 2.90 (1125) & +0.23\\
+\hspace{1em}Local govt corruption (1–4) & 2.47 (1183) & 2.56 (1184) & +0.09\\
 \addlinespace[0.3em]
 \multicolumn{4}{l}{\textbf{Media \& Political Interest}}\\
-\hspace{1em}Follows political news & 3.06 & 2.86 & -0.21\\
-\hspace{1em}Internet news & 1.22 & 1.82 & +0.61\\
-\hspace{1em}Political interest & 2.57 & 2.29 & -0.28\\
-\hspace{1em}Discusses politics & 1.46 & 1.47 & +0.01\\
+\hspace{1em}Follows political news & 3.07 (1199) & 2.86 (1200) & -0.21\\
+\hspace{1em}Internet news (1–6) & 1.22 (1199) & 1.82 (1200) & +0.60\\
+\hspace{1em}Political interest & 2.57 (1198) & 2.29 (1198) & -0.28\\
+\hspace{1em}Discusses politics & 1.45 (1198) & 1.47 (1198) & +0.02\\
 \bottomrule
 \end{tabular}
 \begin{tablenotes}[para]
 \item \textit{Note:} 
-\item N = 1,200 per wave. Cell entries are wave means. $\Delta$ = W4 mean minus W3 mean; negative values indicate decline. '—' indicates variable not fielded. Internet news values reflect harmonization to a common frequency scale; see manuscript footnote for scale details.
+\item W3 N = 1,200; W4 N = 1,200. Participation rows 1–6 report percentages (gate question); valid N shown in parentheses. $\Delta$ for participation rows is in percentage points (pp); for other rows, in scale units. '—' indicates item not fielded. Internet news harmonized to 1–6 frequency scale (1 = never, 6 = daily or more).
 \end{tablenotes}
 \end{threeparttable}
 \end{table}
@@ -828,14 +853,19 @@ authoritarian normalization that was about to descend.
 2021}\label{the-silence-cambodia-in-2021}
 
 On November 16, 2017, the Supreme Court of Cambodia dissolved the
-Cambodia National Rescue Party. The ruling, which cited a vaguely
-defined conspiracy to overthrow the government, banned 118 CNRP
-officials from political activity for five years and transferred the
-party's parliamentary seats to smaller, CPP-aligned parties. Kem Sokha
-had already been arrested in September; Sam Rainsy remained in exile. In
-the July 2018 national election, the CPP won all 125 seats in the
-National Assembly. Cambodia became, for all practical purposes, a
-one-party state.
+Cambodia National Rescue Party.\footnote{Unless otherwise noted, the
+  political chronology in this section draws on Un et al. (2020);
+  Chheang \& President of the Asian Vision Institute (AVI), an
+  independent think-tank based in Phnom Penh, Cambodia. He is a public
+  policy analyst specializing in geopolitics and political economy of
+  Southeast Asia. (2021); and Morgenbesser \& Pepinsky (2019).} The
+ruling, which cited a vaguely defined conspiracy to overthrow the
+government, banned 118 CNRP officials from political activity for five
+years and transferred the party's parliamentary seats to smaller,
+CPP-aligned parties. Kem Sokha had already been arrested in September;
+Sam Rainsy remained in exile. In the July 2018 national election, the
+CPP won all 125 seats in the National Assembly. Cambodia became, for all
+practical purposes, a one-party state.
 
 The CNRP's dissolution did not occur in isolation. It was the
 centerpiece of a broader campaign of political closure that
@@ -894,40 +924,42 @@ another.
 Variable & W2 (2008) & W3 (2012) & W4 (2015) & \textbf{W6 (2021)} & \Delta W3{\textrightarrow}W6\\
 \midrule
 \addlinespace[0.3em]
-\multicolumn{6}{l}{\textbf{Political Participation (1–5: never to often)}}\\
-\hspace{1em}Contacted elected official & 3.44 & 4.31 & 3.08 & \textbf{1.74} & -2.56\\
-\hspace{1em}Contacted civil servant & 3.43 & 4.33 & 3.19 & \textbf{2.47} & -1.86\\
-\hspace{1em}Contacted community leader & 1.53 & 1.90 & 2.00 & \textbf{1.39} & -0.52\\
-\hspace{1em}Voted in last election & — & 0.79 & 0.83 & \textbf{0.88} & +0.09\\
-\hspace{1em}Attended demonstration & — & 4.48 & 3.07 & \textbf{1.29} & -3.20\\
-\hspace{1em}Signed petition & — & 4.34 & 3.23 & \textbf{2.13} & -2.21\\
+\multicolumn{6}{l}{\textbf{Political Participation}}\\
+\hspace{1em}Contacted elected official & 32.6\% (998) & 4.1\% (1197) & 4.5\% (1182) & \textbf{13.3\% (1119)} & +9.2 pp\\
+\hspace{1em}Contacted civil servant & 31.8\% (999) & 6.6\% (1199) & 11.0\% (1195) & \textbf{37.2\% (1138)} & +30.6 pp\\
+\hspace{1em}Contacted influential person & 43.0\% (997) & 52.6\% (1196) & 55.9\% (1200) & \textbf{23.3\% (1137)} & -29.3 pp\\
+\hspace{1em}Signed petition & --- & 10.5\% (1200) & 14.5\% (1188) & \textbf{30.5\% (1110)} & +20.0 pp\\
+\hspace{1em}Attended demonstration & --- & 2.6\% (1200) & 4.5\% (1190) & \textbf{3.3\% (1062)} & +0.7 pp\\
+\hspace{1em}Contacted media & --- & 3.2\% (1198) & 3.4\% (1188) & \textbf{12.2\% (1119)} & +9.0 pp\\
+\hspace{1em}Contacted community leader (mean, 1–5) & 1.53 (997) & 1.90 (1196) & 2.00 (1200) & \textbf{1.39 (1137)} & -0.51\\
+\hspace{1em}Voted in last election & — & 0.79 (1196) & 0.83 (1195) & \textbf{0.88 (1196)} & +0.09\\
 \addlinespace[0.3em]
 \multicolumn{6}{l}{\textbf{Authoritarian Preferences (1–4: very bad to very good)}}\\
-\hspace{1em}Expert rule & — & 1.58 & 1.66 & \textbf{2.11} & +0.53\\
-\hspace{1em}Single-party rule & 1.79 & 1.97 & 1.78 & \textbf{2.21} & +0.24\\
-\hspace{1em}Strongman rule & 1.60 & 1.73 & 1.76 & \textbf{2.17} & +0.45\\
-\hspace{1em}Military rule & 2.19 & 2.19 & 1.98 & \textbf{2.21} & +0.02\\
+\hspace{1em}Expert rule & — & 1.58 (1189) & 1.66 (1188) & \textbf{2.11 (1091)} & +0.53\\
+\hspace{1em}Single-party rule & 1.79 (912) & 1.97 (1189) & 1.78 (1193) & \textbf{2.21 (1110)} & +0.24\\
+\hspace{1em}Strongman rule & 1.60 (901) & 1.73 (1194) & 1.76 (1167) & \textbf{2.17 (1094)} & +0.44\\
+\hspace{1em}Military rule & 2.19 (918) & 2.19 (1187) & 1.98 (1181) & \textbf{2.21 (1069)} & +0.02\\
 \addlinespace[0.3em]
 \multicolumn{6}{l}{\textbf{Democratic Expectations (0–10 scale)}}\\
-\hspace{1em}Democratic future (10pt) & — & 9.58 & 7.72 & \textbf{6.67} & -2.91\\
-\hspace{1em}Democratic past (10pt) & — & 3.97 & 3.87 & \textbf{4.79} & +0.82\\
-\hspace{1em}Democratic present (10pt) & 6.72 & 5.85 & 5.06 & \textbf{5.78} & -0.08\\
+\hspace{1em}Democratic future (10pt) & — & 9.58 (910) & 7.72 (552) & \textbf{6.67 (458)} & -2.91\\
+\hspace{1em}Democratic past (10pt) & — & 3.97 (951) & 3.87 (938) & \textbf{4.78 (859)} & +0.81\\
+\hspace{1em}Democratic present (10pt) & 6.72 (472) & 5.85 (738) & 5.06 (760) & \textbf{5.77 (714)} & -0.08\\
 \addlinespace[0.3em]
 \multicolumn{6}{l}{\textbf{Corruption}}\\
-\hspace{1em}Witnessed corruption (binary) & 0.28 & 0.49 & 0.63 & \textbf{0.15} & -0.34\\
-\hspace{1em}National govt corruption (1–4) & 2.86 & 2.67 & 2.90 & \textbf{2.33} & -0.34\\
-\hspace{1em}Local govt corruption (1–4) & 2.56 & 2.47 & 2.56 & \textbf{2.36} & -0.11\\
+\hspace{1em}Witnessed corruption (binary) & 0.28 (987) & 0.49 (1194) & 0.63 (1114) & \textbf{0.15 (1175)} & -0.34\\
+\hspace{1em}National govt corruption (1–4) & 2.86 (776) & 2.67 (1098) & 2.90 (1125) & \textbf{2.33 (1022)} & -0.34\\
+\hspace{1em}Local govt corruption (1–4) & 2.56 (940) & 2.47 (1183) & 2.56 (1184) & \textbf{2.36 (980)} & -0.11\\
 \addlinespace[0.3em]
 \multicolumn{6}{l}{\textbf{Media \& Political Interest}}\\
-\hspace{1em}Follows political news & — & 3.06 & 2.86 & \textbf{2.04} & -1.03\\
-\hspace{1em}Internet news & — & 5.79 & 2.17 & \textbf{2.17} & -3.61\\
-\hspace{1em}Political interest & 2.56 & 2.57 & 2.29 & \textbf{2.06} & -0.51\\
-\hspace{1em}Discusses politics & 1.65 & 1.46 & 1.47 & \textbf{1.26} & -0.20\\
+\hspace{1em}Follows political news & — & 3.07 (1199) & 2.86 (1200) & \textbf{2.04 (1187)} & -1.03\\
+\hspace{1em}Internet news (1–6) & — & 1.22 (1199) & 1.82 (1200) & \textbf{4.66 (1218)} & +3.44\\
+\hspace{1em}Political interest & 2.56 (996) & 2.57 (1198) & 2.29 (1198) & \textbf{2.06 (1205)} & -0.51\\
+\hspace{1em}Discusses politics & 1.65 (998) & 1.45 (1198) & 1.47 (1198) & \textbf{1.26 (1214)} & -0.19\\
 \bottomrule
 \end{tabular}
 \begin{tablenotes}[para]
 \item \textit{Note:} 
-\item N per wave: W2 = 1,000; W3 = 1,200; W4 = 1,200; W6 = 1,242. Cell entries are unweighted wave means. '—' indicates variable not fielded in that wave. $\Delta$ W3$\rightarrow$W6 = W6 mean minus W3 mean (peak-to-trough change). W6 column in bold marks the endpoint of the trajectory. Voted last election is a binary proportion. Corruption witnessed is a binary proportion.
+\item N per wave: W2 = 1,000; W3 = 1,200; W4 = 1,200; W6 = 1,242. Rows 1–6 (Political Participation) report the percentage of respondents who ever engaged in each activity (gate proportion), with per-cell valid N in parentheses; $\Delta$ for these rows is in percentage points. Rows 7–8 and all remaining rows report unweighted wave means with per-cell valid N in parentheses; $\Delta$ is the arithmetic difference. '---' indicates variable not fielded in that wave. $\Delta$ W3$\rightarrow$W6 = W6 value minus W3 value (peak-to-trough change). W6 column in bold marks the endpoint of the trajectory. Voted last election and corruption witnessed are binary proportions.
 \end{tablenotes}
 \end{threeparttable}
 \end{table}
@@ -1042,17 +1074,19 @@ risks of self-incrimination or unwanted official attention. The social
 desirability bias literature has long recognized that survey responses
 on sensitive topics shift in predictable directions under conditions of
 political constraint, with respondents offering answers that align with
-perceived official expectations.\footnote{On social desirability bias in
-  authoritarian survey contexts, see Schedler and Sarsfield's work on
-  survey reliability under electoral authoritarianism (Frye et al.,
-  2016; Schedler \& Sarsfield, 2007).} The post-2017 Cambodian
-environment, in which public criticism of the government carried
-tangible legal consequences, represents precisely the conditions under
-which such bias would be expected to intensify. The two
-explanations---reduced exposure through demobilization and increased
-reticence through social desirability pressure---likely operate in
-tandem, each reinforcing the other to produce the dramatic decline
-observed in the data.
+perceived official expectations.\footnote{On the reliability of survey
+  responses under electoral authoritarianism, see Schedler \& Sarsfield
+  (2007). Frye et al. (2016) demonstrate that even in semi-competitive
+  authoritarian contexts, survey-measured approval can closely track
+  genuine opinion---but their findings also imply that as political
+  space closes further, the gap between expressed and private attitudes
+  is likely to widen.} The post-2017 Cambodian environment, in which
+public criticism of the government carried tangible legal consequences,
+represents precisely the conditions under which such bias would be
+expected to intensify. The two explanations---reduced exposure through
+demobilization and increased reticence through social desirability
+pressure---likely operate in tandem, each reinforcing the other to
+produce the dramatic decline observed in the data.
 
 The voter turnout paradox completes the portrait. Despite the collapse
 of all other forms of political participation, self-reported voting in
@@ -1086,10 +1120,11 @@ orientation of a population adjusting to the available political
 reality. A paired comparison with Vietnam or the Philippines---where
 territorial disputes drive China perceptions in sharply negative
 directions despite similar economic interdependence---would sharpen this
-point considerably.\^{}{[}Strangio (2020) provides the most
-comprehensive account of Cambodia's positioning within China's Southeast
-Asian strategy. On the divergent China perception trajectories across
-ASEAN, the ABS cross-national data offer direct comparative evidence.
+point considerably.\footnote{Strangio (2020) provides the most
+  comprehensive account of Cambodia's positioning within China's
+  Southeast Asian strategy. On the divergent China perception
+  trajectories across ASEAN, the ABS cross-national data offer direct
+  comparative evidence.}
 
 The informational withdrawal that began tentatively in 2015 reached its
 full expression by 2021. Following political news fell to 2.04,
@@ -1331,6 +1366,24 @@ Bratton, Michael, Mattes, Robert, \& Gyimah-Boadi, E. (2004).
 \emph{{Cambridge studies in comparative politics: Public opinion,
 democracy, and market reform in Africa}}. Cambridge University Press.
 
+\bibitem[\citeproctext]{ref-Chheang2015-ud}
+Chheang, Vannarith. (2015). {CAMBODIA IN 2014: The Beginning of Concrete
+Reforms}. \emph{Nan Yang Wen Ti Yan Qiu = Southeast Asian Affairs},
+89--101.
+
+\bibitem[\citeproctext]{ref-Chheang2021-td}
+Chheang, Vannarith, \& President of the Asian Vision Institute (AVI), an
+independent think-tank based in Phnom Penh, Cambodia. He is a public
+policy analyst specializing in geopolitics and political economy of
+Southeast Asia. (2021). {Cambodia in 2020: Regime legitimacy tested}.
+\emph{Southeast Asian Affairs}, \emph{SEAA21}, 73--91.
+\url{https://doi.org/10.1355/aa21-1e}
+
+\bibitem[\citeproctext]{ref-COMFREL-The-Committee-for-Free-and-Fair-Elections-in-Cambodia-2013-kt}
+COMFREL (The Committee for Free and Fair Elections in Cambodia). (2013).
+\emph{{2013 National Assembly Elections Final Assessment and Report}}
+{[}Research report{]}.
+
 \bibitem[\citeproctext]{ref-Davenport2007-ww}
 Davenport, Christian. (2007). {State Repression and Political Order}.
 \emph{Annual Review of Political Science}, \emph{10}, 1--23.
@@ -1366,6 +1419,10 @@ legitimation, repression, and co-optation in autocratic regimes}.
 \emph{Democratization}, \emph{20}, 13--38.
 \url{https://doi.org/10.1080/13510347.2013.738860}
 
+\bibitem[\citeproctext]{ref-Hughes2010-ns}
+Hughes, Caroline. (2010). {CAMBODIA IN 2009: The Party's Not Over Yet}.
+\emph{Nan Yang Wen Ti Yan Qiu = Southeast Asian Affairs}, 85--99.
+
 \bibitem[\citeproctext]{ref-Inglehart1997-gw}
 Inglehart, Ronald. (1997). \emph{{Modernization and postmodernization:
 Cultural, economic, and political change in 43 societies}}. Princeton
@@ -1396,16 +1453,14 @@ Mattes, Robert, \& Bratton, Michael. (2007). {Learning about {Democracy}
 in {Africa}: Awareness, {Performance}, and {Experience}}. \emph{American
 Journal of Political Science}, \emph{51}, 192--217.
 
+\bibitem[\citeproctext]{ref-Morgenbesser2017-cu}
+Morgenbesser, L. (2017). {The failure of democratisation by elections in
+Cambodia}. \emph{Contemporary Politics}.
+
 \bibitem[\citeproctext]{ref-Morgenbesser2016-vf}
 Morgenbesser, Lee. (2016). \emph{{Behind the Facade: Elections under
 Authoritarianism in Southeast Asia}}. State University of New York
 Press.
-
-\bibitem[\citeproctext]{ref-Morgenbesser2017-so}
-Morgenbesser, Lee. (2017). {The autocratic mandate: elections,
-legitimacy and regime stability in {Singapore}}. \emph{The Pacific
-Review}, \emph{30}, 205--231.
-\url{https://doi.org/10.1080/09512748.2016.1201134}
 
 \bibitem[\citeproctext]{ref-Morgenbesser2020-kz}
 Morgenbesser, Lee. (2020). \emph{{The rise of sophisticated
@@ -1474,9 +1529,32 @@ University Press.
 Strangio, Sebastian. (2020). \emph{{In the Dragon's Shadow: Southeast
 Asia in the Chinese Century}}. Yale University Press.
 
+\bibitem[\citeproctext]{ref-Um2014-ft}
+Um, Khatharya. (2014). {CAMBODIA IN 2013: The Winds of Change}.
+\emph{Nan Yang Wen Ti Yan Qiu = Southeast Asian Affairs}, 99--116.
+
 \bibitem[\citeproctext]{ref-Un2012-im}
 Un, Kheang. (2012). {A Thin Veneer of Change}. \emph{Asian Survey},
 \emph{52}, 202--209. \url{https://doi.org/10.1525/as.2012.52.1.202}
+
+\bibitem[\citeproctext]{ref-Un2013-ge}
+Un, Kheang. (2013a). {Beyond the Crossroads?} \emph{Asian Survey},
+\emph{53}, 142--149. \url{https://doi.org/10.1525/as.2013.53.1.142}
+
+\bibitem[\citeproctext]{ref-Un2013-zu}
+Un, Kheang. (2013b). {Cambodia in 2012: Towards developmental
+authoritarianism?} In Daljit Singh (Ed.), \emph{{Southeast Asian Affairs
+2013}} (pp. 73--86). ISEAS Publishing.
+\url{https://doi.org/10.1355/9789814459563-009}
+
+\bibitem[\citeproctext]{ref-Un2020-dq}
+Un, Kheang, Luo, Jing Jing, Professor of Political Science at Northern
+Illinois University., \& affiliate of the School of International
+Relations and the Center for Southeast Asian Studies, Xiamen University.
+(2020). {Cambodia in 2019: Entrenching one-party rule and asserting
+national sovereignty in the era of shifting global geopolitics}.
+\emph{Southeast Asian Affairs}, \emph{SEAA20}, 119--136.
+\url{https://doi.org/10.1355/aa20-1g}
 
 \bibitem[\citeproctext]{ref-Wedeen1998-qz}
 Wedeen, Lisa. (1998). {Acting {``As If''}: Symbolic Politics and Social

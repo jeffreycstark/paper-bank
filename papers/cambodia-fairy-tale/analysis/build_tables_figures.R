@@ -1,6 +1,5 @@
 #!/usr/bin/env Rscript
-# build_tables_figures.R — regenerate analysis_data.rds, tables, and figures
-# Run after any change to the upstream abs_harmonized.rds
+# build_tables_figures.R — Task 8 rebuild with gate participation variables
 
 suppressPackageStartupMessages({
   library(tidyverse)
@@ -10,10 +9,9 @@ suppressPackageStartupMessages({
 
 project_root <- "/Users/jeffreystark/Development/Research/paper-bank"
 paper_dir    <- file.path(project_root, "papers/cambodia-fairy-tale")
-analysis_dir <- file.path(paper_dir, "analysis")
-results_dir  <- file.path(analysis_dir, "results")
-fig_dir      <- file.path(analysis_dir, "figures")
-tbl_dir      <- file.path(analysis_dir, "tables")
+results_dir  <- file.path(paper_dir, "analysis/results")
+fig_dir      <- file.path(paper_dir, "analysis/figures")
+tbl_dir      <- file.path(paper_dir, "analysis/tables")
 
 dir.create(results_dir, showWarnings = FALSE, recursive = TRUE)
 dir.create(fig_dir,     showWarnings = FALSE, recursive = TRUE)
@@ -22,142 +20,261 @@ dir.create(tbl_dir,     showWarnings = FALSE, recursive = TRUE)
 source(file.path(project_root, "_data_config.R"))
 source(file.path(paper_dir, "R", "helpers.R"))
 
-# ── 1. Load and save analysis data ────────────────────────────────────────────
-cat("Loading ABS harmonized data...\n")
+# ── 8a. Build analysis_data.rds with gate variables ───────────────────────────
+cat("Loading ABS...\n")
 abs_all <- readRDS(abs_harmonized_path)
+
+gate_vars <- c("gate_contact_elected", "gate_contact_civil_servant",
+               "gate_contact_influential", "gate_petition",
+               "gate_demonstration", "gate_contact_media")
 
 dat <- abs_all |>
   filter(country == 12, wave %in% c(2, 3, 4, 6)) |>
   mutate(
     country_label = "Cambodia",
     year = case_when(
-      wave == 2 ~ 2008,
-      wave == 3 ~ 2012,
-      wave == 4 ~ 2015,
-      wave == 6 ~ 2022
+      wave == 2 ~ 2008, wave == 3 ~ 2012,
+      wave == 4 ~ 2015, wave == 6 ~ 2022
     ),
     age_n    = normalize_01(age),
     edu_n    = normalize_01(education_level),
-    polint_n = normalize_01(political_interest)
+    polint_n = normalize_01(political_interest),
+    # Ensure gates are numeric 0/1
+    across(all_of(gate_vars), ~ as.numeric(as.character(.x)))
   )
 
-cat("Cambodia n =", nrow(dat), "\n")
 cat("N per wave:\n"); print(table(dat$wave, dat$year))
 saveRDS(dat, file.path(results_dir, "analysis_data.rds"))
-cat("Saved: analysis_data.rds\n\n")
+cat("Saved analysis_data.rds\n\n")
 
-# ── 2. Variable sets ───────────────────────────────────────────────────────────
-var_meta <- tribble(
-  ~domain,                    ~variable,                    ~label,
-  "Political Participation",   "action_contact_elected",     "Contacted elected official",
-  "Political Participation",   "action_contact_civil_servant","Contacted civil servant",
-  "Political Participation",   "community_leader_contact",   "Contacted community leader",
-  "Political Participation",   "voted_last_election",        "Voted in last election",
-  "Political Participation",   "action_demonstration",       "Attended demonstration",
-  "Political Participation",   "action_petition",            "Signed petition",
-  "Authoritarian Preferences", "expert_rule",                "Expert rule",
-  "Authoritarian Preferences", "single_party_rule",          "Single-party rule",
-  "Authoritarian Preferences", "strongman_rule",             "Strongman rule",
-  "Authoritarian Preferences", "military_rule",              "Military rule",
-  "Democratic Expectations",   "dem_country_future",         "Democratic future (10pt)",
-  "Democratic Expectations",   "dem_country_past",           "Democratic past (10pt)",
-  "Democratic Expectations",   "dem_country_present_govt",   "Democratic present (10pt)",
-  "Corruption",                "corrupt_witnessed",          "Witnessed corruption (binary)",
-  "Corruption",                "corrupt_national_govt",      "National govt corruption (1-4)",
-  "Corruption",                "corrupt_local_govt",         "Local govt corruption (1-4)",
-  "Media & Political Interest","pol_news_follow",            "Follows political news",
-  "Media & Political Interest","news_internet",              "Internet news",
-  "Media & Political Interest","political_interest",         "Political interest",
-  "Media & Political Interest","pol_discuss",                "Discusses politics"
+# ── Variable metadata ──────────────────────────────────────────────────────────
+# Participation: gate variables (binary → report as %)
+# community_leader_contact and voted_last_election: no gate, keep as mean/proportion
+part_gate_meta <- tribble(
+  ~variable,                   ~label,
+  "gate_contact_elected",      "Contacted elected official",
+  "gate_contact_civil_servant","Contacted civil servant",
+  "gate_contact_influential",  "Contacted influential person",
+  "gate_petition",             "Signed petition",
+  "gate_demonstration",        "Attended demonstration",
+  "gate_contact_media",        "Contacted media"
 )
 
-all_vars <- unique(var_meta$variable)
+part_other_meta <- tribble(
+  ~variable,              ~label,
+  "community_leader_contact", "Contacted community leader (mean, 1–5)",
+  "voted_last_election",      "Voted in last election"
+)
 
-# ── 3. Wave means ──────────────────────────────────────────────────────────────
-wave_means <- dat |>
+non_part_meta <- tribble(
+  ~domain,                    ~variable,                  ~label,
+  "Authoritarian Preferences", "expert_rule",              "Expert rule",
+  "Authoritarian Preferences", "single_party_rule",        "Single-party rule",
+  "Authoritarian Preferences", "strongman_rule",           "Strongman rule",
+  "Authoritarian Preferences", "military_rule",            "Military rule",
+  "Democratic Expectations",   "dem_country_future",       "Democratic future (10pt)",
+  "Democratic Expectations",   "dem_country_past",         "Democratic past (10pt)",
+  "Democratic Expectations",   "dem_country_present_govt", "Democratic present (10pt)",
+  "Corruption",                "corrupt_witnessed",        "Witnessed corruption (binary)",
+  "Corruption",                "corrupt_national_govt",    "National govt corruption (1–4)",
+  "Corruption",                "corrupt_local_govt",       "Local govt corruption (1–4)",
+  "Media & Political Interest","pol_news_follow",          "Follows political news",
+  "Media & Political Interest","news_internet",            "Internet news (1–6)",
+  "Media & Political Interest","political_interest",       "Political interest",
+  "Media & Political Interest","pol_discuss",              "Discusses politics"
+)
+
+all_gate_vars    <- part_gate_meta$variable
+all_other_vars   <- c(part_other_meta$variable, non_part_meta$variable)
+
+# ── Wave-level summaries ───────────────────────────────────────────────────────
+# Gate variables: proportion (mean of 0/1) + valid N
+gate_summary <- dat |>
   group_by(wave, year) |>
   summarise(
-    n = n(),
-    across(all_of(all_vars), ~ round(mean(.x, na.rm = TRUE), 3)),
+    wave_n = n(),
+    across(all_of(all_gate_vars),
+           list(pct = ~ round(mean(.x, na.rm = TRUE) * 100, 1),
+                n   = ~ sum(!is.na(.x))),
+           .names = "{.col}__{.fn}"),
     .groups = "drop"
   )
 
-cat("=== Wave means ===\n")
-print(as.data.frame(wave_means))
+# Other variables: mean + valid N
+other_summary <- dat |>
+  group_by(wave, year) |>
+  summarise(
+    across(all_of(all_other_vars),
+           list(mean = ~ round(mean(.x, na.rm = TRUE), 2),
+                n    = ~ sum(!is.na(.x))),
+           .names = "{.col}__{.fn}"),
+    .groups = "drop"
+  )
 
-w2 <- wave_means |> filter(wave == 2)
-w3 <- wave_means |> filter(wave == 3)
-w4 <- wave_means |> filter(wave == 4)
-w6 <- wave_means |> filter(wave == 6)
+cat("=== Gate variable proportions (%) by wave ===\n")
+gate_summary |>
+  select(wave, year, ends_with("__pct")) |>
+  rename_with(~ sub("__pct$", "", .x)) |>
+  print()
 
-get_val <- function(wdf, v) {
-  val <- wdf[[v]]
-  if (length(val) == 0 || all(is.na(val))) NA_real_ else val
+cat("\n=== Gate valid N by wave ===\n")
+gate_summary |>
+  select(wave, year, ends_with("__n")) |>
+  rename_with(~ sub("__n$", "", .x)) |>
+  print()
+
+# ── Helper: extract wave value from summary ────────────────────────────────────
+get_gate <- function(wdf, v, stat) {
+  col <- paste0(v, "__", stat)
+  val <- wdf[[col]]
+  if (length(val) == 0 || all(is.na(val))) NA else val
 }
-fmt <- function(x, digits = 2) if_else(is.na(x), "—", sprintf(paste0("%.", digits, "f"), x))
-fmt_delta <- function(x) case_when(is.na(x) ~ "—", x > 0 ~ sprintf("+%.2f", x), TRUE ~ sprintf("%.2f", x))
+get_other <- function(wdf, v, stat) {
+  col <- paste0(v, "__", stat)
+  val <- wdf[[col]]
+  if (length(val) == 0 || all(is.na(val))) NA else val
+}
 
-# ── 4. Table 1: Wave 2 baseline ────────────────────────────────────────────────
-table1 <- var_meta |>
-  mutate(
-    w2_mean   = map_dbl(variable, ~ get_val(w2, .x)),
-    w2_fmt    = fmt(w2_mean),
-    n_fmt     = if_else(is.na(w2_mean), "—", as.character(w2$n))
-  ) |>
-  select(domain, label, w2_fmt, n_fmt)
+fmt_pct <- function(pct, n) {
+  if (is.na(pct)) "---" else sprintf("%.1f\\%% (%d)", pct, n)  # \% is LaTeX-escaped percent
+}
+fmt_mean <- function(m, digits = 2) {
+  if (is.na(m) || is.nan(m)) "—" else sprintf(paste0("%.", digits, "f"), m)
+}
+fmt_delta_pct <- function(d) {
+  if (is.na(d)) "—" else if (d > 0) sprintf("+%.1f pp", d) else sprintf("%.1f pp", d)
+}
+fmt_delta_mean <- function(d) {
+  if (is.na(d)) "—" else if (d > 0) sprintf("+%.2f", d) else sprintf("%.2f", d)
+}
+
+waves <- list(w2 = 2, w3 = 3, w4 = 4, w6 = 6)
+wdf <- list(
+  w2 = gate_summary |> filter(wave == 2),
+  w3 = gate_summary |> filter(wave == 3),
+  w4 = gate_summary |> filter(wave == 4),
+  w6 = gate_summary |> filter(wave == 6)
+)
+odf <- list(
+  w2 = other_summary |> filter(wave == 2),
+  w3 = other_summary |> filter(wave == 3),
+  w4 = other_summary |> filter(wave == 4),
+  w6 = other_summary |> filter(wave == 6)
+)
+
+# ── 8b. Table 1: W2 Baseline ──────────────────────────────────────────────────
+make_part_row_t1 <- function(v, label) {
+  pct <- get_gate(wdf$w2, v, "pct")
+  n   <- get_gate(wdf$w2, v, "n")
+  tibble(domain = "Political Participation (% ever)", label = label,
+         w2_fmt = fmt_pct(pct, n))
+}
+make_other_row_t1 <- function(v, label, dom) {
+  m <- get_other(odf$w2, v, "mean")
+  n <- get_other(odf$w2, v, "n")
+  tibble(domain = dom, label = label,
+         w2_fmt = if (is.na(m) || is.nan(m)) "—" else
+                  sprintf("%s (%d)", fmt_mean(m), n))
+}
+
+table1 <- bind_rows(
+  pmap_dfr(part_gate_meta,  ~ make_part_row_t1(..1, ..2)),
+  pmap_dfr(part_other_meta, ~ make_other_row_t1(..1, ..2, "Political Participation")),
+  pmap_dfr(non_part_meta,   ~ make_other_row_t1(..2, ..3, ..1))
+)
 
 saveRDS(table1, file.path(tbl_dir, "table1_w2_baseline.rds"))
-cat("\nTable 1 saved.\n")
+cat("\n=== Table 1 ===\n"); print(table1)
 
-# ── 5. Table 2: W3→W4 comparison ──────────────────────────────────────────────
-table2 <- var_meta |>
-  mutate(
-    w3_mean   = map_dbl(variable, ~ get_val(w3, .x)),
-    w4_mean   = map_dbl(variable, ~ get_val(w4, .x)),
-    delta     = round(w4_mean - w3_mean, 3),
-    w3_fmt    = fmt(w3_mean),
-    w4_fmt    = fmt(w4_mean),
-    delta_fmt = fmt_delta(delta)
-  ) |>
-  select(domain, label, w3_fmt, w4_fmt, delta_fmt)
+# ── 8b. Table 2: W3→W4 comparison ────────────────────────────────────────────
+make_part_row_t2 <- function(v, label) {
+  p3 <- get_gate(wdf$w3, v, "pct"); n3 <- get_gate(wdf$w3, v, "n")
+  p4 <- get_gate(wdf$w4, v, "pct"); n4 <- get_gate(wdf$w4, v, "n")
+  d  <- if (!is.na(p3) && !is.na(p4)) round(p4 - p3, 1) else NA_real_
+  tibble(domain = "Political Participation (% ever)", label = label,
+         w3_fmt = fmt_pct(p3, n3), w4_fmt = fmt_pct(p4, n4),
+         delta_fmt = fmt_delta_pct(d))
+}
+make_other_row_t2 <- function(v, label, dom) {
+  m3 <- get_other(odf$w3, v, "mean"); n3 <- get_other(odf$w3, v, "n")
+  m4 <- get_other(odf$w4, v, "mean"); n4 <- get_other(odf$w4, v, "n")
+  d  <- if (!is.na(m3) && !is.na(m4) && !is.nan(m3) && !is.nan(m4))
+           round(m4 - m3, 2) else NA_real_
+  tibble(domain = dom, label = label,
+         w3_fmt = if (is.na(m3)||is.nan(m3)) "—" else sprintf("%s (%d)", fmt_mean(m3), n3),
+         w4_fmt = if (is.na(m4)||is.nan(m4)) "—" else sprintf("%s (%d)", fmt_mean(m4), n4),
+         delta_fmt = fmt_delta_mean(d))
+}
+
+table2 <- bind_rows(
+  pmap_dfr(part_gate_meta,  ~ make_part_row_t2(..1, ..2)),
+  pmap_dfr(part_other_meta, ~ make_other_row_t2(..1, ..2, "Political Participation")),
+  pmap_dfr(non_part_meta,   ~ make_other_row_t2(..2, ..3, ..1))
+)
 
 saveRDS(table2, file.path(tbl_dir, "table2_w3w4_comparison.rds"))
-cat("Table 2 saved.\n")
+cat("\n=== Table 2 ===\n"); print(table2)
 
-# ── 6. Table 3: Four-wave trajectory ──────────────────────────────────────────
-table3 <- var_meta |>
-  mutate(
-    w2_mean   = map_dbl(variable, ~ get_val(w2, .x)),
-    w3_mean   = map_dbl(variable, ~ get_val(w3, .x)),
-    w4_mean   = map_dbl(variable, ~ get_val(w4, .x)),
-    w6_mean   = map_dbl(variable, ~ get_val(w6, .x)),
-    delta     = round(w6_mean - w3_mean, 3),
-    w2_fmt    = fmt(w2_mean),
-    w3_fmt    = fmt(w3_mean),
-    w4_fmt    = fmt(w4_mean),
-    w6_fmt    = fmt(w6_mean),
-    delta_fmt = fmt_delta(delta)
-  ) |>
-  select(domain, label, w2_fmt, w3_fmt, w4_fmt, w6_fmt, delta_fmt)
+# ── 8b. Table 3: Four-wave trajectory ────────────────────────────────────────
+make_part_row_t3 <- function(v, label) {
+  p2 <- get_gate(wdf$w2, v, "pct"); n2 <- get_gate(wdf$w2, v, "n")
+  p3 <- get_gate(wdf$w3, v, "pct"); n3 <- get_gate(wdf$w3, v, "n")
+  p4 <- get_gate(wdf$w4, v, "pct"); n4 <- get_gate(wdf$w4, v, "n")
+  p6 <- get_gate(wdf$w6, v, "pct"); n6 <- get_gate(wdf$w6, v, "n")
+  d  <- if (!is.na(p3) && !is.na(p6)) round(p6 - p3, 1) else NA_real_
+  tibble(domain = "Political Participation (% ever)", label = label,
+         w2_fmt = fmt_pct(p2, n2), w3_fmt = fmt_pct(p3, n3),
+         w4_fmt = fmt_pct(p4, n4), w6_fmt = fmt_pct(p6, n6),
+         delta_fmt = fmt_delta_pct(d))
+}
+make_other_row_t3 <- function(v, label, dom) {
+  m2 <- get_other(odf$w2, v, "mean"); n2 <- get_other(odf$w2, v, "n")
+  m3 <- get_other(odf$w3, v, "mean"); n3 <- get_other(odf$w3, v, "n")
+  m4 <- get_other(odf$w4, v, "mean"); n4 <- get_other(odf$w4, v, "n")
+  m6 <- get_other(odf$w6, v, "mean"); n6 <- get_other(odf$w6, v, "n")
+  d  <- if (!is.na(m3) && !is.na(m6) && !is.nan(m3) && !is.nan(m6))
+           round(m6 - m3, 2) else NA_real_
+  fmt_cell <- function(m, n) if (is.na(m)||is.nan(m)) "—" else
+              sprintf("%s (%d)", fmt_mean(m), n)
+  tibble(domain = dom, label = label,
+         w2_fmt = fmt_cell(m2, n2), w3_fmt = fmt_cell(m3, n3),
+         w4_fmt = fmt_cell(m4, n4), w6_fmt = fmt_cell(m6, n6),
+         delta_fmt = fmt_delta_mean(d))
+}
+
+table3 <- bind_rows(
+  pmap_dfr(part_gate_meta,  ~ make_part_row_t3(..1, ..2)),
+  pmap_dfr(part_other_meta, ~ make_other_row_t3(..1, ..2, "Political Participation")),
+  pmap_dfr(non_part_meta,   ~ make_other_row_t3(..2, ..3, ..1))
+)
 
 saveRDS(table3, file.path(tbl_dir, "table3_four_wave_trajectory.rds"))
-cat("Table 3 saved.\n")
+cat("\n=== Table 3 ===\n"); print(table3)
 
-# ── 7. Figure 1: Multi-panel trend plot ───────────────────────────────────────
-fig_vars <- tribble(
-  ~domain,                    ~variable,                    ~label,
-  "Political Participation",   "action_contact_elected",     "Contacted official",
-  "Political Participation",   "action_demonstration",       "Attended demonstration",
-  "Political Participation",   "voted_last_election",        "Voted (last election)",
-  "Authoritarian Preferences", "single_party_rule",          "Single-party rule",
-  "Authoritarian Preferences", "strongman_rule",             "Strongman rule",
-  "Democratic Expectations",   "dem_country_future",         "Democratic future",
-  "Democratic Expectations",   "dem_country_present_govt",   "Democratic present",
-  "Corruption",                "corrupt_witnessed",          "Witnessed corruption",
-  "Corruption",                "corrupt_national_govt",      "Nat'l govt corruption",
-  "Media & Political Interest","pol_news_follow",            "Follows pol. news",
-  "Media & Political Interest","political_interest",         "Political interest"
+# ── 8c. Figure 1 rebuild ──────────────────────────────────────────────────────
+# Participation facet: gate proportions (as 0-1); other facets: means as before
+fig_part_vars <- tibble(
+  domain   = "Political Participation",
+  variable = c("gate_contact_elected", "gate_demonstration", "voted_last_election"),
+  label    = c("Contacted official", "Attended demonstration", "Voted (last election)"),
+  is_gate  = c(TRUE, TRUE, FALSE)
 )
+fig_other_vars <- tibble(
+  domain   = c("Authoritarian Preferences","Authoritarian Preferences",
+                "Democratic Expectations",  "Democratic Expectations",
+                "Corruption",               "Corruption",
+                "Media & Political Interest","Media & Political Interest"),
+  variable = c("single_party_rule","strongman_rule",
+               "dem_country_future","dem_country_present_govt",
+               "corrupt_witnessed","corrupt_national_govt",
+               "pol_news_follow","political_interest"),
+  label    = c("Single-party rule","Strongman rule",
+               "Democratic future","Democratic present",
+               "Witnessed corruption","Nat'l govt corruption",
+               "Follows pol. news","Political interest"),
+  is_gate  = FALSE
+)
+fig_vars <- bind_rows(fig_part_vars, fig_other_vars)
 
 fig_data <- dat |>
   select(wave, year, all_of(unique(fig_vars$variable))) |>
@@ -165,11 +282,15 @@ fig_data <- dat |>
   filter(!is.na(value)) |>
   group_by(variable, year) |>
   summarise(mean_val = mean(value, na.rm = TRUE), .groups = "drop") |>
-  left_join(fig_vars |> select(variable, domain, label), by = "variable") |>
-  mutate(domain = factor(domain, levels = c(
-    "Political Participation", "Authoritarian Preferences",
-    "Democratic Expectations", "Corruption", "Media & Political Interest"
-  )))
+  left_join(fig_vars, by = "variable") |>
+  mutate(
+    # Scale participation gates to % for display
+    mean_val = if_else(is_gate, mean_val * 100, mean_val),
+    domain = factor(domain, levels = c(
+      "Political Participation", "Authoritarian Preferences",
+      "Democratic Expectations", "Corruption", "Media & Political Interest"
+    ))
+  )
 
 fig1 <- ggplot(fig_data, aes(x = year, y = mean_val, color = label, group = label)) +
   geom_line(linewidth = 0.8) +
@@ -180,31 +301,114 @@ fig1 <- ggplot(fig_data, aes(x = year, y = mean_val, color = label, group = labe
   facet_wrap(~domain, scales = "free_y", ncol = 2) +
   scale_x_continuous(breaks = c(2008, 2012, 2015, 2022)) +
   scale_color_manual(values = c(
-    "#2166AC", "#B2182B", "#4DAF4A", "#F4A582", "#D6604D",
-    "#92C5DE", "#4393C3", "#762A83", "#9970AB", "#1B7837", "#5AAE61"
+    "#2166AC","#B2182B","#4DAF4A","#F4A582","#D6604D",
+    "#92C5DE","#4393C3","#762A83","#9970AB","#1B7837","#5AAE61"
   )) +
   labs(
     title    = "Political Orientations in Cambodia, 2008-2022",
-    subtitle = "Wave means by domain. Dashed line = 2017 CNRP dissolution.",
-    x = NULL, y = "Mean value",
-    caption  = "Source: Asian Barometer Survey, Waves 2, 3, 4, 6. Cambodia (N = 1,000-1,242 per wave)."
+    subtitle = "Participation panel: % who ever engaged (gate). Other panels: wave means.",
+    x = NULL, y = NULL,
+    caption = "Source: Asian Barometer Survey, Waves 2, 3, 4, 6. Cambodia (N = 1,000-1,242 per wave)."
   ) +
   theme_pub +
   theme(legend.position = "right", legend.text = element_text(size = 7.5))
 
 ggsave(file.path(fig_dir, "fig1_trend_panels.pdf"), fig1, width = 10, height = 8)
 ggsave(file.path(fig_dir, "fig1_trend_panels.png"), fig1, width = 10, height = 8, dpi = 300)
-cat("Figure 1 saved.\n")
+cat("\nFigure 1 saved.\n")
 
-# ── 8. Print updated news_internet values specifically ───────────────────────
-cat("\n=== news_internet values (check against manuscript text) ===\n")
-dat |>
+# ── 8d. Stat verification: gate proportions vs manuscript text ────────────────
+cat("\n\n=== 8d. STAT VERIFICATION REPORT ===\n")
+
+# Actual gate proportions from data
+actual_gates <- dat |>
   group_by(wave, year) |>
   summarise(
-    n_nonmissing = sum(!is.na(news_internet)),
-    mean_val     = round(mean(news_internet, na.rm = TRUE), 3),
+    across(all_of(all_gate_vars),
+           list(pct = ~ round(mean(.x, na.rm=TRUE)*100, 1),
+                n   = ~ sum(!is.na(.x))),
+           .names = "{.col}__{.fn}"),
+    .groups = "drop"
+  )
+
+# Manuscript search: grep for hardcoded numbers related to participation
+# Old frequency means that appear in the manuscript
+old_vals <- tribble(
+  ~variable,                   ~wave_label, ~wave_num, ~old_val, ~what,
+  "action_contact_elected",     "W2",  2,  3.44,  "freq mean",
+  "action_contact_elected",     "W3",  3,  4.31,  "freq mean",
+  "action_contact_elected",     "W4",  4,  3.08,  "freq mean",
+  "action_contact_elected",     "W6",  6,  1.74,  "freq mean",
+  "action_contact_civil_servant","W2", 2,  3.43,  "freq mean",
+  "action_contact_civil_servant","W3", 3,  4.33,  "freq mean",
+  "action_contact_civil_servant","W4", 4,  3.19,  "freq mean",
+  "action_contact_civil_servant","W6", 6,  2.47,  "freq mean",
+  "action_demonstration",        "W3", 3,  4.48,  "freq mean",
+  "action_demonstration",        "W4", 4,  3.07,  "freq mean",
+  "action_demonstration",        "W6", 6,  1.29,  "freq mean",
+  "action_petition",             "W3", 3,  4.34,  "freq mean",
+  "action_petition",             "W4", 4,  3.23,  "freq mean",
+  "action_petition",             "W6", 6,  2.14,  "freq mean"
+)
+
+gate_map <- c(
+  "action_contact_elected"      = "gate_contact_elected",
+  "action_contact_civil_servant"= "gate_contact_civil_servant",
+  "action_demonstration"        = "gate_demonstration",
+  "action_petition"             = "gate_petition"
+)
+
+cat(sprintf("%-30s %-5s %-10s %-10s %-6s\n",
+            "Variable", "Wave", "Old (freq)", "New (gate%)", "Valid N"))
+cat(strrep("-", 65), "\n")
+
+for (i in seq_len(nrow(old_vals))) {
+  row    <- old_vals[i, ]
+  gvar   <- gate_map[row$variable]
+  w_row  <- actual_gates |> filter(wave == row$wave_num)
+  pct    <- w_row[[paste0(gvar, "__pct")]]
+  n      <- w_row[[paste0(gvar, "__n")]]
+  cat(sprintf("%-30s %-5s %-10s %-10s %-6s\n",
+              row$variable, row$wave_label,
+              sprintf("%.2f", row$old_val),
+              if(is.null(pct)||is.na(pct)) "—" else sprintf("%.1f%%", pct),
+              if(is.null(n)||is.na(n)) "—" else as.character(n)))
+}
+
+# ── 8e. Updated valid-N report ────────────────────────────────────────────────
+cat("\n\n=== 8e. UPDATED VALID-N REPORT (gate variables included) ===\n")
+
+all_check_vars <- c(all_gate_vars,
+                    "community_leader_contact", "voted_last_election",
+                    non_part_meta$variable)
+
+valid_ns <- dat |>
+  filter(wave %in% c(2,3,4,6)) |>
+  group_by(wave, year) |>
+  summarise(
+    wave_n = n(),
+    across(all_of(all_check_vars), ~ sum(!is.na(.x))),
     .groups = "drop"
   ) |>
-  print()
+  pivot_longer(-c(wave, year, wave_n), names_to = "variable", values_to = "valid_n") |>
+  mutate(pct_valid = round(valid_n / wave_n * 100, 1),
+         is_gate   = variable %in% all_gate_vars)
+
+cat("\nGate variables — valid N:\n")
+valid_ns |> filter(is_gate) |>
+  select(wave, year, variable, valid_n, wave_n, pct_valid) |>
+  arrange(variable, wave) |>
+  print(n = 40)
+
+cat("\nFlagged non-gate variables (>10% missing):\n")
+valid_ns |>
+  filter(!is_gate) |>
+  group_by(wave) |>
+  mutate(threshold = 0.90 * max(valid_n)) |>
+  ungroup() |>
+  filter(valid_n < threshold) |>
+  select(wave, year, variable, valid_n, wave_n, pct_valid) |>
+  arrange(wave, pct_valid) |>
+  print(n = 50)
 
 cat("\nDONE.\n")
