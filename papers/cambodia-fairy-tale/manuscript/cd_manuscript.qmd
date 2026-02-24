@@ -399,7 +399,6 @@ The fairy tale has no happy ending. But it has a lesson, and the lesson is not a
 
 ```{r tbl-tableA1}
 #| echo: false
-#| tbl-cap: "Cross-Wave Comparability of Survey Items"
 comp <- read.csv(file.path(rr_dir, "comparability_matrix.csv"), stringsAsFactors = FALSE)
 
 comp |>
@@ -412,21 +411,22 @@ comp |>
     escape    = TRUE
   ) |>
   kable_styling(
-    latex_options = c("hold_position", "scale_down", "repeat_header"),
+    latex_options = c("repeat_header"),
     font_size     = 7,
-    full_width    = TRUE
+    full_width    = FALSE
   ) |>
-  column_spec(1, width = "2.2cm") |>
-  column_spec(2, width = "2.8cm") |>
-  column_spec(3, width = "2.8cm") |>
-  column_spec(4, width = "2.8cm") |>
-  column_spec(5, width = "2.8cm") |>
-  column_spec(6, width = "1.4cm") |>
+  column_spec(1, width = "2.0cm") |>
+  column_spec(2, width = "2.3cm") |>
+  column_spec(3, width = "2.3cm") |>
+  column_spec(4, width = "2.3cm") |>
+  column_spec(5, width = "2.3cm") |>
+  column_spec(6, width = "1.5cm") |>
   footnote(
     general = "Status: Full = identical or functionally equivalent wording across all waves used; Partial = minor wording shift or item not fielded in all waves (cross-wave comparison valid with caveats noted in text). No items are classified as Excluded from all comparisons; wave-pair restrictions are noted in the main text.",
     general_title = "Note:",
     footnote_as_chunk = TRUE,
-    escape = FALSE
+    escape = FALSE,
+    threeparttable = TRUE
   )
 ```
 
@@ -442,7 +442,7 @@ A2 <- readRDS(file.path(tbl_dir, "tableA2_subgroups.rds"))
 # Helper: print one panel as kbl
 print_A2_panel <- function(df, title, footnote_txt) {
   data_cols <- setdiff(names(df), c("label", "wave_label"))
-  df |>
+  tbl <- df |>
     dplyr::select(wave_label, all_of(data_cols)) |>
     kbl(
       col.names  = c("Wave", data_cols),
@@ -451,10 +451,13 @@ print_A2_panel <- function(df, title, footnote_txt) {
       escape     = FALSE
     ) |>
     kable_styling(
-      latex_options = c("hold_position", "scale_down"),
-      font_size     = 8,
+      latex_options = c("hold_position"),
+      font_size     = 9,
       full_width    = FALSE
     ) |>
+    column_spec(1, width = "2.5cm") |>
+    column_spec(seq_along(data_cols) + 1L,
+                width = paste0(round(11.5 / length(data_cols), 1), "cm")) |>
     pack_rows("Gate: contacted influential person", 1, 4) |>
     pack_rows("Democratic future (0-10 mean)", 5, 7) |>
     pack_rows("Witnessed corruption (\\%)", 8, 11) |>
@@ -465,8 +468,12 @@ print_A2_panel <- function(df, title, footnote_txt) {
       general           = footnote_txt,
       general_title     = "Note:",
       footnote_as_chunk = TRUE,
-      escape            = FALSE
+      escape            = FALSE,
+      threeparttable    = TRUE
     )
+  # Inject single-spacing so double-spaced document doesn't push rows off page
+  tbl_str <- sub("\\begingroup", "\\begingroup\\setstretch{1}", as.character(tbl), fixed = TRUE)
+  knitr::asis_output(tbl_str)
 }
 
 ci_note <- "Estimates shown with 95\\\\% CI in parentheses (Wilson interval for proportions; t-based for means). Gate proportions and voted/corruption displayed as percentages. '---' = item not fielded in wave. Wave 2 (2008), Wave 3 (2012), Wave 4 (2015), Wave 6 (2021)."
@@ -482,7 +489,7 @@ ci_note <- "Estimates shown with 95\\\\% CI in parentheses (Wilson interval for 
 
 print_A2_panel <- function(df, title, footnote_txt) {
   data_cols <- setdiff(names(df), c("label", "wave_label"))
-  df |>
+  tbl <- df |>
     dplyr::select(wave_label, all_of(data_cols)) |>
     kbl(
       col.names  = c("Wave", data_cols),
@@ -491,10 +498,13 @@ print_A2_panel <- function(df, title, footnote_txt) {
       escape     = FALSE
     ) |>
     kable_styling(
-      latex_options = c("hold_position", "scale_down"),
-      font_size     = 8,
+      latex_options = c("hold_position"),
+      font_size     = 9,
       full_width    = FALSE
     ) |>
+    column_spec(1, width = "2.5cm") |>
+    column_spec(seq_along(data_cols) + 1L,
+                width = paste0(round(11.5 / length(data_cols), 1), "cm")) |>
     pack_rows("Gate: contacted influential person", 1, 4) |>
     pack_rows("Democratic future (0-10 mean)", 5, 7) |>
     pack_rows("Witnessed corruption (\\%)", 8, 11) |>
@@ -505,8 +515,12 @@ print_A2_panel <- function(df, title, footnote_txt) {
       general           = footnote_txt,
       general_title     = "Note:",
       footnote_as_chunk = TRUE,
-      escape            = FALSE
+      escape            = FALSE,
+      threeparttable    = TRUE
     )
+  # Inject single-spacing so double-spaced document doesn't push rows off page
+  tbl_str <- sub("\\begingroup", "\\begingroup\\setstretch{1}", as.character(tbl), fixed = TRUE)
+  knitr::asis_output(tbl_str)
 }
 
 print_A2_panel(A2$age, "Subgroup Analysis by Age Group", ci_note)
@@ -520,7 +534,7 @@ ci_note <- "Estimates shown with 95\\\\% CI in parentheses (Wilson interval for 
 
 print_A2_panel <- function(df, title, footnote_txt) {
   data_cols <- setdiff(names(df), c("label", "wave_label"))
-  df |>
+  tbl <- df |>
     dplyr::select(wave_label, all_of(data_cols)) |>
     kbl(
       col.names  = c("Wave", data_cols),
@@ -529,10 +543,13 @@ print_A2_panel <- function(df, title, footnote_txt) {
       escape     = FALSE
     ) |>
     kable_styling(
-      latex_options = c("hold_position", "scale_down"),
-      font_size     = 8,
+      latex_options = c("hold_position"),
+      font_size     = 9,
       full_width    = FALSE
     ) |>
+    column_spec(1, width = "2.5cm") |>
+    column_spec(seq_along(data_cols) + 1L,
+                width = paste0(round(11.5 / length(data_cols), 1), "cm")) |>
     pack_rows("Gate: contacted influential person", 1, 4) |>
     pack_rows("Democratic future (0-10 mean)", 5, 7) |>
     pack_rows("Witnessed corruption (\\%)", 8, 11) |>
@@ -543,8 +560,12 @@ print_A2_panel <- function(df, title, footnote_txt) {
       general           = footnote_txt,
       general_title     = "Note:",
       footnote_as_chunk = TRUE,
-      escape            = FALSE
+      escape            = FALSE,
+      threeparttable    = TRUE
     )
+  # Inject single-spacing so double-spaced document doesn't push rows off page
+  tbl_str <- sub("\\begingroup", "\\begingroup\\setstretch{1}", as.character(tbl), fixed = TRUE)
+  knitr::asis_output(tbl_str)
 }
 
 print_A2_panel(A2$education, "Subgroup Analysis by Education Level", ci_note)
@@ -567,15 +588,17 @@ A3 |>
     escape    = FALSE
   ) |>
   kable_styling(
-    latex_options = c("hold_position", "scale_down"),
-    font_size     = 9,
-    full_width    = TRUE
+    latex_options = c("hold_position"),
+    font_size     = 10,
+    full_width    = FALSE
   ) |>
-  column_spec(1, width = "4.5cm") |>
+  column_spec(1, width = "4.0cm") |>
+  column_spec(2:5, width = "2.5cm") |>
   footnote(
     general = "Cell format: estimate (SE). Proportions (interpersonal trust) shown as percentage (SE in percentage points). Means shown as raw scale values (SE). '---' = item not fielded in wave. Items are non-political and should not be affected by opposition elimination; stable values support the domain-specificity of observed political attitude shifts.",
     general_title = "Note:",
     footnote_as_chunk = TRUE,
-    escape = FALSE
+    escape = FALSE,
+    threeparttable = TRUE
   )
 ```
