@@ -5,12 +5,12 @@
 \PassOptionsToPackage{dvipsnames,svgnames,x11names}{xcolor}
 %
 \documentclass[
-  12pt,
-  letterpaper]{article}
+  letterpaper,
+  DIV=11,
+  numbers=noendperiod]{scrartcl}
 \usepackage{xcolor}
-\usepackage[margin=1in]{geometry}
 \usepackage{amsmath,amssymb}
-\setcounter{secnumdepth}{5}
+\setcounter{secnumdepth}{-\maxdimen} % remove section numbering
 \usepackage{iftex}
 \ifPDFTeX
   \usepackage[T1]{fontenc}
@@ -31,7 +31,6 @@
   \usepackage[]{microtype}
   \UseMicrotypeSet[protrusion]{basicmath} % disable protrusion for tt fonts
 }{}
-\usepackage{setspace}
 \makeatletter
 \@ifundefined{KOMAClassName}{% if non-KOMA class
   \IfFileExists{parskip.sty}{%
@@ -140,23 +139,21 @@
  
 
 
-\usepackage{setspace}
 \usepackage{booktabs}
-\usepackage{caption}
 \usepackage{longtable}
 \usepackage{array}
 \usepackage{multirow}
+\usepackage{wrapfig}
 \usepackage{float}
-\usepackage{graphicx}
+\usepackage{colortbl}
+\usepackage{pdflscape}
+\usepackage{tabu}
 \usepackage{threeparttable}
 \usepackage{threeparttablex}
-\usepackage{colortbl}
+\usepackage[normalem]{ulem}
+\usepackage{makecell}
 \usepackage{xcolor}
-\captionsetup{width=\textwidth}
-\setlength\LTcapwidth{\textwidth}
-\floatplacement{figure}{H}
-\floatplacement{table}{H}
-\raggedright
+\KOMAoption{captions}{tableheading}
 \makeatletter
 \@ifpackageloaded{caption}{}{\usepackage{caption}}
 \AtBeginDocument{%
@@ -210,15 +207,15 @@ authoritarianism, democratic aspirations},
   colorlinks=true,
   linkcolor={blue},
   filecolor={Maroon},
-  citecolor={blue},
-  urlcolor={blue},
+  citecolor={Blue},
+  urlcolor={Blue},
   pdfcreator={LaTeX via pandoc}}
 
 
 \title{The Education of a Citizenry: Hope, Demobilization, and
 Authoritarian Normalization in Cambodia, 2008--2021}
 \author{Jeffrey Stark}
-\date{February 24, 2026 at 7:17 PM}
+\date{February 24, 2026 at 8:15 AM}
 \begin{document}
 \maketitle
 \begin{abstract}
@@ -244,7 +241,6 @@ imagination.
 \end{abstract}
 
 
-\setstretch{2}
 \section{Introduction}\label{introduction}
 
 In 2012, Cambodians rated the democratic future of their country at 9.6
@@ -254,10 +250,10 @@ It is worth pausing on that number. On a scale designed to capture the
 full range of democratic expectation, Cambodian respondents placed
 themselves at the extreme ceiling---more optimistic about their
 democratic trajectory than citizens of virtually any other country
-surveyed by the Asian Barometer (Hu et al. 2023). This was not a country
-with free and fair elections, an independent judiciary, or a vibrant
-free press. It was a dominant-party authoritarian state under the
-continuous rule of Hun Sen and the Cambodian People's Party (CPP), a
+surveyed by the Asian Barometer (Hu et al., 2023). This was not a
+country with free and fair elections, an independent judiciary, or a
+vibrant free press. It was a dominant-party authoritarian state under
+the continuous rule of Hun Sen and the Cambodian People's Party (CPP), a
 regime that had held power since 1985 and showed no signs of voluntary
 departure. And yet Cambodians believed, with remarkable consistency,
 that democracy was coming.
@@ -327,16 +323,16 @@ fields of competitive authoritarianism, the meticulous menu of
 manipulation required to manage electoral autocracies, and the
 stabilizing pillars of legitimation, repression, and
 co-optation.\footnote{For the foundational typologies of these
-  institutional survival mechanics, see Levitsky and Way (2010);
-  Schedler (2013); and Gerschewski (2013). While these frameworks
-  masterfully explain elite-level regime consolidation, they are less
-  equipped to explain the simultaneous, multi-dimensional shifts in mass
-  public opinion observed in the Asian Barometer Survey data during
-  periods of opposition collapse.} Yet, this institutional focus, while
-vital for understanding the resilience of the state, often obscures the
-quiet, downstream effects on the citizenry. Theories of regime survival
-tend to treat the public as a variable to be managed---either repressed
-into submission or bought off through patronage. This article shifts the
+  institutional survival mechanics, see Levitsky \& Way (2010); Schedler
+  (2013); and Gerschewski (2013). While these frameworks masterfully
+  explain elite-level regime consolidation, they are less equipped to
+  explain the simultaneous, multi-dimensional shifts in mass public
+  opinion observed in the Asian Barometer Survey data during periods of
+  opposition collapse.} Yet, this institutional focus, while vital for
+understanding the resilience of the state, often obscures the quiet,
+downstream effects on the citizenry. Theories of regime survival tend to
+treat the public as a variable to be managed---either repressed into
+submission or bought off through patronage. This article shifts the
 analytical lens. By tracing the Cambodian electorate's trajectory from
 2008 to 2021, it focuses not on how the regime maintained power, but on
 what happens to citizen orientations when the democratic alternative is
@@ -372,7 +368,7 @@ of viable channels for political expression.\footnote{Gaventa's central
   internalization of quiescence---provides the closest existing
   theoretical analogue to the pattern observed in the Cambodian data,
   though his analysis is situated in a very different political context
-  (Gaventa 1980).} Where Lukes' third dimension of power operates by
+  (Gaventa, 1980).} Where Lukes' third dimension of power operates by
 shaping preferences so that grievances never form, demobilization by
 subtraction operates one step later: grievances may persist, but the
 perceived vehicle for their expression has been eliminated, producing a
@@ -381,7 +377,7 @@ multiple survey dimensions simultaneously.\footnote{The distinction
   matters: Lukes' third dimension operates \emph{before} grievances
   form; demobilization by subtraction operates \emph{after} grievances
   have formed and been politically activated, removing the vehicle for
-  their expression rather than the grievances themselves (Lukes 2005).}
+  their expression rather than the grievances themselves (Lukes, 2005).}
 
 The remainder of this article proceeds as follows. A data and
 measurement section describes the Asian Barometer Survey waves, sampling
@@ -553,11 +549,11 @@ flowed.\footnote{On the CPP's patronage architecture, see Caroline
   (Copenhagen: NIAS Press, 2011); Un (2012).} The military and security
 services were thoroughly integrated into the party apparatus, and the
 judiciary operated as an instrument of executive power rather than an
-independent check upon it (Blake 2019; Morgenbesser 2016). Economic
-growth, driven by the garment export sector, construction, and an
-expanding tourism industry, provided a material foundation for the
+independent check upon it.\footnote{Blake (2019); Morgenbesser (2016).}
+Economic growth, driven by the garment export sector, construction, and
+an expanding tourism industry, provided a material foundation for the
 regime's implicit social contract: stability and modest prosperity in
-exchange for political acquiescence (Hughes and Un 2011).
+exchange for political acquiescence.\footnote{Hughes \& Un (2011)}
 
 The opposition landscape was fragmented and demoralized. The Sam Rainsy
 Party (SRP), the most prominent non-CPP formation, commanded a loyal but
@@ -567,7 +563,9 @@ Party, led by Kem Sokha, drew support from a distinct base but lacked
 the organizational reach to challenge the CPP's rural dominance. Neither
 party, operating independently, presented a credible threat to CPP
 hegemony---a structural condition that would change dramatically with
-their merger four years later (Noren-Nilsson 2015).
+their merger four years later.\footnote{Noren-Nilsson (2015) provides
+  the most detailed account of the opposition landscape in this period
+  and the narratives that would eventually fuel the CNRP's formation.}
 
 The Wave 2 Asian Barometer data from this period paint a portrait of a
 population that was neither enthusiastic nor resistant, but simply
@@ -721,10 +719,10 @@ non-CPP vote, personal rivalries preventing coordination, and the
 absence of a unified organizational infrastructure capable of matching
 the CPP's commune-level reach. The merger of the SRP and the Human
 Rights Party, brokered through extended negotiations between Sam Rainsy
-and Kem Sokha, resolved the coordination problem at a stroke
-(Noren-Nilsson 2015; Un 2013a). The resulting party offered voters
-something genuinely new in Cambodian politics: a single, unified
-alternative to the CPP with recognizable leaders, a coherent platform,
+and Kem Sokha, resolved the coordination problem at a stroke.\footnote{Noren-Nilsson
+  (2015); Un (2013a).} The resulting party offered voters something
+genuinely new in Cambodian politics: a single, unified alternative to
+the CPP with recognizable leaders, a coherent platform,
 and---critically---the organizational capacity to mobilize supporters in
 both urban and peri-urban constituencies.
 
@@ -735,13 +733,16 @@ driven by a potent combination of youth demographics, social media
 penetration, and economic grievance. Facebook, which had reached an
 estimated 1.5 million Cambodian users by 2013, served as both an
 organizational tool and an alternative information ecosystem that
-partially circumvented CPP control of broadcast media (Norén-Nilsson
-2021a; Morgenbesser 2020). The CNRP's campaign messaging---centered on
+partially circumvented CPP control of broadcast media.\footnote{Norén-Nilsson
+  (2021a) on Fresh News and Cambodia's digital media landscape. On the
+  broader role of social media in authoritarian contexts, see
+  Morgenbesser (2020).} The CNRP's campaign messaging---centered on
 anti-corruption, land rights, wages for garment workers, and a promise
 to bring genuine democratic accountability---resonated with a generation
 of voters who had no memory of the Khmer Rouge and little patience for
-the stability-first bargain their parents had accepted (Norén-Nilsson
-2021b).
+the stability-first bargain their parents had accepted.\footnote{Norén-Nilsson
+  (2021b) on youth mobilization and power reproduction in Cambodia's
+  authoritarian system.}
 
 The election results shocked the political establishment. The CNRP won
 55 of 123 National Assembly seats, reducing the CPP's margin to its
@@ -749,8 +750,8 @@ narrowest since 1993. Allegations of systematic electoral fraud
 triggered months of mass protest in Phnom Penh, with demonstrations
 regularly drawing crowds estimated in the tens of thousands. For
 observers and participants alike, the political settlement that had
-governed Cambodia since the late 1990s appeared to be unraveling
-(Strangio 2014; Morgenbesser 2017).
+governed Cambodia since the late 1990s appeared to be
+unraveling.\footnote{Strangio (2014); Morgenbesser (2017).}
 
 The democratic expectation measures tell the same story from a different
 angle. When asked to rate the democratic future of their country on a
@@ -870,12 +871,13 @@ not changed: the CPP retained control of the security forces, the
 judiciary, and the National Election Committee, while the CNRP's
 capacity for mass mobilization---its primary source of leverage---was
 progressively constrained through targeted legal harassment of its
-leaders and selective restrictions on public assembly (Morgenbesser
-2017; Norén-Nilsson 2019; Schedler 2013). By 2015, the dialogue had
-largely stalled, and the political atmosphere had shifted from the
-hopeful if chaotic energy of 2013 to something more wary and uncertain.
-It was in this atmosphere that the Wave 4 Asian Barometer survey entered
-the field.
+leaders and selective restrictions on public assembly.\footnote{Morgenbesser
+  (2017); Norén-Nilsson (2019). On the broader pattern of managed
+  political openings in dominant-party systems, see Schedler (2013).} By
+2015, the dialogue had largely stalled, and the political atmosphere had
+shifted from the hopeful if chaotic energy of 2013 to something more
+wary and uncertain. It was in this atmosphere that the Wave 4 Asian
+Barometer survey entered the field.
 
 The Wave 4 data from 2015 capture a population in the midst of this
 reckoning---no longer at the peak of mobilization but not yet in the
@@ -1014,11 +1016,11 @@ descend.
 
 On November 16, 2017, the Supreme Court of Cambodia dissolved the
 Cambodia National Rescue Party.\footnote{Unless otherwise noted, the
-  political chronology in this section draws on Un and Luo (2020);
-  Chheang and President of the Asian Vision Institute (AVI), an
+  political chronology in this section draws on Un \& Luo (2020);
+  Chheang \& President of the Asian Vision Institute (AVI), an
   independent think-tank based in Phnom Penh, Cambodia. He is a public
   policy analyst specializing in geopolitics and political economy of
-  Southeast Asia. (2021); and Morgenbesser and Pepinsky (2019).} The
+  Southeast Asia. (2021); and Morgenbesser \& Pepinsky (2019).} The
 ruling, which cited a vaguely defined conspiracy to overthrow the
 government, banned 118 CNRP officials from political activity for five
 years and transferred the party's parliamentary seats to smaller,
@@ -1032,16 +1034,19 @@ centerpiece of a broader campaign of political closure that
 systematically dismantled the infrastructure of independent civic life.
 The \emph{Cambodia Daily}, the country's most prominent English-language
 newspaper and a persistent thorn in the CPP's side, was forced to close
-in September 2017 after receiving a disputed tax bill of \$6.3 million
-(Norén-Nilsson 2021a). Radio Free Asia's Cambodian bureau was shuttered,
-and several of its journalists faced criminal charges. Independent radio
-stations that had broadcast opposition content were pressured to switch
-to pro-government programming or cease operations entirely. Civil
-society organizations faced intensified regulatory scrutiny under the
-2015 Law on Associations and Non-Governmental Organizations (LANGO),
-which gave the government broad discretionary power to dissolve
-organizations deemed to threaten public order (Norén-Nilsson and Eng
-2020).
+in September 2017 after receiving a disputed tax bill of \$6.3
+million.\footnote{The Cambodia Daily's closure was widely interpreted as
+  politically motivated. See Norén-Nilsson (2021a) on the restructuring
+  of Cambodia's media landscape during this period.} Radio Free Asia's
+Cambodian bureau was shuttered, and several of its journalists faced
+criminal charges. Independent radio stations that had broadcast
+opposition content were pressured to switch to pro-government
+programming or cease operations entirely. Civil society organizations
+faced intensified regulatory scrutiny under the 2015 Law on Associations
+and Non-Governmental Organizations (LANGO), which gave the government
+broad discretionary power to dissolve organizations deemed to threaten
+public order.\footnote{On LANGO and its effects on civil society space,
+  see Norén-Nilsson \& Eng (2020).}
 
 The combined effect was the elimination not merely of the political
 opposition but of the broader ecosystem---media, civil society, informal
@@ -1050,11 +1055,12 @@ information and organized collective action. The transition, in Levitsky
 and Way's typology, was from competitive authoritarianism, in which
 opposition parties exist and can occasionally win, to hegemonic
 authoritarianism, in which the electoral arena is formally maintained
-but substantively emptied (Levitsky and Way 2010; Schedler 2002;
-Morgenbesser and Pepinsky 2019). The 2018 national election, conducted
-without the CNRP on the ballot, produced a CPP sweep of all 125 National
-Assembly seats---a result that formalized what the dissolution had
-already accomplished.
+but substantively emptied.\footnote{Levitsky \& Way (2010); Schedler
+  (2002). Morgenbesser \& Pepinsky (2019) applies this framework
+  specifically to Cambodia's post-2017 trajectory.} The 2018 national
+election, conducted without the CNRP on the ballot, produced a CPP sweep
+of all 125 National Assembly seats---a result that formalized what the
+dissolution had already accomplished.
 
 The Wave 6 data from 2021 record the consequences.
 
@@ -1085,24 +1091,6 @@ politics---contracts. The divergence between these two trajectories is
 itself evidence of demobilization by subtraction: what citizens can
 still do expands; what citizens choose to do in pursuit of genuine
 political alternatives collapses.
-
-The rise in civil servant contact to 37.2 percent in Wave 6, against the
-backdrop of collapsing independent engagement, warrants careful
-interpretation. This pattern need not reflect passive acquiescence
-alone. In a political environment where opposition parties, independent
-media, and civil society organizations have been systematically
-dismantled, contacting a civil servant may represent the only remaining
-channel through which citizens can address grievances or secure material
-needs. The education of a citizenry, in this sense, involves not only
-the lowering of democratic expectations but also a pragmatic
-recalibration of political strategy: citizens learn which levers still
-function and redirect their efforts accordingly. This reading preserves
-a degree of agency within the normalization framework --- demobilized
-citizens are not necessarily inert, but their participation has been
-redirected into channels that reinforce rather than challenge the
-regime's institutional architecture. The result is a form of engagement
-that is simultaneously rational at the individual level and
-depoliticizing at the collective level.
 
 \begin{table}
 
@@ -1225,7 +1213,10 @@ The normalization framework finds a useful analogue in Wedeen's analysis
 of political compliance in Hafez al-Assad's Syria, where citizens
 participated in elaborate public rituals of regime praise not because
 they believed the regime's claims but because acting as if they believed
-was the condition of ordinary life (Wedeen 1998, 2000). The Cambodian
+was the condition of ordinary life.\footnote{Wedeen (1998); Wedeen
+  (2000). Wedeen's concept of ``acting as if'' captures the performative
+  dimension of political compliance under conditions where genuine
+  belief is neither required nor expected by the regime.} The Cambodian
 case differs in important respects---the ABS data capture private survey
 responses rather than public performances, and the CPP's demands on
 citizens are less theatrically extravagant than the Assad cult of
@@ -1264,26 +1255,6 @@ reduce political action; it reduces the perceptual evidence that
 political action might address. The regime becomes less corrupt not
 because it has reformed but because citizens have stopped looking.
 
-External assessments corroborate the interpretation that declining
-witnessed corruption reflects perceptual withdrawal rather than actual
-improvement. Cambodia's score on Transparency International's Corruption
-Perceptions Index remained essentially flat throughout the study period,
-moving from 21 in 2015 to 23 in 2021 on a 100-point scale ---
-consistently ranking the country among the most corrupt in Southeast
-Asia and globally (Transparency International 2023). Reports from
-domestic and international monitoring organizations continued to
-document endemic corruption in land concessions, public procurement, and
-the judiciary throughout the period in which survey respondents'
-reported witnessing of corruption collapsed from 49 to 15 percent. The
-gap between external expert assessments, which registered no meaningful
-improvement, and citizens' reported experience, which registered a
-fourfold decline, is difficult to reconcile with genuine anti-corruption
-progress. It is, however, consistent with a population that has
-progressively withdrawn from the administrative and political sites
-where corruption is encountered --- not because corruption diminished,
-but because the reasons and opportunities for engaging with state
-institutions outside officially sanctioned channels have.
-
 An alternative, and not mutually exclusive, explanation for the
 corruption decline invokes the survey environment itself. In a political
 climate where the opposition has been criminalized and independent media
@@ -1294,7 +1265,7 @@ desirability bias literature has long recognized that survey responses
 on sensitive topics shift in predictable directions under conditions of
 political constraint, with respondents offering answers that align with
 perceived official expectations.\footnote{On the reliability of survey
-  responses under electoral authoritarianism, see Schedler and Sarsfield
+  responses under electoral authoritarianism, see Schedler \& Sarsfield
   (2007). Frye et al. (2016) demonstrate that even in semi-competitive
   authoritarian contexts, survey-measured approval can closely track
   genuine opinion---but their findings also imply that as political
@@ -1321,13 +1292,15 @@ ink applied at polling stations from an anti-fraud measure into a tool
 of social surveillance. Factory workers were warned that returning to
 work without inked fingers would result in wage deductions; village
 heads distributed polling slips with the expectation that residents
-would comply; government employees were required to participate (McCargo
-2018). Voting in a one-party election is not a political act in the same
-sense as voting in a competitive one; it is closer to a demonstration of
-compliance, a public performance of belonging to the political community
-as the regime defines it. The fact that turnout rises precisely as
-meaningful engagement collapses suggests that Cambodians understand the
-distinction even as they perform the ritual.
+would comply; government employees were required to
+participate.\footnote{McCargo (2018) provides a detailed firsthand
+  account of the turnout-maximization dynamics surrounding the 2018
+  election.} Voting in a one-party election is not a political act in
+the same sense as voting in a competitive one; it is closer to a
+demonstration of compliance, a public performance of belonging to the
+political community as the regime defines it. The fact that turnout
+rises precisely as meaningful engagement collapses suggests that
+Cambodians understand the distinction even as they perform the ritual.
 
 The international orientation data add a final dimension to the
 normalization portrait. Cambodian assessments of Chinese influence in
@@ -1347,7 +1320,11 @@ orientation of a population adjusting to the available political
 reality. A paired comparison with Vietnam or the Philippines---where
 territorial disputes drive China perceptions in sharply negative
 directions despite similar economic interdependence---would sharpen this
-point considerably (Strangio 2020).
+point considerably.\footnote{Strangio (2020) provides the most
+  comprehensive account of Cambodia's positioning within China's
+  Southeast Asian strategy. On the divergent China perception
+  trajectories across ASEAN, the ABS cross-national data offer direct
+  comparative evidence.}
 
 The informational withdrawal that began tentatively in 2015 reached its
 full expression by 2021. Following political news fell to 2.04,
@@ -1482,8 +1459,8 @@ the responses that are provided reflect real attitudinal shifts. This
 interpretation is consistent with Frye et al.'s finding that
 survey-measured approval in semi-competitive authoritarian contexts can
 closely track genuine opinion, though the gap between expressed and
-private attitudes likely widens as political space narrows further (Frye
-et al. 2016).
+private attitudes likely widens as political space narrows
+further.\footnote{Frye et al. (2016).}
 
 \emph{Pandemic-era behavioral disruption.} The Wave 6 data were
 collected in 2021, during the COVID-19 pandemic. Public health
@@ -1512,8 +1489,9 @@ fell from 14 percent (Wave 4) to 5 percent (Wave 6) on the binary ``most
 people can be trusted'' item. This drop is consistent with the social
 atomization documented in pandemic-era survey research across multiple
 countries and may also reflect broader erosion of social cohesion under
-intensified authoritarianism (Aassve et al. 2021). However, the fact
-that this is the only non-political item showing a substantial
+intensified authoritarianism.\footnote{On the cross-national effects of
+  COVID-19 on generalized trust, see Aassve et al. (2021).} However, the
+fact that this is the only non-political item showing a substantial
 decline---while national pride, family economic assessment, and
 perceived economic change all remain stable---suggests a localized
 effect rather than a general contamination of the survey environment.
@@ -1628,7 +1606,7 @@ circumstances.\footnote{The canonical formulation of democratic values
   tradition from Inglehart (1997) onward. The Cambodian data suggest a
   more situationally contingent model, closer to what Bratton and Mattes
   have termed ``demand for democracy'' as a function of perceived supply
-  (Bratton et al. 2004; Mattes and Bratton 2007).} The Cambodian
+  (Bratton et al., 2004; Mattes \& Bratton, 2007).} The Cambodian
 evidence suggests instead that measured democratic attitudes may be
 substantially a function of perceived democratic possibility---that hope
 is not merely the emotional accompaniment of democratic aspiration but
@@ -1663,13 +1641,14 @@ generalizable indicator of authoritarian normalization. Where elections
 are maintained as regime rituals rather than competitive mechanisms,
 rising turnout signals not democratic health but its opposite: the
 transformation of voting from an act of political choice into an act of
-political compliance (Schedler 2002; Magaloni and Kricheli 2010). The
-Cambodian case suggests that this turnout-participation divergence
-emerges specifically in the wake of opposition elimination, and that its
-appearance in other contexts---wherever rising turnout coincides with
-collapsing civic engagement---should be read as evidence that the
-electoral arena has been substantively emptied even if it remains
-formally intact.
+political compliance.\footnote{On the ritual function of elections in
+  hegemonic authoritarian systems, see Schedler (2002); Magaloni \&
+  Kricheli (2010).} The Cambodian case suggests that this
+turnout-participation divergence emerges specifically in the wake of
+opposition elimination, and that its appearance in other
+contexts---wherever rising turnout coincides with collapsing civic
+engagement---should be read as evidence that the electoral arena has
+been substantively emptied even if it remains formally intact.
 
 These findings carry inherent limitations. Four cross-sectional waves
 across thirteen years provide suggestive but not definitive evidence;
@@ -1693,34 +1672,14 @@ speech (OR = 1.01, \emph{p} = 0.95) nor perceived freedom to organize
 less free to speak are no more likely to skip the democratic future
 question than those who feel more free, indicating that the elevated
 nonresponse rate is not the signature of a population censoring itself
-out of fear.
-
-A methodological caution is warranted regarding the 63 percent
-non-response rate on the democratic future item in Wave 6. This level of
-missingness means that the reported 2021 mean is effectively a survivor
-statistic, reflecting only those respondents who retained enough
-political engagement --- or perhaps political imagination --- to
-formulate an expectation about Cambodia's democratic trajectory at all.
-Yet this limitation is also, in a sense, the study's most striking
-finding. If demobilization by subtraction operates by narrowing the
-horizon of political possibility, then the inability or unwillingness of
-nearly two-thirds of respondents to venture an opinion about Cambodia's
-democratic future is not merely a data problem to be corrected; it is
-the condition the framework predicts. The silence of the 63 percent and
-the diminished expectations of the 37 percent who answered are not
-competing narratives but complementary expressions of the same process.
-The former have disengaged from the question entirely; the latter have
-revised their answer downward. Both constitute evidence of a citizenry
-educated out of democratic expectation, albeit through different
-registers of withdrawal.
-
-The preceding section on alternative mechanisms has addressed the
-pandemic, generational, and preference-falsification concerns in detail;
-the conclusion here is that these factors may amplify specific estimates
-but cannot account for the overall pattern. Finally, any single-country
-study faces the inherent limitation of generalizability: the mechanisms
-identified here may be specific to Cambodia's particular configuration
-of post-conflict politics, dominant-party rule, and opposition dynamics.
+out of fear. The preceding section on alternative mechanisms has
+addressed the pandemic, generational, and preference-falsification
+concerns in detail; the conclusion here is that these factors may
+amplify specific estimates but cannot account for the overall pattern.
+Finally, any single-country study faces the inherent limitation of
+generalizability: the mechanisms identified here may be specific to
+Cambodia's particular configuration of post-conflict politics,
+dominant-party rule, and opposition dynamics.
 
 The most productive response to this limitation is comparative
 extension. The demobilization sequence observed in Cambodia---declining
@@ -1775,7 +1734,7 @@ moments.\footnote{Two contextual anomalies warrant specific
   2021 results reflect deeper authoritarian normalization rather than
   mere epidemiological artifacts. On the methodological challenges of
   surveying under authoritarian conditions more generally, see Schedler
-  and Sarsfield (2007). Furthermore, the single-country focus of this
+  \& Sarsfield (2007). Furthermore, the single-country focus of this
   study naturally bounds its immediate generalizability, though the
   mechanisms observed here offer a framework for testing similar
   dynamics in other consolidating hegemonic regimes.} Yet, the
@@ -1804,241 +1763,237 @@ and the long silence that followed.
 \addcontentsline{toc}{section}{References}
 
 \phantomsection\label{refs}
-\begin{CSLReferences}{1}{1}
+\begin{CSLReferences}{1}{0}
 \bibitem[\citeproctext]{ref-Aassve2021-dn}
-Aassve, Arnstein, Guido Alfani, Francesco Gandolfi, and Marco Le Moglie.
-2021. {``{Epidemics and trust: The case of the Spanish Flu}.''}
-\emph{Health Economics} 30 (April): 840--57.
-\url{https://doi.org/10.1002/hec.4218}.
+Aassve, Arnstein, Alfani, Guido, Gandolfi, Francesco, \& Le Moglie,
+Marco. (2021). {Epidemics and trust: The case of the Spanish Flu}.
+\emph{Health Economics}, \emph{30}, 840--857.
+\url{https://doi.org/10.1002/hec.4218}
 
 \bibitem[\citeproctext]{ref-Blake2019-ji}
-Blake, David J H. 2019. {``{Recalling hydraulic despotism: Hun Sen's
-Cambodia and the return of strict authoritarianism}.''} \emph{Austrian
-Journal of South-East Asian Studies} 12 (June): 69--89.
-\url{https://doi.org/10.14764/10.ASEAS-0014}.
+Blake, David J H. (2019). {Recalling hydraulic despotism: Hun Sen's
+Cambodia and the return of strict authoritarianism}. \emph{Austrian
+Journal of South-East Asian Studies}, \emph{12}, 69--89.
+\url{https://doi.org/10.14764/10.ASEAS-0014}
 
 \bibitem[\citeproctext]{ref-Bratton2004-ke}
-Bratton, Michael, Robert Mattes, and E Gyimah-Boadi. 2004.
+Bratton, Michael, Mattes, Robert, \& Gyimah-Boadi, E. (2004).
 \emph{{Cambridge studies in comparative politics: Public opinion,
 democracy, and market reform in Africa}}. Cambridge University Press.
 
 \bibitem[\citeproctext]{ref-Chheang2015-ud}
-Chheang, Vannarith. 2015. {``{Cambodia in 2014: The Beginning of
-Concrete Reforms}.''} \emph{Nan Yang Wen Ti Yan Qiu = Southeast Asian
-Affairs}, 89--101.
+Chheang, Vannarith. (2015). {CAMBODIA IN 2014: The Beginning of Concrete
+Reforms}. \emph{Nan Yang Wen Ti Yan Qiu = Southeast Asian Affairs},
+89--101.
 
 \bibitem[\citeproctext]{ref-Chheang2021-td}
-Chheang, Vannarith, and President of the Asian Vision Institute (AVI),
-an independent think-tank based in Phnom Penh, Cambodia. He is a public
+Chheang, Vannarith, \& President of the Asian Vision Institute (AVI), an
+independent think-tank based in Phnom Penh, Cambodia. He is a public
 policy analyst specializing in geopolitics and political economy of
-Southeast Asia. 2021. {``{Cambodia in 2020: Regime legitimacy
-tested}.''} \emph{Southeast Asian Affairs} SEAA21: 73--91.
-\url{https://doi.org/10.1355/aa21-1e}.
+Southeast Asia. (2021). {Cambodia in 2020: Regime legitimacy tested}.
+\emph{Southeast Asian Affairs}, \emph{SEAA21}, 73--91.
+\url{https://doi.org/10.1355/aa21-1e}
 
 \bibitem[\citeproctext]{ref-Chu2008-ld}
-Chu, Yun-Han, Andrew J Choffnes, Larry Diamond, Liqun Cao, Andrew J
-Nathan, and Doh Chull Shin, eds. 2008. \emph{{How east Asians view
+Chu, Yun-Han, Choffnes, Andrew J, Diamond, Larry, Cao, Liqun, Nathan,
+Andrew J, \& Shin, Doh Chull (Eds.). (2008). \emph{{How east Asians view
 democracy}}. Columbia University Press.
 
 \bibitem[\citeproctext]{ref-COMFREL-The-Committee-for-Free-and-Fair-Elections-in-Cambodia-2013-kt}
-COMFREL (The Committee for Free and Fair Elections in Cambodia). 2013.
-\emph{{2013 National Assembly Elections Final Assessment and Report}}.
-Research report.
+COMFREL (The Committee for Free and Fair Elections in Cambodia). (2013).
+\emph{{2013 National Assembly Elections Final Assessment and Report}}
+{[}Research report{]}.
 
 \bibitem[\citeproctext]{ref-Davenport2007-ww}
-Davenport, Christian. 2007. {``{State Repression and Political
-Order}.''} \emph{Annual Review of Political Science} 10 (June): 1--23.
-\url{https://doi.org/10.1146/annurev.polisci.10.101405.143216}.
+Davenport, Christian. (2007). {State Repression and Political Order}.
+\emph{Annual Review of Political Science}, \emph{10}, 1--23.
+\url{https://doi.org/10.1146/annurev.polisci.10.101405.143216}
 
 \bibitem[\citeproctext]{ref-Davenport2005-mk}
-Davenport, Christian, Hank Johnston, and Carol Mcclurg Mueller. 2005.
+Davenport, Christian, Johnston, Hank, \& Mueller, Carol Mcclurg. (2005).
 \emph{{Repression and Mobilization}}. University of Minnesota Press.
 
 \bibitem[\citeproctext]{ref-Earl2011-et}
-Earl, Jennifer. 2011. {``{Political Repression: Iron Fists, Velvet
-Gloves, and Diffuse Control}.''} \emph{Annual Review of Sociology} 37
-(August): 261--84.
-\url{https://doi.org/10.1146/annurev.soc.012809.102609}.
+Earl, Jennifer. (2011). {Political Repression: Iron Fists, Velvet
+Gloves, and Diffuse Control}. \emph{Annual Review of Sociology},
+\emph{37}, 261--284.
+\url{https://doi.org/10.1146/annurev.soc.012809.102609}
 
 \bibitem[\citeproctext]{ref-Frye2016-zm}
-Frye, Timothy, Scott Gehlbach, Kyle L Marquardt, and Ora John Reuter.
-2016. {``{Is Putin's popularity real?}''} \emph{Post-Soviet Affairs} 33:
-1--15. \url{https://doi.org/10.1080/1060586X.2016.1144334}.
+Frye, Timothy, Gehlbach, Scott, Marquardt, Kyle L, \& Reuter, Ora John.
+(2016). {Is Putin's popularity real?} \emph{Post-Soviet Affairs},
+\emph{33}, 1--15. \url{https://doi.org/10.1080/1060586X.2016.1144334}
 
 \bibitem[\citeproctext]{ref-Gandhi2008-dk}
-Gandhi, Jennifer. 2008. \emph{{Political institutions under
+Gandhi, Jennifer. (2008). \emph{{Political institutions under
 dictatorship}}. Cambridge University Press.
-\url{https://doi.org/10.1017/cbo9780511510090}.
+\url{https://doi.org/10.1017/cbo9780511510090}
 
 \bibitem[\citeproctext]{ref-Gaventa1980-ob}
-Gaventa, John. 1980. \emph{{Power and powerlessness: Quiescence and
+Gaventa, John. (1980). \emph{{Power and powerlessness: Quiescence and
 rebellion in an Appalachian valley}}. Oxford University Press.
 
 \bibitem[\citeproctext]{ref-Gerschewski2013-en}
-Gerschewski, Johannes. 2013. {``{The three pillars of stability:
-legitimation, repression, and co-optation in autocratic regimes}.''}
-\emph{Democratization} 20 (January): 13--38.
-\url{https://doi.org/10.1080/13510347.2013.738860}.
+Gerschewski, Johannes. (2013). {The three pillars of stability:
+legitimation, repression, and co-optation in autocratic regimes}.
+\emph{Democratization}, \emph{20}, 13--38.
+\url{https://doi.org/10.1080/13510347.2013.738860}
 
 \bibitem[\citeproctext]{ref-Hu2023-ib}
-Hu, Fu, Yun-Han Chu, and Asian Barometer Survey. 2023. \emph{{Asian
+Hu, Fu, Chu, Yun-Han, \& Asian Barometer Survey. (2023). \emph{{Asian
 Barometer Survey, Waves 2-4, 6}}.
 
 \bibitem[\citeproctext]{ref-Hughes2010-ns}
-Hughes, Caroline. 2010. {``{Cambodia in 2009: The Party's Not Over
-Yet}.''} \emph{Nan Yang Wen Ti Yan Qiu = Southeast Asian Affairs},
-85--99.
+Hughes, Caroline. (2010). {Cambodia in 2009: The Party's Not Over Yet}.
+\emph{Nan Yang Wen Ti Yan Qiu = Southeast Asian Affairs}, 85--99.
 
 \bibitem[\citeproctext]{ref-Hughes2011-zf}
-Hughes, Caroline, and Kheang Un, eds. 2011. \emph{{Cambodia's Economic
-Transformation}}. NIAS Studies in Asian Topics Series. NIAS Press.
+Hughes, Caroline, \& Un, Kheang (Eds.). (2011). \emph{{Cambodia's
+Economic Transformation}}. NIAS Press.
 
 \bibitem[\citeproctext]{ref-Inglehart1997-gw}
-Inglehart, Ronald. 1997. \emph{{Modernization and postmodernization:
+Inglehart, Ronald. (1997). \emph{{Modernization and postmodernization:
 Cultural, economic, and political change in 43 societies}}. Princeton
 University Press.
 
 \bibitem[\citeproctext]{ref-Kuran1995-up}
-Kuran, Timur. 1995. \emph{{Private truths, public lies: The social
-consequences of preference falsification}}. 2nd ed. Harvard University
+Kuran, Timur. (1995). \emph{{Private truths, public lies: The social
+consequences of preference falsification}} (2nd ed.). Harvard University
 Press.
 
 \bibitem[\citeproctext]{ref-Levitsky2010-bc}
-Levitsky, Steven, and Lucan A Way. 2010. \emph{{Problems of
+Levitsky, Steven, \& Way, Lucan A. (2010). \emph{{Problems of
 international politics: Competitive authoritarianism: Hybrid regimes
 after the cold war}}. Cambridge University Press.
 
 \bibitem[\citeproctext]{ref-Lukes2005-bc}
-Lukes, Steven. 2005. \emph{{Power: A Radical View}}. 2nd ed. Palgrave
-MacMillan.
+Lukes, Steven. (2005). \emph{{Power: A Radical View}} (2nd ed.).
+Palgrave MacMillan.
 
 \bibitem[\citeproctext]{ref-Magaloni2010-wl}
-Magaloni, Beatriz, and Ruth Kricheli. 2010. {``{Political order and
-one-party rule}.''} \emph{Annual Review of Political Science (Palo Alto,
-Calif.)} 13 (May): 123--43.
-\url{https://doi.org/10.1146/annurev.polisci.031908.220529}.
+Magaloni, Beatriz, \& Kricheli, Ruth. (2010). {Political order and
+one-party rule}. \emph{Annual Review of Political Science (Palo Alto,
+Calif.)}, \emph{13}, 123--143.
+\url{https://doi.org/10.1146/annurev.polisci.031908.220529}
 
 \bibitem[\citeproctext]{ref-Mattes2007-ej}
-Mattes, Robert, and Michael Bratton. 2007. {``{Learning about
-{Democracy} in {Africa}: Awareness, {Performance}, and {Experience}}.''}
-\emph{American Journal of Political Science} 51: 192--217.
+Mattes, Robert, \& Bratton, Michael. (2007). {Learning about {Democracy}
+in {Africa}: Awareness, {Performance}, and {Experience}}. \emph{American
+Journal of Political Science}, \emph{51}, 192--217.
 
 \bibitem[\citeproctext]{ref-McCargo2018-ms}
-McCargo, Duncan. 2018. {``{The trouble with turnout at Cambodia's
-election}.''} In \emph{Asia Times}.
+McCargo, Duncan. (2018, July 31). \emph{{The trouble with turnout at
+Cambodia's election}}.
 
 \bibitem[\citeproctext]{ref-Morgenbesser2017-cu}
-Morgenbesser, L. 2017. {``{The failure of democratisation by elections
-in Cambodia}.''} \emph{Contemporary Politics}.
+Morgenbesser, L. (2017). {The failure of democratisation by elections in
+Cambodia}. \emph{Contemporary Politics}.
 
 \bibitem[\citeproctext]{ref-Morgenbesser2016-vf}
-Morgenbesser, Lee. 2016. \emph{{Behind the Facade: Elections under
+Morgenbesser, Lee. (2016). \emph{{Behind the Facade: Elections under
 Authoritarianism in Southeast Asia}}. State University of New York
 Press.
 
 \bibitem[\citeproctext]{ref-Morgenbesser2020-kz}
-Morgenbesser, Lee. 2020. \emph{{The rise of sophisticated
+Morgenbesser, Lee. (2020). \emph{{The rise of sophisticated
 authoritarianism in Southeast Asia}}. Cambridge University Press.
 
 \bibitem[\citeproctext]{ref-Morgenbesser2019-mb}
-Morgenbesser, L, and T B Pepinsky. 2019. {``{Elections as causes of
-democratization: Southeast Asia in comparative perspective}.''}
+Morgenbesser, L, \& Pepinsky, T B. (2019). {Elections as causes of
+democratization: Southeast Asia in comparative perspective}.
 \emph{Comparative Political Studies}.
 
 \bibitem[\citeproctext]{ref-Noren-Nilsson2015-yi}
-Noren-Nilsson, Astrid. 2015. {``{Cambodia at a Crossroads. The
-Narratives of Cambodia National Rescue Party Supporters after the 2013
-Elections}.''} \emph{Internationales Asienforum} 46: 261--78.
-\url{https://doi.org/10.11588/iaf.2015.46.3726}.
+Noren-Nilsson, Astrid. (2015). {Cambodia at a Crossroads. The Narratives
+of Cambodia National Rescue Party Supporters after the 2013 Elections}.
+\emph{Internationales Asienforum}, \emph{46}, 261--278.
+\url{https://doi.org/10.11588/iaf.2015.46.3726}
 
 \bibitem[\citeproctext]{ref-Noren-Nilsson2019-ck}
-Norén-Nilsson, Astrid. 2019. {``{Kem Ley and Cambodian Citizenship
-Today: Grass-Roots Mobilisation, Electoral Politics and Individuals}.''}
-\emph{Journal of Current Southeast Asian Affairs} 38 (April): 77--97.
-\url{https://doi.org/10.1177/1868103419846009}.
+Norén-Nilsson, Astrid. (2019). {Kem Ley and Cambodian Citizenship Today:
+Grass-Roots Mobilisation, Electoral Politics and Individuals}.
+\emph{Journal of Current Southeast Asian Affairs}, \emph{38}, 77--97.
+\url{https://doi.org/10.1177/1868103419846009}
 
 \bibitem[\citeproctext]{ref-Noren-Nilsson2021-is}
-Norén-Nilsson, Astrid. 2021a. {``{Fresh News, innovative news:
-popularizing Cambodia's authoritarian turn}.''} \emph{Critical Asian
-Studies} 53 (January): 89--108.
-\url{https://doi.org/10.1080/14672715.2020.1837637}.
+Norén-Nilsson, Astrid. (2021a). {Fresh News, innovative news:
+popularizing Cambodia's authoritarian turn}. \emph{Critical Asian
+Studies}, \emph{53}, 89--108.
+\url{https://doi.org/10.1080/14672715.2020.1837637}
 
 \bibitem[\citeproctext]{ref-Noren-Nilsson2021-sq}
-Norén-Nilsson, Astrid. 2021b. {``{Youth Mobilization, Power Reproduction
-and Cambodia's Authoritarian Turn}.''} \emph{Contemporary Southeast
-Asia: A Journal of International and Strategic Affairs} 43: 265--92.
+Norén-Nilsson, Astrid. (2021b). {Youth Mobilization, Power Reproduction
+and Cambodia's Authoritarian Turn}. \emph{Contemporary Southeast Asia: A
+Journal of International and Strategic Affairs}, \emph{43}, 265--292.
 
 \bibitem[\citeproctext]{ref-Noren-Nilsson2020-ev}
-Norén-Nilsson, Astrid, and Netra Eng. 2020. {``{Pathways to leadership
+Norén-Nilsson, Astrid, \& Eng, Netra. (2020). {Pathways to leadership
 within and beyond Cambodian civil society: Elite status and
-boundary-crossing}.''} \emph{Politics and Governance} 8 (September):
-109--19. \url{https://doi.org/10.17645/pag.v8i3.3020}.
+boundary-crossing}. \emph{Politics and Governance}, \emph{8}, 109--119.
+\url{https://doi.org/10.17645/pag.v8i3.3020}
 
 \bibitem[\citeproctext]{ref-Przeworski2000-ed}
-Przeworski, Adam, Michael E Alvarez, Jose Antonio Cheibub, and Fernando
-Limongi. 2000. \emph{{Democracy and Development: Political Institutions
-and Well-Being in the World, 1950-{1990}}}. Cambridge University Press.
+Przeworski, Adam, Alvarez, Michael E, Cheibub, Jose Antonio, \& Limongi,
+Fernando. (2000). \emph{{Democracy and Development: Political
+Institutions and Well-Being in the World, 1950-{1990}}}. Cambridge
+University Press.
 
 \bibitem[\citeproctext]{ref-Schedler2002-eg}
-Schedler, Andreas. 2002. {``{Elections Without Democracy: The Menu of
-Manipulation}.''} \emph{Journal of Democracy} 13: 36--50.
-\url{https://doi.org/10.1353/jod.2002.0031}.
+Schedler, Andreas. (2002). {Elections Without Democracy: The Menu of
+Manipulation}. \emph{Journal of Democracy}, \emph{13}, 36--50.
+\url{https://doi.org/10.1353/jod.2002.0031}
 
 \bibitem[\citeproctext]{ref-Schedler2013-qn}
-Schedler, Andreas. 2013. \emph{{The politics of uncertainty: Sustaining
-and subverting electoral authoritarianism}}. Oxford Studies in
-Democratization. Oxford University Press.
+Schedler, Andreas. (2013). \emph{{The politics of uncertainty:
+Sustaining and subverting electoral authoritarianism}}. Oxford
+University Press.
 
 \bibitem[\citeproctext]{ref-Schedler2007-pv}
-Schedler, A, and R Sarsfield. 2007. {``{Democrats with Adjectives:
-Linking Direct and Indirect Measures of Democratic Support}.''}
-\emph{European Journal of Political Research} 46: 637--59.
+Schedler, A, \& Sarsfield, R. (2007). {Democrats with Adjectives:
+Linking Direct and Indirect Measures of Democratic Support}.
+\emph{European Journal of Political Research}, \emph{46}, 637--659.
 
 \bibitem[\citeproctext]{ref-Strangio2014-vi}
-Strangio, Sebastian. 2014. \emph{{Hun Sen's Cambodia}}. Yale University
-Press.
+Strangio, Sebastian. (2014). \emph{{Hun Sen's Cambodia}}. Yale
+University Press.
 
 \bibitem[\citeproctext]{ref-Strangio2020-gw}
-Strangio, Sebastian. 2020. \emph{{In the Dragon's Shadow: Southeast Asia
-in the Chinese Century}}. Yale University Press.
-
-\bibitem[\citeproctext]{ref-Transparency_International2023-im}
-Transparency International. 2023. \emph{{Corruption perceptions index
-{2022}}}. Research report. Transparency International.
+Strangio, Sebastian. (2020). \emph{{In the Dragon's Shadow: Southeast
+Asia in the Chinese Century}}. Yale University Press.
 
 \bibitem[\citeproctext]{ref-Um2014-ft}
-Um, Khatharya. 2014. {``{Cambodia in 2013: The Winds of Change}.''}
+Um, Khatharya. (2014). {Cambodia in 2013: The Winds of Change}.
 \emph{Nan Yang Wen Ti Yan Qiu = Southeast Asian Affairs}, 99--116.
 
 \bibitem[\citeproctext]{ref-Un2012-im}
-Un, Kheang. 2012. {``{A Thin Veneer of Change}.''} \emph{Asian Survey}
-52: 202--9. \url{https://doi.org/10.1525/as.2012.52.1.202}.
+Un, Kheang. (2012). {A Thin Veneer of Change}. \emph{Asian Survey},
+\emph{52}, 202--209. \url{https://doi.org/10.1525/as.2012.52.1.202}
 
 \bibitem[\citeproctext]{ref-Un2013-ss}
-Un, Kheang. 2013a. {``{Cambodia in 2012: Beyond the Crossroads}.''}
-\emph{Asian Survey}, Beyond the crossroads?, vol. 53 (February):
-142--49. \url{https://doi.org/10.1525/as.2013.53.1.142}.
+Un, Kheang. (2013a). {Cambodia in 2012: Beyond the Crossroads}.
+\emph{Asian Survey}, \emph{53}, 142--149.
+\url{https://doi.org/10.1525/as.2013.53.1.142}
 
 \bibitem[\citeproctext]{ref-Un2013-zu}
-Un, Kheang. 2013b. {``{{Cambodia in 2012}: Towards developmental
-authoritarianism?}''} In \emph{{Southeast Asian Affairs 2013}}, edited
-by Daljit Singh. ISEAS Publishing.
-\url{https://doi.org/10.1355/9789814459563-009}.
+Un, Kheang. (2013b). {{Cambodia in 2012}: Towards developmental
+authoritarianism?} In Daljit Singh (Ed.), \emph{{Southeast Asian Affairs
+2013}} (pp. 73--86). ISEAS Publishing.
+\url{https://doi.org/10.1355/9789814459563-009}
 
 \bibitem[\citeproctext]{ref-Un2020-dq}
-Un, Kheang, and Jing Jing Luo. 2020. {``{Cambodia in 2019: Entrenching
+Un, Kheang, \& Luo, Jing Jing. (2020). {Cambodia in 2019: Entrenching
 one-party rule and asserting national sovereignty in the era of shifting
-global geopolitics}.''} \emph{Southeast Asian Affairs} SEAA20: 119--36.
-\url{https://doi.org/10.1355/aa20-1g}.
+global geopolitics}. \emph{Southeast Asian Affairs}, \emph{SEAA20},
+119--136. \url{https://doi.org/10.1355/aa20-1g}
 
 \bibitem[\citeproctext]{ref-Wedeen1998-qz}
-Wedeen, Lisa. 1998. {``{Acting {`As If'}: Symbolic Politics and Social
-Control in Syria}.''} \emph{Comparative Studies in Society and History}
-40 (July): 503--23. \url{https://doi.org/10.1017/S0010417598001388}.
+Wedeen, Lisa. (1998). {Acting {``As If''}: Symbolic Politics and Social
+Control in Syria}. \emph{Comparative Studies in Society and History},
+\emph{40}, 503--523. \url{https://doi.org/10.1017/S0010417598001388}
 
 \bibitem[\citeproctext]{ref-Wedeen2000-bg}
-Wedeen, Lisa. 2000. \emph{{Ambiguities of domination: Politics,
-rhetoric, and symbols in contemporary Syria}}. 2nd ed. University of
+Wedeen, Lisa. (2000). \emph{{Ambiguities of domination: Politics,
+rhetoric, and symbols in contemporary Syria}} (2nd ed.). University of
 Chicago Press.
 
 \end{CSLReferences}
@@ -2055,13 +2010,7 @@ Survey Items}
 
 \begingroup\fontsize{7}{9}\selectfont
 
-\begin{ThreePartTable}
-\begin{TableNotes}[para]
-\item \textit{Note:} 
-\item Status: Full = identical or functionally equivalent wording across all waves used; Partial = minor wording shift or item not fielded in all waves (cross-wave comparison valid with caveats noted in text). No items are classified as Excluded from all comparisons; wave-pair restrictions are noted in the main text.
-\end{TableNotes}
-
-\begin{longtable}[t]{>{\raggedright\arraybackslash}p{2.0cm}>{\raggedright\arraybackslash}p{2.3cm}>{\raggedright\arraybackslash}p{2.3cm}>{\raggedright\arraybackslash}p{2.3cm}>{\raggedright\arraybackslash}p{2.3cm}>{\raggedright\arraybackslash}p{1.5cm}}
+\begin{longtable}[t]{>{\raggedright\arraybackslash}p{2.0cm}>{\raggedright\arraybackslash}p{2.5cm}>{\raggedright\arraybackslash}p{2.5cm}>{\raggedright\arraybackslash}p{2.5cm}>{\raggedright\arraybackslash}p{2.5cm}>{\raggedright\arraybackslash}p{1.5cm}}
 
 \caption{\label{tbl-tableA1}}
 
@@ -2079,7 +2028,7 @@ Variable & W2 (2008) & W3 (2012) & W4 (2015) & W6 (2021) & Status\\
 
 \endfoot
 \bottomrule
-\insertTableNotes
+\multicolumn{6}{l}{\rule{0pt}{1em}\textit{Note:} Status: Full = identical or functionally equivalent wording across all waves used; Partial = minor wording shift or item not fielded in all waves (cross-wave comparison valid with caveats noted in text). No items are classified as Excluded from all comparisons; wave-pair restrictions are noted in the main text.}\\
 \endlastfoot
 Contacted elected official & Have you ever contacted an elected official to express your views? (broad) & Have you ever contacted an elected official to complain about or seek help with a problem? (narrow) & Have you ever contacted an elected official to express your views? (broad) & Have you ever contacted an elected official to express your views? (broad) & Partial\\
 Contacted civil servant & Have you ever contacted a civil servant to express your views? (broad) & Have you ever contacted a government official to complain about or seek help with a problem? (narrow) & Have you ever contacted a civil servant to express your views? (broad) & Have you ever contacted a civil servant to express your views? (broad) & Partial\\
@@ -2106,7 +2055,6 @@ Discusses politics & How often do you discuss politics with friends or family? (
 
 \end{longtable}
 
-\end{ThreePartTable}
 \endgroup{}
 
 \newpage
@@ -2122,9 +2070,8 @@ Variables}
 
 \centering{
 
-\centering\begingroup\setstretch{1}\fontsize{9}{11}\selectfont
+\centering\begingroup\fontsize{9}{11}\selectfont
 
-\begin{threeparttable}
 \begin{tabular}[t]{>{\raggedright\arraybackslash}p{2.5cm}>{\raggedright\arraybackslash}p{5.8cm}>{\raggedright\arraybackslash}p{5.8cm}}
 \toprule
 Wave & Urban & Rural\\
@@ -2164,12 +2111,8 @@ Wave & Urban & Rural\\
 \hspace{1em}Wave 4 (2015) & 2.31 (2.17--2.45) & 2.29 (2.23--2.35)\\
 \hspace{1em}Wave 6 (2021) & 1.94 (1.83--2.04) & 2.10 (2.04--2.16)\\
 \bottomrule
+\multicolumn{3}{l}{\rule{0pt}{1em}\textit{Note:} Estimates shown with 95\% CI in parentheses (Wilson interval for proportions; t-based for means). Gate proportions and voted/corruption displayed as percentages. '---' = item not fielded in wave. Wave 2 (2008), Wave 3 (2012), Wave 4 (2015), Wave 6 (2021).}\\
 \end{tabular}
-\begin{tablenotes}[para]
-\item \textit{Note:} 
-\item Estimates shown with 95\% CI in parentheses (Wilson interval for proportions; t-based for means). Gate proportions and voted/corruption displayed as percentages. '---' = item not fielded in wave. Wave 2 (2008), Wave 3 (2012), Wave 4 (2015), Wave 6 (2021).
-\end{tablenotes}
-\end{threeparttable}
 \endgroup{}
 
 }
@@ -2182,9 +2125,8 @@ Wave & Urban & Rural\\
 
 \centering{
 
-\centering\begingroup\setstretch{1}\fontsize{9}{11}\selectfont
+\centering\begingroup\fontsize{9}{11}\selectfont
 
-\begin{threeparttable}
 \begin{tabular}[t]{>{\raggedright\arraybackslash}p{2.5cm}>{\raggedright\arraybackslash}p{3.8cm}>{\raggedright\arraybackslash}p{3.8cm}>{\raggedright\arraybackslash}p{3.8cm}}
 \toprule
 Wave & Under 30 & 30-49 & 50+\\
@@ -2224,12 +2166,8 @@ Wave & Under 30 & 30-49 & 50+\\
 \hspace{1em}Wave 4 (2015) & 2.14 (2.04--2.24) & 2.31 (2.23--2.39) & 2.40 (2.29--2.50)\\
 \hspace{1em}Wave 6 (2021) & 2.08 (1.97--2.19) & 2.04 (1.96--2.11) & 2.08 (1.99--2.17)\\
 \bottomrule
+\multicolumn{4}{l}{\rule{0pt}{1em}\textit{Note:} Estimates shown with 95\% CI in parentheses (Wilson interval for proportions; t-based for means). Gate proportions and voted/corruption displayed as percentages. '---' = item not fielded in wave.}\\
 \end{tabular}
-\begin{tablenotes}[para]
-\item \textit{Note:} 
-\item Estimates shown with 95\% CI in parentheses (Wilson interval for proportions; t-based for means). Gate proportions and voted/corruption displayed as percentages. '---' = item not fielded in wave.
-\end{tablenotes}
-\end{threeparttable}
 \endgroup{}
 
 }
@@ -2242,9 +2180,8 @@ Wave & Under 30 & 30-49 & 50+\\
 
 \centering{
 
-\centering\begingroup\setstretch{1}\fontsize{9}{11}\selectfont
+\centering\begingroup\fontsize{9}{11}\selectfont
 
-\begin{threeparttable}
 \begin{tabular}[t]{>{\raggedright\arraybackslash}p{2.5cm}>{\raggedright\arraybackslash}p{3.8cm}>{\raggedright\arraybackslash}p{3.8cm}>{\raggedright\arraybackslash}p{3.8cm}}
 \toprule
 Wave & Primary or below & Secondary & Tertiary\\
@@ -2284,12 +2221,8 @@ Wave & Primary or below & Secondary & Tertiary\\
 \hspace{1em}Wave 4 (2015) & 2.24 (2.18--2.31) & 2.37 (2.28--2.46) & 2.41 (2.07--2.75)\\
 \hspace{1em}Wave 6 (2021) & 2.06 (1.99--2.13) & 2.07 (1.98--2.15) & 2.01 (1.79--2.23)\\
 \bottomrule
+\multicolumn{4}{l}{\rule{0pt}{1em}\textit{Note:} Estimates shown with 95\% CI in parentheses (Wilson interval for proportions; t-based for means). Gate proportions and voted/corruption displayed as percentages. '---' = item not fielded in wave.}\\
 \end{tabular}
-\begin{tablenotes}[para]
-\item \textit{Note:} 
-\item Estimates shown with 95\% CI in parentheses (Wilson interval for proportions; t-based for means). Gate proportions and voted/corruption displayed as percentages. '---' = item not fielded in wave.
-\end{tablenotes}
-\end{threeparttable}
 \endgroup{}
 
 }
@@ -2312,7 +2245,6 @@ Wave}
 
 \centering\begingroup\fontsize{10}{12}\selectfont
 
-\begin{threeparttable}
 \begin{tabular}[t]{>{\raggedright\arraybackslash}p{4.0cm}>{\raggedright\arraybackslash}p{2.5cm}>{\raggedright\arraybackslash}p{2.5cm}>{\raggedright\arraybackslash}p{2.5cm}>{\raggedright\arraybackslash}p{2.5cm}}
 \toprule
 label & W2 (2008) & W3 (2012) & W4 (2015) & W6 (2021)\\
@@ -2327,12 +2259,8 @@ Family econ change (1yr) & 3.30 (0.026) & 3.10 (0.027) & 3.04 (0.024) & 3.27 (0.
 National econ situation & 3.18 (0.026) & 3.33 (0.024) & 3.12 (0.023) & 3.05 (0.024)\\
 Democracy satisfaction & 2.97 (0.024) & 2.98 (0.020) & 2.71 (0.023) & 3.10 (0.019)\\
 \bottomrule
+\multicolumn{5}{l}{\rule{0pt}{1em}\textit{Note:} Cell format: estimate (SE). Proportions (interpersonal trust) shown as percentage (SE in percentage points). Means shown as raw scale values (SE). '---' = item not fielded in wave. Items are non-political and should not be affected by opposition elimination; stable values support the domain-specificity of observed political attitude shifts.}\\
 \end{tabular}
-\begin{tablenotes}[para]
-\item \textit{Note:} 
-\item Cell format: estimate (SE). Proportions (interpersonal trust) shown as percentage (SE in percentage points). Means shown as raw scale values (SE). '---' = item not fielded in wave. Items are non-political and should not be affected by opposition elimination; stable values support the domain-specificity of observed political attitude shifts.
-\end{tablenotes}
-\end{threeparttable}
 \endgroup{}
 
 }
