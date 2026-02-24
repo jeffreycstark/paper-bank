@@ -57,7 +57,7 @@ format:
     toc: true
     number-sections: true
 bibliography: references.bib
-csl: apa.csl
+csl: chicago-author-date.csl
 execute:
   echo: false
   warning: false
