@@ -167,5 +167,6 @@ papers/**/*.pdf
 papers/**/*.docx
 !papers/**/submission/*.pdf
 !papers/**/output/manuscript/*.pdf
+!papers/**/output/manuscript/*.docx
 # Large generated files
 data/processed/abs_econdev_authpref.csv

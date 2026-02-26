@@ -6,7 +6,8 @@ figures/*.png
 figures/*.pdf
 tables/*.html
 tables/*.csv
-_output/
+!output/manuscript/*.pdf
+!output/manuscript/*.docx
 .quarto/
 
 

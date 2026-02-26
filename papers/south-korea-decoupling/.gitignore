@@ -8,7 +8,8 @@
 !manuscript/reference.docx
 **/*.png
 **/*.pdf
-_output/
+!output/manuscript/*.pdf
+!output/manuscript/*.docx
 .quarto/
 **/*.quarto_ipynb
 
