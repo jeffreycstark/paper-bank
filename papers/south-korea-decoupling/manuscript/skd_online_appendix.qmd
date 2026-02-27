@@ -84,19 +84,19 @@ extract_econ_coef <- function(model) {
 .p_str <- function(p) if (p < 0.001) "< 0.001" else sprintf("= %.3f", p)
 
 .alt_b <- function(country, dv_var, d = 3) {
-  row <- alt_norm$pooled |> filter(country == !!country, dv_var == !!dv_var)
+  row <- dplyr::filter(alt_norm$pooled, country == !!country, dv_var == !!dv_var)
   round(row$estimate, d)
 }
 .alt_p <- function(country, dv_var) {
-  p <- alt_norm$pooled |> filter(country == !!country, dv_var == !!dv_var) |> pull(p.value)
+  p <- dplyr::filter(alt_norm$pooled, country == !!country, dv_var == !!dv_var) |> pull(p.value)
   .p_str(p)
 }
 .alt_xc_b <- function(dv_var, d = 3) {
-  row <- alt_norm$cross_country |> filter(dv_var == !!dv_var, term == "econ_index:is_korea")
+  row <- dplyr::filter(alt_norm$cross_country, dv_var == !!dv_var, term == "econ_index:is_korea")
   round(row$estimate, d)
 }
 .alt_xc_p <- function(dv_var) {
-  p <- alt_norm$cross_country |> filter(dv_var == !!dv_var, term == "econ_index:is_korea") |> pull(p.value)
+  p <- dplyr::filter(alt_norm$cross_country, dv_var == !!dv_var, term == "econ_index:is_korea") |> pull(p.value)
   .p_str(p)
 }
 ```
