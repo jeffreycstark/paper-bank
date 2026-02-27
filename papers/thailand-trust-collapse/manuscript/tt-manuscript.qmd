@@ -275,7 +275,7 @@ The paper proceeds as follows. Section 2 reviews the literature on institutional
 
 ## Institutional Trust in Democratizing Asia
 
-Political trust is critical for democratic stability [@Easton1965-ap; @Norris1999-sn], but dynamics differ between established democracies and Asia's hybrid regimes. Western research emphasizes post-materialist shifts [@Inglehart1997-gw] or critical citizenship [@Norris2011-oc]; Asian contexts show different patterns from recent transitions and regime contestation.
+Political trust is critical for democratic stability [@Easton1979-rc; @Norris1999-sn], but dynamics differ between established democracies and Asia's hybrid regimes. Western research emphasizes post-materialist shifts [@Inglehart1997-gw] or critical citizenship [@Norris2011-oc]; Asian contexts show different patterns from recent transitions and regime contestation.
 
 Early work identified a "satisfaction-support gap": citizens dissatisfied with performance while maintaining democratic support [@Shin2007-gu; @Shin2008-gu]. Subsequent research documented substantial trust variation across Asia [@Chu2008-fk; @Chang2007-sy], but few examine within-country trajectories across decades or investigate mechanisms driving differential trust.
 
@@ -283,7 +283,7 @@ Trust in coercive institutions presents puzzles. Unlike consolidated democracies
 
 ## Competing Explanations
 
-**Performance legitimacy** treats trust as performance function [@Hetherington1998-sz; @Van_de_Walle2008-cm]. Rally variants predict temporary crisis gains [@Mueller1970-kf], but collapse if management fails [@Esaiasson2021-vg]. COVID-19 provides a test: if pandemic response drives change, government trust should decline more than military trust.
+**Performance legitimacy** treats trust as performance function [@Hetherington1998-sz; @Van-de-Walle2008-tm]. Rally variants predict temporary crisis gains [@Mueller1970-kf], but collapse if management fails [@Esaiasson2021-vg]. COVID-19 provides a test: if pandemic response drives change, government trust should decline more than military trust.
 
 **Political crisis** frameworks emphasize regime conflicts [@Torcal2014-xs; @Levi2000-am]. When institutions implicate in struggles (coups, crises), citizens update neutrality beliefs. Updating can be *targeted*: trust declines for norm-violating institutions while others insulated [@Bermeo2016-zl; @Helmke2017-pq]. For Thailand, political crisis predicts military trust should decline more (primary disruptor via 2006/2014 coups). The 2020--2021 protests explicitly demanded ending military interference.
 
@@ -295,7 +295,7 @@ Four periods structure the analysis:
 
 **Period 1 (2001--2005):** The 1997 crisis catalyzed reform producing the "People's Constitution" [@Harding2011-kh]. Thaksin won 2001 elections and delivered on populist promises (healthcare, village funds, debt relief), generating high satisfaction [@Phongpaichit2008-wr]. Both government and military trust were exceptionally high, reflecting diffuse institutional confidence in perceived renewal. The military benefited from monarchy association and stabilizing-force self-presentation [@McCargo2005-zj].
 
-**Period 2 (2006--2013):** The 2006 coup against Thaksin initiated chronic instability [@Chambers2014-ty]. Despite deposing elected government, the coup enjoyed elite support. Pro-Thaksin parties won 2007 and 2011 elections. Street protests (Yellow Shirts, Red Shirts) paralyzed Bangkok, culminating in military's 2010 violent dispersal [@Montesano2012-st].
+**Period 2 (2006--2013):** The 2006 coup against Thaksin initiated chronic instability [@Chambers2014-ty]. Despite deposing elected government, the coup enjoyed elite support. Pro-Thaksin parties won 2007 and 2011 elections. Street protests (Yellow Shirts, Red Shirts) paralyzed Bangkok, culminating in military's 2010 violent dispersal [@Montesano2025-up].
 
 **Period 3 (2014--2019):** The 2014 coup installed General Prayuth, leading to five years of direct military rule [@Ockey2017-ux]. The 2017 constitution embedded military influence: appointed Senate, budget autonomy, favorable electoral rules [@Bunte2016-it]. The 2019 elections were perceived as engineered to preserve Prayuth's premiership [@Chambers2021-qt].
 

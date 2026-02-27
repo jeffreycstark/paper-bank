@@ -1,0 +1,47 @@
+# Literature Review
+
+## Institutional Trust in Democratizing Asia
+
+Political trust is critical for democratic stability [@Easton1979-rc; @Norris1999-sn], but dynamics differ between established democracies and Asia's hybrid regimes. Western research emphasizes post-materialist shifts [@Inglehart1997-gw] or critical citizenship [@Norris2011-oc]; Asian contexts show different patterns from recent transitions and regime contestation.
+
+Early work identified a "satisfaction-support gap": citizens dissatisfied with performance while maintaining democratic support [@Shin2007-gu; @Shin2008-gu]. Subsequent research documented substantial trust variation across Asia [@Chu2008-fk; @Chang2007-sy], but few examine within-country trajectories across decades or investigate mechanisms driving differential trust.
+
+Trust in coercive institutions presents puzzles. Unlike consolidated democracies with civilian control, many Asian militaries have ongoing political roles [@Croissant2013-ly]. Thailand is extreme: thirteen coups since 1932, constitutional privileges insulating military from oversight [@Chambers2014-ty; @Ockey2017-ux]. Research documents polarization and military's instability role [@McCargo2009-vs; @Ferrara2015-we], but we lack systematic evidence on mass-level trust evolution.
+
+## Competing Explanations
+
+**Performance legitimacy** treats trust as performance function [@Hetherington1998-sz; @Van-de-Walle2008-tm]. Rally variants predict temporary crisis gains [@Mueller1970-kf], but collapse if management fails [@Esaiasson2021-vg]. COVID-19 provides a test: if pandemic response drives change, government trust should decline more than military trust.
+
+**Political crisis** frameworks emphasize regime conflicts [@Torcal2014-xs; @Levi2000-am]. When institutions implicate in struggles (coups, crises), citizens update neutrality beliefs. Updating can be *targeted*: trust declines for norm-violating institutions while others insulated [@Bermeo2016-zl; @Helmke2017-pq]. For Thailand, political crisis predicts military trust should decline more (primary disruptor via 2006/2014 coups). The 2020--2021 protests explicitly demanded ending military interference.
+
+**Pandemic governance** research shows divergent trajectories: effective containment produced trust gains, failures produced declines [@Bol2021-yz; @Baekgaard2020-vr]. Most focuses on Western democracies and short-term effects. The key empirical leverage: if COVID drove Thailand's collapse, government trust should decline more (managed response); if political crisis drove it, military trust should decline more (protest target).
+
+## Thailand's Political Trajectory
+
+Four periods structure the analysis:
+
+**Period 1 (2001--2005):** The 1997 crisis catalyzed reform producing the "People's Constitution" [@Harding2011-kh]. Thaksin won 2001 elections and delivered on populist promises (healthcare, village funds, debt relief), generating high satisfaction [@Phongpaichit2008-wr]. Both government and military trust were exceptionally high, reflecting diffuse institutional confidence in perceived renewal. The military benefited from monarchy association and stabilizing-force self-presentation [@McCargo2005-zj].
+
+**Period 2 (2006--2013):** The 2006 coup against Thaksin initiated chronic instability [@Chambers2014-ty]. Despite deposing elected government, the coup enjoyed elite support. Pro-Thaksin parties won 2007 and 2011 elections. Street protests (Yellow Shirts, Red Shirts) paralyzed Bangkok, culminating in military's 2010 violent dispersal [@Montesano2025-up].
+
+**Period 3 (2014--2019):** The 2014 coup installed General Prayuth, leading to five years of direct military rule [@Ockey2017-ux]. The 2017 constitution embedded military influence: appointed Senate, budget autonomy, favorable electoral rules [@Bunte2016-it]. The 2019 elections were perceived as engineered to preserve Prayuth's premiership [@Chambers2021-qt].
+
+**Period 4 (2020--2022):** Youth protests marked generational rupture [@Sinpeng2021-hd]. Unlike previous polarization, protests united students and workers around dissolving parliament, ending military interference, and reforming monarchy's role. Government responded with arrests and censorship [@McCargo2021-na]. COVID lockdowns temporarily suppressed protests but intensified economic grievances.
+
+This timeline generates predictions: if trust tracks political events, we should observe (1) declines following coups, (2) erosion during military government, and (3) sharp declines Wave 5--6 coinciding with protests. Crucially, military trust should decline more than government trust.
+
+## Hypotheses
+
+**H1** (Exceptional decline): Thailand exhibits steeper institutional trust decline than Philippines or Taiwan over 2001--2022.
+
+**H2** (Institutional differentiation): In Thailand, military trust declines more steeply than government trust, consistent with political crisis and inconsistent with pandemic performance.
+
+**H3** (Coercive legitimacy alignment): In Philippines, trust in coercive institutions is maintained during Duterte (Waves 4--5), reflecting alignment between state coercion and mass preferences.
+
+H3's logic derives from Thailand's inverse. Where Thailand's military acted against democratic expectations, Duterte's security acted with popular order demand [@Curato2016-kl; @Teehankee2016-xm]. If preference alignment holds, Filipino police trust should remain stable despite extrajudicial killings, providing scope conditions: trust erodes when coercive action violates citizen evaluative standards.
+
+**H4** (Democratic expectation updating): In Thailand, rejection of authoritarian rule increases over the study period, consistent with rising democratic expectations.
+
+**H5** (Political engagement and trust erosion): Higher political interest associates with lower institutional trust, strengthening over time in Thailand as engagement becomes vehicle for critical evaluation.
+
+H4/H5 test attitudinal mechanisms. Democratic expectation updating implies Thailand's collapse reflects deeper evaluative shift. We should observe rising authoritarian rejection alongside trust decline, distinguishing maturation from cynicism.

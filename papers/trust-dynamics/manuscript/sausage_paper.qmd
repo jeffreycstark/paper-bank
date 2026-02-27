@@ -68,13 +68,13 @@ Three patterns demand explanation:
 
 ## The "Grass is Greener" Hypothesis
 
-Rose, Mishler, and Haerpfer [-@rose1998democracy], analyzing post-communist transitions, found that "people who have been denied democratic freedoms value new political rights more highly." This suggests a fundamental asymmetry: democracy is idealized when absent, taken for granted when present.
+Rose, Mishler, and Haerpfer [-@Rose1998-os], analyzing post-communist transitions, found that "people who have been denied democratic freedoms value new political rights more highly." This suggests a fundamental asymmetry: democracy is idealized when absent, taken for granted when present.
 
 I extend this logic to Asia, where variation in regime types and democratic experience provides a natural laboratory. The prediction: citizens in authoritarian regimes will express stronger *abstract* support for democracy (it represents an appealing alternative), while citizens in democracies will be more *pragmatic* (they live with democracy's frustrations daily).
 
 ## Democratic Disillusionment vs. Authoritarian Idealization
 
-Chu and Diamond [-@chu2008democracy] document an apparent paradox in Asian public opinion: high levels of expressed support for democracy coexist with skepticism about democratic institutions and willingness to consider alternatives. I argue these are not contradictory but reflect different dimensions:
+Chu and Diamond [-@Chu2008-ld] document an apparent paradox in Asian public opinion: high levels of expressed support for democracy coexist with skepticism about democratic institutions and willingness to consider alternatives. I argue these are not contradictory but reflect different dimensions:
 
 - **Ideological support**: Abstract belief that democracy is good
 - **Pragmatic orientation**: Willingness to trade democratic process for outcomes when forced to choose
