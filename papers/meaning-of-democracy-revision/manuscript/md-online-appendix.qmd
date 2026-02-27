@@ -53,7 +53,7 @@ library(knitr)
 library(kableExtra)
 library(here)
 
-here::i_am("papers/meaning-of-democracy-revision/manuscript/online_appendix.qmd")
+here::i_am("papers/meaning-of-democracy-revision/manuscript/md-online-appendix.qmd")
 
 # Results directory (multinomial logit analysis outputs)
 results_dir <- here("papers", "meaning-of-democracy-revision", "analysis", "revised", "results")
