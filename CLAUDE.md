@@ -125,8 +125,8 @@ paper-bank/
 
 ## Bibliography Rules
 
-**Never add BibTeX entries to any `references.bib` file unless explicitly asked.**
-When replacing hard-coded citations, use existing keys from the bib file (search first) or insert placeholder keys (e.g., `@Author2019-MISSING`) and report what is missing. Do not write new `@BOOK`, `@ARTICLE`, or other entries without an explicit request.
+**Never add BibTeX entries to any `references.bib` file unless given express permission by the user.**
+Do not offer to add entries, do not add them proactively, and do not add them in response to citation warnings from Quarto or pandoc. When replacing hard-coded citations, use existing keys from the bib file (search first) or insert placeholder keys (e.g., `@Author2019-MISSING`) and report what is missing. Do not write new `@BOOK`, `@ARTICLE`, or other entries without an explicit, direct instruction to do so.
 
 ---
 
