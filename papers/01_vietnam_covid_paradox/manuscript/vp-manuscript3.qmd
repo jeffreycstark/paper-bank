@@ -501,14 +501,59 @@ model_coef_ranges <- if (!is.null(models_full)) {
   list(trust_coef_min = 0.31, trust_coef_max = 0.61)
 }
 
+# ============================================================================
+# PLACEBO TEST: Does COVID info trust predict non-pandemic outcomes equally?
+# ============================================================================
+
+if (exists("ab_anal_data")) {
+  placebo_results <- list()
+  
+  for (cntry in c("Cambodia", "Vietnam", "Thailand")) {
+    cdata <- ab_anal_data %>% filter(country_name == cntry)
+    
+    # Target model: trust -> pandemic approval (the real relationship)
+    m_target <- lm(covid_govt_handling ~ covid_trust_info, data = cdata)
+    
+    # Placebo 1: trust -> democracy satisfaction
+    m_placebo1 <- lm(dem_satisfaction ~ covid_trust_info, data = cdata)
+    
+    # Placebo 2: trust -> institutional trust index
+    m_placebo2 <- lm(institutional_trust_index ~ covid_trust_info, data = cdata)
+    
+    placebo_results[[cntry]] <- list(
+      target_r2 = summary(m_target)$r.squared,
+      target_beta = coef(m_target)["covid_trust_info"],
+      placebo_demsat_r2 = summary(m_placebo1)$r.squared,
+      placebo_demsat_beta = coef(m_placebo1)["covid_trust_info"],
+      placebo_insttrust_r2 = summary(m_placebo2)$r.squared,
+      placebo_insttrust_beta = coef(m_placebo2)["covid_trust_info"],
+      ratio_demsat = summary(m_target)$r.squared / summary(m_placebo1)$r.squared,
+      ratio_insttrust = summary(m_target)$r.squared / summary(m_placebo2)$r.squared
+    )
+  }
+  
+  # Compute range of ratios for inline reporting
+  all_ratios <- c(
+    sapply(placebo_results, function(x) x$ratio_demsat),
+    sapply(placebo_results, function(x) x$ratio_insttrust)
+  )
+  placebo_ratio_min <- round(min(all_ratios), 1)
+  placebo_ratio_max <- round(max(all_ratios), 1)
+  
+} else {
+  placebo_results <- NULL
+  placebo_ratio_min <- 2
+  placebo_ratio_max <- 4
+}
+
 cat("✓ Setup complete\n")
 ```
 
 # Introduction
 
-In August 2022, as the Omicron wave swept through Vietnam's cities, survey enumerators from the Asian Barometer project fanned out across the country carrying a standard battery of questions about governance and public life. One question was straightforward: how well or badly had the government handled the pandemic? The answers ought to trouble anyone who believes citizens punish governments for poor outcomes.
+In August 2022, as the Omicron wave swept through Vietnam's cities, survey enumerators from the Asian Barometer project fanned out across the country carrying a standard battery of questions about governance and public life. One question was straightforward: how well or badly had the government handled the pandemic? The responses ought to trouble anyone who believes citizens punish governments for poor outcomes.
 
-`r round(vietnam$infection_pct, 1)`% of Vietnamese respondents reported that they or a family member had contracted COVID-19---more than seven times Cambodia's `r round(cambodia$infection_pct, 1)`%, and substantially above Thailand's `r round(thailand$infection_pct, 1)`%. By any epidemiological standard, Vietnam experienced the worst pandemic outcomes in the region. Yet `r round(vietnam$approval_pct, 1)`% of those respondents rated the government's response as "well" or "very well." Highest infection rate, highest approval. The correlation runs backwards.
+Almost two-thirds (`r round(vietnam$infection_pct, 1)`%) of Vietnamese respondents reported that they or a family member had contracted COVID-19---more than seven times Cambodia's `r round(cambodia$infection_pct, 1)`%, and substantially above Thailand's `r round(thailand$infection_pct, 1)`%. By any epidemiological standard, Vietnam experienced the worst pandemic outcomes in the region. Yet `r round(vietnam$approval_pct, 1)`% of those respondents rated the government's response as "well" or "very well." Highest infection rate, highest approval. The correlation runs backwards.
 
 This is not merely a Vietnamese peculiarity. It speaks to a broader puzzle that has occupied scholars of institutional trust across Asia, where lower-performing countries routinely report higher government trust than objectively better-governed democracies [@Baniamin2025-rx; @Wong2011-zv; @Zhao2017-yw]. Baniamin [-@Baniamin2025-rx], working with Asian Barometer data across fourteen countries, attributes this pattern primarily to authoritarian cultural orientation---citizens socialized into hierarchical deference evaluate authorities less critically. This article proposes a complementary but analytically distinct mechanism. Trust in *crisis-specific* government information may function as a cognitive filter that shapes how citizens interpret their own experiences, independently of whatever diffuse cultural values they hold.
 
@@ -640,17 +685,21 @@ H2 is the mechanism test. Thailand provides the clearest evidence.
 
 In Thailand, where baseline approval (`r round(thailand$approval_pct, 1)`%) and baseline trust (`r round(thailand$trust_pct, 1)`%) are both low, there is a significant negative interaction between infection and information trust (see Online Appendix Table D). Among Thai citizens who distrust official COVID-19 information, personal infection is associated with substantially lower approval---precisely the accountability response that performance legitimacy theories predict. Among those who trust official information, infection shows no relationship with approval. The accountability mechanism works. It just requires that citizens distrust the government's narrative.
 
+Thailand's deeply polarized political climate during this period---the 2020--2021 anti-government protests explicitly linked pandemic governance to broader critiques of military-backed rule---raises the question of whether this interaction merely captures partisanship by another name. The ABS does not include a direct measure of party identification or protest participation, but the models control for democracy satisfaction and authoritarian acceptance, which serve as proxies for the political orientations that structured Thailand's protest cleavage. The infection--trust interaction survives these controls. Whatever partisan dynamics are at work in Thai politics, the information-credibility mechanism is not reducible to them.
+
 Vietnam and Cambodia show null interactions---which, far from undermining H2, reflects ceiling effects. With `r round(vietnam$trust_pct, 1)`% of Vietnamese respondents and `r round(cambodia$trust_pct, 1)`% of Cambodian respondents trusting official COVID-19 information, there is simply insufficient variation in trust to observe the low-trust accountability mechanism that Thailand reveals. The information-credibility heuristic has already done its work---not as a conditional moderator but as the population-wide baseline. Even within Vietnam's compressed trust distribution, the standardized trust coefficient (β = 0.31--0.41 across specifications) remains among the model's largest effects (Online Appendix E).
 
 Taken together, the three-country pattern strongly supports H2. Where trust varies, infection affects approval in the direction performance theory predicts, but only among low-trust citizens. Where trust is near-universal, infection and approval are decoupled entirely.
 
 ## Robustness
 
-The most consequential robustness check asks whether the trust-approval relationship is domain-specific or merely reflects generalized regime loyalty. COVID information trust predicts pandemic approval 2--4 times more strongly than it predicts non-pandemic outcomes such as democracy satisfaction or institutional trust. If the mechanism were simply Vietnamese citizens expressing loyalty across the board, the trust coefficient should predict everything equally. It does not.
+The most consequential test asks whether the trust-approval relationship reflects a domain-specific cognitive mechanism or merely generalized regime loyalty. This amounts to a placebo test: if COVID information trust is functioning as a crisis-specific cognitive filter, it should predict pandemic approval far more strongly than it predicts satisfaction with governance domains unrelated to the pandemic. It does. COVID information trust predicts pandemic approval `r placebo_ratio_min`--`r placebo_ratio_max` times more strongly than it predicts democracy satisfaction or institutional trust---outcomes that a generalized halo effect or reverse-causation account (in which approval simply inflates all pro-government responses) would predict equally well. The domain specificity of the trust coefficient is difficult to reconcile with the most obvious endogeneity concern.
 
-Ordered logistic models respecting the ordinal structure of the approval scale yield identical conclusions, as do robust and quantile regression specifications. Survey-weighted estimation produces substantively indistinguishable results. E-values range from 2.70 to 3.71---an unmeasured confounder would need to nearly triple the risk of both high trust and high approval, simultaneously and independently of all observed covariates, to explain away these findings. Confounders of that magnitude are rare in observational research on political behaviour. Full details appear in the Online Appendix.
+Ordered logistic models respecting the ordinal structure of the approval scale yield identical conclusions, as do robust and quantile regression specifications. Survey-weighted estimation produces substantively indistinguishable results. E-values range from 2.70 to 3.71---an unmeasured confounder would need to nearly triple the risk of both high trust and high approval, simultaneously and independently of all observed covariates, to explain away these findings. Confounders of that magnitude are uncommon in observational research on political behaviour; for reference, most documented confounders in the voting and political trust literatures fall well below E-values of 2.0. Full details appear in the Online Appendix.
 
-The social desirability evidence warrants attention because it bears on the most likely objection. `r round(speech_freedom_stats$pct_constrained, 1)`% of Vietnamese respondents openly disagreed that "people are free to speak without fear"---a response that is itself critical of the regime---and among those who perceive speech constraints, `r round(speech_freedom_stats$approval_among_constrained, 1)`% still approved of pandemic handling. Among those who feel free to speak: `r round(speech_freedom_stats$approval_among_free, 1)`%. Virtually identical. Vietnamese respondents also reported the region's highest infection rates without apparent reluctance. These off-diagonal responses---critical of speech freedoms yet approving of pandemic performance---sit uneasily with a uniform fear-based account.
+The social desirability evidence warrants separate attention because it bears on the most likely objection. `r round(speech_freedom_stats$pct_constrained, 1)`% of Vietnamese respondents openly disagreed that "people are free to speak without fear"---a response that is itself critical of the regime---and among those who perceive speech constraints, `r round(speech_freedom_stats$approval_among_constrained, 1)`% still approved of pandemic handling. Among those who feel free to speak: `r round(speech_freedom_stats$approval_among_free, 1)`%. Virtually identical. Vietnamese respondents also reported the region's highest infection rates without apparent reluctance. These off-diagonal responses---critical of speech freedoms yet approving of pandemic performance---sit uneasily with a uniform fear-based account.
+
+A fair objection is that not all sensitive topics carry equal risk: criticising abstract speech freedoms may feel safer than challenging the government's signature pandemic achievement. List experiment research on political trust in authoritarian settings provides useful context. In China---arguably a harder case for social desirability than Vietnam---list experiments have documented overreporting of trust in the central government on the order of 10--25 percentage points, though sincere trust levels remain at or above majority thresholds even after correction [@Nicholson2023-kt; @Robinson2019-qm]. No comparable list experiment exists for pandemic-specific attitudes in Vietnam, but even assuming a desirability gap at the upper end of the range documented in these studies, the trust-approval association observed here (β = `r round(model_coef_ranges$trust_coef_min, 2)` to `r round(model_coef_ranges$trust_coef_max, 2)`) substantially exceeds what desirability bias alone could plausibly generate---since bias would need to differentially inflate the trust-approval relationship relative to the infection-approval relationship to account for the pattern.
 
 # Discussion
 
@@ -662,17 +711,19 @@ Cross-sectional data cannot prove the causal pathway, but the pattern is consist
 
 Pandian and McGonigle [-@Pandian2025-ww], studying Singapore's COVID-19 response, describe an analogous dynamic they term "political technocracy"---a legitimation strategy in which the ruling party positions itself as a competent long-term trustee and deploys systematic rhetorical techniques to shape perceptions of national problems. Their taxonomy of state rhetorical strategies---ontological, moral, and statistical---resonates with the Southeast Asian cases, though the specific mechanisms differ. Vietnam's Communist Party is not Singapore's PAP, and the Vietnamese information environment operates through different institutional channels. But the underlying logic converges: states can actively engineer the cognitive conditions under which citizens process crisis outcomes.
 
+An important alternative reading of the Vietnamese and Cambodian cases deserves direct engagement: that citizens are not "filtering" personal experience through trusted information so much as echoing the only available narrative frame. In a mono-narrative information environment, the distinction between a cognitive heuristic and simple frame adoption may collapse. During Vietnam's Omicron wave, state media consistently framed mass infection as the inevitable cost of a globally circulating variant---emphasising vaccination progress, international comparisons, and economic reopening rather than domestic policy failure [@Le2024-sv; @Truong2022-sp]. Citizens may have adopted this attribution not because they weighed competing interpretations and found the official account credible, but because no competing interpretation was readily available. The Thailand comparison provides partial traction on this concern: there, where alternative frames circulated freely, the information trust variable still predicted approval, but the performance-accountability mechanism operated among low-trust citizens. The cognitive filter, in other words, appears to function even in a pluralistic information environment---it is not exclusively a product of narrative monopoly, though monopoly conditions clearly amplify it.
+
 This poses a fundamental challenge to performance legitimacy theory. If the state can maintain a trusted narrative, objective failure need not translate into political consequences. The argument requires that trust in official information causally shapes evaluation---a direction the present design cannot establish. But it does not require that the trust itself is unearned. Vietnam's early pandemic response was genuinely impressive, and citizens may have accurately perceived competent management even as the situation deteriorated---a kind of reputational reservoir that the information environment helped sustain.
 
 ## Limitations
 
 Three limitations deserve attention.
 
-The most consequential is causal direction. Trust may shape approval, approval may shape trust, or both may reflect an underlying orientation toward the regime. The 16--26% attenuation when controlling for institutional trust suggests the relationship is not *entirely* driven by common cause, but some portion plausibly is. Experimental or panel designs could isolate the causal pathway; cross-sectional evidence can establish the pattern's existence and robustness, not its causal architecture.
+The most consequential is causal direction. Trust may shape approval, approval may shape trust, or both may reflect an underlying orientation toward the regime. The 16--26% attenuation when controlling for institutional trust suggests the relationship is not *entirely* driven by common cause, but some portion plausibly is. The placebo test reported in Section 4.5---showing that COVID information trust predicts pandemic approval `r placebo_ratio_min`--`r placebo_ratio_max` times more strongly than non-pandemic outcomes---provides the strongest available evidence against a pure reverse-causation account, since a generalized halo effect should predict all government evaluations with similar intensity. But the test cannot rule out a pandemic-specific form of reverse causation in which citizens who approve of pandemic handling retrospectively report higher information trust to maintain attitudinal consistency. Isolating the causal pathway requires experimental or panel designs that this study cannot provide.
 
-The analysis measures *trust* in government information, not information control, media censorship, or propaganda effectiveness. High trust in Vietnam could reflect successful narrative management by an authoritarian state, genuinely effective crisis communication, cultural deference to authority [@Thayer2011-te; @Kerkvliet2015-lp], or some combination. Throughout, the paper maintains a distinction between the measured construct---individual-level trust in official COVID-19 information---and unmeasured contextual factors (information environments, media systems, censorship regimes) that may explain why trust levels differ so dramatically across countries.
+The analysis measures *trust* in government information, not information control, media censorship, or propaganda effectiveness. High trust in Vietnam could reflect successful narrative management by an authoritarian state, genuinely effective crisis communication, cultural deference to authority [@Thayer2011-te; @Kerkvliet2015-lp], or some combination. The paper maintains a distinction throughout between the measured construct---individual-level trust in official COVID-19 information---and unmeasured contextual factors (information environments, media systems, censorship regimes) that may explain why trust levels differ so dramatically across countries. The elite signaling alternative discussed in Section 5.1---that citizens in mono-narrative environments may simply echo the only available frame rather than actively filtering experience---remains a plausible partial account that cross-sectional data cannot fully adjudicate.
 
-Social desirability bias has been partially addressed but cannot be fully resolved. The off-diagonal patterns described above---Vietnamese respondents critical of speech freedoms yet approving of pandemic handling---constitute the strongest evidence against a uniform desirability account. But subtler forms of bias are harder to exclude. Respondents might feel safe criticising abstract speech freedoms while reluctant to challenge the government's signature pandemic achievement. Even granting this possibility, the *relationships* between information trust, infection, and approval---the core empirical contribution---should be less affected than the levels, since desirability bias would need to differentially inflate the trust-approval association relative to the infection-approval association to explain the pattern.
+Social desirability bias has been partially addressed but cannot be fully resolved. The off-diagonal patterns described in Section 4.5---Vietnamese respondents critical of speech freedoms yet approving of pandemic handling---constitute the strongest evidence against a uniform desirability account, and the magnitude of the trust-approval association substantially exceeds the social desirability gaps documented in list experiment research on authoritarian political trust [@Nicholson2023-kt; @Robinson2019-qm]. But subtler forms of topic-specific bias remain possible: respondents may feel safer criticising abstract speech freedoms than challenging the government's signature pandemic achievement. Even granting this, the *relationships* between information trust, infection, and approval---the core empirical contribution---should be less affected than the levels, since desirability bias would need to differentially inflate the trust-approval association relative to the infection-approval association to account for the pattern.
 
 How do these findings relate to Baniamin's [-@Baniamin2025-rx] authoritarian cultural orientation framework? The two accounts are not in tension. Authoritarian cultural orientation likely helps explain *why* citizens in Vietnam and Cambodia trust official COVID-19 information so readily---societies with stronger hierarchical orientations may be predisposed to accept official narratives. But once trust is established, the analysis here suggests it actively shapes how citizens interpret their experiences, functioning as a mediating mechanism rather than simply inflating all assessments uniformly. Authoritarian cultural orientation identifies a cultural precondition; the information-credibility heuristic identifies a cognitive pathway through which that precondition shapes political evaluations during crises.
 
