@@ -24,6 +24,7 @@ format:
     embed-resources: true
   pdf:
     toc: false
+    pdf-engine: lualatex
     documentclass: article
     geometry: margin=1in
     fontsize: 12pt
