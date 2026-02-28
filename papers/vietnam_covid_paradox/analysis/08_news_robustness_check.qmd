@@ -38,7 +38,7 @@ This document tests whether our core finding—that trust in government COVID in
 
 ```{r load-data}
 # Load main analysis data
-ab_data <- readRDS(here("data", "processed", "ab_analysis_v2.rds"))
+ab_data <- readRDS(here("papers", "vietnam_covid_paradox", "analysis", "data", "analysis_data.rds"))
 
 cat("Loaded", nrow(ab_data), "observations\n")
 

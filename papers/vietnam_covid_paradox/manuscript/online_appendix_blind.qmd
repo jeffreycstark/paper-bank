@@ -88,8 +88,10 @@ safe_load_rds <- function(filepath, name) {
 results_dir <- file.path("..", "analysis", "results")
 
 # Load main analysis dataset
-data_dir <- here::here("data", "processed")
-ab_data <- safe_load_rds(file.path(data_dir, "ab_analysis_v2.rds"), "ab_data")
+ab_data <- safe_load_rds(
+  here::here("papers", "vietnam_covid_paradox", "analysis", "data", "analysis_data.rds"),
+  "ab_data"
+)
 
 # Load all result files
 endogeneity_diagnostics <- safe_load_rds(file.path(results_dir, "endogeneity_diagnostics.rds"), "endogeneity_diagnostics")

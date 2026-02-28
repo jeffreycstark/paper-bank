@@ -29,7 +29,7 @@ library(broom)
 library(modelsummary)
 
 # Load data with new political attitude variables
-ab_analysis <- readRDS(here("data", "processed", "ab_analysis_v2.rds"))
+ab_analysis <- readRDS(here("papers", "vietnam_covid_paradox", "analysis", "data", "analysis_data.rds"))
 
 # Focus on three-country comparison
 ab_three <- ab_analysis %>%

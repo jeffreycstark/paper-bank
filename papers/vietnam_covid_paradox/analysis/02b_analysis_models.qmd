@@ -24,7 +24,7 @@ library(ggplot2)
 
 # Load the clean data
 # Ensure this points to the file created in your previous script
-ab_analysis <- readRDS(here("data", "processed", "ab_analysis_v2.rds"))
+ab_analysis <- readRDS(here("papers", "vietnam_covid_paradox", "analysis", "data", "analysis_data.rds"))
 
 # Convert haven_labelled country_name to standard factor for compatibility
 ab_analysis <- ab_analysis %>%

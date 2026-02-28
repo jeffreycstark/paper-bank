@@ -50,7 +50,7 @@ mutate <- dplyr::mutate
 cat("=== LOADING DATA WITH SURVEY WEIGHTS ===\n\n")
 
 # Load the analysis data (w and region now included in base data prep)
-ab_weighted <- readRDS(here("data", "processed", "ab_analysis_v2.rds"))
+ab_weighted <- readRDS(here("papers", "vietnam_covid_paradox", "analysis", "data", "analysis_data.rds"))
 
 cat("Weighted data dimensions:", nrow(ab_weighted), "rows ×", ncol(ab_weighted), "columns\n")
 
@@ -455,7 +455,7 @@ cat("
 ✓ COMPLETED: Survey weights (w) and region variables now included in base data prep
    - Module 03 updated to retain w and region from raw data
    - No separate merge step needed
-   - Available directly in ab_analysis_v2.rds
+   - Available directly in analysis_data.rds
 
 ✓ COMPLETED: All models implemented with actual variables:
    - H1: COVID infection → government approval for all 3 countries

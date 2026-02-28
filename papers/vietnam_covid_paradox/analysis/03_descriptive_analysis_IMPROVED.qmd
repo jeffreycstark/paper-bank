@@ -85,13 +85,13 @@ cat("✓ Professional color system loaded (colorblind-friendly)\n")
 cat("\n=== Diagnostic Info ===\n")
 cat("Working directory:", getwd(), "\n")
 cat("here() root:", here::here(), "\n")
-data_path <- here("data", "processed", "ab_analysis_v2.rds")
+data_path <- here("papers", "vietnam_covid_paradox", "analysis", "data", "analysis_data.rds")
 cat("Looking for file at:", data_path, "\n")
 cat("File exists:", file.exists(data_path), "\n")
 cat("=======================\n\n")
 
 # Load data
-ab_analysis <- readRDS(here("data", "processed", "ab_analysis_v2.rds"))
+ab_analysis <- readRDS(here("papers", "vietnam_covid_paradox", "analysis", "data", "analysis_data.rds"))
 
 # Convert haven_labelled country_name to standard factor for compatibility
 ab_analysis <- ab_analysis %>%

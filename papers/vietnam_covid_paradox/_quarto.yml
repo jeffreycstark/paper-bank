@@ -19,6 +19,3 @@ format:
 execute:
   freeze: auto
 
-knitr:
-  opts_knit:
-    root.dir: "../.."

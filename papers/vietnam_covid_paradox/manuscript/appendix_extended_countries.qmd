@@ -47,7 +47,7 @@ This appendix extends our three-country analysis (Cambodia, Thailand, Vietnam) t
 
 ```{r load-data}
 # Load expanded dataset with 7 countries
-ab_v2 <- readRDS(here("..", "..", "..", "data", "processed", "ab_analysis_v2.rds"))
+ab_v2 <- readRDS(here::here("papers", "vietnam_covid_paradox", "analysis", "data", "analysis_data.rds"))
 
 # Verify countries
 cat("Countries in expanded dataset:", paste(unique(ab_v2$country_name), collapse=", "), "\n")

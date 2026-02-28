@@ -51,10 +51,10 @@ library(sensemakr)
 set.seed(12345)
 
 # Load analysis dataset (includes economic variables from 04c module)
-ab_data <- readRDS(here("data", "processed", "ab_analysis_v2.rds"))
+ab_data <- readRDS(here("papers", "vietnam_covid_paradox", "analysis", "data", "analysis_data.rds"))
 
 # Economic variables are now integrated via data_prep_modules/04c_economic_variables.R
-cat("✓ Loaded ab_analysis_v2.rds with integrated economic variables\n")
+cat("✓ Loaded analysis_data.rds\n")
 
 # Filter to three focal countries
 ab_focal <- ab_data %>%

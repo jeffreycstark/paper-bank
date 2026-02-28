@@ -68,7 +68,7 @@ safe_extract_coef <- function(model, term) {
 }
 
 # Load data (from modular pipeline)
-ab_analysis <- readRDS(here("data", "processed", "ab_analysis_v2.rds"))
+ab_analysis <- readRDS(here("papers", "vietnam_covid_paradox", "analysis", "data", "analysis_data.rds"))
 
 # Convert haven_labelled country_name to standard factor for compatibility
 ab_analysis <- ab_analysis %>%

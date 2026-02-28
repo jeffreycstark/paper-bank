@@ -94,6 +94,22 @@ paper-bank/
 **Data**: ABS (country_num == 3, Korea, all waves) + KAMOS (Korean domestic panel survey).
 **Key files**: `analysis/00_data_preparation.R`, `analysis/01_descriptive_analysis.R`, `analysis/02_models.R`, `manuscript/manuscript.qmd`.
 
+### vietnam-covid-paradox
+**Topic**: The information-credibility paradox — why personal COVID infection had no effect on government approval in Vietnam and Cambodia, mediated by near-universal trust in official information.
+**Data**: ABS Wave 6 (Vietnam: country == 11, Cambodia: country == 12, Thailand: country == 8); N ≈ 3,679.
+**Analysis pipeline** (run in order):
+1. `analysis/00_data_preparation.R` — sources `_data_config.R`, loads `abs_harmonized.rds`, filters W6 Vietnam/Cambodia/Thailand, builds all composite variables, saves `analysis/data/analysis_data.rds`
+2. `analysis/03_hypothesis_testing.qmd` — main hypotheses (H1–H4), OLS models, standardized β
+3. `analysis/04_mediation_analysis.qmd` — mediation via covid_trust_info
+4. `analysis/05_robustness_checks.qmd` — robustness
+5. `analysis/06_sensitivity_analysis.qmd` — sensitivity
+**Manuscript**: `manuscript/vp-manuscript.qmd`, `manuscript/vp-online_appendix.qmd`
+**Key notes**:
+- `covid_trust_info` and `covid_govt_handling` are reverse-coded in `00_data_preparation.R` (harmonized: 1=best; analysis: 4=best)
+- `auth_acceptance` uses 2 harmonized items (q150, q152) vs. old pipeline's 4 items (q168–q171)
+- `emergency_powers_support` and `covid_restrict_composite` are NA (not in harmonized dataset)
+- Old 10-module pipeline archived at `analysis/archive/data_prep_modules_v1/`
+
 ### south-korea-decoupling
 **Topic**: The Satisfaction Paradox — economic performance and the decoupling of democratic support in South Korea and Taiwan.
 **Data**: ABS (Korea: country == 3, Taiwan: country == 7, waves 1–6) + KAMOS (Korean domestic panel, W1/W4).

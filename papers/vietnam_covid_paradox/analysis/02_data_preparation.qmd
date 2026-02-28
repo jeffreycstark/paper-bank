@@ -57,10 +57,11 @@ library(tidyverse)
 library(here)
 
 # Load main analysis dataset (all observations)
-ab_analysis <- readRDS(here("data", "processed", "ab_analysis_v2.rds"))
+ab_analysis <- readRDS(here("papers", "vietnam_covid_paradox", "analysis", "data", "analysis_data.rds"))
 
-# Load validated dataset (complete cases only, 88.1% retention)
-ab_analysis_validated <- readRDS(here("data", "processed", "ab_analysis_v2_validated.rds"))
+# NOTE: ab_analysis_v2_validated.rds (complete-cases subset) is no longer generated.
+# The full analysis_data.rds is used; scripts apply their own complete-case filtering.
+ab_analysis_validated <- ab_analysis
 
 cat("✓ Loaded datasets:\n")
 cat("  - ab_analysis:", nrow(ab_analysis), "observations,", ncol(ab_analysis), "variables\n")

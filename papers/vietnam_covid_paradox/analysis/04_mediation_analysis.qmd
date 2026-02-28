@@ -39,7 +39,7 @@ theme_set(theme_minimal(base_size = 12))
 
 ```{r 00b-load-data}
 # Load your prepared dataset (from modular pipeline)
-data <- readRDS(here("data", "processed", "ab_analysis_v2.rds"))
+data <- readRDS(here("papers", "vietnam_covid_paradox", "analysis", "data", "analysis_data.rds"))
 
 # Convert haven_labelled country_name to standard factor for compatibility
 data <- data %>%

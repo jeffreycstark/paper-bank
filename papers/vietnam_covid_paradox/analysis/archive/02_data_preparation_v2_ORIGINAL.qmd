@@ -2466,7 +2466,7 @@ if(is.factor(ab_analysis$country_name)) {
 # Save Processed Data
 
 # Save as RDS (preserves R data types) - V2 with 7 countries
-saveRDS(ab_analysis, here("data", "processed", "ab_analysis_v2.rds"))
+saveRDS(ab_analysis, here("papers", "vietnam_covid_paradox", "analysis", "data", "analysis_data.rds"))
 
 # Save as CSV (for sharing/other software)
 write_csv(ab_analysis, here("data", "processed", "ab_analysis_v2.csv"))

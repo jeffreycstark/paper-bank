@@ -141,7 +141,7 @@ cat("✓ Colorblind-friendly palettes defined\n")
 #| code-summary: "Load data from Script 02"
 
 # Load the cleaned and prepared dataset (from modular pipeline)
-data <- readRDS(here("data", "processed", "ab_analysis_v2.rds"))
+data <- readRDS(here("papers", "vietnam_covid_paradox", "analysis", "data", "analysis_data.rds"))
 
 # Convert haven_labelled country_name to standard factor for compatibility
 data <- data %>%

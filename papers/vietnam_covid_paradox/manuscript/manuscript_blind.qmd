@@ -305,8 +305,8 @@ create_placeholder <- function(table_name, script_to_run) {
 }
 
 # CALCULATE DESCRIPTIVE STATISTICS FOR VARIABLES
-if (file.exists(here("data", "processed", "ab_analysis_v2.rds"))) {
-  ab_anal_data <- readRDS(here("data", "processed", "ab_analysis_v2.rds"))
+if (file.exists(here("papers", "vietnam_covid_paradox", "analysis", "data", "analysis_data.rds"))) {
+  ab_anal_data <- readRDS(here("papers", "vietnam_covid_paradox", "analysis", "data", "analysis_data.rds"))
   
   var_stats <- list(
     # DV: Government approval
