@@ -7,7 +7,7 @@ library(broom)
 
 project_root <- "/Users/jeffreystark/Development/Research/paper-bank"
 data_dir <- file.path(project_root, "data/processed")
-output_dir <- file.path(project_root, "papers/meaning-of-democracy/analysis")
+output_dir <- file.path(project_root, "papers/02_meaning_of_democracy_revision/analysis")
 
 cat("Loading data...\n")
 w3 <- readRDS(file.path(data_dir, "w3.rds"))

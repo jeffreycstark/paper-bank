@@ -8,7 +8,7 @@
 #   (6) democratic_commitment index reliability check
 #
 # Depends on: thailand_panel.rds and existing results/
-# Usage: Rscript papers/thailand-trust-collapse/analysis/05_new_analyses.R
+# Usage: Rscript papers/05_thailand_trust_collapse/analysis/05_new_analyses.R
 
 library(tidyverse)
 library(broom)
@@ -22,14 +22,14 @@ library(marginaleffects)  # for predicted probabilities from polr
 select <- dplyr::select
 
 project_root <- "/Users/jeffreystark/Development/Research/paper-bank"
-analysis_dir  <- file.path(project_root, "papers/thailand-trust-collapse/analysis")
+analysis_dir  <- file.path(project_root, "papers/05_thailand_trust_collapse/analysis")
 results_dir   <- file.path(analysis_dir, "results")
 fig_dir       <- file.path(analysis_dir, "figures")
 
 d <- readRDS(file.path(analysis_dir, "thailand_panel.rds"))
 cat("Loaded:", nrow(d), "obs\n")
 
-source(file.path(project_root, "papers/thailand-trust-collapse/R/helpers.R"))
+source(file.path(project_root, "papers/05_thailand_trust_collapse/R/helpers.R"))
 
 # =============================================================================
 # (1) H3 formal test: Philippines coercive vs. non-coercive trust, Waves 4–6

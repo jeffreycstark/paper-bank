@@ -4,7 +4,7 @@
 # Random-slopes models for government and military trust, country-specific
 # slope extraction, and pre-trend robustness check.
 #
-# Usage: Rscript papers/thailand-trust-collapse/analysis/02_models.R
+# Usage: Rscript papers/05_thailand_trust_collapse/analysis/02_models.R
 
 library(tidyverse)
 library(lme4)
@@ -14,7 +14,7 @@ library(broom.mixed)
 # ── Setup ─────────────────────────────────────────────────────────────────────
 
 project_root <- "/Users/jeffreystark/Development/Research/paper-bank"
-analysis_dir <- file.path(project_root, "papers/thailand-trust-collapse/analysis")
+analysis_dir <- file.path(project_root, "papers/05_thailand_trust_collapse/analysis")
 table_dir <- file.path(analysis_dir, "tables")
 
 set.seed(2025)

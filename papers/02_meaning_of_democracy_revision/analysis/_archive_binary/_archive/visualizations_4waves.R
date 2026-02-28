@@ -6,7 +6,7 @@ library(ggplot2)
 theme_set(theme_minimal(base_size = 12))
 
 # Load the data
-data_dir <- "/Users/jeffreystark/Development/Research/paper-bank/papers/meaning-of-democracy/analysis"
+data_dir <- "/Users/jeffreystark/Development/Research/paper-bank/papers/02_meaning_of_democracy_revision/analysis"
 by_country_wave <- read_csv(file.path(data_dir, "loser_effect_by_country_4waves.csv"))
 
 # Countries with 3+ waves for trajectory plot

@@ -3,7 +3,7 @@
 ## Redesigned comparative figures for Stark (2026)
 ## "When Do Surveys Produce False Positives for Regime Support?"
 ##
-## Run from: papers/hong-kong-democratic-erosion/
+## Run from: papers/06_hong_kong_democratic_erosion/
 ## Outputs:  analysis/figures/
 ## ──────────────────────────────────────────────────────────────────────────────
 

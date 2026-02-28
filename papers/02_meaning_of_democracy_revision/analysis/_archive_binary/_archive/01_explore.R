@@ -6,7 +6,7 @@ library(haven)
 
 project_root <- "/Users/jeffreystark/Development/Research/paper-bank"
 data_dir <- file.path(project_root, "data/processed")
-output_dir <- file.path(project_root, "papers/meaning-of-democracy/analysis")
+output_dir <- file.path(project_root, "papers/02_meaning_of_democracy_revision/analysis")
 
 # Load wave data
 cat("Loading data...\n")

@@ -31,7 +31,7 @@ select <- dplyr::select
 project_root <- "/Users/jeffreystark/Development/Research/paper-bank"
 source(file.path(project_root, "_data_config.R"))
 
-paper_dir    <- file.path(project_root, "papers/south-korea-accountability-gap")
+paper_dir    <- file.path(project_root, "papers/07_south_korea_accountability_gap")
 analysis_dir <- file.path(paper_dir, "analysis")
 results_dir  <- file.path(analysis_dir, "results")
 out_tables   <- file.path(paper_dir, "outputs", "tables")

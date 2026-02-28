@@ -2,7 +2,7 @@ project:
   type: manuscript
   output-dir: _site
   render:
-    - "papers/sausage-paper/paper.qmd"
+    - "papers/trust-dynamics/paper.qmd"
     - "papers/*/paper.qmd"
     - "papers/*/appendix.qmd"
 
@@ -16,7 +16,6 @@ execute:
   daemon: false
 
 # Default bibliography and citation style
-bibliography: papers/paper-two/refs.bib
 csl: apa.csl
 
 # Figure and table options

@@ -4,7 +4,7 @@
 # Trust trajectories, wave-to-wave changes, and the government vs military
 # comparison (the "smoking gun" for political crisis mechanism).
 #
-# Usage: Rscript papers/thailand-trust-collapse/analysis/01_descriptive_analysis.R
+# Usage: Rscript papers/05_thailand_trust_collapse/analysis/01_descriptive_analysis.R
 
 library(tidyverse)
 library(patchwork)
@@ -12,7 +12,7 @@ library(patchwork)
 # ── Setup ─────────────────────────────────────────────────────────────────────
 
 project_root <- "/Users/jeffreystark/Development/Research/paper-bank"
-analysis_dir <- file.path(project_root, "papers/thailand-trust-collapse/analysis")
+analysis_dir <- file.path(project_root, "papers/05_thailand_trust_collapse/analysis")
 fig_dir <- file.path(analysis_dir, "figures")
 results_dir <- file.path(analysis_dir, "results")
 dir.create(results_dir, showWarnings = FALSE, recursive = TRUE)
@@ -20,7 +20,7 @@ dir.create(results_dir, showWarnings = FALSE, recursive = TRUE)
 set.seed(2025)
 theme_set(theme_minimal(base_size = 12))
 
-source(file.path(project_root, "papers/thailand-trust-collapse/R/helpers.R"))
+source(file.path(project_root, "papers/05_thailand_trust_collapse/R/helpers.R"))
 
 d <- readRDS(file.path(analysis_dir, "thailand_panel.rds"))
 cat("Loaded:", nrow(d), "obs\n")

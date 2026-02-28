@@ -10,7 +10,7 @@ suppressPackageStartupMessages({
 })
 
 project_root <- "/Users/jeffreystark/Development/Research/paper-bank"
-paper_dir    <- file.path(project_root, "papers/cambodia-fairy-tale")
+paper_dir    <- file.path(project_root, "papers/04_cambodia_fairy_tale")
 results_dir  <- file.path(paper_dir, "analysis/results")
 tbl_dir      <- file.path(paper_dir, "analysis/tables")
 rr_dir       <- file.path(paper_dir, "analysis/reviewer_response")

@@ -16,6 +16,9 @@ format:
     code-tools: true
     df-print: paged
 
+bibliography: manuscript/references.bib
+csl: manuscript/apa.csl
+
 execute:
   freeze: auto
 

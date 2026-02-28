@@ -5,14 +5,14 @@
 # (Thailand, Philippines, Taiwan), creates derived variables, and saves
 # thailand_panel.rds for downstream analysis.
 #
-# Usage: Rscript papers/thailand-trust-collapse/analysis/00_data_preparation.R
+# Usage: Rscript papers/05_thailand_trust_collapse/analysis/00_data_preparation.R
 
 library(tidyverse)
 
 # ── Load source data ──────────────────────────────────────────────────────────
 
 project_root <- "/Users/jeffreystark/Development/Research/paper-bank"
-analysis_dir <- file.path(project_root, "papers/thailand-trust-collapse/analysis")
+analysis_dir <- file.path(project_root, "papers/05_thailand_trust_collapse/analysis")
 
 source(file.path(project_root, "_data_config.R"))
 abs_source <- readRDS(abs_harmonized_path)

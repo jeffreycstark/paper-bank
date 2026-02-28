@@ -10,13 +10,13 @@
 #   Fig E (fig9): Regional military trust decline (slopegraph)
 #
 # Depends on: thailand_panel.rds and existing results/
-# Usage: Rscript papers/thailand-trust-collapse/analysis/06_manuscript_figures.R
+# Usage: Rscript papers/05_thailand_trust_collapse/analysis/06_manuscript_figures.R
 
 library(tidyverse)
 library(patchwork)
 
 project_root <- "/Users/jeffreystark/Development/Research/paper-bank"
-analysis_dir <- file.path(project_root, "papers/thailand-trust-collapse/analysis")
+analysis_dir <- file.path(project_root, "papers/05_thailand_trust_collapse/analysis")
 results_dir  <- file.path(analysis_dir, "results")
 fig_dir      <- file.path(analysis_dir, "figures")
 
@@ -24,7 +24,7 @@ set.seed(2025)
 
 # ── Colors and theme (matching existing figures) ──────────────────────────────
 
-source(file.path(project_root, "papers/thailand-trust-collapse/R/helpers.R"))
+source(file.path(project_root, "papers/05_thailand_trust_collapse/R/helpers.R"))
 
 inst_colors <- c(
   "Military"   = "#c0392b",

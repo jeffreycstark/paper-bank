@@ -20,7 +20,7 @@ library(here)
 library(knitr)
 library(kableExtra)
 
-here::i_am("papers/meaning-of-democracy-revision/analysis/revised/08_threeway_decomposition.qmd")
+here::i_am("papers/02_meaning_of_democracy_revision/analysis/revised/08_threeway_decomposition.qmd")
 
 # Output directory
 output_dir <- here("papers", "meaning-of-democracy-revision", "analysis", "revised", "results")

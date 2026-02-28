@@ -8,7 +8,7 @@
 # Depends on: 00_data_preparation.R (thailand_panel.rds)
 # Also loads political_interest and pol_discuss from ABS harmonized data
 #
-# Usage: Rscript papers/thailand-trust-collapse/analysis/04_attitudinal_mechanisms.R
+# Usage: Rscript papers/05_thailand_trust_collapse/analysis/04_attitudinal_mechanisms.R
 
 library(tidyverse)
 library(lme4)
@@ -21,13 +21,13 @@ library(lmtest)
 # ── Setup ─────────────────────────────────────────────────────────────────────
 
 project_root <- "/Users/jeffreystark/Development/Research/paper-bank"
-analysis_dir <- file.path(project_root, "papers/thailand-trust-collapse/analysis")
+analysis_dir <- file.path(project_root, "papers/05_thailand_trust_collapse/analysis")
 results_dir <- file.path(analysis_dir, "results")
 
 dir.create(results_dir, showWarnings = FALSE, recursive = TRUE)
 set.seed(2025)
 
-source(file.path(project_root, "papers/thailand-trust-collapse/R/helpers.R"))
+source(file.path(project_root, "papers/05_thailand_trust_collapse/R/helpers.R"))
 
 # Load panel data
 d <- readRDS(file.path(analysis_dir, "thailand_panel.rds"))

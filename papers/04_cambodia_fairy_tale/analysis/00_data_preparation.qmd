@@ -29,7 +29,7 @@ library(broom)
 project_root <- "/Users/jeffreystark/Development/Research/paper-bank"
 source(file.path(project_root, "_data_config.R"))
 
-paper_dir    <- file.path(project_root, "papers/cambodia-fairy-tale")
+paper_dir    <- file.path(project_root, "papers/04_cambodia_fairy_tale")
 analysis_dir <- file.path(paper_dir, "analysis")
 results_dir  <- file.path(analysis_dir, "results")
 fig_dir      <- file.path(analysis_dir, "figures")

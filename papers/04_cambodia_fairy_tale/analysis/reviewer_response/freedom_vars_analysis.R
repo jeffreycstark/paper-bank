@@ -35,7 +35,7 @@ suppressPackageStartupMessages({
 # 0. Load data
 # ---------------------------------------------------------------------------
 project_root <- "/Users/jeffreystark/Development/Research/paper-bank"
-paper_dir    <- file.path(project_root, "papers/cambodia-fairy-tale")
+paper_dir    <- file.path(project_root, "papers/04_cambodia_fairy_tale")
 rr_dir       <- file.path(paper_dir, "analysis/reviewer_response")
 res_dir      <- file.path(paper_dir, "analysis/results")
 

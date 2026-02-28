@@ -30,7 +30,7 @@ library(tidyverse)
 library(haven)
 library(here)
 
-here::i_am("papers/meaning-of-democracy-revision/analysis/06_openended_validation.qmd")
+here::i_am("papers/02_meaning_of_democracy_revision/analysis/06_openended_validation.qmd")
 
 # Output directory (consistent with other analysis scripts)
 output_dir <- here("papers", "meaning-of-democracy-revision", "analysis", "revised", "data")

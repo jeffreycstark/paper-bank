@@ -4,7 +4,7 @@
 # Tests all six hypotheses (H1-H6) and saves structured results to results/.
 # Depends on: 00_data_preparation.R (must be run first to produce thailand_panel.rds)
 #
-# Usage: Rscript papers/thailand-trust-collapse/analysis/03_hypothesis_tests.R
+# Usage: Rscript papers/05_thailand_trust_collapse/analysis/03_hypothesis_tests.R
 
 library(tidyverse)
 library(lme4)
@@ -18,7 +18,7 @@ library(lmtest)
 # ── Setup ─────────────────────────────────────────────────────────────────────
 
 project_root <- "/Users/jeffreystark/Development/Research/paper-bank"
-analysis_dir <- file.path(project_root, "papers/thailand-trust-collapse/analysis")
+analysis_dir <- file.path(project_root, "papers/05_thailand_trust_collapse/analysis")
 results_dir <- file.path(analysis_dir, "results")
 
 dir.create(results_dir, showWarnings = FALSE, recursive = TRUE)
@@ -29,7 +29,7 @@ cat("Loaded:", format(nrow(d), big.mark = ","), "obs across",
     length(unique(d$country_name)), "countries,",
     length(unique(d$wave_num)), "waves\n\n")
 
-source(file.path(project_root, "papers/thailand-trust-collapse/R/helpers.R"))
+source(file.path(project_root, "papers/05_thailand_trust_collapse/R/helpers.R"))
 
 # =============================================================================
 # H1: Thailand Exceptionalism

@@ -347,7 +347,7 @@ combined %>%
 # Save results
 # ============================================================================
 cat("\n\n--- Saving results ---\n")
-output_dir <- "/Users/jeffreystark/Development/Research/paper-bank/papers/meaning-of-democracy/analysis"
+output_dir <- "/Users/jeffreystark/Development/Research/paper-bank/papers/02_meaning_of_democracy_revision/analysis"
 
 saveRDS(combined, file.path(output_dir, "winner_loser_4waves.rds"))
 write_csv(by_country_wave, file.path(output_dir, "loser_effect_by_country_4waves.csv"))

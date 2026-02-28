@@ -19,7 +19,7 @@ library(ggplot2)
 library(knitr)
 library(here)
 
-here::i_am("papers/meaning-of-democracy/analysis/06_party_winner_loser.qmd")
+here::i_am("papers/02_meaning_of_democracy_revision/analysis/06_party_winner_loser.qmd")
 proj_root <- here::here()
 ```
 
@@ -641,7 +641,7 @@ d <- readRDS("data/processed/abs_econdev_authpref.rds")
 # This requires careful alignment since we're using row numbers as IDs
 
 # For Taiwan, Korea, Thailand in waves W2-W6:
-vote_data <- readRDS("papers/meaning-of-democracy/analysis/data/vote_winner_opposition.rds")
+vote_data <- readRDS("papers/02_meaning_of_democracy_revision/analysis/data/vote_winner_opposition.rds")
 
 # Merge (requires row-position matching logic)
 # d <- d %>%

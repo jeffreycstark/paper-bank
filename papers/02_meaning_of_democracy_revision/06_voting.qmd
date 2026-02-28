@@ -27,7 +27,7 @@ This script analyzes voting behavior using harmonized Asian Barometer data. Key 
 library(tidyverse)
 library(here)
 
-here::i_am("papers/meaning-of-democracy/06_voting.qmd")
+here::i_am("papers/02_meaning_of_democracy_revision/06_voting.qmd")
 
 # Master dataset (from survey-data-prep repo)
 source(here("_data_config.R"))

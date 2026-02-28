@@ -23,7 +23,7 @@ library(tidyverse)
 library(here)
 library(patchwork)
 
-here::i_am("papers/meaning-of-democracy/analysis/03_figures.qmd")
+here::i_am("papers/02_meaning_of_democracy_revision/analysis/03_figures.qmd")
 
 # Directories
 fig_dir <- here("papers", "meaning-of-democracy", "figures")
