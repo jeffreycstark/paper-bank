@@ -254,7 +254,7 @@ if (knitr::is_latex_output()) {
 }
 ```
 
-Two features of the party coding merit additional comment:
+Two features of the party coding warrant elaboration:
 
 **Party code instability in South Korea.** South Korea's frequent party reorganizations mean that the same numeric vote-choice code in the ABS microdata can represent different parties across waves. For example, code 301 corresponds to the progressive Uri Party in Waves 2--3, the conservative Saenuri Party in Wave 4, and the progressive Democratic Party in Waves 5--6. Wave-specific crosswalks were constructed to ensure correct coalition assignment despite this instability.
 
@@ -460,11 +460,11 @@ kbl(tab_wide,
 
 ### Sample Selection Considerations
 
-Because the analysis conditions on reported vote choice to assign electoral status, non-voters are excluded by design. In most country-waves, non-voter rates fall between 8 and 25 percent, consistent with the moderately high turnout typical of Asian democracies. Two patterns merit attention.
+Because the analysis conditions on reported vote choice to assign electoral status, non-voters are excluded by design. In most country-waves, non-voter rates fall between 8 and 25 percent, consistent with the moderately high turnout typical of Asian democracies. Two patterns stand out.
 
-First, Myanmar exhibits the highest non-voter rate among the analysis countries, reaching 26 percent in Wave 4. This likely reflects the challenging political environment during the transitional period following decades of military rule, where many citizens may have been uncertain about electoral participation or faced practical barriers to voting.
+First, Myanmar exhibits the highest non-voter rate among the analysis countries, reaching 26 percent in Wave 4. The elevated non-voter rate likely reflects the challenging political environment during the transitional period following decades of military rule, where many citizens may have been uncertain about electoral participation or faced practical barriers to voting.
 
-Second, Australia and Thailand represent near-compulsory or high-turnout contexts where non-voter rates remain below 5 percent across waves. In these cases, selection into voting is effectively eliminated as a confound, and the persistence of the loser effect in Thailand---where the gap grew dramatically despite minimal sample selection---provides strong evidence that the findings are not driven by differential turnout between winners and losers.
+Second, Australia and Thailand represent near-compulsory or high-turnout contexts where non-voter rates remain below 5 percent across waves. In these cases, selection into voting is effectively eliminated as a confound, and the persistence of the loser effect in Thailand---where the gap grew dramatically despite minimal sample selection---is consistent with the inference that the findings are not driven by differential turnout between winners and losers.
 
 The exclusion of non-voters means the analysis characterizes democratic conceptions among the politically engaged electorate rather than the population at large. However, the consistency of the loser effect across countries with vastly different non-voter rates (from 3.7 percent in Australia to 26 percent in Myanmar) suggests the pattern is robust to variation in the scope of sample selection.
 
@@ -832,7 +832,7 @@ kbl(three_group, booktabs = TRUE, digits = 3) %>%
 
 **Note:** L - W = Loser minus Winner; NV - W = Non-voter minus Winner. Positive values on procedural items indicate greater procedural orientation relative to winners.
 
-Table G4 reports pairwise chi-square tests confirming that non-voters differ more from losers than from winners across all item sets (Cramér's V for the loser--non-voter comparison ranges from 0.020 to 0.052, consistently exceeding the winner--non-voter comparison of 0.021 to 0.038).
+Table G4 reports pairwise chi-square tests indicating that non-voters differ more from losers than from winners across all item sets (Cramér's V for the loser--non-voter comparison ranges from 0.020 to 0.052, consistently exceeding the winner--non-voter comparison of 0.021 to 0.038).
 
 ```{r tbl-F4-pairwise-tests}
 #| tbl-cap: "Pairwise Chi-Square Tests and Effect Sizes"
@@ -951,9 +951,9 @@ To probe the mechanism underlying positional updating, this appendix decomposes 
 
 Pooled across three countries ($N = 7{,}640$ respondents with valid three-way coding), key opposition voters show a mean procedural difference of $-0.016$ relative to winners, with only 2 of 8 procedural items positive. The procedural-substantive gap between key opposition and winners ($-0.042$) is small. By country, only South Korea shows a weakly positive gap ($+0.025$); Taiwan ($-0.016$) and Thailand ($-0.080$) both run in the opposite direction. Across specifications, Other Losers display procedural orientations that are substantively comparable to---and in several cases stronger than---those observed among Key Opposition supporters. The differences between the two loser subgroups do not reach conventional levels of statistical significance in any specification.
 
-These findings are more consistent with an exclusion-based mechanism than with a strategic-signaling account. Citizens who lack even the organizational infrastructure of a major opposition party may in fact experience the most acute sense of exclusion from governing authority, reinforcing rather than undermining the positional updating framework.
+These findings are more consistent with an exclusion-based mechanism than with a strategic-signaling account. Citizens who lack even the organizational infrastructure of a major opposition party may experience the most acute sense of exclusion from governing authority, reinforcing rather than undermining the positional updating framework.
 
-Two important caveats are warranted. First, only three countries in the sample permit this decomposition, limiting statistical power and generalizability. Second, the categories are necessarily coarse; within "Other Losers," the political situations of minor party supporters and nonpartisan independents likely differ in ways the data cannot capture. The analysis should therefore be read as suggestive rather than definitive. What it does establish is that the loser effect is not an artifact of opposition party mobilization alone, lending additional support to the broader exclusion-based interpretation of positional updating developed in the main text.
+Two caveats qualify the interpretation. First, only three countries in the sample permit this decomposition, limiting statistical power and generalizability. Second, the categories are necessarily coarse; within "Other Losers," the political situations of minor party supporters and nonpartisan independents likely differ in ways the data cannot capture. The analysis should therefore be read as suggestive rather than definitive. What it does establish is that the loser effect is not an artifact of opposition party mobilization alone, lending additional support to the broader exclusion-based interpretation of positional updating developed in the main text.
 
 # Thailand Wave 4 Exclusion Robustness {#sec-thai-w4}
 
