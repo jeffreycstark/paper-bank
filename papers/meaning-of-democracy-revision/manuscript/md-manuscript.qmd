@@ -429,7 +429,7 @@ gap_tbl <- cw_gap %>%
   select(Country, W3, W4, W6)
 
 if (knitr::is_latex_output()) {
-  gap_tbl %>%
+  tbl_out <- gap_tbl %>%
     kbl(
       booktabs = TRUE,
       longtable = FALSE,
@@ -451,6 +451,9 @@ if (knitr::is_latex_output()) {
       footnote_as_chunk = TRUE,
       threeparttable = TRUE
     )
+  tbl_str <- as.character(tbl_out)
+  tbl_str <- gsub("\\label{tab:country-gaps}", "", tbl_str, fixed = TRUE)
+  cat(tbl_str)
 } else {
   gap_tbl %>%
     kable(format = "pipe", align = c("l", "c", "c", "c"))
