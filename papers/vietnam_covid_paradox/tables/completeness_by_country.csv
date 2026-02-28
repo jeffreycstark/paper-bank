@@ -1,4 +1,0 @@
-country_name,n_total,covid_contracted_n,covid_contracted_pct,covid_severity_n,covid_severity_pct,govt_handling_n,govt_handling_pct,trust_info_n,trust_info_pct,covid_perf_comp_n,covid_perf_comp_pct,dem_sat_n,dem_sat_pct,dem_leg_n,dem_leg_pct,trust_index_n,trust_index_pct,auth_accept_n,auth_accept_pct,regime_pref_n,regime_pref_pct,emergency_n,emergency_pct,age_n,age_pct,gender_n,gender_pct,educ_n,educ_pct,urban_n,urban_pct
-Cambodia,1242,1234,99.4,1167,94,1207,97.2,1198,96.5,1227,98.8,1196,96.3,1152,92.8,1093,88,1161,93.5,1165,93.8,1214,97.7,1242,100,1242,100,1241,99.9,1242,100
-Vietnam,1237,1232,99.6,1228,99.3,1224,98.9,1217,98.4,1231,99.5,1227,99.2,1194,96.5,1175,95,1168,94.4,1196,96.7,1213,98.1,1237,100,1237,100,1237,100,1237,100
-Thailand,1200,1178,98.2,1153,96.1,1141,95.1,1159,96.6,1166,97.2,1144,95.3,1197,99.8,1115,92.9,1040,86.7,1081,90.1,1114,92.8,1200,100,1200,100,1200,100,1200,100

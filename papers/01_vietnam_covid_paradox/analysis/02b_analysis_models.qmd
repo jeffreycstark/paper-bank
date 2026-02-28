@@ -1,0 +1,188 @@
+---
+title: "02b_analysis_models Multivariate Analysis & Robustness Checks"
+subtitle: "The Vietnam Paradox"
+author: "Jeffrey Stark"
+date: today
+format:
+  html:
+    toc: true
+    code-fold: show
+    df-print: paged
+---
+
+# Setup
+
+```{r setup, message=FALSE, warning=FALSE}
+# Load packages
+library(tidyverse)
+library(here)
+library(modelsummary) # For regression tables
+library(marginaleffects) # For visualizing interactions
+library(sandwich) # For robust standard errors
+library(lmtest) # For testing coefficients
+library(ggplot2)
+
+# Load the clean data
+# Ensure this points to the file created in your previous script
+ab_analysis <- readRDS(here("papers", "01_vietnam_covid_paradox", "analysis", "data", "analysis_data.rds"))
+
+# Convert haven_labelled country_name to standard factor for compatibility
+ab_analysis <- ab_analysis %>%
+  mutate(country_name = as.factor(as.character(country_name)))
+
+# Set distinct plot theme
+theme_set(theme_minimal())
+```
+
+
+```{r 01-function-country-models}
+run_country_models <- function(data, country_name) {
+  
+  country_data <- data %>% filter(country_name == !!country_name)
+  
+  # Model 1: Objective Reality
+  m1 <- lm(covid_govt_handling ~ covid_contracted + covid_impact_severity + 
+             age + gender + urban + educ_level, 
+           data = country_data)
+  
+  # Model 2: Adding Information Trust
+  m2 <- lm(covid_govt_handling ~ covid_contracted + covid_impact_severity + 
+             covid_trust_info + 
+             age + gender + urban + educ_level, 
+           data = country_data)
+  
+  # Model 3: The "Halo" Test (Controlling for General Trust)
+  m3 <- lm(covid_govt_handling ~ covid_contracted + covid_impact_severity + 
+             covid_trust_info + institutional_trust_index +
+             age + gender + urban + educ_level, 
+           data = country_data)
+  
+  return(list(m1, m2, m3))
+}
+
+# Run for all three countries
+models_vietnam <- run_country_models(ab_analysis, "Vietnam")
+models_cambodia <- run_country_models(ab_analysis, "Cambodia")
+models_thailand <- run_country_models(ab_analysis, "Thailand")
+
+# Display Regression Table (Vietnam Focus)
+modelsummary(
+  models_vietnam, 
+  title = "Vietnam: Determinants of Government Pandemic Approval",
+  stars = TRUE,
+  coef_map = c(
+    "covid_contracted" = "Infected (Personal)",
+    "covid_impact_severity" = "Econ Hardship",
+    "covid_trust_info" = "Trust in COVID Info",
+    "institutional_trust_index" = "General Inst. Trust",
+    "(Intercept)" = "Intercept"
+  ),
+  gof_map = c("nobs", "r.squared"),
+  notes = "Standard errors in parentheses. DV: Government Handling (1-4)."
+)
+```
+
+
+```{r 02-visualizing-decoupling-figure1}
+# Calculate effects for Vietnam only for the main figure
+vietnam_data <- ab_analysis %>% filter(country_name == "Vietnam")
+
+m_viz <- lm(covid_govt_handling ~ covid_contracted + covid_impact_severity + covid_trust_info, 
+            data = vietnam_data)
+
+# Calculate Average Marginal Effects
+effects <- slopes(m_viz) %>%
+  group_by(term) %>%
+  summarize(
+    estimate = mean(estimate),
+    conf.low = mean(conf.low),
+    conf.high = mean(conf.high)
+  )
+
+# Plot Figure 1
+ggplot(effects, aes(x = term, y = estimate)) +
+  geom_hline(yintercept = 0, linetype = "dashed", color = "gray") +
+  geom_pointrange(aes(ymin = conf.low, ymax = conf.high), color = "darkred", size = 1) +
+  coord_flip() +
+  labs(
+    title = "Vietnam: Impact of Factors on Gov Approval",
+    subtitle = "Change in Approval (1-4 scale) associated with 1 unit increase",
+    y = "Change in Approval Rating",
+    x = ""
+  ) +
+  scale_x_discrete(labels = c(
+    "covid_contracted" = "Infection Status",
+    "covid_impact_severity" = "Economic Hardship",
+    "covid_trust_info" = "Trust in Information"
+  ))
+```
+
+
+```{r 03-lens-mechanism-interaction-effects}
+# Run interaction model on pooled data with country interactions
+# This allows us to see if the "lens" works differently in Vietnam vs Thailand
+
+# Plotting the "Lens Effect" with Facets
+# 1. Define the Interaction Model first
+m_interaction <- lm(covid_govt_handling ~
+                      covid_impact_severity * covid_trust_info * country_name +
+                      age + gender + urban + educ_level,
+                    data = ab_analysis)
+
+# 2. Visualize using the "Facets" approach (Option 2)
+plot_predictions(
+  m_interaction,
+  condition = list(
+    "covid_impact_severity",       # x-axis
+    "covid_trust_info" = c(1, 4),  # color: compare Low (1) vs High (4) Trust
+    "country_name"                 # facet: split by country
+  ),
+  draw = FALSE  # Return data frame instead of plot, to have full control
+) %>%
+  ggplot(aes(x = covid_impact_severity,
+             y = estimate,
+             color = factor(covid_trust_info))) +
+  geom_line(linewidth = 1) +
+  geom_ribbon(aes(ymin = conf.low, ymax = conf.high,
+                  fill = factor(covid_trust_info)),
+              alpha = 0.2) +
+
+  # Create distinct panels for each country
+  facet_wrap(~ country_name) +
+
+  # Add clear labels
+  labs(
+    title = "The 'Lens' Effect: Does Trust Buffer Economic Hardship?",
+    subtitle = "Comparing the buffering effect of High vs. Low Trust across countries",
+    y = "Predicted Government Approval (1-4)",
+    x = "Economic Hardship Severity (1-4)",
+    color = "Trust in COVID Info",
+    fill = "Trust in COVID Info"
+  ) +
+
+  # Rename legend labels for clarity
+  scale_color_discrete(labels = c("Low Trust (1)", "High Trust (4)")) +
+  scale_fill_discrete(labels = c("Low Trust (1)", "High Trust (4)")) +
+
+  # Use a clean theme and move legend to bottom
+  theme_minimal() +
+  theme(legend.position = "bottom")
+```
+
+```{r 04-policy-shift-check, eval=FALSE}
+# NOTE: This analysis cannot be run for Vietnam due to 100% missing data
+# on covid_restrict_composite (pandemic-specific restrictions variables).
+# Vietnam did not have these questions in the survey.
+#
+# Alternative: Run for Thailand or Cambodia where data exists
+
+# Testing if acceptance of restrictions correlates with approval
+# In Vietnam, high approval + high acceptance of restrictions = Support for State Power
+# High approval + low acceptance = Support for "Living with COVID" (Freedom)
+
+# Use Thailand instead (has data for restriction variables)
+m_policy <- lm(covid_govt_handling ~ covid_restrict_composite + covid_trust_info,
+               data = ab_analysis %>% filter(country_name == "Thailand"))
+
+summary(m_policy)
+```

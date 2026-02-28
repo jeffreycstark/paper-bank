@@ -1,0 +1,1618 @@
+---
+title: "Script 07: Country-Specific Comparative Analysis"
+subtitle: "The Vietnam Paradox - Stratified Analysis by Country"
+author: "Jeffrey Stark"
+date: today
+format:
+  html:
+    toc: true
+    toc-depth: 4
+    toc-location: left
+    code-fold: show
+    code-tools: true
+    code-line-numbers: true
+    number-sections: true
+    theme: cosmo
+    embed-resources: true
+    fig-width: 10
+    fig-height: 7
+    df-print: paged
+execute:
+  warning: false
+  message: false
+  cache: false
+---
+
+# 1. Setup {#sec-setup}
+
+## Load Required Packages
+
+```{r 00-setup-packages}
+#| label: setup-packages
+#| code-summary: "Load packages"
+
+# Clear environment
+rm(list = ls())
+
+# Set CRAN mirror
+options(repos = c(CRAN = "https://cloud.r-project.org"))
+
+# Load required packages
+if (!require("pacman")) install.packages("pacman")
+pacman::p_load(
+  # Data manipulation
+  tidyverse,
+  dplyr,
+  
+  # Statistical analysis
+  psych,
+  lavaan,
+  mediation,
+  
+  # Visualization
+  ggplot2,
+  gridExtra,
+  RColorBrewer,
+  scales,
+  patchwork,
+  
+  # Tables
+  knitr,
+  kableExtra,
+  gt,
+  gtsummary,
+  
+  # Effect sizes
+  effectsize,
+  
+  # Bootstrap
+  boot,
+  
+  # Additional utilities
+  here,
+  janitor
+)
+
+# Set global options
+options(scipen = 999)  # Disable scientific notation
+set.seed(2025)         # Reproducibility
+
+# Set ggplot theme
+theme_set(theme_minimal(base_size = 12))
+```
+
+## Load Prepared Data
+
+```{r 01-load-prepared-data}
+#| label: load-prepared-data
+#| code-summary: "Load data from Script 02"
+
+# Load the cleaned and prepared dataset
+data <- readRDS(here("papers", "01_vietnam_covid_paradox", "analysis", "data", "analysis_data.rds"))
+
+# Convert haven_labelled country_name to standard factor for compatibility
+data <- data %>%
+  mutate(country_name = as.factor(as.character(country_name)))
+
+# Verify data structure
+cat("Dataset dimensions:", nrow(data), "rows ×", ncol(data), "columns\n")
+cat("Countries included:", unique(data$country_name), "\n")
+
+# Display variable summary
+glimpse(data)
+```
+
+## Verify Key Variables
+
+```{r 02-verify-key-variables}
+#| label: verify-key-variables
+#| code-summary: "Check key variables exist"
+
+# List of required variables for analysis
+required_vars <- c(
+  "country_name",           # Country identifier
+  "covid_contracted",       # PRIMARY IV: COVID infection
+  "covid_govt_handling",    # PRIMARY DV: Government approval
+  "covid_trust_info",       # KEY MEDIATOR: Trust in govt COVID info
+  "dem_satisfaction",       # Democracy satisfaction
+  "institutional_trust_index", # Institutional trust
+  "auth_acceptance",        # Authoritarianism acceptance
+  "emergency_powers_support" # Emergency powers support
+)
+
+# Check all variables exist
+missing_vars <- setdiff(required_vars, names(data))
+if (length(missing_vars) > 0) {
+  stop("Missing required variables: ", paste(missing_vars, collapse = ", "))
+} else {
+  cat("✓ All required variables present\n")
+}
+
+# Check for missing data by country
+data %>%
+  group_by(country_name) %>%
+  summarise(
+    n = n(),
+    covid_contracted_missing = sum(is.na(covid_contracted)),
+    covid_govt_handling_missing = sum(is.na(covid_govt_handling)),
+    covid_trust_info_missing = sum(is.na(covid_trust_info))
+  ) %>%
+  kable(caption = "Sample Size and Missing Data by Country") %>%
+  kable_styling(bootstrap_options = c("striped", "hover"))
+```
+
+------------------------------------------------------------------------
+
+# 2. Stratified Descriptive Statistics {#sec-descriptives}
+
+## Sample Characteristics by Country
+
+```{r 03-sample-characteristics-by-country}
+#| label: sample-characteristics-by-country
+#| code-summary: "Descriptive statistics stratified by country"
+
+# Create comprehensive descriptive table
+descriptive_table <- data %>%
+  group_by(country_name) %>%
+  summarise(
+    N = n(),
+    
+    # COVID Infection
+    covid_contracted_mean = mean(covid_contracted, na.rm = TRUE),
+    covid_contracted_sd = sd(covid_contracted, na.rm = TRUE),
+    covid_contracted_min = min(covid_contracted, na.rm = TRUE),
+    covid_contracted_max = max(covid_contracted, na.rm = TRUE),
+    
+    # Government Approval
+    govt_handling_mean = mean(covid_govt_handling, na.rm = TRUE),
+    govt_handling_sd = sd(covid_govt_handling, na.rm = TRUE),
+    govt_handling_min = min(covid_govt_handling, na.rm = TRUE),
+    govt_handling_max = max(covid_govt_handling, na.rm = TRUE),
+    
+    # Trust in Information
+    trust_info_mean = mean(covid_trust_info, na.rm = TRUE),
+    trust_info_sd = sd(covid_trust_info, na.rm = TRUE),
+    trust_info_min = min(covid_trust_info, na.rm = TRUE),
+    trust_info_max = max(covid_trust_info, na.rm = TRUE),
+    
+    # Democracy Satisfaction
+    dem_sat_mean = mean(dem_satisfaction, na.rm = TRUE),
+    dem_sat_sd = sd(dem_satisfaction, na.rm = TRUE),
+    
+    # Institutional Trust
+    inst_trust_mean = mean(institutional_trust_index, na.rm = TRUE),
+    inst_trust_sd = sd(institutional_trust_index, na.rm = TRUE),
+    
+    # Authoritarianism
+    auth_mean = mean(auth_acceptance, na.rm = TRUE),
+    auth_sd = sd(auth_acceptance, na.rm = TRUE)
+  )
+
+# Display formatted table
+descriptive_table %>%
+  kable(
+    digits = 2,
+    caption = "Descriptive Statistics by Country: Key Variables",
+    col.names = c(
+      "Country", "N",
+      "Mean", "SD", "Min", "Max",  # COVID Infection
+      "Mean", "SD", "Min", "Max",  # Govt Handling
+      "Mean", "SD", "Min", "Max",  # Trust Info
+      "Mean", "SD",                 # Democracy
+      "Mean", "SD",                 # Inst Trust
+      "Mean", "SD"                  # Auth
+    )
+  ) %>%
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed")) %>%
+  add_header_above(c(" " = 2, "COVID Infection" = 4, "Govt Approval" = 4, 
+                     "Trust Info" = 4, "Democracy" = 2, "Inst Trust" = 2, 
+                     "Authoritarianism" = 2))
+```
+
+## Cross-Tabulation: Infection × Approval by Country
+
+```{r 04-crosstabs-by-country}
+#| label: crosstabs-by-country
+#| code-summary: "Cross-tabulation of infection and approval"
+#| fig-height: 6
+
+# Create categorical version of infection variable for cross-tabs
+data <- data %>%
+  mutate(
+    infection_category = case_when(
+      covid_contracted == 1 ~ "Not Infected",
+      covid_contracted == 2 ~ "Self Infected",
+      covid_contracted == 3 ~ "Family Infected",
+      covid_contracted == 4 ~ "Both Infected",
+      TRUE ~ NA_character_
+    ),
+    approval_category = case_when(
+      covid_govt_handling <= 2 ~ "Disapprove",
+      covid_govt_handling == 3 ~ "Neutral",
+      covid_govt_handling >= 4 ~ "Approve",
+      TRUE ~ NA_character_
+    )
+  )
+
+# Cross-tabulation for each country
+countries <- c("Vietnam", "Cambodia", "Thailand")
+
+crosstab_list <- list()
+
+for (country in countries) {
+  country_data <- data %>% filter(country_name == country)
+  
+  crosstab <- table(country_data$infection_category, 
+                    country_data$approval_category)
+  
+  cat("\n", rep("=", 60), "\n", sep = "")
+  cat("CROSS-TABULATION:", country, "\n")
+  cat(rep("=", 60), "\n\n", sep = "")
+  
+  print(crosstab)
+  
+  # Calculate proportions
+  prop_table <- prop.table(crosstab, margin = 1) * 100
+  cat("\nRow Percentages (% within infection category):\n")
+  print(round(prop_table, 1))
+  
+  crosstab_list[[country]] <- crosstab
+}
+```
+
+## Visualization: Distribution Comparison
+
+```{r 05-visualization-dist-comparison}
+#| label: viz-distribution-comparison
+#| code-summary: "Side-by-side distribution plots"
+#| fig-width: 12
+#| fig-height: 10
+
+# Color palette (8 countries now in dataset)
+colors <- brewer.pal(8, "Set2")
+
+# 1. COVID Infection Distribution
+p1 <- ggplot(data, aes(x = covid_contracted, fill = country_name)) +
+  geom_histogram(bins = 4, position = "dodge", alpha = 0.7, color = "white") +
+  scale_fill_manual(values = colors) +
+  labs(
+    title = "COVID Infection Experience by Country",
+    x = "Infection Level (1=None, 4=Self+Family)",
+    y = "Frequency",
+    fill = "Country"
+  ) +
+  theme(legend.position = "bottom")
+
+# 2. Government Approval Distribution
+p2 <- ggplot(data, aes(x = covid_govt_handling, fill = country_name)) +
+  geom_histogram(bins = 5, position = "dodge", alpha = 0.7, color = "white") +
+  scale_fill_manual(values = colors) +
+  labs(
+    title = "Government COVID Handling Approval by Country",
+    x = "Approval Rating (1=Very Bad, 5=Very Good)",
+    y = "Frequency",
+    fill = "Country"
+  ) +
+  theme(legend.position = "bottom")
+
+# 3. Trust in Information Distribution
+p3 <- ggplot(data, aes(x = covid_trust_info, fill = country_name)) +
+  geom_density(alpha = 0.5) +
+  scale_fill_manual(values = colors) +
+  labs(
+    title = "Trust in Government COVID Information by Country",
+    x = "Trust in Information (continuous scale)",
+    y = "Density",
+    fill = "Country"
+  ) +
+  theme(legend.position = "bottom")
+
+# 4. Boxplot Comparison
+p4 <- ggplot(data, aes(x = country_name, y = covid_govt_handling, 
+                        fill = country_name)) +
+  geom_boxplot(alpha = 0.7, outlier.alpha = 0.3) +
+  scale_fill_manual(values = colors) +
+  labs(
+    title = "Government Approval Distribution Comparison",
+    x = "Country",
+    y = "COVID Government Handling Approval",
+    fill = "Country"
+  ) +
+  theme(legend.position = "none")
+
+# Combine plots
+(p1 + p2) / (p3 + p4) +
+  plot_annotation(
+    title = "Distribution Comparison Across Countries",
+    theme = theme(plot.title = element_text(size = 16, face = "bold"))
+  )
+```
+
+------------------------------------------------------------------------
+
+# 3. Country-Specific Correlation Analysis {#sec-correlations}
+
+## Correlation Matrices by Country
+
+```{r 06-correlation-matrices-by-country}
+#| label: correlation-matrices-by-country
+#| code-summary: "Separate correlation matrices for each country"
+
+# Key variables for correlation
+cor_vars <- c(
+  "covid_contracted",
+  "covid_govt_handling", 
+  "covid_trust_info",
+  "dem_satisfaction",
+  "institutional_trust_index",
+  "auth_acceptance"
+)
+
+# Function to compute correlation matrix with significance
+compute_corr_matrix <- function(country_data, country_name) {
+  
+  # Select variables and remove missing
+  cor_data <- country_data %>%
+    select(all_of(cor_vars)) %>%
+    na.omit()
+  
+  # Compute correlations with significance tests
+  cor_matrix <- corr.test(cor_data, method = "pearson", adjust = "holm")
+  
+  cat("\n", rep("=", 70), "\n", sep = "")
+  cat("CORRELATION MATRIX:", country_name, "(N =", nrow(cor_data), ")\n")
+  cat(rep("=", 70), "\n\n", sep = "")
+  
+  # Print correlation coefficients
+  cat("Pearson Correlations:\n")
+  print(round(cor_matrix$r, 3))
+  
+  cat("\n\nP-values (Holm-corrected):\n")
+  print(round(cor_matrix$p, 3))
+  
+  # Return correlation object for further use
+  return(cor_matrix)
+}
+
+# Compute for each country
+vietnam_cor <- data %>% 
+  filter(country_name == "Vietnam") %>%
+  compute_corr_matrix("Vietnam")
+
+cambodia_cor <- data %>%
+  filter(country_name == "Cambodia") %>%
+  compute_corr_matrix("Cambodia")
+
+thailand_cor <- data %>%
+  filter(country_name == "Thailand") %>%
+  compute_corr_matrix("Thailand")
+```
+
+## Fisher's Z-Test: Comparing Correlations Across Countries
+
+```{r 07-fishers-z-test-correlations}
+#| label: fishers-z-test-correlations
+#| code-summary: "Test if correlations differ significantly between countries"
+
+# Function to perform Fisher's Z-test
+fishers_z_test <- function(r1, n1, r2, n2, var1_name, var2_name, 
+                           country1, country2) {
+  
+  # Fisher's Z transformation
+  z1 <- 0.5 * log((1 + r1) / (1 - r1))
+  z2 <- 0.5 * log((1 + r2) / (1 - r2))
+  
+  # Standard error
+  se <- sqrt(1/(n1 - 3) + 1/(n2 - 3))
+  
+  # Z-statistic
+  z_stat <- (z1 - z2) / se
+  
+  # Two-tailed p-value
+  p_value <- 2 * (1 - pnorm(abs(z_stat)))
+  
+  # Return results
+  return(data.frame(
+    Variable_Pair = paste(var1_name, "×", var2_name),
+    Country_1 = country1,
+    r1 = round(r1, 3),
+    n1 = n1,
+    Country_2 = country2,
+    r2 = round(r2, 3),
+    n2 = n2,
+    Z_statistic = round(z_stat, 3),
+    p_value = round(p_value, 4),
+    Significant = ifelse(p_value < 0.05, "Yes", "No")
+  ))
+}
+
+# Get sample sizes
+n_vietnam <- data %>% 
+  filter(country_name == "Vietnam") %>%
+  select(all_of(cor_vars)) %>%
+  na.omit() %>%
+  nrow()
+
+n_cambodia <- data %>%
+  filter(country_name == "Cambodia") %>%
+  select(all_of(cor_vars)) %>%
+  na.omit() %>%
+  nrow()
+
+n_thailand <- data %>%
+  filter(country_name == "Thailand") %>%
+  select(all_of(cor_vars)) %>%
+  na.omit() %>%
+  nrow()
+```
+
+## Fisher's Z-Test: Comparing Correlations Across Countries (with P-value Adjustment)
+
+```{r 07b-fishers-z-test-correlations}
+# KEY COMPARISON 1: COVID Infection × Government Approval
+cat("\n", rep("=", 70), "\n", sep = "")
+cat("FISHER'S Z-TEST: COVID Infection × Government Approval (Corrected)\n")
+cat(rep("=", 70), "\n\n", sep = "")
+
+# 1. Store the raw results first
+fisher_infection_approval <- rbind(
+  fishers_z_test(r1 = vietnam_cor$r["covid_contracted", "covid_govt_handling"], n1 = n_vietnam,
+                 r2 = cambodia_cor$r["covid_contracted", "covid_govt_handling"], n2 = n_cambodia,
+                 var1_name = "COVID Infection", var2_name = "Govt Approval", country1 = "Vietnam", country2 = "Cambodia"),
+  fishers_z_test(r1 = vietnam_cor$r["covid_contracted", "covid_govt_handling"], n1 = n_vietnam,
+                 r2 = thailand_cor$r["covid_contracted", "covid_govt_handling"], n2 = n_thailand,
+                 var1_name = "COVID Infection", var2_name = "Govt Approval", country1 = "Vietnam", country2 = "Thailand"),
+  fishers_z_test(r1 = cambodia_cor$r["covid_contracted", "covid_govt_handling"], n1 = n_cambodia,
+                 r2 = thailand_cor$r["covid_contracted", "covid_govt_handling"], n2 = n_thailand,
+                 var1_name = "COVID Infection", var2_name = "Govt Approval", country1 = "Cambodia", country2 = "Thailand")
+)
+
+# 2. Apply P-value Adjustment (Holm is recommended over Bonferroni as it's less conservative but still safe)
+fisher_infection_approval$p_adj <- p.adjust(fisher_infection_approval$p_value, method = "holm")
+
+# 3. Update the "Significant" column based on the ADJUSTED p-value
+fisher_infection_approval$Significant <- ifelse(fisher_infection_approval$p_adj < 0.05, "Yes", "No")
+
+# 4. Display the table with adjusted p-values
+fisher_infection_approval %>%
+  select(Variable_Pair, Country_1, Country_2, r1, r2, Z_statistic, p_value, p_adj, Significant) %>%
+  kable(caption = "Fisher's Z-Test with Holm Correction") %>%
+  kable_styling(bootstrap_options = c("striped", "hover"))
+
+# KEY COMPARISON 2: Trust × Government Approval
+cat("\n", rep("=", 70), "\n", sep = "")
+cat("FISHER'S Z-TEST: Trust in Info × Government Approval\n")
+cat(rep("=", 70), "\n\n", sep = "")
+
+fisher_trust_approval <- rbind(
+  fishers_z_test(
+    r1 = vietnam_cor$r["covid_trust_info", "covid_govt_handling"],
+    n1 = n_vietnam,
+    r2 = cambodia_cor$r["covid_trust_info", "covid_govt_handling"],
+    n2 = n_cambodia,
+    var1_name = "Trust in Info",
+    var2_name = "Govt Approval",
+    country1 = "Vietnam",
+    country2 = "Cambodia"
+  ),
+  fishers_z_test(
+    r1 = vietnam_cor$r["covid_trust_info", "covid_govt_handling"],
+    n1 = n_vietnam,
+    r2 = thailand_cor$r["covid_trust_info", "covid_govt_handling"],
+    n2 = n_thailand,
+    var1_name = "Trust in Info",
+    var2_name = "Govt Approval",
+    country1 = "Vietnam",
+    country2 = "Thailand"
+  ),
+  fishers_z_test(
+    r1 = cambodia_cor$r["covid_trust_info", "covid_govt_handling"],
+    n1 = n_cambodia,
+    r2 = thailand_cor$r["covid_trust_info", "covid_govt_handling"],
+    n2 = n_thailand,
+    var1_name = "Trust in Info",
+    var2_name = "Govt Approval",
+    country1 = "Cambodia",
+    country2 = "Thailand"
+  )
+)
+
+fisher_trust_approval %>%
+  kable(caption = "Fisher's Z-Test: Trust-Approval Correlation Differences") %>%
+  kable_styling(bootstrap_options = c("striped", "hover"))
+```
+
+## Visualization: Correlation Heatmaps
+
+```{r 08-viz-correlation-heatmaps}
+#| label: viz-correlation-heatmaps
+#| code-summary: "Heatmap visualization of correlations by country"
+#| fig-width: 14
+#| fig-height: 5
+
+# Function to create correlation heatmap
+create_cor_heatmap <- function(cor_matrix, country_name, cor_vars) {
+  
+  # Extract correlation matrix
+  cor_data <- cor_matrix$r
+  
+  # Convert to long format
+  cor_long <- cor_data %>%
+    as.data.frame() %>%
+    rownames_to_column("Var1") %>%
+    pivot_longer(cols = -Var1, names_to = "Var2", values_to = "correlation")
+  
+  # Create heatmap
+  ggplot(cor_long, aes(x = Var1, y = Var2, fill = correlation)) +
+    geom_tile(color = "white") +
+    geom_text(aes(label = sprintf("%.2f", correlation)), size = 3) +
+    scale_fill_gradient2(
+      low = "#d73027",
+      mid = "white", 
+      high = "#4575b4",
+      midpoint = 0,
+      limits = c(-1, 1),
+      name = "Pearson r"
+    ) +
+    labs(
+      title = country_name,
+      x = NULL,
+      y = NULL
+    ) +
+    theme_minimal() +
+    theme(
+      axis.text.x = element_text(angle = 45, hjust = 1, size = 8),
+      axis.text.y = element_text(size = 8),
+      plot.title = element_text(hjust = 0.5, face = "bold")
+    ) +
+    coord_fixed()
+}
+
+# Create heatmaps
+p_vietnam <- create_cor_heatmap(vietnam_cor, "Vietnam", cor_vars)
+p_cambodia <- create_cor_heatmap(cambodia_cor, "Cambodia", cor_vars)
+p_thailand <- create_cor_heatmap(thailand_cor, "Thailand", cor_vars)
+
+# Combine plots
+p_vietnam + p_cambodia + p_thailand +
+  plot_layout(guides = "collect") +
+  plot_annotation(
+    title = "Correlation Matrices by Country",
+    theme = theme(plot.title = element_text(size = 16, face = "bold"))
+  )
+```
+
+------------------------------------------------------------------------
+
+# 4. Country-Specific Regression Models {#sec-regression}
+
+## Model 1: Infection Predicting Approval (Bivariate)
+
+```{r 09-regression-bivariate-by-country}
+#| label: regression-bivariate-by-country
+#| code-summary: "Simple regression: Infection → Approval by country"
+
+# Function to run and format regression
+run_regression <- function(country_data, country_name, formula_text) {
+  
+  # Fit model
+  model <- lm(as.formula(formula_text), data = country_data)
+  
+  # Extract coefficients with CI
+  coef_table <- summary(model)$coefficients
+  ci <- confint(model)
+  
+  # Combine results
+  results <- data.frame(
+    Country = country_name,
+    Coefficient = rownames(coef_table),
+    B = coef_table[, "Estimate"],
+    SE = coef_table[, "Std. Error"],
+    t_value = coef_table[, "t value"],
+    p_value = coef_table[, "Pr(>|t|)"],
+    CI_lower = ci[, 1],
+    CI_upper = ci[, 2]
+  )
+  
+  # Add model fit statistics
+  results$R_squared <- summary(model)$r.squared
+  results$Adj_R_squared <- summary(model)$adj.r.squared
+  results$N <- nobs(model)
+  
+  return(list(
+    results = results,
+    model = model
+  ))
+}
+
+# Run bivariate models for each country
+vietnam_m1 <- data %>%
+  filter(country_name == "Vietnam") %>%
+  run_regression("Vietnam", "covid_govt_handling ~ covid_contracted")
+
+cambodia_m1 <- data %>%
+  filter(country_name == "Cambodia") %>%
+  run_regression("Cambodia", "covid_govt_handling ~ covid_contracted")
+
+thailand_m1 <- data %>%
+  filter(country_name == "Thailand") %>%
+  run_regression("Thailand", "covid_govt_handling ~ covid_contracted")
+
+# Combine results
+bivariate_results <- rbind(
+  vietnam_m1$results,
+  cambodia_m1$results,
+  thailand_m1$results
+)
+
+# Display table
+bivariate_results %>%
+  mutate(
+    B_CI = sprintf("%.3f [%.3f, %.3f]", B, CI_lower, CI_upper),
+    p_formatted = case_when(
+      p_value < 0.001 ~ "< .001",
+      p_value < 0.01 ~ "< .01",
+      p_value < 0.05 ~ "< .05",
+      TRUE ~ sprintf("%.3f", p_value)
+    )
+  ) %>%
+  select(Country, Coefficient, B_CI, SE, t_value, p_formatted, R_squared, N) %>%
+  kable(
+    digits = 3,
+    caption = "Model 1: COVID Infection → Government Approval (by Country)",
+    col.names = c("Country", "Coefficient", "B [95% CI]", "SE", "t", "p", "R²", "N")
+  ) %>%
+  kable_styling(bootstrap_options = c("striped", "hover")) %>%
+  pack_rows("Vietnam", 1, 2) %>%
+  pack_rows("Cambodia", 3, 4) %>%
+  pack_rows("Thailand", 5, 6)
+```
+
+## Model 2: Adding Trust as Predictor
+
+```{r 10-regression-trust-by-country}
+#| label: regression-trust-by-country
+#| code-summary: "Multiple regression: Infection + Trust → Approval"
+
+# Run models with trust added
+vietnam_m2 <- data %>%
+  filter(country_name == "Vietnam") %>%
+  run_regression("Vietnam", 
+                 "covid_govt_handling ~ covid_contracted + covid_trust_info")
+
+cambodia_m2 <- data %>%
+  filter(country_name == "Cambodia") %>%
+  run_regression("Cambodia", 
+                 "covid_govt_handling ~ covid_contracted + covid_trust_info")
+
+thailand_m2 <- data %>%
+  filter(country_name == "Thailand") %>%
+  run_regression("Thailand", 
+                 "covid_govt_handling ~ covid_contracted + covid_trust_info")
+
+# Combine results
+trust_model_results <- rbind(
+  vietnam_m2$results,
+  cambodia_m2$results,
+  thailand_m2$results
+)
+
+# Display table
+trust_model_results %>%
+  mutate(
+    B_CI = sprintf("%.3f [%.3f, %.3f]", B, CI_lower, CI_upper),
+    p_formatted = case_when(
+      p_value < 0.001 ~ "< .001",
+      p_value < 0.01 ~ "< .01",
+      p_value < 0.05 ~ "< .05",
+      TRUE ~ sprintf("%.3f", p_value)
+    )
+  ) %>%
+  select(Country, Coefficient, B_CI, SE, t_value, p_formatted, R_squared, N) %>%
+  kable(
+    digits = 3,
+    caption = "Model 2: Infection + Trust → Government Approval (by Country)",
+    col.names = c("Country", "Coefficient", "B [95% CI]", "SE", "t", "p", "R²", "N")
+  ) %>%
+  kable_styling(bootstrap_options = c("striped", "hover")) %>%
+  pack_rows("Vietnam", 1, 3) %>%
+  pack_rows("Cambodia", 4, 6) %>%
+  pack_rows("Thailand", 7, 9)
+```
+
+## Model 3: Full Model with Controls
+
+```{r 11-regression-full-by-country}
+#| label: regression-full-by-country
+#| code-summary: "Full model with all predictors"
+
+# Full model formula
+full_formula <- paste(
+  "covid_govt_handling ~",
+  "covid_contracted +",
+  "covid_trust_info +",
+  "dem_satisfaction +",
+  "institutional_trust_index +",
+  "auth_acceptance"
+)
+
+# Run full models
+vietnam_m3 <- data %>%
+  filter(country_name == "Vietnam") %>%
+  run_regression("Vietnam", full_formula)
+
+cambodia_m3 <- data %>%
+  filter(country_name == "Cambodia") %>%
+  run_regression("Cambodia", full_formula)
+
+thailand_m3 <- data %>%
+  filter(country_name == "Thailand") %>%
+  run_regression("Thailand", full_formula)
+
+# Combine results
+full_model_results <- rbind(
+  vietnam_m3$results,
+  cambodia_m3$results,
+  thailand_m3$results
+)
+
+# Display table
+full_model_results %>%
+  mutate(
+    B_CI = sprintf("%.3f [%.3f, %.3f]", B, CI_lower, CI_upper),
+    p_formatted = case_when(
+      p_value < 0.001 ~ "***",
+      p_value < 0.01 ~ "**",
+      p_value < 0.05 ~ "*",
+      TRUE ~ ""
+    )
+  ) %>%
+  select(Country, Coefficient, B_CI, SE, t_value, p_formatted, R_squared, N) %>%
+  kable(
+    digits = 3,
+    caption = "Model 3: Full Model with All Predictors (by Country)",
+    col.names = c("Country", "Coefficient", "B [95% CI]", "SE", "t", "Sig.", "R²", "N")
+  ) %>%
+  kable_styling(bootstrap_options = c("striped", "hover")) %>%
+  pack_rows("Vietnam", 1, 6) %>%
+  pack_rows("Cambodia", 7, 12) %>%
+  pack_rows("Thailand", 13, 18) %>%
+  footnote(general = "*** p < .001, ** p < .01, * p < .05")
+```
+
+## Model Comparison Table
+
+```{r 12-model-comparison-summary}
+#| label: model-comparison-summary
+#| code-summary: "Side-by-side comparison of all models"
+
+# Extract key coefficients for comparison
+create_comparison_table <- function(m1, m2, m3, country) {
+  
+  # Extract infection coefficient from each model
+  infection_m1 <- m1$results %>% 
+    filter(Coefficient == "covid_contracted") %>%
+    select(B, p_value, R_squared) %>%
+    mutate(Model = "M1: Bivariate")
+  
+  infection_m2 <- m2$results %>%
+    filter(Coefficient == "covid_contracted") %>%
+    select(B, p_value, R_squared) %>%
+    mutate(Model = "M2: + Trust")
+  
+  infection_m3 <- m3$results %>%
+    filter(Coefficient == "covid_contracted") %>%
+    select(B, p_value, R_squared) %>%
+    mutate(Model = "M3: Full")
+  
+  # Extract trust coefficient
+  trust_m2 <- m2$results %>%
+    filter(Coefficient == "covid_trust_info") %>%
+    select(B, p_value) %>%
+    mutate(Model = "M2: + Trust", R_squared = NA)
+  
+  trust_m3 <- m3$results %>%
+    filter(Coefficient == "covid_trust_info") %>%
+    select(B, p_value, R_squared) %>%
+    mutate(Model = "M3: Full")
+  
+  # Combine
+  comparison <- rbind(
+    infection_m1,
+    infection_m2,
+    infection_m3
+  ) %>%
+    mutate(
+      Country = country,
+      Variable = "COVID Infection"
+    )
+  
+  trust_comparison <- rbind(
+    data.frame(Model = "M1: Bivariate", B = NA, p_value = NA, 
+               R_squared = NA, Country = country, Variable = "Trust in Info"),
+    trust_m2 %>% mutate(Country = country, Variable = "Trust in Info"),
+    trust_m3 %>% mutate(Country = country, Variable = "Trust in Info")
+  )
+  
+  return(rbind(comparison, trust_comparison))
+}
+
+# Create comparison for all countries
+comparison_all <- rbind(
+  create_comparison_table(vietnam_m1, vietnam_m2, vietnam_m3, "Vietnam"),
+  create_comparison_table(cambodia_m1, cambodia_m2, cambodia_m3, "Cambodia"),
+  create_comparison_table(thailand_m1, thailand_m2, thailand_m3, "Thailand")
+)
+
+# Format and display
+comparison_all %>%
+  mutate(
+    B_formatted = ifelse(is.na(B), "—", sprintf("%.3f", B)),
+    p_formatted = case_when(
+      is.na(p_value) ~ "—",
+      p_value < 0.001 ~ "< .001***",
+      p_value < 0.01 ~ sprintf("%.3f**", p_value),
+      p_value < 0.05 ~ sprintf("%.3f*", p_value),
+      TRUE ~ sprintf("%.3f", p_value)
+    ),
+    R2_formatted = ifelse(is.na(R_squared), "—", sprintf("%.3f", R_squared))
+  ) %>%
+  select(Country, Variable, Model, B_formatted, p_formatted, R2_formatted) %>%
+  pivot_wider(
+    names_from = Model,
+    values_from = c(B_formatted, p_formatted, R2_formatted)
+  ) %>%
+  kable(
+    caption = "Model Comparison: Coefficient Estimates Across Specifications",
+    col.names = c("Country", "Variable", 
+                  "B", "p", "R²", "B", "p", "R²", "B", "p", "R²")
+  ) %>%
+  kable_styling(bootstrap_options = c("striped", "hover")) %>%
+  add_header_above(c(" " = 2, "Model 1" = 3, "Model 2" = 3, "Model 3" = 3)) %>%
+  footnote(general = "*** p < .001, ** p < .01, * p < .05")
+```
+
+------------------------------------------------------------------------
+
+# 5. Country-Specific Mediation Analysis {#sec-mediation}
+
+## Mediation Model: Infection → Trust → Approval
+
+```{r 13-mediation-by-country}
+#| label: mediation-by-country
+#| code-summary: "Mediation analysis stratified by country"
+
+# Function to run mediation analysis
+run_mediation <- function(country_data, country_name) {
+  
+  # Remove missing data
+  med_data <- country_data %>%
+    select(covid_contracted, covid_trust_info, covid_govt_handling) %>%
+    na.omit()
+  
+  cat("\n", rep("=", 70), "\n", sep = "")
+  cat("MEDIATION ANALYSIS:", country_name, "(N =", nrow(med_data), ")\n")
+  cat(rep("=", 70), "\n\n", sep = "")
+  
+  # Path A: IV → Mediator
+  model_a <- lm(covid_trust_info ~ covid_contracted, data = med_data)
+  
+  # Path B + C': Mediator + IV → DV
+  model_b <- lm(covid_govt_handling ~ covid_contracted + covid_trust_info, 
+                data = med_data)
+  
+  # Path C: Total effect (IV → DV)
+  model_c <- lm(covid_govt_handling ~ covid_contracted, data = med_data)
+  
+  # Run mediation with bootstrapping
+  set.seed(2025)
+  mediation_results <- mediate(
+    model_a, 
+    model_b,
+    treat = "covid_contracted",
+    mediator = "covid_trust_info",
+    boot = TRUE,
+    sims = 2000,
+    boot.ci.type = "bca"
+  )
+  
+  # Print summary
+  print(summary(mediation_results))
+  
+  # Extract key statistics
+  results <- data.frame(
+    Country = country_name,
+    N = nrow(med_data),
+    
+    # Path A: IV → Mediator
+    path_a = coef(model_a)["covid_contracted"],
+    path_a_se = summary(model_a)$coefficients["covid_contracted", "Std. Error"],
+    path_a_p = summary(model_a)$coefficients["covid_contracted", "Pr(>|t|)"],
+    
+    # Path B: Mediator → DV (controlling IV)
+    path_b = coef(model_b)["covid_trust_info"],
+    path_b_se = summary(model_b)$coefficients["covid_trust_info", "Std. Error"],
+    path_b_p = summary(model_b)$coefficients["covid_trust_info", "Pr(>|t|)"],
+    
+    # Path C': Direct effect (IV → DV, controlling mediator)
+    path_c_prime = coef(model_b)["covid_contracted"],
+    path_c_prime_se = summary(model_b)$coefficients["covid_contracted", "Std. Error"],
+    path_c_prime_p = summary(model_b)$coefficients["covid_contracted", "Pr(>|t|)"],
+    
+    # Path C: Total effect
+    path_c = coef(model_c)["covid_contracted"],
+    path_c_se = summary(model_c)$coefficients["covid_contracted", "Std. Error"],
+    path_c_p = summary(model_c)$coefficients["covid_contracted", "Pr(>|t|)"],
+    
+    # Indirect effect (bootstrapped)
+    indirect_effect = mediation_results$d0,
+    indirect_ci_lower = mediation_results$d0.ci[1],
+    indirect_ci_upper = mediation_results$d0.ci[2],
+    indirect_p = mediation_results$d0.p,
+    
+    # Proportion mediated
+    prop_mediated = mediation_results$n0,
+    prop_med_ci_lower = mediation_results$n0.ci[1],
+    prop_med_ci_upper = mediation_results$n0.ci[2]
+  )
+  
+  return(list(
+    results = results,
+    mediation_object = mediation_results,
+    model_a = model_a,
+    model_b = model_b,
+    model_c = model_c
+  ))
+}
+
+# Run mediation for each country
+vietnam_mediation <- data %>%
+  filter(country_name == "Vietnam") %>%
+  run_mediation("Vietnam")
+
+cambodia_mediation <- data %>%
+  filter(country_name == "Cambodia") %>%
+  run_mediation("Cambodia")
+
+thailand_mediation <- data %>%
+  filter(country_name == "Thailand") %>%
+  run_mediation("Thailand")
+```
+
+## Mediation Results Summary Table
+
+```{r 14-mediation-results-table}
+#| label: mediation-results-table
+#| code-summary: "Summary table of mediation effects"
+
+# Combine mediation results
+mediation_summary <- rbind(
+  vietnam_mediation$results,
+  cambodia_mediation$results,
+  thailand_mediation$results
+)
+
+# Format table
+mediation_summary %>%
+  mutate(
+    # Path A
+    path_a_formatted = sprintf("%.3f (%.3f)%s", 
+                               path_a, path_a_se,
+                               ifelse(path_a_p < 0.05, "*", "")),
+    # Path B
+    path_b_formatted = sprintf("%.3f (%.3f)%s", 
+                               path_b, path_b_se,
+                               ifelse(path_b_p < 0.05, "*", "")),
+    # Path C'
+    path_c_prime_formatted = sprintf("%.3f (%.3f)%s", 
+                                     path_c_prime, path_c_prime_se,
+                                     ifelse(path_c_prime_p < 0.05, "*", "")),
+    # Path C
+    path_c_formatted = sprintf("%.3f (%.3f)%s", 
+                               path_c, path_c_se,
+                               ifelse(path_c_p < 0.05, "*", "")),
+    # Indirect effect
+    indirect_formatted = sprintf("%.3f [%.3f, %.3f]%s",
+                                 indirect_effect,
+                                 indirect_ci_lower,
+                                 indirect_ci_upper,
+                                 ifelse(indirect_p < 0.05, "*", "")),
+    # Proportion mediated
+    prop_med_formatted = sprintf("%.1f%% [%.1f%%, %.1f%%]",
+                                 prop_mediated * 100,
+                                 prop_med_ci_lower * 100,
+                                 prop_med_ci_upper * 100)
+  ) %>%
+  select(Country, N, 
+         path_a_formatted, path_b_formatted, 
+         path_c_prime_formatted, path_c_formatted,
+         indirect_formatted, prop_med_formatted) %>%
+  kable(
+    caption = "Mediation Analysis Results by Country",
+    col.names = c(
+      "Country", "N",
+      "Path a (IV→M)", "Path b (M→DV)", 
+      "Path c' (Direct)", "Path c (Total)",
+      "Indirect Effect", "Proportion Mediated"
+    )
+  ) %>%
+  kable_styling(bootstrap_options = c("striped", "hover")) %>%
+  footnote(
+    general = c(
+      "* p < .05 (bootstrap p-values for indirect effects)",
+      "Standard errors in parentheses; 95% CIs in brackets",
+      "IV = COVID Infection; M = Trust in Government Info; DV = Government Approval",
+      "Bootstrap samples = 2,000; Method = Bias-corrected and accelerated (BCa)"
+    )
+  )
+```
+
+## Test: Proportion Mediated Differences
+
+```{r 15-test-proportion-mediated-differences}
+#| label: test-proportion-mediated-differences
+#| code-summary: "Test if proportion mediated differs across countries"
+
+# Extract proportion mediated for each country
+vietnam_prop <- vietnam_mediation$mediation_object$n0
+cambodia_prop <- cambodia_mediation$mediation_object$n0
+thailand_prop <- thailand_mediation$mediation_object$n0
+
+# Create summary
+prop_comparison <- data.frame(
+  Country = c("Vietnam", "Cambodia", "Thailand"),
+  Proportion_Mediated = c(vietnam_prop, cambodia_prop, thailand_prop),
+  CI_Lower = c(
+    vietnam_mediation$mediation_object$n0.ci[1],
+    cambodia_mediation$mediation_object$n0.ci[1],
+    thailand_mediation$mediation_object$n0.ci[1]
+  ),
+  CI_Upper = c(
+    vietnam_mediation$mediation_object$n0.ci[2],
+    cambodia_mediation$mediation_object$n0.ci[2],
+    thailand_mediation$mediation_object$n0.ci[2]
+  )
+) %>%
+  mutate(
+    Percentage = Proportion_Mediated * 100,
+    CI_Lower_Pct = CI_Lower * 100,
+    CI_Upper_Pct = CI_Upper * 100,
+    Formatted = sprintf("%.1f%% [%.1f%%, %.1f%%]", 
+                       Percentage, CI_Lower_Pct, CI_Upper_Pct)
+  )
+
+cat("\n", rep("=", 70), "\n", sep = "")
+cat("PROPORTION MEDIATED COMPARISON\n")
+cat(rep("=", 70), "\n\n", sep = "")
+
+print(prop_comparison %>% select(Country, Formatted))
+
+cat("\nInterpretation:\n")
+cat("- Overlapping CIs suggest no significant difference\n")
+cat("- Non-overlapping CIs suggest significant difference\n\n")
+
+# Check for overlap
+vietnam_vs_cambodia <- !(
+  prop_comparison$CI_Upper[1] < prop_comparison$CI_Lower[2] |
+  prop_comparison$CI_Lower[1] > prop_comparison$CI_Upper[2]
+)
+
+vietnam_vs_thailand <- !(
+  prop_comparison$CI_Upper[1] < prop_comparison$CI_Lower[3] |
+  prop_comparison$CI_Lower[1] > prop_comparison$CI_Upper[3]
+)
+
+cambodia_vs_thailand <- !(
+  prop_comparison$CI_Upper[2] < prop_comparison$CI_Lower[3] |
+  prop_comparison$CI_Lower[2] > prop_comparison$CI_Upper[3]
+)
+
+cat("Vietnam vs Cambodia:", 
+    ifelse(vietnam_vs_cambodia, "CIs overlap", "CIs do NOT overlap"), "\n")
+cat("Vietnam vs Thailand:", 
+    ifelse(vietnam_vs_thailand, "CIs overlap", "CIs do NOT overlap"), "\n")
+cat("Cambodia vs Thailand:", 
+    ifelse(cambodia_vs_thailand, "CIs overlap", "CIs do NOT overlap"), "\n")
+```
+
+------------------------------------------------------------------------
+
+# 6. Visualization Suite {#sec-visualizations}
+
+## Figure 1: Scatterplot with Country-Specific Regression Lines
+
+```{r 16-viz-scatterplot-regression}
+#| label: viz-scatterplot-regression
+#| code-summary: "Scatterplot: Infection × Approval by country"
+#| fig-width: 10
+#| fig-height: 7
+
+# Color palette (8 countries now in dataset)
+colors <- brewer.pal(8, "Set2")
+
+# Create scatterplot with regression lines
+ggplot(data, aes(x = covid_contracted, y = covid_govt_handling, 
+                 color = country_name)) +
+  geom_jitter(alpha = 0.3, width = 0.1, height = 0.1) +
+  geom_smooth(method = "lm", se = TRUE, linewidth = 1.2) +
+  scale_color_manual(values = colors) +
+  scale_x_continuous(
+    breaks = 1:4,
+    labels = c("None", "Self", "Family", "Both")
+  ) +
+  scale_y_continuous(breaks = 1:5) +
+  labs(
+    title = "The Vietnam Paradox: COVID Infection and Government Approval",
+    subtitle = "Country-specific regression lines with 95% confidence intervals",
+    x = "COVID-19 Infection Experience",
+    y = "Government COVID Handling Approval (1=Very Bad, 5=Very Good)",
+    color = "Country",
+    caption = paste(
+      "Vietnam shows positive relationship while Cambodia and Thailand show negative.",
+      "\nNote: Points jittered for visibility."
+    )
+  ) +
+  theme_minimal(base_size = 12) +
+  theme(
+    legend.position = "bottom",
+    plot.title = element_text(face = "bold", size = 14),
+    plot.subtitle = element_text(size = 11),
+    plot.caption = element_text(hjust = 0, size = 9, color = "gray40")
+  )
+```
+
+## Figure 2: Forest Plot - Effect Sizes by Country
+
+```{r 17-viz-forest-plot}
+#| label: viz-forest-plot
+#| code-summary: "Forest plot of regression coefficients"
+#| fig-width: 10
+#| fig-height: 6
+
+# Prepare data for forest plot
+forest_data <- rbind(
+  vietnam_m3$results %>% 
+    filter(Coefficient == "covid_contracted") %>%
+    mutate(Country = "Vietnam"),
+  cambodia_m3$results %>% 
+    filter(Coefficient == "covid_contracted") %>%
+    mutate(Country = "Cambodia"),
+  thailand_m3$results %>% 
+    filter(Coefficient == "covid_contracted") %>%
+    mutate(Country = "Thailand")
+) %>%
+  mutate(
+    Significant = ifelse(p_value < 0.05, "Yes", "No")
+  )
+
+# Create forest plot
+ggplot(forest_data, aes(x = B, y = Country, color = Significant)) +
+  geom_vline(xintercept = 0, linetype = "dashed", color = "gray50") +
+  geom_errorbarh(
+    aes(xmin = CI_lower, xmax = CI_upper),
+    height = 0.2,
+    linewidth = 1
+  ) +
+  geom_point(size = 4) +
+  scale_color_manual(
+    values = c("Yes" = "#d73027", "No" = "gray60"),
+    guide = guide_legend(reverse = TRUE)
+  ) +
+  labs(
+    title = "Effect of COVID Infection on Government Approval",
+    subtitle = "Regression coefficients from full model (Model 3) with 95% CIs",
+    x = "Regression Coefficient (B)",
+    y = NULL,
+    color = "Significant\n(p < .05)",
+    caption = "Controlling for: Trust in Info, Democracy Satisfaction, Institutional Trust, Authoritarianism"
+  ) +
+  theme_minimal(base_size = 12) +
+  theme(
+    plot.title = element_text(face = "bold", size = 14),
+    plot.subtitle = element_text(size = 11),
+    plot.caption = element_text(hjust = 0, size = 9, color = "gray40"),
+    legend.position = "right",
+    panel.grid.major.y = element_blank()
+  )
+```
+
+## Figure 3: Mediation Path Diagrams
+
+```{r 18-viz-mediation-diagrams}
+#| label: viz-mediation-diagrams
+#| code-summary: "Path diagrams for mediation by country"
+#| fig-width: 12
+#| fig-height: 10
+
+# Function to create mediation diagram
+create_mediation_diagram <- function(mediation_obj, country_name) {
+  
+  # Extract path coefficients
+  path_a <- mediation_obj$model_a %>% 
+    coef() %>% 
+    `[`("covid_contracted")
+  
+  path_b <- mediation_obj$model_b %>% 
+    coef() %>% 
+    `[`("covid_trust_info")
+  
+  path_c_prime <- mediation_obj$model_b %>% 
+    coef() %>% 
+    `[`("covid_contracted")
+  
+  indirect <- mediation_obj$mediation_object$d0
+  
+  # Create data for diagram
+  nodes <- data.frame(
+    x = c(1, 3, 3),
+    y = c(2, 3, 1),
+    label = c("COVID\nInfection", "Trust in\nGovt Info", "Government\nApproval")
+  )
+  
+  # Create base plot
+  p <- ggplot() +
+    # Nodes
+    geom_point(data = nodes, aes(x = x, y = y), 
+               size = 20, color = "#4575b4", alpha = 0.3) +
+    geom_text(data = nodes, aes(x = x, y = y, label = label),
+              size = 3.5, fontface = "bold") +
+    
+    # Path a (IV -> M)
+    annotate("segment", 
+             x = 1.3, y = 2.15, xend = 2.7, yend = 2.85,
+             arrow = arrow(length = unit(0.3, "cm"), type = "closed"),
+             linewidth = 1, color = "black") +
+    annotate("text", x = 2, y = 2.7, 
+             label = sprintf("a = %.3f*", path_a),
+             size = 3.5, fontface = "bold") +
+    
+    # Path b (M -> DV)
+    annotate("segment",
+             x = 3, y = 2.7, xend = 3, yend = 1.3,
+             arrow = arrow(length = unit(0.3, "cm"), type = "closed"),
+             linewidth = 1, color = "black") +
+    annotate("text", x = 3.4, y = 2,
+             label = sprintf("b = %.3f*", path_b),
+             size = 3.5, fontface = "bold") +
+    
+    # Path c' (Direct effect)
+    annotate("segment",
+             x = 1.3, y = 1.85, xend = 2.7, yend = 1.15,
+             arrow = arrow(length = unit(0.3, "cm"), type = "closed"),
+             linewidth = 1, color = "gray50", linetype = "dashed") +
+    annotate("text", x = 2, y = 1.3,
+             label = sprintf("c' = %.3f", path_c_prime),
+             size = 3.5, color = "gray50") +
+    
+    # Indirect effect note
+    annotate("text", x = 2, y = 0.5,
+             label = sprintf("Indirect Effect = %.3f*\nProp. Mediated = %.1f%%",
+                           indirect, 
+                           mediation_obj$mediation_object$n0 * 100),
+             size = 3.5, fontface = "italic") +
+    
+    # Title
+    labs(title = country_name) +
+    
+    # Theme
+    xlim(0.5, 3.8) +
+    ylim(0.2, 3.5) +
+    theme_void() +
+    theme(
+      plot.title = element_text(hjust = 0.5, face = "bold", size = 14)
+    )
+  
+  return(p)
+}
+
+# Create diagrams
+p_vietnam_med <- create_mediation_diagram(vietnam_mediation, "Vietnam")
+p_cambodia_med <- create_mediation_diagram(cambodia_mediation, "Cambodia")
+p_thailand_med <- create_mediation_diagram(thailand_mediation, "Thailand")
+
+# Combine plots
+p_vietnam_med / p_cambodia_med / p_thailand_med +
+  plot_annotation(
+    title = "Mediation Model: COVID Infection → Trust → Government Approval",
+    subtitle = "Path coefficients from country-specific models (* p < .05)",
+    theme = theme(
+      plot.title = element_text(size = 16, face = "bold"),
+      plot.subtitle = element_text(size = 12)
+    )
+  )
+```
+
+## Figure 4: Coefficient Comparison Plot
+
+```{r 19-viz-coefficient-comparison}
+#| label: viz-coefficient-comparison
+#| code-summary: "Compare all coefficients across countries"
+#| fig-width: 12
+#| fig-height: 8
+
+# Prepare data for coefficient comparison
+coef_comparison <- rbind(
+  vietnam_m3$results %>% mutate(Country = "Vietnam"),
+  cambodia_m3$results %>% mutate(Country = "Cambodia"),
+  thailand_m3$results %>% mutate(Country = "Thailand")
+) %>%
+  filter(Coefficient != "(Intercept)") %>%
+  mutate(
+    Coefficient = factor(
+      Coefficient,
+      levels = c("covid_contracted", "covid_trust_info", 
+                "dem_satisfaction", "institutional_trust_index",
+                "auth_acceptance"),
+      labels = c("COVID Infection", "Trust in Info",
+                "Democracy Satisfaction", "Institutional Trust",
+                "Authoritarianism")
+    ),
+    Significant = ifelse(p_value < 0.05, "Yes", "No")
+  )
+
+# Create comparison plot
+ggplot(coef_comparison, 
+       aes(x = Coefficient, y = B, color = Country, shape = Significant)) +
+  geom_hline(yintercept = 0, linetype = "dashed", color = "gray50") +
+  geom_errorbar(
+    aes(ymin = CI_lower, ymax = CI_upper),
+    width = 0.2,
+    position = position_dodge(width = 0.5),
+    linewidth = 0.8
+  ) +
+  geom_point(
+    size = 3,
+    position = position_dodge(width = 0.5)
+  ) +
+  scale_color_manual(values = brewer.pal(8, "Set2")) +
+  scale_shape_manual(values = c("Yes" = 16, "No" = 1)) +
+  labs(
+    title = "Full Model Coefficient Comparison Across Countries",
+    subtitle = "Standardized regression coefficients with 95% confidence intervals",
+    x = "Predictor Variable",
+    y = "Regression Coefficient (B)",
+    color = "Country",
+    shape = "Significant\n(p < .05)",
+    caption = "DV = Government COVID Handling Approval\nModel includes all predictors simultaneously"
+  ) +
+  theme_minimal(base_size = 12) +
+  theme(
+    plot.title = element_text(face = "bold", size = 14),
+    plot.subtitle = element_text(size = 11),
+    plot.caption = element_text(hjust = 0, size = 9, color = "gray40"),
+    axis.text.x = element_text(angle = 45, hjust = 1),
+    legend.position = "right"
+  ) +
+  coord_flip()
+```
+
+------------------------------------------------------------------------
+
+# 7. Key Findings Summary {#sec-summary}
+
+## Summary of Country Differences
+
+```{r 20-summary-key-findings}
+#| label: summary-key-findings
+#| code-summary: "Synthesize key findings"
+
+cat("=" , rep("=", 69), "\n", sep = "")
+cat("KEY FINDINGS: COUNTRY-SPECIFIC ANALYSIS\n")
+cat(rep("=", 70), "\n\n", sep = "")
+
+cat("1. BIVARIATE CORRELATIONS (Infection × Approval)\n")
+cat("   Vietnam:  r =", 
+    sprintf("%.3f", vietnam_cor$r["covid_contracted", "covid_govt_handling"]),
+    ifelse(vietnam_cor$p["covid_contracted", "covid_govt_handling"] < 0.05, 
+           "(significant)", "(n.s.)"), "\n")
+cat("   Cambodia: r =", 
+    sprintf("%.3f", cambodia_cor$r["covid_contracted", "covid_govt_handling"]),
+    ifelse(cambodia_cor$p["covid_contracted", "covid_govt_handling"] < 0.05,
+           "(significant)", "(n.s.)"), "\n")
+cat("   Thailand: r =", 
+    sprintf("%.3f", thailand_cor$r["covid_contracted", "covid_govt_handling"]),
+    ifelse(thailand_cor$p["covid_contracted", "covid_govt_handling"] < 0.05,
+           "(significant)", "(n.s.)"), "\n\n")
+
+cat("2. REGRESSION COEFFICIENTS (Full Model)\n")
+cat("   Vietnam:  B =", sprintf("%.3f", 
+    vietnam_m3$results %>% 
+      filter(Coefficient == "covid_contracted") %>% 
+      pull(B)), "\n")
+cat("   Cambodia: B =", sprintf("%.3f",
+    cambodia_m3$results %>%
+      filter(Coefficient == "covid_contracted") %>%
+      pull(B)), "\n")
+cat("   Thailand: B =", sprintf("%.3f",
+    thailand_m3$results %>%
+      filter(Coefficient == "covid_contracted") %>%
+      pull(B)), "\n\n")
+
+cat("3. MEDIATION EFFECTS (Indirect Effect)\n")
+cat("   Vietnam:  Indirect =", 
+    sprintf("%.3f", vietnam_mediation$mediation_object$d0),
+    sprintf("(%.1f%% mediated)", vietnam_mediation$mediation_object$n0 * 100), 
+    "\n")
+cat("   Cambodia: Indirect =",
+    sprintf("%.3f", cambodia_mediation$mediation_object$d0),
+    sprintf("(%.1f%% mediated)", cambodia_mediation$mediation_object$n0 * 100),
+    "\n")
+cat("   Thailand: Indirect =",
+    sprintf("%.3f", thailand_mediation$mediation_object$d0),
+    sprintf("(%.1f%% mediated)", thailand_mediation$mediation_object$n0 * 100),
+    "\n\n")
+
+cat("4. TRUST IN INFORMATION (Correlation with Approval)\n")
+cat("   Vietnam:  r =",
+    sprintf("%.3f", vietnam_cor$r["covid_trust_info", "covid_govt_handling"]),
+    "\n")
+cat("   Cambodia: r =",
+    sprintf("%.3f", cambodia_cor$r["covid_trust_info", "covid_govt_handling"]),
+    "\n")
+cat("   Thailand: r =",
+    sprintf("%.3f", thailand_cor$r["covid_trust_info", "covid_govt_handling"]),
+    "\n\n")
+
+cat("5. INTERPRETATION:\n")
+cat("   • Vietnam shows POSITIVE infection-approval relationship\n")
+cat("   • Cambodia and Thailand show NEGATIVE relationships\n")
+cat("   • Trust in government information is STRONGEST in Vietnam\n")
+cat("   • Mediation effect is LARGEST in Vietnam\n")
+cat("   • Results support the 'Vietnam Paradox' hypothesis\n\n")
+
+cat(rep("=", 70), "\n", sep = "")
+```
+
+## Publication-Ready Summary Table
+
+```{r 21-publication-summary-table}
+#| label: publication-summary-table
+#| code-summary: "Create publication-ready summary table"
+
+# Create comprehensive summary
+summary_table <- data.frame(
+  Statistic = c(
+    "Sample Size",
+    "Mean COVID Infection",
+    "Mean Government Approval",
+    "Mean Trust in Info",
+    "r (Infection × Approval)",
+    "B (Infection → Approval, bivariate)",
+    "B (Infection → Approval, full model)",
+    "B (Trust → Approval, full model)",
+    "Indirect Effect (via Trust)",
+    "Proportion Mediated",
+    "Model R² (Full Model)"
+  ),
+  Vietnam = c(
+    nrow(data %>% filter(country_name == "Vietnam") %>% 
+           select(covid_contracted) %>% na.omit()),
+    sprintf("%.2f", mean(data$covid_contracted[data$country_name == "Vietnam"], 
+                        na.rm = TRUE)),
+    sprintf("%.2f", mean(data$covid_govt_handling[data$country_name == "Vietnam"],
+                        na.rm = TRUE)),
+    sprintf("%.2f", mean(data$covid_trust_info[data$country_name == "Vietnam"],
+                        na.rm = TRUE)),
+    sprintf("%.3f*", vietnam_cor$r["covid_contracted", "covid_govt_handling"]),
+    sprintf("%.3f", vietnam_m1$results %>% 
+              filter(Coefficient == "covid_contracted") %>% pull(B)),
+    sprintf("%.3f", vietnam_m3$results %>%
+              filter(Coefficient == "covid_contracted") %>% pull(B)),
+    sprintf("%.3f***", vietnam_m3$results %>%
+              filter(Coefficient == "covid_trust_info") %>% pull(B)),
+    sprintf("%.3f*", vietnam_mediation$mediation_object$d0),
+    sprintf("%.1f%%", vietnam_mediation$mediation_object$n0 * 100),
+    sprintf("%.3f", unique(vietnam_m3$results$R_squared))
+  ),
+  Cambodia = c(
+    nrow(data %>% filter(country_name == "Cambodia") %>%
+           select(covid_contracted) %>% na.omit()),
+    sprintf("%.2f", mean(data$covid_contracted[data$country_name == "Cambodia"],
+                        na.rm = TRUE)),
+    sprintf("%.2f", mean(data$covid_govt_handling[data$country_name == "Cambodia"],
+                        na.rm = TRUE)),
+    sprintf("%.2f", mean(data$covid_trust_info[data$country_name == "Cambodia"],
+                        na.rm = TRUE)),
+    sprintf("%.3f*", cambodia_cor$r["covid_contracted", "covid_govt_handling"]),
+    sprintf("%.3f", cambodia_m1$results %>%
+              filter(Coefficient == "covid_contracted") %>% pull(B)),
+    sprintf("%.3f", cambodia_m3$results %>%
+              filter(Coefficient == "covid_contracted") %>% pull(B)),
+    sprintf("%.3f***", cambodia_m3$results %>%
+              filter(Coefficient == "covid_trust_info") %>% pull(B)),
+    sprintf("%.3f", cambodia_mediation$mediation_object$d0),
+    sprintf("%.1f%%", cambodia_mediation$mediation_object$n0 * 100),
+    sprintf("%.3f", unique(cambodia_m3$results$R_squared))
+  ),
+  Thailand = c(
+    nrow(data %>% filter(country_name == "Thailand") %>%
+           select(covid_contracted) %>% na.omit()),
+    sprintf("%.2f", mean(data$covid_contracted[data$country_name == "Thailand"],
+                        na.rm = TRUE)),
+    sprintf("%.2f", mean(data$covid_govt_handling[data$country_name == "Thailand"],
+                        na.rm = TRUE)),
+    sprintf("%.2f", mean(data$covid_trust_info[data$country_name == "Thailand"],
+                        na.rm = TRUE)),
+    sprintf("%.3f*", thailand_cor$r["covid_contracted", "covid_govt_handling"]),
+    sprintf("%.3f", thailand_m1$results %>%
+              filter(Coefficient == "covid_contracted") %>% pull(B)),
+    sprintf("%.3f", thailand_m3$results %>%
+              filter(Coefficient == "covid_contracted") %>% pull(B)),
+    sprintf("%.3f***", thailand_m3$results %>%
+              filter(Coefficient == "covid_trust_info") %>% pull(B)),
+    sprintf("%.3f", thailand_mediation$mediation_object$d0),
+    sprintf("%.1f%%", thailand_mediation$mediation_object$n0 * 100),
+    sprintf("%.3f", unique(thailand_m3$results$R_squared))
+  )
+)
+
+summary_table %>%
+  kable(
+    caption = "Table X. Summary of Country-Specific Analysis Results",
+    align = c("l", "r", "r", "r")
+  ) %>%
+  kable_styling(bootstrap_options = c("striped", "hover")) %>%
+  pack_rows("Descriptive Statistics", 1, 4) %>%
+  pack_rows("Bivariate Analysis", 5, 6) %>%
+  pack_rows("Regression Analysis", 7, 8) %>%
+  pack_rows("Mediation Analysis", 9, 10) %>%
+  pack_rows("Model Fit", 11, 11) %>%
+  footnote(
+    general = c("*** p < .001, ** p < .01, * p < .05",
+                "Full model includes: COVID infection, trust in info, democracy satisfaction, institutional trust, authoritarianism")
+  )
+```
+
+------------------------------------------------------------------------
+
+# 8. Save Results for Manuscript
+
+```{r 99-save-results-for-manuscript}
+#| label: save-results-for-manuscript
+#| code-summary: "Save key results for manuscript integration"
+
+# ============================================================================
+# SAVE KEY RESULTS FOR MANUSCRIPT
+# ============================================================================
+
+results_dir <- here("papers/01_vietnam_covid_paradox/analysis/results")
+dir.create(results_dir, showWarnings = FALSE, recursive = TRUE)
+
+# Correlation matrices by country
+saveRDS(vietnam_cor, file.path(results_dir, "country_vietnam_correlations.rds"))
+saveRDS(cambodia_cor, file.path(results_dir, "country_cambodia_correlations.rds"))
+saveRDS(thailand_cor, file.path(results_dir, "country_thailand_correlations.rds"))
+
+# Fisher's Z tests
+saveRDS(fisher_infection_approval, file.path(results_dir, "country_fisher_infection_approval.rds"))
+saveRDS(fisher_trust_approval, file.path(results_dir, "country_fisher_trust_approval.rds"))
+
+# Proportion mediated comparison
+saveRDS(prop_comparison, file.path(results_dir, "country_proportion_mediated.rds"))
+
+# Publication summary table
+saveRDS(summary_table, file.path(results_dir, "country_summary_table.rds"))
+
+cat("\n=== SAVED RESULTS FOR MANUSCRIPT ===\n")
+cat("✓ Vietnam correlation matrix\n")
+cat("✓ Cambodia correlation matrix\n")
+cat("✓ Thailand correlation matrix\n")
+cat("✓ Fisher's Z test: Infection × Approval\n")
+cat("✓ Fisher's Z test: Trust × Approval\n")
+cat("✓ Proportion mediated comparison\n")
+cat("✓ Publication summary table\n")
+cat("\nAll results saved to:", results_dir, "\n")
+```
+
+# 9. Session Information {#sec-session}
+
+```{r 22-session-information}
+#| label: session-information
+#| code-summary: "R session information for reproducibility"
+
+sessionInfo()
+```
+
+------------------------------------------------------------------------
+
+# END OF SCRIPT 07

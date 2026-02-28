@@ -1,9 +1,0 @@
-"","institutional_trust_index","dem_satisfaction","dem_legitimacy","regime_preference","auth_acceptance","emergency_powers_support","covid_govt_performance","covid_restrict_composite"
-"institutional_trust_index",1,0.669,0.564,0.3,0.392,0.383,0.68,0.394
-"dem_satisfaction",0.669,1,0.584,0.305,0.387,0.309,0.655,0.355
-"dem_legitimacy",0.564,0.584,1,0.167,0.223,0.297,0.474,0.175
-"regime_preference",0.3,0.305,0.167,1,0.546,0.165,0.342,0.324
-"auth_acceptance",0.392,0.387,0.223,0.546,1,0.221,0.465,0.391
-"emergency_powers_support",0.383,0.309,0.297,0.165,0.221,1,0.375,0.468
-"covid_govt_performance",0.68,0.655,0.474,0.342,0.465,0.375,1,0.444
-"covid_restrict_composite",0.394,0.355,0.175,0.324,0.391,0.468,0.444,1
