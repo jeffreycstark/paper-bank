@@ -51,28 +51,31 @@ paper-bank/
 │   ├── figures/
 │   └── tables/
 └── papers/
-    ├── meaning-of-democracy-revision/   # Loser effects on democratic conceptions
-    ├── hong-kong-democratic-erosion/     # HK democratic attitudes + sensitivity gradient
-    ├── thailand-trust-collapse/         # Thailand 20-year institutional trust erosion
-    ├── trust-dynamics/                  # Trust dynamics across Asian democracies
-    └── south-korea-accountability-gap/  # South Korea accountability gap [in progress]
+    ├── 01_vietnam_covid_paradox/        # Vietnam/Cambodia COVID information paradox
+    ├── 02_meaning_of_democracy_revision/ # Loser effects on democratic conceptions
+    ├── 03_south_korea_decoupling/       # SK/Taiwan economic-democratic support decoupling
+    ├── 04_cambodia_fairy_tale/          # Cambodia
+    ├── 05_thailand_trust_collapse/      # Thailand 20-year institutional trust erosion
+    ├── 06_hong_kong_democratic_erosion/ # HK democratic attitudes + sensitivity gradient
+    ├── 07_south_korea_accountability_gap/ # South Korea accountability gap [in progress]
+    └── trust-dynamics/                  # Trust dynamics across Asian democracies
 ```
 
 ---
 
 ## Papers
 
-### meaning-of-democracy-revision
+### 02_meaning_of_democracy_revision
 **Topic**: How electoral winners/losers differ in democratic conceptions (multinomial logit).
 **Data**: ABS (waves 2-6), electoral status coding.
 **Key files**: `analysis/01_data_preparation_mlogit.qmd`, `analysis/revised/` directory.
 
-### hong-kong-democratic-erosion
+### 06_hong_kong_democratic_erosion
 **Topic**: Democratic attitude erosion in Hong Kong, sensitivity gradient methodology.
 **Data**: ABS (wave 5 HK), WVS (wave 7 HK), LBS (Venezuela, Nicaragua).
 **Key files**: `analysis/00_data_preparation.qmd`, `analysis/06_wvs_triangulation.qmd`, `analysis/08_wvs_sensitivity_gradient.R`, `analysis/09_lbs_sensitivity_gradient.R`.
 
-### thailand-trust-collapse
+### 05_thailand_trust_collapse
 **Topic**: Thailand's 20-year institutional trust erosion (2001-2022), KCI journal target.
 **Data**: ABS (W1-W6, Thailand + Philippines + Taiwan comparators).
 **Analysis pipeline** (run scripts 00–05 in order to regenerate all results):
@@ -84,17 +87,17 @@ paper-bank/
 6. `analysis/05_new_analyses.R` — DiD, Philippines H3 formal test, ordered logit predicted probs, weighted comparison, IB sensitivity-gradient, scale reliability
 **Manuscript**: `manuscript/tta-manuscript.qmd`, `manuscript/tta-online-appendix.qmd`
 
-### trust-dynamics
+### trust-dynamics (unnumbered)
 **Topic**: Institutional trust dynamics across Asian democracies.
 **Data**: ABS (all waves).
 **Key files**: `analysis/00_create_analysis_data.qmd`, `paper.qmd`.
 
-### south-korea-accountability-gap
+### 07_south_korea_accountability_gap
 **Topic**: [TBD] South Korea accountability gap.
 **Data**: ABS (country_num == 3, Korea, all waves) + KAMOS (Korean domestic panel survey).
 **Key files**: `analysis/00_data_preparation.R`, `analysis/01_descriptive_analysis.R`, `analysis/02_models.R`, `manuscript/manuscript.qmd`.
 
-### vietnam-covid-paradox
+### 01_vietnam_covid_paradox
 **Topic**: The information-credibility paradox — why personal COVID infection had no effect on government approval in Vietnam and Cambodia, mediated by near-universal trust in official information.
 **Data**: ABS Wave 6 (Vietnam: country == 11, Cambodia: country == 12, Thailand: country == 8); N ≈ 3,679.
 **Analysis pipeline** (run in order):
@@ -110,7 +113,12 @@ paper-bank/
 - `emergency_powers_support` and `covid_restrict_composite` are NA (not in harmonized dataset)
 - Old 10-module pipeline archived at `analysis/archive/data_prep_modules_v1/`
 
-### south-korea-decoupling
+### 04_cambodia_fairy_tale
+**Topic**: Cambodia.
+**Data**: ABS.
+**Key files**: `manuscript/`, `analysis/`.
+
+### 03_south_korea_decoupling
 **Topic**: The Satisfaction Paradox — economic performance and the decoupling of democratic support in South Korea and Taiwan.
 **Data**: ABS (Korea: country == 3, Taiwan: country == 7, waves 1–6) + KAMOS (Korean domestic panel, W1/W4).
 **Analysis pipeline** (run scripts 00–05 in order):

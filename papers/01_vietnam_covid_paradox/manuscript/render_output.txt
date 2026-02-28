@@ -1,0 +1,82 @@
+[31m
+
+processing file: online_appendix.qmd
+[39m1/73                                   
+2/73 [setup]                           
+3/73                                   
+4/73 [load-speech-stats]               
+5/73                                   
+6/73 [tbl-social-desirability]         
+7/73                                   
+8/73 [load-correlation-stats]          
+9/73                                   
+10/73 [tbl-freedom-approval-correlation]
+11/73                                   
+12/73 [tbl-scale-reliability]           
+13/73                                   
+14/73 [tbl-correlation-vietnam]         
+15/73                                   
+16/73 [tbl-vif]                         
+17/73                                   
+18/73 [tbl-crosstab]                    
+19/73                                   
+20/73 [tbl-interaction-full]            
+21/73                                   
+22/73 [fig-interaction-plot]            
+23/73                                   
+24/73 [tbl-infection-approval]          
+25/73                                   
+26/73 [tbl-economic-approval]           
+27/73                                   
+28/73 [tbl-trust-approval]              
+29/73                                   
+30/73 [tbl-model1-full]                 
+31/73                                   
+32/73 [tbl-model2-full]                 
+33/73                                   
+34/73 [tbl-ordinal]                     
+35/73                                   
+36/73 [tbl-robust]                      
+37/73                                   
+38/73 [tbl-quantile]                    
+39/73                                   
+40/73 [tbl-missing]                     
+41/73                                   
+42/73 [tbl-complete-case]               
+43/73                                   
+44/73 [tbl-timing-dist]                 
+45/73                                   
+46/73 [tbl-timing]                      
+47/73                                   
+48/73 [tbl-outlier-summary]             
+49/73                                   
+50/73 [tbl-outlier-sensitivity]         
+51/73                                   
+52/73 [tbl-news-control]                
+53/73                                   
+54/73 [tbl-news-interaction]            
+55/73                                   
+56/73 [tbl-evalue]                      
+57/73                                   
+58/73 [fig-evalue]                      
+59/73                                   
+60/73 [tbl-falsification]               
+61/73                                   
+62/73 [fig-falsification]               
+63/73                                   
+64/73 [tbl-mice]                        
+65/73                                   
+66/73 [tbl-economic-robust]             
+67/73                                   
+68/73 [tbl-sensitivity-summary]         
+69/73                                   
+70/73 [tbl-eight-country]               
+71/73                                   
+72/73 [tbl-dem-preference]              
+73/73                                   
+[31moutput file: online_appendix.knit.md
+
+[39m[31mThere were 31 warnings (use warnings() to see them)
+[39m[1m[34mRendering HTML preview [online_appendix.qmd][39m[22m
+Output created: _output/online_appendix-preview.html
+

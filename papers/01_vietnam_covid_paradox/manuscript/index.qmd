@@ -1,0 +1,114 @@
+# Introduction {.unnumbered}
+
+This research project investigates a puzzling phenomenon in Southeast Asian responses to the COVID-19 pandemic: why does Vietnam maintain the highest government approval ratings despite experiencing the highest infection rates, while Thailand shows low approval with moderate infections?
+
+## The Vietnam Paradox
+
+The core empirical puzzle driving this research is striking and counterintuitive:
+
+::: callout-important
+## Key Finding
+
+Despite experiencing a 65.9% COVID-19 infection rate—the highest among Cambodia, Thailand, and Vietnam—Vietnam simultaneously recorded:
+
+-   **97.5%** government approval for pandemic handling (highest)
+-   **91.9%** trust in government COVID information (highest)\
+-   **2.6%** satisfaction with democracy (lowest)
+
+This challenges fundamental assumptions about the relationship between governance outcomes and regime legitimacy.
+:::
+
+## Research Questions
+
+This project addresses four interrelated questions:
+
+1.  **Why does the relationship between COVID outcomes and government approval vary across regime contexts?**
+2.  **What mediates the connection between pandemic experiences and regime legitimacy?**
+3.  **How do citizens distinguish between government performance and democratic quality?**
+4.  **Under what conditions do citizens support expanded emergency government powers?**
+
+## Three Regime Patterns
+
+Preliminary analysis reveals three distinct patterns:
+
+```{mermaid}
+%%| fig-width: 8
+flowchart LR
+    A[Vietnam<br/>Authoritarian<br/>Effectiveness] --> B[High Infections<br/>High Approval<br/>Low Democracy]
+    C[Cambodia<br/>Authoritarian<br/>Legitimacy] --> D[Low Infections<br/>High Approval<br/>Low Democracy]
+    E[Thailand<br/>Democratic<br/>Crisis] --> F[Moderate Infections<br/>Low Approval<br/>Moderate Democracy]
+```
+
+## Theoretical Contributions
+
+This research makes three primary contributions:
+
+1.  **Challenges outcome-based theories of performance legitimacy** by demonstrating that authoritarian regimes can maintain support during crises despite poor objective outcomes
+
+2.  **Explains mechanisms of authoritarian resilience** through information control and rally-around-the-flag effects
+
+3.  **Demonstrates the value of distinguishing multiple dimensions of regime legitimacy** rather than treating citizen attitudes as unidimensional
+
+## Data
+
+**Source:** Asian Barometer Survey Wave 6 (2*020-2021***)\
+**Countries:\*\* Cambodia, Thailand, Vietnam\
+**Sample Size:** \[To be filled from data\]\
+**Key Variables:** Trust in institutions, democracy attitudes, COVID experiences, emergency powers support
+
+## Project Structure
+
+This analysis proceeds through four phases:
+
+### Phase 1: Foundation (Complete)
+
+-   Theoretical framework and hypotheses
+-   Data preparation and cleaning
+-   Descriptive analysis and pattern identification
+-   Scale validation through factor analysis
+
+### Phase 2: Hypothesis Testing (In Progress)
+
+-   Interaction models testing country-specific effects
+-   Mediation analysis of information environment
+-   Moderator analysis of institutional trust
+
+### Phase 3: Validation (Planned)
+
+-   Robustness checks and sensitivity analyses
+-   Final publication-quality visualizations
+
+### Phase 4: Manuscript (Planned)
+
+-   Complete manuscript integration
+-   Online appendix with supplementary materials
+
+## How to Use This Document
+
+Each chapter represents a stage in the research process:
+
+-   **Read sequentially** for the complete research narrative
+-   **Jump to specific analyses** using the table of contents
+-   **View or hide code** using the "Code" buttons
+-   **Download outputs** from the figures/ and tables/ directories
+
+## Getting Started
+
+To replicate this analysis:
+
+1.  Clone or download this project repository
+2.  Place Asian Barometer Wave 5 data in `data/raw/`
+3.  Install required R packages (see README.md)
+4.  Run scripts sequentially starting with `02_data_preparation.qmd`
+
+For detailed instructions, see the project documentation.
+
+------------------------------------------------------------------------
+
+**Author:** \[Jeffrey Stark\]\
+**Institution:** \[Yonsei University\]\
+**Last Updated:** `r Sys.Date()`
+
+::: callout-note
+This is a working research project. All analyses are preliminary and subject to revision. Comments and suggestions welcome at \[your.email\@institution.edu\]
+:::

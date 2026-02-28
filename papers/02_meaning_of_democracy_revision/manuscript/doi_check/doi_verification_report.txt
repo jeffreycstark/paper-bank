@@ -1,0 +1,55 @@
+DOI VERIFICATION REPORT
+Generated: 2026-02-28 12:48
+======================================================================
+
+Total entries:        58
+Entries with DOI:     50
+Entries without DOI:  8
+DOIs checked:         50
+DOIs valid:           49
+DOIs not found (404): 1
+Invalid DOI format:   0
+Other errors:         0
+Title mismatches:     3
+Year mismatches:      1
+
+
+──────────────────────────────────────────────────────────────────────
+DOIs NOT FOUND (404) — likely wrong or mistyped
+──────────────────────────────────────────────────────────────────────
+
+  [Wu2022-hz]
+  Title: Regime Types and Winner-Loser Gaps in Support for Democracy in East Asia
+  DOI:   10.1080/13510347.2022.2082887
+
+──────────────────────────────────────────────────────────────────────
+TITLE MISMATCHES — DOI may point to wrong article
+──────────────────────────────────────────────────────────────────────
+
+  [Anderson2005-uk]
+  Bib title:       Losers' consent: Elections and democratic legitimacy. Comparative politics
+  CrossRef title:  Losers' Consent
+  DOI:             10.1093/0199276382.001.0001
+
+  [Ockey2004-ek]
+  Bib title:       Making democracy: Leadership, class, gender, and political participation in Thailand
+  CrossRef title:  Making Democracy
+  DOI:             10.1515/9780824842659
+
+  [Slater2010-ba]
+  Bib title:       Cambridge studies in comparative politics: Ordering power: Contentious politics and authoritarian leviathans in southeast Asia
+  CrossRef title:  Ordering Power
+  DOI:             10.1017/cbo9780511760891
+
+──────────────────────────────────────────────────────────────────────
+YEAR MISMATCHES — may indicate wrong edition or version
+──────────────────────────────────────────────────────────────────────
+
+  [Ockey2004-ek]
+  Title:           Making democracy: Leadership, class, gender, and political participation in Thailand
+  Bib date:        2004-08-31
+  CrossRef year:   2017
+  DOI:             10.1515/9780824842659
+
+======================================================================
+End of report

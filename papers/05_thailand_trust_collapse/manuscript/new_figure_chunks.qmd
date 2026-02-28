@@ -1,0 +1,178 @@
+<!-- =========================================================================
+     NEW FIGURE CHUNKS — paste into tt-manuscript.qmd at positions noted.
+     Run analysis/06_manuscript_figures.R first to generate the PNGs.
+     ========================================================================= -->
+
+<!-- ── REVISED RESULTS SECTION ORDER ──────────────────────────────────────────
+
+  §4.1  Trust Trajectories
+        [KEEP] fig-trajectories  (fig3_combined_trajectories.png)
+        [KEEP] fig-bottom-box    (fig4_bottom_box_trends.png)
+
+  §4.2  Thailand Exceptionalism (H1)
+        [KEEP] tbl-h1-interaction
+        [KEEP] tbl-random-slopes
+
+  §4.3  Institutional Differentiation (H2)
+        [ADD]  fig-h2-gap          ← NEW (replaces opening prose paragraph)
+        [KEEP] tbl-h2-threeway
+
+  §4.4  Pre-Trend and Causal Identification
+        [ADD]  fig-pretrend-reversal ← NEW (before the pre-trend table)
+        [KEEP] tbl-pretrend
+        [MOVE] tbl-did ← move up from after robustness tables
+
+  §4.5  Performance Controls
+        [KEEP] tbl-h3-performance (now positioned as confound-ruling-out evidence)
+
+  §4.6  Philippines: Coercive Legitimacy Alignment (H3)
+        [ADD]  fig-th-ph-coercive ← NEW (H3 now has a visual)
+
+  §4.7  Attitudinal Mechanisms (H4 and H5)
+        [ADD]  fig-expectations-divergence ← NEW (scissors plot)
+
+  §4.8  Regional Variation
+        [ADD]  fig-regional-decline ← NEW (replaces tbl-regional-means OR
+               precedes it; the table can move to Online Appendix)
+
+  §4.9  Robustness
+        [KEEP] tbl-secondary
+        [KEEP] tbl-ologit
+
+============================================================================ -->
+
+
+<!-- ═══════════════════════════════════════════════════════════════════════════
+     §4.3  INSTITUTIONAL DIFFERENTIATION (H2)
+     INSERT this chunk immediately BEFORE tbl-h2-threeway.
+     Replace the current opening descriptive paragraph with a forward
+     reference to the figure, then let the table provide the formal test.
+     ═══════════════════════════════════════════════════════════════════════════ -->
+
+```{r fig-h2-gap, out.width="100%"}
+#| fig-cap: >
+#|   Thailand's military and government trust trajectories (W1–W6).
+#|   Shaded ribbon marks the growing gap between institutions; 95% CI bands
+#|   shown. Military trust fell 1.5 times more than government trust
+#|   (three-way interaction *p* < .001), inconsistent with pandemic performance
+#|   accounts (which predict the reverse) and consistent with the political
+#|   crisis interpretation (H2).
+knitr::include_graphics(file.path(fig_dir, "fig5_h2_mil_govt_gap.png"))
+```
+
+<!--
+REVISED PROSE to follow the figure (replaces current "descriptive evidence
+already suggests" paragraph):
+
+Figure 3 makes the institutional differentiation pattern immediately visible.
+Military trust began Wave 1 marginally above government trust and the two
+series tracked closely through Wave 3 before diverging sharply. The formal
+test is reported in @tbl-h2-threeway.
+-->
+
+
+<!-- ═══════════════════════════════════════════════════════════════════════════
+     §4.4  PRE-TREND AND CAUSAL IDENTIFICATION
+     INSERT fig-pretrend-reversal BEFORE tbl-pretrend.
+     Then keep tbl-pretrend, followed immediately by tbl-did
+     (moved up from the Robustness section).
+     ═══════════════════════════════════════════════════════════════════════════ -->
+
+```{r fig-pretrend-reversal, out.width="100%"}
+#| fig-cap: >
+#|   Thai military trust was statistically *rising* (β = positive) through
+#|   Wave 4 before collapsing to 1.62 in Wave 6. The dashed line projects
+#|   the pre-Wave 4 trajectory forward as a counterfactual; the actual W5–W6
+#|   values fall dramatically below this projection. The shaded regions
+#|   distinguish the pre-shock era (green) from the protest era (red).
+#|   This reversal rules out secular decline as an explanation and points
+#|   to a discrete political shock (pre-trend coefficient *p* < .001).
+knitr::include_graphics(file.path(fig_dir, "fig6_pretrend_reversal.png"))
+```
+
+<!--
+PROSE NOTE: after this figure, keep tbl-pretrend as-is, then move tbl-did
+immediately after (before Performance Controls). The DiD pairs naturally
+with pre-trend: both address identification. The Robustness section then
+becomes tbl-secondary + tbl-ologit only.
+-->
+
+
+<!-- ═══════════════════════════════════════════════════════════════════════════
+     §4.6  PHILIPPINES: COERCIVE LEGITIMACY ALIGNMENT (H3)
+     INSERT at the start of the H3 section, before the formal test prose.
+     ═══════════════════════════════════════════════════════════════════════════ -->
+
+```{r fig-th-ph-coercive, out.width="100%"}
+#| fig-cap: >
+#|   Panel A: Thailand's military and government trust trajectories (W1–W6).
+#|   Panel B: Philippines military and police trust trajectories (W1–W6).
+#|   Shaded region marks the Duterte era (PH, W4–W6) and protest era (TH,
+#|   W4–W6). Where state coercion aligned with mass preferences (Philippines),
+#|   coercive institutional trust held or rose. Where it violated democratic
+#|   expectations (Thailand), it collapsed. The contrast provides scope
+#|   conditions for the coercive legitimacy mechanism (H3).
+knitr::include_graphics(file.path(fig_dir, "fig7_th_ph_coercive.png"))
+```
+
+<!--
+PROSE NOTE: This figure now carries the H3 visual burden. The paragraph
+about the formal null result (stacked model, wave × coercive interaction
+non-significant) can follow the figure as interpretive context.
+The current opening sentence "The Philippine case provides a theoretically
+informative contrast" works well as the figure's lead-in.
+-->
+
+
+<!-- ═══════════════════════════════════════════════════════════════════════════
+     §4.7  ATTITUDINAL MECHANISMS (H4 and H5)
+     INSERT at the start of this section, before the rejection-of-military-rule
+     prose paragraph.
+     ═══════════════════════════════════════════════════════════════════════════ -->
+
+```{r fig-expectations-divergence, out.width="100%"}
+#| fig-cap: >
+#|   Thailand W1–W6: military trust (red, declining; H1) plotted against
+#|   rejection of military rule (blue, rising; H4). Both variables use the
+#|   same 1–4 scale. The scissors pattern — trust falling as democratic norms
+#|   rise — is inconsistent with generalized political cynicism (which would
+#|   produce parallel declines) and consistent with democratic expectation
+#|   updating: citizens are applying increasingly demanding evaluative
+#|   standards to institutions they perceive as violating democratic norms.
+#|   Vertical dashed line marks the 2014 coup. 95% CI bands shown.
+knitr::include_graphics(file.path(fig_dir, "fig8_expectations_divergence.png"))
+```
+
+<!--
+PROSE NOTE: This figure can replace or precede the current opening paragraph
+of §4.7. The key numbers (e.g., thai_reject_mil_w1, thai_reject_mil_w6)
+remain in the inline text for precision; the figure carries the visual logic.
+-->
+
+
+<!-- ═══════════════════════════════════════════════════════════════════════════
+     §4.8  REGIONAL VARIATION
+     REPLACE tbl-regional-means with this figure (move the table to the
+     Online Appendix), or place the figure before the table if the editor
+     requires it.
+     ═══════════════════════════════════════════════════════════════════════════ -->
+
+```{r fig-regional-decline, out.width="90%"}
+#| fig-cap: >
+#|   Military trust by Thai region across Waves 4–6 (region identifiers
+#|   available W4–W6 only; *N* = 3,301). Regions are ordered left-to-right
+#|   by magnitude of W4–W6 decline. Bangkok (protest epicenter) and the
+#|   Northeast (Thaksin heartland) declined equally and most steeply, despite
+#|   representing historically opposing sides of the Red Shirt–Yellow Shirt
+#|   divide. The South (royalist stronghold) showed the smallest decline.
+#|   This geographic pattern is inconsistent with pandemic performance accounts
+#|   (which would predict uniform regional patterns) and consistent with
+#|   politically structured trust erosion.
+knitr::include_graphics(file.path(fig_dir, "fig9_regional_decline.png"))
+```
+
+<!--
+PROSE NOTE: The current tbl-regional-means can move to Online Appendix as
+"Table A-X: Military trust means by region and wave." The regression results
+(reg_bkk_vs_south, reg_ne_vs_south, etc.) remain as inline text.
+-->

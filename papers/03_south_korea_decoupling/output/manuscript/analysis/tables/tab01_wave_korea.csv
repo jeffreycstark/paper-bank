@@ -1,0 +1,13 @@
+wave,year,dv,beta_display,se_display,r2_display,n
+1,2003,Satisfaction,0.375***,(0.033),0.087,1500
+1,2003,Democratic quality,-0.207**,(0.063),0.016,1500
+2,2006,Satisfaction,0.396***,(0.034),0.122,1179
+2,2006,Democratic quality,-0.064,(0.036),0.010,1176
+3,2011,Satisfaction,0.447***,(0.040),0.150,1198
+3,2011,Democratic quality,-0.015,(0.036),0.017,1194
+4,2015,Satisfaction,0.466***,(0.045),0.141,1185
+4,2015,Democratic quality,-0.029,(0.040),0.018,1193
+5,2019,Satisfaction,0.581***,(0.037),0.184,1260
+5,2019,Democratic quality,0.007,(0.037),0.011,1260
+6,2022,Satisfaction,0.433***,(0.043),0.098,1209
+6,2022,Democratic quality,0.005,(0.038),0.028,1214

@@ -1,0 +1,7 @@
+dv,term_label,beta_display,se_display
+Satisfaction,Economic evaluations (Taiwan baseline),0.521***,(0.012)
+Satisfaction,Korea indicator,0.056***,(0.009)
+Satisfaction,Economic evaluations x Korea,-0.077***,(0.020)
+Democratic quality,Economic evaluations (Taiwan baseline),-0.188***,(0.015)
+Democratic quality,Korea indicator,-0.129***,(0.011)
+Democratic quality,Economic evaluations x Korea,0.138***,(0.025)

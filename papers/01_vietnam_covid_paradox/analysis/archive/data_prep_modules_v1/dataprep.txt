@@ -1,0 +1,2181 @@
+---- 00_run_all.R ----
+#!/usr/bin/env Rscript
+# ==============================================================================
+# MASTER DATA PREPARATION PIPELINE
+# ==============================================================================
+# Purpose: Run all 13 modules in sequence
+# Usage: source("papers/01_vietnam_covid_paradox/analysis/data_prep_modules/00_run_all.R")
+#    or: Rscript papers/01_vietnam_covid_paradox/analysis/data_prep_modules/00_run_all.R
+#
+# Output: ab_analysis_v2.rds, ab_analysis_v2_validated.rds
+# ==============================================================================
+
+cat("\n")
+cat(rep("=", 80), "\n", sep = "")
+cat("ASIAN BAROMETER DATA PREPARATION v2.0\n")
+cat("Modular Pipeline - 13 Modules\n")
+cat(rep("=", 80), "\n\n")
+
+# ============================================
+# CONFIGURATION
+# ============================================
+
+skip_validation <- FALSE  # Set TRUE for quick runs (skips Module 09)
+
+# ============================================
+# MODULE EXECUTION
+# ============================================
+
+modules <- c(
+  "01_setup_config.R",
+  "02_load_filter.R",
+  "03_variable_selection.R",
+  "04_trust_variables.R",
+  "04b_corruption_variables.R",
+  "04c_economic_variables.R",  # ADDED: Economic variables for sensitivity analysis
+  "04d_political_attitudes.R", # ADDED: Political attitudes for robustness analyses
+  "05_democracy_variables.R",
+  "06_authoritarianism_variables.R",
+  "07_emergency_powers.R",
+  "08_covid_variables.R",
+  "09_validation_quality.R",
+  "10_finalize_export.R"
+)
+
+# Optional: Skip validation module
+if (skip_validation) {
+  modules <- modules[modules != "09_validation_quality.R"]
+  cat("⚠ Skipping validation module (quick run mode)\n\n")
+}
+
+# Execute pipeline
+pipeline_start_time <- Sys.time()
+
+for (i in seq_along(modules)) {
+  cat(sprintf("[%d/%d] Running %s...\n", i, length(modules), modules[i]))
+
+  .mod_timer_start <- Sys.time()
+  source(here::here("papers", "01_vietnam_covid_paradox", "analysis",
+                    "data_prep_modules", modules[i]))
+  .mod_timer_elapsed <- difftime(Sys.time(), .mod_timer_start, units = "secs")
+
+  cat(sprintf("      ✓ Completed in %.1f seconds\n\n", .mod_timer_elapsed))
+}
+
+total_time <- difftime(Sys.time(), pipeline_start_time, units = "mins")
+
+# ============================================
+# COMPLETION SUMMARY
+# ============================================
+
+cat(rep("=", 80), "\n", sep = "")
+cat(sprintf("✓ PIPELINE COMPLETE in %.1f minutes\n", total_time))
+cat(rep("=", 80), "\n\n")
+
+cat("Next Steps:\n")
+cat("  1. Check data/processed/ for output files\n")
+cat("  2. Run downstream analyses (05_hypothesis_testing.qmd, etc.)\n")
+cat("  3. Verify outputs match original version\n\n")
+
+cat("Quick Data Check:\n")
+cat("  ab_analysis: N =", nrow(ab_analysis), "observations\n")
+cat("  ab_analysis_validated: N =", nrow(ab_analysis_validated), "observations\n\n")
+
+---- 01_setup_config.R ----
+# ==============================================================================
+# MODULE 01: CONFIGURATION AND SETUP
+# ==============================================================================
+# Purpose: Load packages, configure environment, source helper functions
+# Dependencies: R/utils/_load_functions.R
+# Outputs: CONFIG (list object), all helper functions in scope
+# ==============================================================================
+
+cat("\n", rep("=", 70), "\n", sep = "")
+cat("MODULE 01: CONFIGURATION AND SETUP\n")
+cat(rep("=", 70), "\n\n")
+
+# ============================================
+# PACKAGE LOADING
+# ============================================
+
+# Set CRAN mirror and global options
+options(repos = c(CRAN = "https://cloud.r-project.org"))
+options(scipen = 999)  # Disable scientific notation
+set.seed(2025)         # Reproducibility
+
+# Load required packages
+suppressPackageStartupMessages({
+  library(conflicted)   # Handle namespace collisions
+  library(tidyverse)
+  library(haven)
+  library(here)
+  library(janitor)
+  library(assertr)      # Hard data validation
+  library(psych)        # Reliability analysis
+  library(gt)           # Tables
+  library(naniar)       # Missing data viz
+  library(skimr)        # Data summaries
+  library(labelled)     # Labeled data handling
+})
+
+# Resolve namespace conflicts
+conflict_prefer("select", "dplyr")
+conflict_prefer("filter", "dplyr")
+conflict_prefer("lag", "dplyr")
+conflict_prefer("alpha", "psych")
+
+cat("✓ Packages loaded and conflicts resolved\n")
+
+# ============================================
+# SOURCE CUSTOM HELPER FUNCTIONS
+# ============================================
+
+t0 <- Sys.time()
+source_success <- tryCatch({
+  source(here("R", "utils", "_load_functions.R"))
+  TRUE
+}, error = function(e) {
+  cat("❌ Error sourcing R/utils/_load_functions.R:", conditionMessage(e), "\n")
+  FALSE
+})
+t1 <- Sys.time()
+
+if (!source_success) {
+  stop("Failed to source helper functions")
+}
+
+cat(sprintf("✓ Helper functions sourced in %.2f sec\n",
+            as.numeric(difftime(t1, t0, units = "secs"))))
+
+# ============================================
+# VERIFY CRITICAL FUNCTIONS EXIST
+# ============================================
+
+required_functions <- c(
+  # Recoding functions
+  "safe_reverse_3pt", "safe_reverse_4pt", "safe_reverse_5pt",
+  # New data prep helpers
+  "create_validated_composite", "validate_range", "report_missing",
+  "batch_clean_missing"
+)
+
+missing_functions <- required_functions[!sapply(required_functions, exists)]
+
+if (length(missing_functions) > 0) {
+  stop("❌ Missing required functions: ", paste(missing_functions, collapse = ", "))
+}
+
+cat("✓ All", length(required_functions), "required functions available\n")
+
+# ============================================
+# CONFIGURATION OBJECT
+# ============================================
+
+CONFIG <- list(
+  # Country selection (8 countries - ADDED AUSTRALIA)
+  countries_of_interest = c(3, 6, 7, 8, 9, 11, 12, 15),
+  country_labels = c(
+    "3" = "Korea",
+    "6" = "Philippines",
+    "7" = "Taiwan",
+    "8" = "Thailand",
+    "9" = "Indonesia",
+    "11" = "Vietnam",
+    "12" = "Cambodia",
+    "15" = "Australia"
+  ),
+
+  # Missing value codes
+  missing_codes_universal = c(-1, 0, 97, 98, 99),
+  missing_codes_short_scale = c(7, 8, 9),
+
+  # Scale variable definitions
+  short_scale_vars = c(
+    # Economic Evaluations (5-point scales: q1-q6)
+    paste0("q", 1:6),
+    # Trust (4-point scales: q7-q15)
+    paste0("q", 7:15),
+    # Democracy (4-point only - EXCLUDE q92 and q95 which are 10-point)
+    "q90", "q91", "q128",
+    # Trade-offs (5-point scales)
+    "q126", "q127",
+    # Authoritarianism Support (4-point: q129-q132)
+    paste0("q", 129:132),
+    # Acceptance of Authoritarian Actions (4-point: q168-q171)
+    paste0("q", 168:171),
+    # Emergency Powers (4-point: q172a-e)
+    paste0("q172", letters[1:5]),
+    # COVID Variables (4-point or 3-point)
+    "q138", "q140", "q141", "q142", "q161", "q162", "q163",
+    paste0("q139", letters[1:4]),
+    paste0("q143", letters[1:5]),
+    # Political engagement
+    "q47", "q48", "q49",
+    # Political attitudes (blind loyalty, govt trust, responsiveness, satisfaction, system support, transparency)
+    "q137", "q136", "q112", "q108", "q96", "q82", "q124",
+    # Employment & SES variables
+    "se9", "se9c_4", "se10", "se14", "se14a"
+  ),
+
+  # Reliability thresholds
+  min_alpha = 0.70,
+  min_items_fraction = 0.60
+)
+
+cat("✓ CONFIG object created with", length(CONFIG), "parameters\n")
+
+# ============================================
+# VERIFY PACKAGE VERSIONS
+# ============================================
+
+cat("\n=== Key Package Versions ===\n")
+cat("dplyr:", as.character(packageVersion("dplyr")), "\n")
+cat("tidyverse:", as.character(packageVersion("tidyverse")), "\n")
+cat("here:", as.character(packageVersion("here")), "\n")
+
+# ============================================
+# MODULE COMPLETE
+# ============================================
+
+cat("\n✓ MODULE 01 COMPLETE\n")
+cat("  - Packages loaded and configured\n")
+cat("  - Helper functions sourced and verified\n")
+cat("  - CONFIG object ready\n")
+cat(rep("=", 70), "\n\n")
+
+---- 02_load_filter.R ----
+# ==============================================================================
+# MODULE 02: DATA LOADING AND COUNTRY FILTERING
+# ==============================================================================
+# Purpose: Load raw AB Wave 6 data and filter to 7 countries of interest
+# Dependencies: Module 01 (CONFIG object must exist)
+# Inputs: data/processed/w6_all_countries_merged.rds
+# Outputs: ab_selected (filtered dataframe), country_name (factor variable)
+# ==============================================================================
+
+cat("\n", rep("=", 70), "\n", sep = "")
+cat("MODULE 02: DATA LOADING AND FILTERING\n")
+cat(rep("=", 70), "\n\n")
+
+# ============================================
+# LOAD RAW DATA
+# ============================================
+
+cat("[loading] Reading Asian Barometer Wave 6 data...\n")
+
+ab_whole <- read_rds(here("data", "processed", "w6_all_countries_merged.rds"))
+
+# ============================================
+# STRIP HAVEN LABELS
+# ============================================
+# Remove haven's labelled class to prevent downstream issues
+# with filtering, joins, and model outputs. Raw labelled data
+# remains available in w6_all_countries_merged.rds if needed.
+
+cat("[cleaning] Stripping haven labels from all variables...\n")
+
+ab_whole <- ab_whole %>%
+  mutate(across(where(haven::is.labelled), ~ as.vector(haven::zap_labels(.))))
+
+cat("✓ Haven labels removed - all variables now base R types\n")
+
+# Hard validation: ensure data loaded
+stopifnot("Data file is empty" = nrow(ab_whole) > 0)
+stopifnot("Country variable missing" = "country" %in% names(ab_whole))
+
+cat("✓ Raw data loaded:", nrow(ab_whole), "rows x", ncol(ab_whole), "columns\n")
+
+# ============================================
+# FILTER TO COUNTRIES OF INTEREST
+# ============================================
+
+cat("\n[filtering] Countries in full dataset:\n")
+print(table(ab_whole$country))
+
+cat("\n[filtering] Filtering to", length(CONFIG$countries_of_interest), "countries...\n")
+
+ab_selected <- ab_whole %>%
+  filter(country %in% CONFIG$countries_of_interest) %>%
+  mutate(
+    country_name = factor(
+      as.character(country),
+      levels = names(CONFIG$country_labels),
+      labels = CONFIG$country_labels
+    )
+  )
+
+# Hard validation: ensure filtering worked
+ab_selected %>%
+  verify(nrow(.) > 0) %>%
+  assert(in_set(CONFIG$countries_of_interest), country) %>%
+  verify(!any(is.na(country_name)))
+
+cat("✓ Filtered data:", nrow(ab_selected), "rows x", ncol(ab_selected), "columns\n")
+
+# ============================================
+# SAMPLE SIZE SUMMARY
+# ============================================
+
+cat("\n=== Sample Sizes by Country ===\n")
+sample_sizes <- table(ab_selected$country_name)
+print(sample_sizes)
+
+cat("\nTotal N:", sum(sample_sizes), "\n")
+
+# ============================================
+# COUNTRY-SPECIFIC NOTES
+# ============================================
+
+cat("\n=== COUNTRY-SPECIFIC DATA NOTES ===\n")
+cat("\nVIETNAM (country code = 11):\n")
+cat("  - Missing q143a-e (COVID-specific emergency powers)\n")
+cat("  - All other measures present\n\n")
+
+cat("OTHER COUNTRIES:\n")
+cat("  - All COVID measures (q138-q145) present\n")
+cat("  - Emergency powers q143 and q172 both available\n\n")
+
+# ============================================
+# MODULE COMPLETE
+# ============================================
+
+cat("✓ MODULE 02 COMPLETE\n")
+cat("  - Data loaded from RDS file\n")
+cat("  - Filtered to", length(unique(ab_selected$country_name)), "countries\n")
+cat("  - Created country_name factor variable\n")
+cat(rep("=", 70), "\n\n")
+
+# Clean up intermediate objects
+rm(ab_whole, sample_sizes)
+
+---- 03_variable_selection.R ----
+# ==============================================================================
+# MODULE 03: VARIABLE SELECTION AND CLEANING
+# ==============================================================================
+# Purpose: Select analysis variables, clean missing codes, recode demographics
+# Dependencies: Modules 01-02 (CONFIG, ab_selected)
+# Inputs: ab_selected (from Module 02)
+# Outputs: ab_selected (with selected vars, clean missing, demographics)
+# ==============================================================================
+
+cat("\n", rep("=", 70), "\n", sep = "")
+cat("MODULE 03: VARIABLE SELECTION AND CLEANING\n")
+cat(rep("=", 70), "\n\n")
+
+# ============================================
+# DEFINE VARIABLE SETS
+# ============================================
+
+cat("[variables] Defining variable sets...\n")
+
+trust_vars <- paste0("q", 7:15)
+democracy_vars <- c("q90", "q91", "q106", "q128", "q92", "q95")
+political_attitudes_vars <- c("q137", "q136", "q112", "q108", "q96", "q82", "q124")  # Blind loyalty, govt trust, responsiveness, transparency, satisfaction, system support, democracy preference
+political_interest_vars <- c("q47", "q48", "q49")
+news_source_vars <- c("q53")  # Most important news source (1-6 categorical)
+tradeoff_vars <- c("q126", "q127")
+authoritarianism_vars <- paste0("q", 129:132)
+acceptance_of_auth_vars <- paste0("q", 168:171)
+emergency_powers_vars <- paste0("q172", letters[1:5])
+corruption_vars <- c("q115", "q116", "q117", "q118", paste0("q119", letters[1:3]), "q79")
+covid_vars <- c("q138", "q140", "q141", "q142", "q161", "q162", "q163")
+family_impact_vars <- paste0("q139", letters[1:4])
+pandemic_gov_powers_vars <- paste0("q143", letters[1:5])
+economic_evaluation_vars <- paste0("q", 1:6)  # Pocketbook & sociotropic economic evaluations
+demographics <- c("level", "se2", "se3_1", "se5", "se5a", "se9", "se9c_4", "se10", "se14", "se14a")
+
+# Combine all variable names
+all_vars <- c(
+  "country", "country_name", "idnumber", "year", "month",
+  "w", "region",  # Survey weight and geographic clustering variable
+  trust_vars, democracy_vars, political_attitudes_vars, political_interest_vars, news_source_vars, tradeoff_vars,
+  authoritarianism_vars, acceptance_of_auth_vars, emergency_powers_vars,
+  corruption_vars, covid_vars, family_impact_vars, pandemic_gov_powers_vars,
+  economic_evaluation_vars,  # ADDED: Pocketbook & sociotropic economic evaluations
+  demographics
+)
+
+ab_selected <- ab_selected %>% select(all_of(all_vars))
+
+cat("✓ Selected", ncol(ab_selected), "variables for analysis\n")
+
+# ============================================
+# CREATE COUNTRY DUMMY VARIABLES
+# ============================================
+
+cat("\n[countries] Creating country dummy variables...\n")
+
+ab_selected <- ab_selected %>%
+  mutate(
+    australia = if_else(country_name == "Australia", 1, 0),
+    cambodia = if_else(country_name == "Cambodia", 1, 0),
+    indonesia = if_else(country_name == "Indonesia", 1, 0),
+    korea = if_else(country_name == "Korea", 1, 0),
+    philippines = if_else(country_name == "Philippines", 1, 0),
+    taiwan = if_else(country_name == "Taiwan", 1, 0),
+    thailand = if_else(country_name == "Thailand", 1, 0),
+    vietnam = if_else(country_name == "Vietnam", 1, 0)
+  )
+
+# Hard validation: ensure valid country names
+ab_selected %>%
+  assert(in_set("Australia", "Cambodia", "Indonesia", "Korea", "Philippines",
+                "Taiwan", "Thailand", "Vietnam"), country_name)
+
+cat("✓ Country dummies created for 8 countries\n")
+
+# ============================================
+# RECODE MISSING VALUES
+# ============================================
+
+cat("\n[missing] Recoding special missing values as NA...\n")
+
+# Step 1: Universal missing codes (all numeric variables)
+all_numeric_vars <- names(select(ab_selected, where(is.numeric)))
+ab_selected <- batch_clean_missing(ab_selected, all_numeric_vars,
+                                   CONFIG$missing_codes_universal)
+
+cat("✓ Universal missing codes recoded:", paste(CONFIG$missing_codes_universal, collapse=", "), "\n")
+
+# Step 2: Short-scale missing codes (7, 8, 9) for specific variables only
+short_scale_present <- CONFIG$short_scale_vars[CONFIG$short_scale_vars %in% names(ab_selected)]
+ab_selected <- batch_clean_missing(ab_selected, short_scale_present,
+                                   c(CONFIG$missing_codes_short_scale))
+
+cat("✓ Short-scale missing codes recoded:", paste(CONFIG$missing_codes_short_scale, collapse=", "), "\n")
+
+# Hard validation: ensure no negative values remain
+negative_check <- ab_selected %>%
+  summarise(across(where(is.numeric), ~sum(. < 0, na.rm = TRUE))) %>%
+  pivot_longer(everything(), names_to = "variable", values_to = "n_negative") %>%
+  filter(n_negative > 0)
+
+stopifnot("Negative values still present after recoding" = nrow(negative_check) == 0)
+cat("✓ Validation passed: No negative values remain\n")
+
+# ============================================
+# RECODE DEMOGRAPHICS
+# ============================================
+
+cat("\n[demographics] Recoding demographic variables...\n")
+
+ab_selected <- ab_selected %>%
+  mutate(
+    # Gender
+    gender = case_when(
+      se2 == 1 ~ "Male",
+      se2 == 2 ~ "Female",
+      TRUE ~ NA_character_
+    ),
+
+    # Urban/Rural
+    urban = case_when(
+      level == 1 ~ 0,  # Rural
+      level == 2 ~ 1,  # Urban
+      TRUE ~ NA_real_
+    ),
+
+    # Age (continuous)
+    age = if_else(se3_1 > 0 & se3_1 < 120, se3_1, NA_real_),
+
+    # Age groups
+    age_group = case_when(
+      age < 30 ~ "18-29",
+      age < 45 ~ "30-44",
+      age < 60 ~ "45-59",
+      age >= 60 ~ "60+",
+      TRUE ~ NA_character_
+    ),
+    age_group = factor(age_group, levels = c("18-29", "30-44", "45-59", "60+")),
+
+    # Education level (categorical)
+    educ_level = case_when(
+      se5 %in% c(1, 2, 3) ~ "Primary or less",
+      se5 %in% c(4, 5, 6, 7) ~ "Secondary",
+      se5 %in% c(8, 9, 10) ~ "University/Tertiary",
+      TRUE ~ NA_character_
+    ),
+    educ_level = factor(educ_level, levels = c("Primary or less", "Secondary", "University/Tertiary")),
+
+    # Years of education (continuous)
+    educ_years = if_else(se5a > 0 & se5a < 99, se5a, NA_real_)
+  )
+
+cat("✓ Demographics recoded: gender, urban, age, age_group, educ_level, educ_years\n")
+
+# ============================================
+# RECODE POLITICAL ENGAGEMENT
+# ============================================
+
+cat("\n[political engagement] Recoding political engagement variables...\n")
+
+ab_selected <- ab_selected %>%
+  mutate(
+    # Political interest (4-point scale)
+    interest_politics = safe_reverse_4pt(q47),
+
+    # Follow news (5-point scale reverse: 1=Everyday → 5, 5=Never → 1)
+    follow_news = safe_reverse_5pt(q48),
+
+    # Discuss politics (3-point scale)
+    discuss_politics = safe_reverse_3pt(q49),
+
+    # News source (1-6 categorical, no reversal)
+    news_source = q53,
+
+    # News source categorized for analysis
+    # q53: 1=TV, 2=TV/Cable, 3=Internet/social media, 4=Radio, 5=Face-to-face, 6=Other
+    news_source_cat = case_when(
+      q53 %in% c(1, 2) ~ "Broadcast (TV)",  # Television (traditional + cable)
+      q53 == 3 ~ "Digital",                  # Internet and social media
+      q53 %in% c(4, 5, 6) ~ "Other",        # Radio, face-to-face, other
+      TRUE ~ NA_character_
+    ),
+    news_source_cat = factor(news_source_cat, levels = c("Broadcast (TV)", "Digital", "Other"))
+  )
+
+cat("✓ Political engagement recoded: interest_politics, follow_news, discuss_politics, news_source, news_source_cat\n")
+
+# ============================================
+# QUICK VERIFICATION
+# ============================================
+
+cat("\n[verification] Running data quality checks...\n")
+
+# Check for impossible demographic values
+impossible_age <- sum(ab_selected$age > 120, na.rm = TRUE)
+impossible_educ <- sum(ab_selected$educ_years > 30, na.rm = TRUE)
+
+stopifnot("Impossible age values found" = impossible_age == 0)
+stopifnot("Impossible education values found" = impossible_educ == 0)
+
+cat("✓ No impossible demographic values\n")
+
+# Verify 10-point scales retained full range
+q92_has_789 <- any(ab_selected$q92 %in% 7:9, na.rm = TRUE)
+q95_has_789 <- any(ab_selected$q95 %in% 7:9, na.rm = TRUE)
+
+stopifnot("10-point scales missing values 7-9" = q92_has_789 & q95_has_789)
+cat("✓ 10-point scales correctly retain values 7-9\n")
+
+# Verify q143 variables availability across countries
+cat("\nChecking q143 (pandemic-specific powers) availability:\n")
+q143_by_country <- ab_selected %>%
+  group_by(country_name) %>%
+  summarise(
+    q143a_present_pct = round(100 * sum(!is.na(q143a)) / n(), 1),
+    n = n()
+  )
+
+print(q143_by_country)
+
+# Verify Vietnam q143 variables are 100% missing (as expected)
+vietnam_q143_present <- ab_selected %>%
+  filter(country_name == "Vietnam") %>%
+  summarise(pct_present = round(100 * sum(!is.na(q143a)) / n(), 1)) %>%
+  pull(pct_present)
+
+if(vietnam_q143_present == 0) {
+  cat("✓ Vietnam q143 variables correctly 100% missing (not asked in survey)\n")
+} else {
+  warning("Unexpected: Vietnam q143 has ", vietnam_q143_present, "% data (expected 0%)")
+}
+
+# Summary statistics
+cat("\n=== Demographics Summary ===\n")
+ab_selected %>%
+  group_by(country_name) %>%
+  summarise(
+    n = n(),
+    age_mean = round(mean(age, na.rm = TRUE), 1),
+    educ_years_mean = round(mean(educ_years, na.rm = TRUE), 1),
+    pct_male = round(100 * sum(gender == "Male", na.rm = TRUE) / n(), 1),
+    pct_urban = round(100 * sum(urban == 1, na.rm = TRUE) / n(), 1)
+  ) %>%
+  print()
+
+# ============================================
+# MODULE COMPLETE
+# ============================================
+
+cat("\n✓ MODULE 03 COMPLETE\n")
+cat("  -", ncol(ab_selected), "variables selected\n")
+cat("  - Missing values recoded\n")
+cat("  - Demographics recoded and validated\n")
+cat(rep("=", 70), "\n\n")
+
+---- 04_trust_variables.R ----
+# ==============================================================================
+# MODULE 04: INSTITUTIONAL TRUST VARIABLES
+# ==============================================================================
+# Purpose: Reverse-code trust variables, validate, create composite index
+# Dependencies: Modules 01-03 (CONFIG, ab_selected, helper functions)
+# Inputs: ab_selected (with q7-q15)
+# Outputs: ab_selected (with trust_q7-q15, institutional_trust_index)
+# ==============================================================================
+
+cat("\n", rep("=", 70), "\n", sep = "")
+cat("MODULE 04: INSTITUTIONAL TRUST VARIABLES\n")
+cat(rep("=", 70), "\n\n")
+
+# ============================================
+# REVERSE-CODE TRUST VARIABLES
+# ============================================
+
+cat("[trust] Trust variables (q7-q15): 1=Great deal, 4=None at all\n")
+cat("[trust] Recoding so higher = more trust (4=Great deal, 1=None at all)\n\n")
+
+ab_selected <- ab_selected %>%
+  mutate(across(q7:q15, safe_reverse_4pt, .names = "trust_{.col}"))
+
+# Define variable set for reuse
+trust_vars_recoded <- paste0("trust_q", 7:15)
+
+cat("✓ Reversed", length(trust_vars_recoded), "trust variables\n")
+
+# ============================================
+# VALIDATE RECODING
+# ============================================
+
+cat("\n[validation] Validating range (should be 1-4)...\n")
+
+validate_range(ab_selected, trust_vars_recoded, 1, 4, "Trust variables")
+
+# ============================================
+# CREATE VALIDATED COMPOSITE
+# ============================================
+
+cat("\n[composite] Creating institutional trust index...\n")
+
+ab_selected <- create_validated_composite(
+  data = ab_selected,
+  vars = trust_vars_recoded,
+  composite_name = "institutional_trust_index",
+  min_alpha = CONFIG$min_alpha,
+  method = "cronbach",
+  min_valid = 7  # Require at least 7 of 9 items (75%)
+)
+
+# ============================================
+# MISSING DATA REPORT
+# ============================================
+
+cat("\n[missing] Missing data report by country:\n\n")
+
+report_missing(ab_selected, trust_vars_recoded, label = "Trust Variables")
+
+# ============================================
+# MODULE COMPLETE
+# ============================================
+
+cat("\n✓ MODULE 04 COMPLETE\n")
+cat("  - Trust variables reverse-coded (q7-q15)\n")
+cat("  - Composite created: institutional_trust_index\n")
+cat("  - Reliability checked (α ≥", CONFIG$min_alpha, ")\n")
+cat(rep("=", 70), "\n\n")
+
+---- 04b_corruption_variables.R ----
+# ==============================================================================
+# CORRUPTION VARIABLES MODULE
+# ==============================================================================
+# Purpose: Process corruption perception and experience variables
+# Dependencies: Modules 01-03 (CONFIG, ab_selected, helper functions)
+#               OR standalone mode (loads data automatically)
+# Inputs: ab_selected (with q115-q119, q79)
+# Outputs: ab_selected (with corruption perception and experience variables)
+#
+# Usage:
+#   Pipeline mode: Sourced by 00_run_all.R (ab_selected already exists)
+#   Standalone mode: source() directly (will load data automatically)
+# ==============================================================================
+
+# ============================================
+# STANDALONE MODE DETECTION
+# ============================================
+# If ab_selected doesn't exist, we're running standalone - load dependencies
+
+.standalone_mode <- !exists("ab_selected")
+
+if (.standalone_mode) {
+  cat("\n[standalone] Running in standalone mode - loading dependencies...\n")
+
+  suppressPackageStartupMessages({
+    library(tidyverse)
+    library(haven)
+    library(here)
+  })
+
+  # Source helper functions
+  source(here("R", "utils", "_load_functions.R"))
+
+  # Load Wave 6 merged data
+  cat("[standalone] Loading data from data/processed/w6_all_countries_merged.rds...\n")
+  ab_selected <- readRDS(here("data", "processed", "w6_all_countries_merged.rds"))
+  cat(sprintf("[standalone] ✓ Loaded %d observations, %d variables\n\n",
+              nrow(ab_selected), ncol(ab_selected)))
+
+  # Convert haven_labelled variables to numeric for corruption variables
+  corruption_source_vars <- c("q115", "q116", "q117", "q118", "q79", "q119a", "q119b", "q119c")
+  for (var in corruption_source_vars) {
+    if (var %in% names(ab_selected)) {
+      ab_selected[[var]] <- as.numeric(ab_selected[[var]])
+    }
+  }
+  cat("[standalone] ✓ Converted corruption source variables to numeric\n")
+}
+
+cat("\n", rep("=", 70), "\n", sep = "")
+cat("CORRUPTION VARIABLES MODULE\n")
+cat(rep("=", 70), "\n\n")
+
+# ============================================
+# CORRUPTION PERCEPTION VARIABLES (Q115-Q116)
+# ============================================
+
+cat("[corruption] Corruption perception variables (q115-q116):\n")
+cat("  Original coding (non-ordinal):\n")
+cat("    1 = Hardly anyone, 2 = Not a lot, 5 = No one (all LOW)\n")
+cat("    3 = Most officials, 4 = Almost everyone (HIGH)\n")
+cat("  Recoding to ordinal 1-4 scale: Higher = More corruption perception\n\n")
+
+# Recode corruption perception variables directly in mutate
+# Maps non-ordinal scale to ordinal 1-5 where higher = more corruption
+ab_selected <- ab_selected %>%
+  mutate(
+    corrupt_local = case_when(
+      q115 == 5 ~ 1,  # No one is involved → lowest corruption
+      q115 == 1 ~ 2,  # Hardly anyone → low corruption
+      q115 == 2 ~ 3,  # Not a lot → moderate corruption
+      q115 == 3 ~ 4,  # Most officials → high corruption
+      q115 == 4 ~ 5,  # Almost everyone → highest corruption
+      TRUE ~ NA_real_
+    ),
+    corrupt_national = case_when(
+      q116 == 5 ~ 1,  # No one is involved → lowest corruption
+      q116 == 1 ~ 2,  # Hardly anyone → low corruption
+      q116 == 2 ~ 3,  # Not a lot → moderate corruption
+      q116 == 3 ~ 4,  # Most officials → high corruption
+      q116 == 4 ~ 5,  # Almost everyone → highest corruption
+      TRUE ~ NA_real_
+    )
+  )
+
+cat("✓ Recoded q115 → corrupt_local (1-5 scale, higher = more corruption)\n")
+cat("✓ Recoded q116 → corrupt_national (1-5 scale, higher = more corruption)\n")
+
+# ============================================
+# ANTI-CORRUPTION EFFECTIVENESS (Q117)
+# ============================================
+
+cat("\n[corruption] Anti-corruption effectiveness (q117):\n")
+cat("  Original: 1=Very effective, 4=Not effective at all\n")
+cat("  Recoding: Higher = More effective (reversed)\n\n")
+
+# q117 is standard 4-point scale, can use safe_reverse_4pt
+ab_selected <- ab_selected %>%
+  mutate(corrupt_effectiveness = safe_reverse_4pt(q117))
+
+cat("✓ Recoded q117 → corrupt_effectiveness (1-4 scale, higher = more effective)\n")
+
+# ============================================
+# HIGH CORRUPTION BINARY INDICATORS
+# ============================================
+
+cat("\n[corruption] Creating binary high corruption indicators:\n")
+cat("  High = 'Most officials' or 'Almost everyone' (original values 3-4)\n\n")
+
+ab_selected <- ab_selected %>%
+  mutate(
+    corrupt_local_high = case_when(
+      q115 %in% c(3, 4) ~ 1,
+      q115 %in% c(1, 2, 5) ~ 0,
+      TRUE ~ NA_real_
+    ),
+    corrupt_national_high = case_when(
+      q116 %in% c(3, 4) ~ 1,
+      q116 %in% c(1, 2, 5) ~ 0,
+      TRUE ~ NA_real_
+    )
+  )
+
+cat("✓ Created corrupt_local_high (binary: 1 = high corruption perception)\n")
+cat("✓ Created corrupt_national_high (binary: 1 = high corruption perception)\n")
+
+# ============================================
+# CORRUPTION EXPERIENCE VARIABLES (Q118, Q79)
+# ============================================
+
+cat("\n[corruption] Corruption experience variables (q118, q79):\n")
+cat("  q118: Personal/witnessed corruption (1=Yes, 2=No)\n")
+cat("  q79: Bribe offered by candidate/party (1=Yes, 2=No)\n")
+cat("  Recoding to binary: 1=Yes, 0=No\n\n")
+
+ab_selected <- ab_selected %>%
+  mutate(
+    corrupt_experience = case_when(
+      q118 == 1 ~ 1,  # Yes, experienced/witnessed corruption
+      q118 == 2 ~ 0,  # No
+      TRUE ~ NA_real_
+    ),
+    corrupt_bribe_offered = case_when(
+      q79 == 1 ~ 1,   # Yes, bribe offered
+      q79 == 2 ~ 0,   # No
+      TRUE ~ NA_real_
+    )
+  )
+
+cat("✓ Created corrupt_experience (binary)\n")
+cat("✓ Created corrupt_bribe_offered (binary)\n")
+
+# ============================================
+# CORRUPTION KNOWLEDGE SOURCE VARIABLES (Q119A-C)
+# ============================================
+
+cat("\n[corruption] Corruption knowledge sources (q119a-c):\n")
+cat("  Recoding to binary: 1=Mentioned, 0=Not mentioned\n\n")
+
+ab_selected <- ab_selected %>%
+  mutate(
+    corrupt_know_personal = if_else(q119a == 1, 1, 0, missing = NA_real_),
+    corrupt_know_family = if_else(q119b == 1, 1, 0, missing = NA_real_),
+    corrupt_know_media = if_else(q119c == 1, 1, 0, missing = NA_real_)
+  )
+
+cat("✓ Created 3 binary knowledge source variables\n")
+
+# ============================================
+# VALIDATE RECODING
+# ============================================
+
+cat("\n[validation] Validating variable ranges...\n")
+
+# Validate continuous corruption variables
+validate_range(ab_selected, c("corrupt_local", "corrupt_national"), 1, 5, 
+               "Corruption perception (local/national)")
+validate_range(ab_selected, "corrupt_effectiveness", 1, 4, 
+               "Anti-corruption effectiveness")
+
+# Validate binary variables
+binary_vars <- c("corrupt_local_high", "corrupt_national_high", 
+                 "corrupt_experience", "corrupt_bribe_offered",
+                 "corrupt_know_personal", "corrupt_know_family", "corrupt_know_media")
+
+for (var in binary_vars) {
+  if (var %in% names(ab_selected)) {
+    min_val <- min(ab_selected[[var]], na.rm = TRUE)
+    max_val <- max(ab_selected[[var]], na.rm = TRUE)
+    if (min_val < 0 || max_val > 1) {
+      stop(sprintf("Range check failed for %s: [%.0f, %.0f], expected [0, 1]",
+                   var, min_val, max_val))
+    }
+  }
+}
+
+cat("✓ All variables within expected ranges\n")
+
+# ============================================
+# MISSING DATA REPORT
+# ============================================
+
+cat("\n[missing] Missing data report by country:\n\n")
+
+all_corrupt_vars <- c("corrupt_local", "corrupt_national", "corrupt_effectiveness",
+                      "corrupt_local_high", "corrupt_national_high",
+                      "corrupt_experience", "corrupt_bribe_offered")
+
+report_missing(ab_selected, all_corrupt_vars, label = "Corruption Variables")
+
+# ============================================
+# STANDALONE MODE: SAVE OUTPUT
+# ============================================
+
+if (.standalone_mode) {
+  output_file <- here("data", "processed", "w6_with_corruption_vars.rds")
+  saveRDS(ab_selected, output_file)
+  cat(sprintf("\n[standalone] ✓ Saved processed data to: %s\n", output_file))
+
+  # Update global environment if sourced interactively
+  if (interactive()) {
+    assign("df", ab_selected, envir = .GlobalEnv)
+    cat("[standalone] ✓ Updated 'df' in global environment\n")
+  }
+}
+
+# ============================================
+# MODULE COMPLETE
+# ============================================
+
+cat("\n✓ CORRUPTION VARIABLES MODULE COMPLETE\n")
+cat("  Variables created:\n")
+cat("    - corrupt_local (1-5, higher = more corruption)\n")
+cat("    - corrupt_national (1-5, higher = more corruption)\n")
+cat("    - corrupt_effectiveness (1-4, higher = more effective)\n")
+cat("    - corrupt_local_high (binary: perceives high local corruption)\n")
+cat("    - corrupt_national_high (binary: perceives high national corruption)\n")
+cat("    - corrupt_experience (binary: witnessed corruption)\n")
+cat("    - corrupt_bribe_offered (binary: offered bribe)\n")
+cat(rep("=", 70), "\n\n")
+
+# Clean up standalone mode flag
+rm(.standalone_mode)
+---- 04c_economic_variables.R ----
+# ==============================================================================
+# ECONOMIC VARIABLES MODULE
+# ==============================================================================
+# Purpose: Process economic SES and vulnerability variables for sensitivity analysis
+# Dependencies: Modules 01-03 (CONFIG, ab_selected, helper functions)
+# Inputs: ab_selected (with q1-q6, q161-q163, se9, se9c_4, se10, se14, se14a)
+# Outputs: ab_selected (with economic variables and composite indices)
+# Note: Addresses reviewer concerns about missing economic controls
+# ==============================================================================
+
+cat("\n", rep("=", 70), "\n", sep = "")
+cat("ECONOMIC VARIABLES MODULE\n")
+cat(rep("=", 70), "\n\n")
+
+# ============================================
+# INCOME & SES VARIABLES (KEY FOR REVIEWER)
+# ============================================
+
+cat("[economic] Income & SES variables (SE14, SE14a):\n")
+cat("  SE14: Monthly household income quintile (1-5)\n")
+cat("  SE14a: Income adequacy (1-5, reverse coded)\n\n")
+
+# Income quintile (already correctly coded: 1=lowest, 5=highest)
+if ("se14" %in% names(ab_selected)) {
+  ab_selected <- ab_selected %>%
+    mutate(
+      income_quintile = case_when(
+        se14 %in% 1:5 ~ as.numeric(se14),
+        TRUE ~ NA_real_
+      )
+    )
+  cat("✓ Created income_quintile (SE14) - Objective SES (1-5)\n")
+}
+
+# Income adequacy (reverse coded so higher = better)
+# Original: 1=covers well+save lot, 5=doesn't cover+great difficulty
+if ("se14a" %in% names(ab_selected)) {
+  ab_selected <- ab_selected %>%
+    mutate(income_adequacy = safe_reverse_5pt(se14a))
+  cat("✓ Created income_adequacy (SE14a) - Subjective wellbeing (1-5, higher = better)\n")
+}
+
+# ============================================
+# ECONOMIC ANXIETY/VULNERABILITY
+# ============================================
+
+cat("\n[economic] Economic anxiety/vulnerability variables (q161-q163):\n")
+cat("  q161: Worry about income loss (reverse coded, higher = more worried)\n")
+cat("  q162: Economic resilience (higher = could cope better)\n")
+cat("  q163: Income fairness (reverse coded, higher = more fair)\n\n")
+
+# Economic anxiety (reverse coded so higher = MORE worried)
+# Original: 1=very worried, 4=not worried at all
+if ("q161" %in% names(ab_selected)) {
+  ab_selected <- ab_selected %>%
+    mutate(econ_anxiety = safe_reverse_4pt(q161))
+  cat("✓ Created econ_anxiety (q161) - Higher = more worried about income loss (1-4)\n")
+}
+
+# Economic resilience (already coded: 1=serious difficulty, 3=manage fine)
+if ("q162" %in% names(ab_selected)) {
+  ab_selected <- ab_selected %>%
+    mutate(
+      econ_resilience = case_when(
+        q162 %in% 1:3 ~ as.numeric(q162),
+        TRUE ~ NA_real_
+      )
+    )
+  cat("✓ Created econ_resilience (q162) - Ability to cope with income loss (1-3)\n")
+}
+
+# Income fairness (reverse coded so higher = MORE fair)
+# Original: 1=very fair, 4=very unfair
+if ("q163" %in% names(ab_selected)) {
+  ab_selected <- ab_selected %>%
+    mutate(income_fairness = safe_reverse_4pt(q163))
+  cat("✓ Created income_fairness (q163) - Perceived economic justice (1-4, higher = more fair)\n")
+}
+
+# ============================================
+# ECONOMIC EVALUATIONS (Pocketbook & Sociotropic)
+# ============================================
+
+cat("\n[economic] Economic evaluations - Pocketbook & Sociotropic (q1-q6):\n")
+cat("  q1: NATIONAL economic condition now (reverse coded)\n")
+cat("  q2: NATIONAL economic condition retrospective (reverse coded)\n")
+cat("  q3: NATIONAL economic condition prospective (reverse coded)\n")
+cat("  q4: FAMILY/HOUSEHOLD economic situation now (reverse coded)\n")
+cat("  q5: FAMILY/HOUSEHOLD economic condition retrospective (reverse coded)\n")
+cat("  q6: FAMILY/HOUSEHOLD economic situation prospective (reverse coded)\n\n")
+
+# All economic evaluation variables use 5-point scale
+# Original: 1=very good/better, 5=very bad/worse
+# Reverse so higher = better evaluations
+
+# NATIONAL/COUNTRY ECONOMIC CONDITIONS (SOCIOTROPIC)
+if ("q1" %in% names(ab_selected)) {
+  ab_selected <- ab_selected %>%
+    mutate(econ_national_now = safe_reverse_5pt(q1))
+  cat("✓ Created econ_national_now (q1) - Country economic condition now\n")
+}
+
+if ("q2" %in% names(ab_selected)) {
+  ab_selected <- ab_selected %>%
+    mutate(econ_national_retrospective = safe_reverse_5pt(q2))
+  cat("✓ Created econ_national_retrospective (q2) - Country economic condition past\n")
+}
+
+if ("q3" %in% names(ab_selected)) {
+  ab_selected <- ab_selected %>%
+    mutate(econ_national_prospective = safe_reverse_5pt(q3))
+  cat("✓ Created econ_national_prospective (q3) - Country economic condition future\n")
+}
+
+# FAMILY/HOUSEHOLD ECONOMIC CONDITIONS (POCKETBOOK)
+if ("q4" %in% names(ab_selected)) {
+  ab_selected <- ab_selected %>%
+    mutate(econ_household_now = safe_reverse_5pt(q4))
+  cat("✓ Created econ_household_now (q4) - Family economic situation now\n")
+}
+
+if ("q5" %in% names(ab_selected)) {
+  ab_selected <- ab_selected %>%
+    mutate(econ_household_retrospective = safe_reverse_5pt(q5))
+  cat("✓ Created econ_household_retrospective (q5) - Family economic condition past\n")
+}
+
+if ("q6" %in% names(ab_selected)) {
+  ab_selected <- ab_selected %>%
+    mutate(econ_household_prospective = safe_reverse_5pt(q6))
+  cat("✓ Created econ_household_prospective (q6) - Family economic situation future\n")
+}
+
+# ============================================
+# EMPLOYMENT VARIABLES
+# ============================================
+
+cat("\n[economic] Employment status variables (SE9, Se9c_4, SE10):\n")
+cat("  SE9: Currently employed (binary)\n")
+cat("  Se9c_4: White vs blue collar (binary)\n")
+cat("  SE10: Main earner in household (binary)\n\n")
+
+if ("se9" %in% names(ab_selected)) {
+  ab_selected <- ab_selected %>%
+    mutate(
+      employed = case_when(
+        se9 == 1 ~ 1,
+        se9 == 2 ~ 0,
+        TRUE ~ NA_real_
+      )
+    )
+  cat("✓ Created employed (SE9)\n")
+}
+
+if ("se9c_4" %in% names(ab_selected)) {
+  ab_selected <- ab_selected %>%
+    mutate(
+      white_collar = case_when(
+        se9c_4 == 1 ~ 1,
+        se9c_4 == 2 ~ 0,
+        TRUE ~ NA_real_
+      )
+    )
+  cat("✓ Created white_collar (Se9c_4)\n")
+}
+
+if ("se10" %in% names(ab_selected)) {
+  ab_selected <- ab_selected %>%
+    mutate(
+      main_earner = case_when(
+        se10 == 1 ~ 1,
+        se10 == 2 ~ 0,
+        TRUE ~ NA_real_
+      )
+    )
+  cat("✓ Created main_earner (SE10)\n")
+}
+
+# ============================================
+# CREATE COMPOSITE INDICES
+# ============================================
+
+cat("\n[economic] Creating composite indices:\n")
+cat("  - Pocketbook index (q4, q5: family/household economic evaluations)\n")
+cat("  - Sociotropic index (q1, q2: country/national economic evaluations)\n")
+cat("  - Vulnerability index (anxiety + low resilience)\n\n")
+
+# Check which component variables exist before creating composites
+has_household_vars <- all(c("econ_household_now", "econ_household_retrospective") %in% names(ab_selected))
+has_national_vars <- all(c("econ_national_now", "econ_national_retrospective") %in% names(ab_selected))
+has_vulnerability_vars <- all(c("econ_anxiety", "econ_resilience") %in% names(ab_selected))
+
+if (has_household_vars) {
+  ab_selected <- ab_selected %>%
+    mutate(
+      # Pocketbook: Family/household economic evaluations (q4, q5)
+      # Using rowMeans for vectorized performance
+      econ_pocketbook_index = rowMeans(
+        select(., econ_household_now, econ_household_retrospective),
+        na.rm = TRUE
+      )
+    )
+  cat("✓ Created econ_pocketbook_index (q4, q5: family/household economic situation)\n")
+}
+
+if (has_national_vars) {
+  ab_selected <- ab_selected %>%
+    mutate(
+      # Sociotropic: Country/national economic evaluations (q1, q2)
+      # Using rowMeans for vectorized performance
+      econ_sociotropic_index = rowMeans(
+        select(., econ_national_now, econ_national_retrospective),
+        na.rm = TRUE
+      )
+    )
+  cat("✓ Created econ_sociotropic_index (q1, q2: country/national economic situation)\n")
+}
+
+if (has_vulnerability_vars) {
+  # Economic vulnerability: combines anxiety + low resilience
+  # Higher = more vulnerable
+  # Note: econ_anxiety is 1-4 scale, econ_resilience is 1-3 scale
+  # Must normalize columns to 0-1 FIRST (vectorized), then compute row mean
+  ab_selected <- ab_selected %>%
+    mutate(
+      n_anxiety = normalize_0_1(econ_anxiety),
+      n_resilience_rev = normalize_0_1(4 - econ_resilience)  # Flip so high = vulnerable
+    ) %>%
+    mutate(
+      econ_vulnerability = rowMeans(
+        cbind(n_anxiety, n_resilience_rev),
+        na.rm = TRUE
+      )
+    ) %>%
+    select(-n_anxiety, -n_resilience_rev)  # Remove intermediate columns
+  cat("✓ Created econ_vulnerability (normalized anxiety + reversed resilience, 0-1 scale)\n")
+}
+
+# Replace NaN with NA in composite indices
+ab_selected <- ab_selected %>%
+  mutate(across(where(is.numeric), ~if_else(is.nan(.), NA_real_, .)))
+
+# ============================================
+# VALIDATE RECODING
+# ============================================
+
+cat("\n[validation] Validating variable ranges...\n")
+
+# Validate income variables (1-5 scale)
+if ("income_quintile" %in% names(ab_selected)) {
+  validate_range(ab_selected, "income_quintile", 1, 5, "Income quintile")
+}
+if ("income_adequacy" %in% names(ab_selected)) {
+  validate_range(ab_selected, "income_adequacy", 1, 5, "Income adequacy")
+}
+
+# Validate anxiety/vulnerability variables
+if ("econ_anxiety" %in% names(ab_selected)) {
+  validate_range(ab_selected, "econ_anxiety", 1, 4, "Economic anxiety")
+}
+if ("econ_resilience" %in% names(ab_selected)) {
+  validate_range(ab_selected, "econ_resilience", 1, 3, "Economic resilience")
+}
+if ("income_fairness" %in% names(ab_selected)) {
+  validate_range(ab_selected, "income_fairness", 1, 4, "Income fairness")
+}
+
+# Validate economic evaluation variables (1-5 scale)
+econ_eval_vars <- c("econ_national_now", "econ_national_retrospective", "econ_national_prospective",
+                    "econ_household_now", "econ_household_retrospective", "econ_household_prospective")
+for (var in econ_eval_vars) {
+  if (var %in% names(ab_selected)) {
+    validate_range(ab_selected, var, 1, 5, var)
+  }
+}
+
+# Validate composite indices
+composite_vars <- c("econ_pocketbook_index", "econ_sociotropic_index", "econ_vulnerability")
+for (var in composite_vars) {
+  if (var %in% names(ab_selected)) {
+    # Composites should also be on similar scales (allowing for flexibility)
+    min_val <- min(ab_selected[[var]], na.rm = TRUE)
+    max_val <- max(ab_selected[[var]], na.rm = TRUE)
+    if (!is.infinite(min_val) && !is.infinite(max_val)) {
+      cat(sprintf("  %s: range [%.2f, %.2f]\n", var, min_val, max_val))
+    }
+  }
+}
+
+# Validate binary employment variables
+binary_vars <- c("employed", "white_collar", "main_earner")
+for (var in binary_vars) {
+  if (var %in% names(ab_selected)) {
+    min_val <- min(ab_selected[[var]], na.rm = TRUE)
+    max_val <- max(ab_selected[[var]], na.rm = TRUE)
+    if (min_val < 0 || max_val > 1) {
+      stop(sprintf("Range check failed for %s: [%.0f, %.0f], expected [0, 1]",
+                   var, min_val, max_val))
+    }
+  }
+}
+
+cat("✓ All variables within expected ranges\n")
+
+# ============================================
+# MISSING DATA REPORT
+# ============================================
+
+cat("\n[missing] Missing data report by country:\n\n")
+
+# Key SES/income variables
+if ("income_quintile" %in% names(ab_selected) || "income_adequacy" %in% names(ab_selected)) {
+  ses_vars <- intersect(c("income_quintile", "income_adequacy"), names(ab_selected))
+  report_missing(ab_selected, ses_vars, label = "SES/Income Variables")
+}
+
+# Economic anxiety/vulnerability variables
+if (any(c("econ_anxiety", "econ_resilience", "income_fairness") %in% names(ab_selected))) {
+  vulnerability_vars <- intersect(c("econ_anxiety", "econ_resilience", "income_fairness"),
+                                   names(ab_selected))
+  report_missing(ab_selected, vulnerability_vars, label = "Economic Vulnerability Variables")
+}
+
+# Composite indices
+if (any(c("econ_pocketbook_index", "econ_sociotropic_index", "econ_vulnerability") %in% names(ab_selected))) {
+  composite_vars <- intersect(c("econ_pocketbook_index", "econ_sociotropic_index", "econ_vulnerability"),
+                               names(ab_selected))
+  report_missing(ab_selected, composite_vars, label = "Economic Composite Indices")
+}
+
+# ============================================
+# MODULE COMPLETE
+# ============================================
+
+cat("\n✓ ECONOMIC VARIABLES MODULE COMPLETE\n")
+cat("  Variables created:\n")
+cat("\n  KEY SES VARIABLES (address reviewer concern):\n")
+cat("    - income_quintile: 1-5 (1=lowest, 5=highest) - OBJECTIVE SES\n")
+cat("    - income_adequacy: 1-5 (higher = covers needs better) - SUBJECTIVE\n")
+cat("\n  ECONOMIC VULNERABILITY:\n")
+cat("    - econ_anxiety: 1-4 (higher = more worried about income loss)\n")
+cat("    - econ_resilience: 1-3 (higher = could cope better if lost income)\n")
+cat("    - income_fairness: 1-4 (higher = perceive income as more fair)\n")
+cat("    - econ_vulnerability: composite index (higher = more vulnerable)\n")
+cat("\n  ECONOMIC EVALUATIONS:\n")
+cat("    - econ_pocketbook_index: family/household (q4, q5)\n")
+cat("    - econ_sociotropic_index: country/national (q1, q2)\n")
+cat("    - econ_national_now (q1), econ_national_retrospective (q2), econ_national_prospective (q3)\n")
+cat("    - econ_household_now (q4), econ_household_retrospective (q5), econ_household_prospective (q6)\n")
+cat("\n  EMPLOYMENT:\n")
+cat("    - employed, white_collar, main_earner (binary)\n")
+cat(rep("=", 70), "\n\n")
+
+---- 04d_political_attitudes.R ----
+# ==============================================================================
+# MODULE 04d: POLITICAL ATTITUDES VARIABLES
+# ==============================================================================
+# Purpose: Create political attitude variables for robustness/alternative analyses
+# Dependencies: Modules 01-03 (CONFIG, ab_selected, helper functions)
+# Inputs: ab_selected (with q137, q136, q112, q108, q96, q82, q124)
+# Outputs: ab_selected (with blind_loyalty, trust_govt_officials, govt_responsiveness,
+#          govt_transparency, govt_satisfaction, system_support, democracy preference vars)
+# ==============================================================================
+
+cat("\n", rep("=", 70), "\n", sep = "")
+cat("MODULE 04d: POLITICAL ATTITUDES VARIABLES\n")
+cat(rep("=", 70), "\n\n")
+
+# ============================================
+# RECODE 4-POINT POLITICAL ATTITUDE SCALES
+# ============================================
+
+cat("[political attitudes] Recoding political attitude variables...\n")
+cat("  q137: Blind loyalty to government (reverse: 5 - x)\n")
+cat("  q136: Trust in government officials (reverse: 5 - x)\n")
+cat("  q112: Government responsiveness (reverse: 5 - x)\n")
+cat("  q108: Government transparency (keep as-is, 1-5)\n")
+cat("  q96:  Government satisfaction (reverse: 5 - x)\n")
+cat("  q82:  System support (reverse: 5 - x)\n\n")
+
+ab_selected <- ab_selected %>%
+  mutate(
+    # Blind loyalty: q137 reverse coded (higher = more loyal)
+    # Original: 1=Strongly agree to 4=Strongly disagree with "citizens should always support govt"
+    blind_loyalty = safe_reverse_4pt(q137),
+
+    # Trust in government officials: q136 reverse coded (higher = more trust)
+    # Original: 1=Strongly agree to 4=Strongly disagree with "govt officials act in citizens' interests"
+    trust_govt_officials = safe_reverse_4pt(q136),
+
+    # Government responsiveness: q112 reverse coded (higher = more responsive)
+    # Original: 1=Strongly agree to 4=Strongly disagree with "govt responds to what people want"
+    govt_responsiveness = safe_reverse_4pt(q112),
+
+    # Government transparency: q108 keep as-is (higher = more transparent)
+    # Note: This is a 5-point scale, just clean missing values
+    govt_transparency = if_else(q108 >= 1 & q108 <= 5, as.numeric(q108), NA_real_),
+
+    # Government satisfaction: q96 reverse coded (higher = more satisfied)
+    # Original: 1=Very satisfied to 4=Very dissatisfied with "how govt runs country"
+    govt_satisfaction = safe_reverse_4pt(q96),
+
+    # System support: q82 reverse coded (higher = more supportive)
+    # Original: 1=Strongly agree to 4=Strongly disagree with "our system of govt is best"
+    system_support = safe_reverse_4pt(q82)
+  )
+
+cat("✓ Recoded 6 political attitude variables\n")
+
+# ============================================
+# VALIDATE RECODING
+# ============================================
+
+cat("\n[validation] Validating ranges...\n")
+
+# 4-point scales (1-4)
+vars_4pt <- c("blind_loyalty", "trust_govt_officials", "govt_responsiveness",
+              "govt_satisfaction", "system_support")
+validate_range(ab_selected, vars_4pt, 1, 4, "4-point political attitude variables")
+
+# 5-point scale (1-5)
+validate_range(ab_selected, "govt_transparency", 1, 5, "Government transparency (5-point)")
+
+# ============================================
+# CREATE DEMOCRACY PREFERENCE VARIABLES (q124)
+# ============================================
+
+cat("\n[democracy preference] Creating democracy preference indicators from q124...\n")
+cat("  q124: 1=Democracy always preferable, 2=Authoritarian can be preferable, 3=Doesn't matter\n\n")
+
+ab_selected <- ab_selected %>%
+  mutate(
+    # Binary: committed democrat vs. not
+    democracy_committed = case_when(
+      q124 == 1 ~ 1,              # Democracy always preferable
+      q124 %in% c(2, 3) ~ 0,      # Authoritarian acceptable OR indifferent
+      TRUE ~ NA_real_
+    ),
+
+    # Binary: authoritarian acceptable
+    authoritarian_acceptable = case_when(
+      q124 == 2 ~ 1,              # Authoritarian can be preferable
+      q124 %in% c(1, 3) ~ 0,      # Democrat or indifferent
+      TRUE ~ NA_real_
+    ),
+
+    # Binary: politically indifferent
+    regime_indifferent = case_when(
+      q124 == 3 ~ 1,              # Doesn't matter
+      q124 %in% c(1, 2) ~ 0,      # Has a preference
+      TRUE ~ NA_real_
+    )
+  )
+
+cat("✓ Created 3 democracy preference indicators:\n")
+cat("  - democracy_committed (1 = democracy always preferable)\n")
+cat("  - authoritarian_acceptable (1 = authoritarian can be preferable)\n")
+cat("  - regime_indifferent (1 = doesn't matter)\n")
+
+# ============================================
+# CROSS-TABULATION BY COUNTRY
+# ============================================
+
+cat("\n[verification] Cross-tabulation by country:\n\n")
+
+# Political attitudes means by country
+cat("=== Political Attitudes Mean by Country ===\n")
+political_means <- ab_selected %>%
+  group_by(country_name) %>%
+  summarise(
+    n = n(),
+    blind_loyalty = round(mean(blind_loyalty, na.rm = TRUE), 2),
+    trust_govt_officials = round(mean(trust_govt_officials, na.rm = TRUE), 2),
+    govt_responsiveness = round(mean(govt_responsiveness, na.rm = TRUE), 2),
+    govt_transparency = round(mean(govt_transparency, na.rm = TRUE), 2),
+    govt_satisfaction = round(mean(govt_satisfaction, na.rm = TRUE), 2),
+    system_support = round(mean(system_support, na.rm = TRUE), 2)
+  )
+print(political_means)
+
+# Democracy preference distribution by country
+cat("\n=== Democracy Preference % by Country ===\n")
+dem_pref_by_country <- ab_selected %>%
+  group_by(country_name) %>%
+  summarise(
+    n = n(),
+    pct_committed_democrat = round(100 * mean(democracy_committed, na.rm = TRUE), 1),
+    pct_auth_acceptable = round(100 * mean(authoritarian_acceptable, na.rm = TRUE), 1),
+    pct_indifferent = round(100 * mean(regime_indifferent, na.rm = TRUE), 1)
+  )
+print(dem_pref_by_country)
+
+# Verification: Vietnam should show high values
+cat("\n[verification] Checking Vietnam shows expected high values...\n")
+vietnam_means <- ab_selected %>%
+  filter(country_name == "Vietnam") %>%
+  summarise(
+    blind_loyalty = mean(blind_loyalty, na.rm = TRUE),
+    trust_govt_officials = mean(trust_govt_officials, na.rm = TRUE),
+    system_support = mean(system_support, na.rm = TRUE)
+  )
+
+if (vietnam_means$blind_loyalty > 2.5 && vietnam_means$trust_govt_officials > 2.5) {
+  cat("✓ Vietnam shows expected high blind_loyalty and trust_govt_officials\n")
+} else {
+  cat("⚠ Vietnam values may be lower than expected - verify source data\n")
+}
+
+# ============================================
+# MISSING DATA REPORT
+# ============================================
+
+cat("\n[missing] Missing data report:\n\n")
+
+all_political_vars <- c(vars_4pt, "govt_transparency",
+                        "democracy_committed", "authoritarian_acceptable", "regime_indifferent")
+report_missing(ab_selected, all_political_vars, label = "Political Attitudes Variables")
+
+# ============================================
+# MODULE COMPLETE
+# ============================================
+
+cat("\n✓ MODULE 04d COMPLETE\n")
+cat("  - 6 political attitude variables created and validated\n")
+cat("  - 3 democracy preference indicators created\n")
+cat("  - Cross-country distributions verified\n")
+cat(rep("=", 70), "\n\n")
+
+---- 05_democracy_variables.R ----
+# ==============================================================================
+# MODULE 05: DEMOCRACY VARIABLES
+# ==============================================================================
+# Purpose: Recode democracy variables, normalize scales, create composites
+# Dependencies: Modules 01-04 (CONFIG, ab_selected, helper functions)
+# Inputs: ab_selected (with democracy vars)
+# Outputs: ab_selected (with democracy composites and standardized vars)
+# ==============================================================================
+
+cat("\n", rep("=", 70), "\n", sep = "")
+cat("MODULE 05: DEMOCRACY VARIABLES\n")
+cat(rep("=", 70), "\n\n")
+
+# ============================================
+# REVERSE-CODE 4-POINT DEMOCRACY VARIABLES
+# ============================================
+
+cat("[democracy] Recoding 4-point democracy variables...\n")
+cat("  q90: Satisfaction with democracy\n")
+cat("  q91: How much of a democracy\n")
+cat("  q106: People are free to speak what they think without fear\n")
+cat("  q128: Democracy may have problems but still best\n\n")
+
+dem_4pt_vars <- c("q90", "q91", "q106", "q128")
+
+ab_selected <- ab_selected %>%
+  mutate(across(all_of(dem_4pt_vars), safe_reverse_4pt, .names = "dem_{.col}"))
+
+recoded_dem_vars <- paste0("dem_", dem_4pt_vars)
+
+validate_range(ab_selected, recoded_dem_vars, 1, 4, "4-point democracy variables")
+
+# Create named variable for freedom of speech
+ab_selected <- ab_selected %>%
+  mutate(freedom_of_speech = dem_q106)
+
+cat("✓ Created named variable: freedom_of_speech (from q106)\n")
+
+# ============================================
+# CLEAN 10-POINT DEMOCRACY SCALES
+# ============================================
+
+cat("\n[democracy] Cleaning 10-point democracy scales...\n")
+cat("  q92: How democratic is current government [1-10]\n")
+cat("  q95: How suitable is democracy for our country [1-10]\n\n")
+
+dem_10pt_vars <- c("q92", "q95")
+
+ab_selected <- ab_selected %>%
+  mutate(
+    across(all_of(dem_10pt_vars),
+           ~{
+             x <- as.numeric(.)
+             x <- round(x, 0)
+             if_else(x >= 1 & x <= 10, x, NA_real_)
+           },
+           .names = "{.col}_clean")
+  )
+
+# Validate 10-point scales
+stopifnot("q92_clean missing values 7-9" = all(c(7, 8, 9) %in% ab_selected$q92_clean))
+stopifnot("q95_clean missing values 7-9" = all(c(7, 8, 9) %in% ab_selected$q95_clean))
+stopifnot("q92_clean range not 1-10" = all(range(ab_selected$q92_clean, na.rm = TRUE) == c(1, 10)))
+stopifnot("q95_clean range not 1-10" = all(range(ab_selected$q95_clean, na.rm = TRUE) == c(1, 10)))
+
+cat("✓ 10-point scales cleaned and validated [1-10]\n")
+
+# ============================================
+# STANDARDIZE VARIABLES
+# ============================================
+
+cat("\n[democracy] Standardizing all democracy variables...\n")
+
+ab_selected <- ab_selected %>%
+  mutate(
+    # Standardize 4-point recoded variables
+    z_dem_q90 = standardize_z(dem_q90),
+    z_dem_q91 = standardize_z(dem_q91),
+    z_dem_q128 = standardize_z(dem_q128),
+    # Standardize 10-point cleaned variables
+    z_dem_q92 = standardize_z(q92_clean),
+    z_dem_q95 = standardize_z(q95_clean),
+    # Normalize to 0-1 for indices
+    n_dem_q90 = normalize_0_1(dem_q90),
+    n_dem_q91 = normalize_0_1(dem_q91),
+    n_dem_q128 = normalize_0_1(dem_q128),
+    n_dem_q92 = normalize_0_1(q92_clean),
+    n_dem_q95 = normalize_0_1(q95_clean)
+  )
+
+cat("✓ Variables standardized (z-scores) and normalized (0-1)\n")
+
+# ============================================
+# CREATE DEMOCRACY COMPOSITES
+# ============================================
+
+cat("\n[democracy] Creating democracy composites...\n")
+
+ab_selected <- ab_selected %>%
+  mutate(
+    # Standardized composites for regression (vectorized with rowMeans)
+    dem_satisfaction_z = rowMeans(select(., z_dem_q90, z_dem_q92), na.rm = TRUE),
+    dem_legitimacy_z = rowMeans(select(., z_dem_q91, z_dem_q95), na.rm = TRUE),
+    # Normalized indices for descriptive stats
+    dem_satisfaction_index = rowMeans(select(., n_dem_q90, n_dem_q92), na.rm = TRUE),
+    dem_legitimacy_index = rowMeans(select(., n_dem_q91, n_dem_q95), na.rm = TRUE),
+    # Backwards compatibility aliases
+    dem_satisfaction = dem_satisfaction_z,
+    dem_legitimacy = dem_legitimacy_z
+  )
+
+# Calculate Spearman-Brown reliability for 2-item scales
+r_satisfaction <- cor(ab_selected$z_dem_q90, ab_selected$z_dem_q92, use = "complete.obs")
+r_legitimacy <- cor(ab_selected$z_dem_q91, ab_selected$z_dem_q95, use = "complete.obs")
+
+sb_satisfaction <- (2 * r_satisfaction) / (1 + r_satisfaction)
+sb_legitimacy <- (2 * r_legitimacy) / (1 + r_legitimacy)
+
+cat("✓ Democracy satisfaction composite: Spearman-Brown =", round(sb_satisfaction, 3), "\n")
+cat("✓ Democracy legitimacy composite: Spearman-Brown =", round(sb_legitimacy, 3), "\n")
+
+# ============================================
+# MISSING DATA REPORT
+# ============================================
+
+cat("\n[missing] Missing data report:\n\n")
+
+all_dem_vars <- c(recoded_dem_vars, "q92_clean", "q95_clean")
+report_missing(ab_selected, all_dem_vars, label = "Democracy Variables")
+
+# ============================================
+# MODULE COMPLETE
+# ============================================
+
+cat("\n✓ MODULE 05 COMPLETE\n")
+cat("  - 4-point democracy variables reverse-coded and validated\n")
+cat("  - 10-point democracy scales cleaned [1-10]\n")
+cat("  - Democracy composites created with reliability checks\n")
+cat(rep("=", 70), "\n\n")
+
+---- 06_authoritarianism_variables.R ----
+# ==============================================================================
+# MODULE 06: AUTHORITARIANISM VARIABLES
+# ==============================================================================
+# Purpose: Recode authoritarianism/regime preference variables, create composites
+# Dependencies: Modules 01-05 (CONFIG, ab_selected, helper functions)
+# Inputs: ab_selected (with q129-q132, q168-q171)
+# Outputs: ab_selected (with regime_preference, auth_acceptance composites)
+# ==============================================================================
+
+cat("\n", rep("=", 70), "\n", sep = "")
+cat("MODULE 06: AUTHORITARIANISM VARIABLES\n")
+cat(rep("=", 70), "\n\n")
+
+# ============================================
+# REGIME PREFERENCE (q129-q132)
+# ============================================
+
+cat("[auth] Regime Preference (q129-q132)\n")
+cat("  Higher values = stronger preference for authoritarian regimes\n\n")
+
+regime_vars <- paste0("q", 129:132)
+
+ab_selected <- ab_selected %>%
+  mutate(across(all_of(regime_vars), safe_reverse_4pt, .names = "regimepref_{.col}"))
+
+regimepref_vars_recoded <- paste0("regimepref_q", 129:132)
+
+validate_range(ab_selected, regimepref_vars_recoded, 1, 4, "Regime preference")
+
+# Create composite with reliability check
+ab_selected <- create_validated_composite(
+  data = ab_selected,
+  vars = regimepref_vars_recoded,
+  composite_name = "regime_preference",
+  min_alpha = CONFIG$min_alpha,
+  method = "cronbach",
+  min_valid = round(length(regimepref_vars_recoded) * CONFIG$min_items_fraction)
+)
+
+cat("✓ Regime preference composite created\n")
+
+# ============================================
+# AUTHORITARIAN ACCEPTANCE (q168-q171)
+# ============================================
+
+cat("\n[auth] Authoritarian Acceptance (q168-q171)\n")
+cat("  Higher values = greater acceptance of authoritarian practices\n\n")
+
+auth_vars <- paste0("q", 168:171)
+
+ab_selected <- ab_selected %>%
+  mutate(across(all_of(auth_vars), safe_reverse_4pt, .names = "auth_{.col}"))
+
+auth_vars_recoded <- paste0("auth_q", 168:171)
+
+validate_range(ab_selected, auth_vars_recoded, 1, 4, "Authoritarian acceptance")
+
+# Create composite with reliability check
+ab_selected <- create_validated_composite(
+  data = ab_selected,
+  vars = auth_vars_recoded,
+  composite_name = "auth_acceptance",
+  min_alpha = CONFIG$min_alpha,
+  method = "cronbach",
+  min_valid = round(length(auth_vars_recoded) * CONFIG$min_items_fraction)
+)
+
+cat("✓ Authoritarian acceptance composite created\n")
+
+# ============================================
+# DESCRIPTIVE SUMMARY
+# ============================================
+
+cat("\n[summary] Authoritarian acceptance by country:\n\n")
+
+ab_selected %>%
+  group_by(country_name) %>%
+  summarise(
+    mean = round(mean(auth_acceptance, na.rm = TRUE), 2),
+    sd = round(sd(auth_acceptance, na.rm = TRUE), 2),
+    n = sum(!is.na(auth_acceptance))
+  ) %>%
+  print()
+
+# ============================================
+# MISSING DATA REPORT
+# ============================================
+
+cat("\n[missing] Missing data report:\n\n")
+
+all_auth_vars <- c(regimepref_vars_recoded, auth_vars_recoded)
+report_missing(ab_selected, all_auth_vars, label = "Authoritarianism Variables")
+
+# ============================================
+# MODULE COMPLETE
+# ============================================
+
+cat("\n✓ MODULE 06 COMPLETE\n")
+cat("  - Regime preference variables reverse-coded (q129-q132)\n")
+cat("  - Authoritarian acceptance variables reverse-coded (q168-q171)\n")
+cat("  - Composites created with reliability checks\n")
+cat(rep("=", 70), "\n\n")
+
+---- 07_emergency_powers.R ----
+# ==============================================================================
+# MODULE 07: EMERGENCY POWERS VARIABLES
+# ==============================================================================
+# Purpose: Recode emergency powers variables, create composite
+# Dependencies: Modules 01-06 (CONFIG, ab_selected, helper functions)
+# Inputs: ab_selected (with q172a-e)
+# Outputs: ab_selected (with emergency_powers_support composite)
+# ==============================================================================
+
+cat("\n", rep("=", 70), "\n", sep = "")
+cat("MODULE 07: EMERGENCY POWERS VARIABLES\n")
+cat(rep("=", 70), "\n\n")
+
+# ============================================
+# REVERSE-CODE EMERGENCY POWERS VARIABLES
+# ============================================
+
+cat("[emergency] Emergency Powers (q172a-e)\n")
+cat("  Justification for government use of emergency powers:\n")
+cat("    a) Public health crisis (COVID-19)\n")
+cat("    b) Economic crisis\n")
+cat("    c) Widespread corruption\n")
+cat("    d) Security crisis/terrorism\n")
+cat("    e) War\n\n")
+
+emergency_vars <- paste0("q172", letters[1:5])
+
+ab_selected <- ab_selected %>%
+  mutate(across(all_of(emergency_vars), safe_reverse_4pt, .names = "emergency_{.col}"))
+
+emergency_vars_recoded <- paste0("emergency_q172", letters[1:5])
+
+validate_range(ab_selected, emergency_vars_recoded, 1, 4, "Emergency powers")
+
+# ============================================
+# CREATE COMPOSITE WITH RELIABILITY CHECK
+# ============================================
+
+cat("\n[composite] Creating emergency powers support composite...\n")
+
+ab_selected <- create_validated_composite(
+  data = ab_selected,
+  vars = emergency_vars_recoded,
+  composite_name = "emergency_powers_support",
+  min_alpha = CONFIG$min_alpha,
+  method = "cronbach",
+  min_valid = round(length(emergency_vars_recoded) * CONFIG$min_items_fraction)
+)
+
+# ============================================
+# DESCRIPTIVE SUMMARY
+# ============================================
+
+cat("\n[summary] Emergency powers support by country:\n\n")
+
+ab_selected %>%
+  group_by(country_name) %>%
+  summarise(
+    covid_health = round(mean(emergency_q172a, na.rm = TRUE), 2),
+    economic = round(mean(emergency_q172b, na.rm = TRUE), 2),
+    corruption = round(mean(emergency_q172c, na.rm = TRUE), 2),
+    security = round(mean(emergency_q172d, na.rm = TRUE), 2),
+    war = round(mean(emergency_q172e, na.rm = TRUE), 2),
+    composite = round(mean(emergency_powers_support, na.rm = TRUE), 2),
+    n = sum(!is.na(emergency_powers_support))
+  ) %>%
+  print()
+
+# ============================================
+# MISSING DATA REPORT
+# ============================================
+
+cat("\n[missing] Missing data report:\n\n")
+
+report_missing(ab_selected, emergency_vars_recoded, label = "Emergency Powers")
+
+# ============================================
+# MODULE COMPLETE
+# ============================================
+
+cat("\n✓ MODULE 07 COMPLETE\n")
+cat("  - Emergency powers variables reverse-coded (q172a-e)\n")
+cat("  - Composite created: emergency_powers_support\n")
+cat("  - Higher scores = greater support for emergency powers\n")
+cat(rep("=", 70), "\n\n")
+
+---- 08_covid_variables.R ----
+# ==============================================================================
+# MODULE 08: COVID VARIABLES
+# ==============================================================================
+# Purpose: Recode COVID impact, trust, and government handling variables
+# Dependencies: Modules 01-07 (CONFIG, ab_selected, helper functions)
+# Inputs: ab_selected (with q138-q145)
+# Outputs: ab_selected (with COVID variables and composites)
+# ==============================================================================
+
+cat("\n", rep("=", 70), "\n", sep = "")
+cat("MODULE 08: COVID VARIABLES\n")
+cat(rep("=", 70), "\n\n")
+
+# ============================================
+# BINARY COVID IMPACT VARIABLES (q138, q139a-d)
+# ============================================
+
+cat("[covid] Personal COVID impact variables (binary)...\n")
+
+covid_binary_vars <- c("q138", paste0("q139", letters[1:4]))
+covid_binary_names <- c("covid_contracted", "covid_illness_death", "covid_job_loss",
+                        "covid_income_loss", "covid_edu_disruption")
+
+ab_selected <- ab_selected %>%
+  mutate(
+    across(all_of(covid_binary_vars),
+           ~case_when(. == 1 ~ 1, . == 2 ~ 0, TRUE ~ NA_real_),
+           .names = "{.col}_binary")
+  )
+
+# Rename for clarity
+for (i in seq_along(covid_binary_vars)) {
+  old_name <- paste0(covid_binary_vars[i], "_binary")
+  new_name <- covid_binary_names[i]
+  ab_selected <- ab_selected %>%
+    rename(!!new_name := !!old_name)
+}
+
+# Validate binary coding
+ab_selected %>% assert(in_set(0, 1, NA), all_of(covid_binary_names))
+
+cat("✓ Binary COVID impact variables created:\n")
+cat("  ", paste(covid_binary_names, collapse = ", "), "\n")
+
+# Create impact count and severity (vectorized with rowSums)
+ab_selected <- ab_selected %>%
+  mutate(
+    covid_impact_count = rowSums(select(., all_of(covid_binary_names)), na.rm = TRUE),
+    covid_health_trauma = covid_illness_death  # Alias for severe health impact
+  )
+
+cat("✓ COVID impact summary variables created\n")
+
+# ============================================
+# REVERSE-CODE COVID EVALUATION VARIABLES
+# ============================================
+
+cat("\n[covid] COVID evaluation variables...\n")
+
+ab_selected <- ab_selected %>%
+  mutate(
+    covid_impact_severity = safe_reverse_4pt(q140),  # Economic impact severity
+    covid_trust_info = safe_reverse_4pt(q141),       # Trust in COVID info
+    covid_govt_handling = safe_reverse_4pt(q142)     # Government handling
+  )
+
+covid_eval_vars <- c("covid_impact_severity", "covid_trust_info", "covid_govt_handling")
+
+validate_range(ab_selected, covid_eval_vars, 1, 4, "COVID evaluation")
+
+# Create government performance composite (vectorized with rowMeans)
+ab_selected <- ab_selected %>%
+  mutate(
+    covid_govt_performance = rowMeans(select(., covid_trust_info, covid_govt_handling), na.rm = TRUE)
+  )
+
+cat("✓ COVID evaluation variables created\n")
+
+# ============================================
+# COVID RESTRICTIONS (q143a-e)
+# ============================================
+
+cat("\n[covid] COVID restriction acceptance (q143a-e)...\n")
+cat("  Note: Vietnam has 100% missing (not asked in survey)\n")
+cat("  Creating composite for non-Vietnam countries only\n\n")
+
+ab_selected <- ab_selected %>%
+  mutate(
+    across(q143a:q143e, ~safe_reverse_3pt(.x), .names = "covid_restrict_{.col}")
+  ) %>%
+  rename(
+    covid_restrict_elections = covid_restrict_q143a,
+    covid_restrict_speech = covid_restrict_q143b,
+    covid_restrict_media = covid_restrict_q143c,
+    covid_restrict_tracking = covid_restrict_q143d,
+    covid_restrict_lockdown = covid_restrict_q143e
+  )
+
+# Validate variables
+covid_restrict_vars <- c("covid_restrict_elections", "covid_restrict_speech",
+                        "covid_restrict_media", "covid_restrict_tracking",
+                        "covid_restrict_lockdown")
+
+# Create composite (with reliability check for non-Vietnam countries)
+# Vietnam will have NA for this composite since all q143 values are missing
+non_vietnam <- ab_selected %>% filter(country_name != "Vietnam")
+
+if (nrow(non_vietnam) > 0) {
+  # Create composite for non-Vietnam countries
+  non_vietnam <- create_validated_composite(
+    data = non_vietnam,
+    vars = covid_restrict_vars,
+    composite_name = "covid_restrict_composite",
+    min_alpha = CONFIG$min_alpha,
+    method = "cronbach",
+    min_valid = round(length(covid_restrict_vars) * CONFIG$min_items_fraction)
+  )
+
+  # Merge back with full dataset (join by both idnumber and country_name to avoid duplicates)
+  ab_selected <- ab_selected %>%
+    left_join(
+      non_vietnam %>% select(idnumber, country_name, covid_restrict_composite),
+      by = c("idnumber", "country_name")
+    )
+
+  cat("✓ COVID restriction composite created (Vietnam = NA)\n")
+} else {
+  cat("⚠ No non-Vietnam data for composite\n")
+}
+
+# ============================================
+# DESCRIPTIVE SUMMARY
+# ============================================
+
+cat("\n[summary] COVID variables by country:\n\n")
+
+ab_selected %>%
+  group_by(country_name) %>%
+  summarise(
+    covid_contracted_pct = round(100 * mean(covid_contracted, na.rm = TRUE), 1),
+    covid_health_trauma_pct = round(100 * mean(covid_health_trauma, na.rm = TRUE), 1),
+    impact_count_mean = round(mean(covid_impact_count, na.rm = TRUE), 2),
+    govt_performance_mean = round(mean(covid_govt_performance, na.rm = TRUE), 2),
+    restrict_composite_mean = round(mean(covid_restrict_composite, na.rm = TRUE), 2),
+    n = n()
+  ) %>%
+  print()
+
+# ============================================
+# MISSING DATA REPORT
+# ============================================
+
+cat("\n[missing] Missing data report:\n\n")
+
+all_covid_vars <- c(covid_binary_names, covid_eval_vars, covid_restrict_vars)
+report_missing(ab_selected, all_covid_vars, label = "COVID Variables")
+
+# ============================================
+# MODULE COMPLETE
+# ============================================
+
+cat("\n✓ MODULE 08 COMPLETE\n")
+cat("  - Personal COVID impact variables created (binary)\n")
+cat("  - COVID evaluation variables reverse-coded\n")
+cat("  - COVID restriction variables created (Vietnam = NA)\n")
+cat("  - Composites: covid_govt_performance, covid_restrict_composite\n")
+cat(rep("=", 70), "\n\n")
+
+---- 09_validation_quality.R ----
+# ==============================================================================
+# MODULE 09: VALIDATION AND QUALITY CHECKS (OPTIONAL)
+# ==============================================================================
+# Purpose: Missing data analysis, construct validation, diagnostics
+# Dependencies: Modules 01-08 (all composites created)
+# Inputs: ab_selected (with all variables and composites)
+# Outputs: Console reports, validation summaries
+# Note: This module can be skipped for quick runs (set skip_validation = TRUE in CONFIG)
+# ==============================================================================
+
+cat("\n", rep("=", 70), "\n", sep = "")
+cat("MODULE 09: VALIDATION AND QUALITY CHECKS\n")
+cat(rep("=", 70), "\n\n")
+
+# ============================================
+# CONSTRUCT RELIABILITY SUMMARY
+# ============================================
+
+cat("[validation] Construct reliability summary:\n\n")
+
+cat("Institutional Trust α:",
+    round(psych::alpha(ab_selected[paste0("trust_q", 7:15)])$total$raw_alpha, 3), "\n")
+cat("Regime Preference α:",
+    round(psych::alpha(ab_selected[paste0("regimepref_q", 129:132)])$total$raw_alpha, 3), "\n")
+cat("Authoritarian Acceptance α:",
+    round(psych::alpha(ab_selected[paste0("auth_q", 168:171)])$total$raw_alpha, 3), "\n")
+cat("Emergency Powers α:",
+    round(psych::alpha(ab_selected[paste0("emergency_q172", letters[1:5])])$total$raw_alpha, 3), "\n")
+
+# COVID restrictions (exclude Vietnam)
+non_vietnam_covid <- ab_selected %>%
+  filter(country_name != "Vietnam") %>%
+  select(starts_with("covid_restrict_")) %>%
+  select(-covid_restrict_composite) %>%
+  na.omit()
+
+if (nrow(non_vietnam_covid) > 0) {
+  cat("COVID Restrictions α (excl. Vietnam):",
+      round(psych::alpha(non_vietnam_covid)$total$raw_alpha, 3), "\n")
+}
+
+# ============================================
+# MISSING DATA PATTERNS BY COUNTRY
+# ============================================
+
+cat("\n[validation] Missing data patterns by construct:\n\n")
+
+# Key composite variables
+key_composites <- c(
+  "institutional_trust_index",
+  "dem_satisfaction_z",
+  "dem_legitimacy_z",
+  "regime_preference",
+  "auth_acceptance",
+  "emergency_powers_support",
+  "covid_govt_performance"
+)
+
+report_missing(ab_selected, key_composites, label = "Key Composites")
+
+# ============================================
+# DESCRIPTIVE STATISTICS BY COUNTRY
+# ============================================
+
+cat("\n[validation] Descriptive statistics for main composites:\n\n")
+
+describe_by_country(ab_selected, key_composites, label = "Main Composites")
+
+# ============================================
+# DATA QUALITY SUMMARY
+# ============================================
+
+cat("\n[validation] Overall data quality by country:\n\n")
+
+ab_selected %>%
+  group_by(country_name) %>%
+  summarise(
+    n = n(),
+    trust_complete = sum(!is.na(institutional_trust_index)),
+    dem_complete = sum(!is.na(dem_satisfaction_z) & !is.na(dem_legitimacy_z)),
+    auth_complete = sum(!is.na(auth_acceptance)),
+    covid_complete = sum(!is.na(covid_govt_performance)),
+    all_complete = sum(
+      !is.na(institutional_trust_index) &
+      !is.na(dem_satisfaction_z) &
+      !is.na(auth_acceptance) &
+      !is.na(covid_govt_performance)
+    ),
+    pct_all_complete = round(100 * all_complete / n, 1)
+  ) %>%
+  print()
+
+# ============================================
+# MODULE COMPLETE
+# ============================================
+
+cat("\n✓ MODULE 09 COMPLETE\n")
+cat("  - Construct reliability validated\n")
+cat("  - Missing data patterns reported\n")
+cat("  - Descriptive statistics generated\n")
+cat(rep("=", 70), "\n\n")
+
+---- 10_finalize_export.R ----
+# ==============================================================================
+# MODULE 10: FINALIZE AND EXPORT
+# ==============================================================================
+# Purpose: Standardize variables, create final datasets, save outputs
+# Dependencies: Modules 01-09 (all variables created)
+# Inputs: ab_selected (complete dataset)
+# Outputs: ab_analysis_v2.rds, ab_analysis_v2_validated.rds, CSV/DTA exports
+# ==============================================================================
+
+cat("\n", rep("=", 70), "\n", sep = "")
+cat("MODULE 10: FINALIZE AND EXPORT\n")
+cat(rep("=", 70), "\n\n")
+
+# ============================================
+# STANDARDIZE COMPOSITE INDICES
+# ============================================
+
+cat("[finalize] Standardizing composite indices for regression...\n")
+
+ab_analysis <- ab_selected %>%
+  mutate(
+    institutional_trust_std = standardize_z(institutional_trust_index),
+    regime_preference_std = standardize_z(regime_preference),
+    auth_acceptance_std = standardize_z(auth_acceptance),
+    emergency_powers_std = standardize_z(emergency_powers_support),
+    covid_govt_performance_std = standardize_z(covid_govt_performance)
+  )
+
+cat("✓ Standardized composites created (*_std variables)\n")
+
+# ============================================
+# CREATE VALIDATED DATASET (COMPLETE CASES)
+# ============================================
+
+cat("\n[finalize] Creating validated dataset (complete cases only)...\n")
+
+ab_analysis_validated <- ab_analysis %>%
+  filter(
+    !is.na(institutional_trust_index),
+    !is.na(dem_satisfaction_z),
+    !is.na(dem_legitimacy_z),
+    !is.na(auth_acceptance),
+    !is.na(covid_govt_performance)
+  )
+
+cat("✓ Validated dataset created\n")
+cat("  Full dataset: N =", nrow(ab_analysis), "\n")
+cat("  Complete cases: N =", nrow(ab_analysis_validated), "\n")
+cat("  Retention rate:", round(100 * nrow(ab_analysis_validated) / nrow(ab_analysis), 1), "%\n")
+
+# ============================================
+# SAVE RDS FILES
+# ============================================
+
+cat("\n[export] Saving RDS files...\n")
+
+saveRDS(ab_analysis, here("data", "processed", "ab_analysis_v2.rds"))
+saveRDS(ab_analysis_validated, here("data", "processed", "ab_analysis_v2_validated.rds"))
+
+cat("✓ Saved: data/processed/ab_analysis_v2.rds\n")
+cat("✓ Saved: data/processed/ab_analysis_v2_validated.rds\n")
+
+# ============================================
+# OPTIONAL: CSV EXPORT
+# ============================================
+
+cat("\n[export] Creating CSV export...\n")
+
+write_csv(ab_analysis, here("data", "processed", "ab_analysis_v2.csv"))
+
+cat("✓ Saved: data/processed/ab_analysis_v2.csv\n")
+
+# ============================================
+# FINAL SUMMARY
+# ============================================
+
+cat("\n", rep("=", 70), "\n", sep = "")
+cat("DATA EXPORT SUMMARY\n")
+cat(rep("=", 70), "\n\n")
+
+cat("Full Dataset (ab_analysis_v2):\n")
+cat("  - Observations:", nrow(ab_analysis), "\n")
+cat("  - Variables:", ncol(ab_analysis), "\n")
+cat("  - Countries:", length(unique(ab_analysis$country_name)), "\n")
+
+cat("\nValidated Dataset (ab_analysis_v2_validated):\n")
+cat("  - Observations:", nrow(ab_analysis_validated), "\n")
+cat("  - Complete case retention:", round(100 * nrow(ab_analysis_validated) / nrow(ab_analysis), 1), "%\n")
+
+cat("\nKey Composites Created:\n")
+cat("  - institutional_trust_index\n")
+cat("  - dem_satisfaction_z, dem_legitimacy_z\n")
+cat("  - regime_preference, auth_acceptance\n")
+cat("  - emergency_powers_support\n")
+cat("  - covid_govt_performance\n")
+
+cat("\nStandardized Variables (for regression):\n")
+cat("  - *_std versions of all composites\n")
+
+cat("\nFiles Saved:\n")
+cat("  - RDS: ab_analysis_v2.rds, ab_analysis_v2_validated.rds\n")
+cat("  - CSV: ab_analysis_v2.csv\n")
+
+# ============================================
+# MODULE COMPLETE
+# ============================================
+
+cat("\n✓ MODULE 10 COMPLETE\n")
+cat(rep("=", 70), "\n\n")
+
+---- run_04b_on_df.R ----
+#!/usr/bin/env Rscript
+# ==============================================================================
+# STANDALONE CORRUPTION VARIABLES SCRIPT
+# ==============================================================================
+# Purpose: Thin wrapper to run corruption module in standalone mode
+# Usage: source("papers/01_vietnam_covid_paradox/analysis/data_prep_modules/run_04b_on_df.R")
+#    or: Rscript papers/01_vietnam_covid_paradox/analysis/data_prep_modules/run_04b_on_df.R
+#
+# Note: All logic is in 04b_corruption_variables.R which auto-detects standalone mode.
+#       This wrapper exists for convenience and backwards compatibility.
+# ==============================================================================
+
+# Simply source the module - it will detect standalone mode automatically
+source(here::here("papers", "01_vietnam_covid_paradox", "analysis",
+                  "data_prep_modules", "04b_corruption_variables.R"))
+

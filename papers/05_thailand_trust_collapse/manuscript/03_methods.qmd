@@ -1,0 +1,44 @@
+# Data and Methods
+
+## Data Source and Sample
+
+We use the Asian Barometer Survey (ABS), analyzing all six waves (2001--2022) for Thailand, Philippines, and Taiwan, the only countries with complete coverage. Total sample: `r format(nrow(d), big.mark = ",")` respondents.
+
+```{r tbl-sample}
+#| tbl-cap: "Sample size by country and wave"
+d %>%
+  group_by(country_name, wave) %>%
+  summarise(n = n(), .groups = "drop") %>%
+  pivot_wider(names_from = wave, values_from = n, values_fill = 0) %>%
+  kbl(col.names = c("Country", paste0("W", 1:6)),
+      booktabs = TRUE) %>%
+  kable_styling(latex_options = c("hold_position"))
+```
+
+Thailand's sample sizes range from 1,200 to 1,500 respondents per wave. The ABS employs stratified multi-stage probability sampling with response rates exceeding 60%. The repeated cross-sectional design suits our focus on aggregate trust trends rather than individual dynamics.
+
+## Dependent Variables
+
+Institutional trust uses standard four-point scales (1=none at all, 4=great deal). We focus on **national government** (elected/administrative institutional trust) and **military** (coercive institutional trust). This comparison provides leverage: if 2020--2021 protests targeted military influence, military trust should decline more; pandemic performance theories predict the opposite. We examine police and court trust as secondary outcomes. The four-point scale is treated as continuous [@Marien2011-ms; @Meer2010-bv], with ordered logit robustness checks in Online Appendix.
+
+## Independent Variables and Controls
+
+Primary variable: **Wave** (1--6), linear time trends. **Country** is categorical with Thailand as reference. Controls include age (centered), gender, education (standardized), and urban residence, addressing compositional changes and baseline differences.
+
+## Analytical Strategy
+
+Multilevel models with country-specific intercepts and slopes:
+
+$$\text{Trust}_{ij} = \gamma_{00} + \gamma_{10}\text{Wave}_{ij} + \mathbf{X}_{ij}\boldsymbol{\beta} + u_{0j} + u_{1j}\text{Wave}_{ij} + \epsilon_{ij}$$
+
+where $u_{1j}$ allows country-specific deviations from average time trends. If Thailand's decline is exceptional, $u_{1,\text{Thailand}}$ should be significantly negative.
+
+To test H2 (institutional differentiation), we estimate pooled models with three-way interactions (Wave × Military × Thailand). The three-way coefficient tests whether Thailand's military-government differential exceeds comparators.
+
+Pre-COVID trend analysis restricts to Waves 1--4, comparing coefficients between pre-COVID and full samples to distinguish discrete shocks from secular trends. Robustness checks include non-linear specifications, ordered logit, and subgroup analyses (Online Appendix).
+
+All models incorporate ABS-provided survey weights (available for Waves 3--6; Waves 1--2 are treated as self-weighting). Models that stack government and military trust for the same respondents use cluster-robust standard errors at the respondent level to account for within-person correlation. PSU identifiers are not available in the public-use ABS files, so we cannot adjust for survey design effects at the primary sampling unit level; this limitation is unlikely to affect our core findings, which concern country-level contrasts rather than population-level prevalence estimates.
+
+## Limitations
+
+Repeated cross-sections prevent individual-level causal inference but suit our aggregate focus. Response rates remain stable (60--70%), minimizing selection concerns. Trust questions use identical wording across waves/countries. We infer individual mechanisms from country-level heterogeneity, supplementing with subgroup comparisons where possible. Our three-country comparison limits generalizability but provides theoretically meaningful contrasts.

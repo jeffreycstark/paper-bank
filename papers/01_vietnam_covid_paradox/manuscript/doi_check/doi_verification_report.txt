@@ -1,0 +1,59 @@
+DOI VERIFICATION REPORT
+Generated: 2026-02-28 10:35
+======================================================================
+
+Total entries:        40
+Entries with DOI:     35
+Entries without DOI:  5
+DOIs checked:         35
+DOIs valid:           35
+DOIs not found (404): 0
+Invalid DOI format:   0
+Other errors:         0
+Title mismatches:     3
+Year mismatches:      3
+
+
+──────────────────────────────────────────────────────────────────────
+TITLE MISMATCHES — DOI may point to wrong article
+──────────────────────────────────────────────────────────────────────
+
+  [Freedom-House2025-gx]
+  Bib title:       Freedom in the world 2022: The annual survey of political rights and civil liberties
+  CrossRef title:  Freedom in the World 2022
+  DOI:             10.5040/9798216424611
+
+  [Popkin1994-yv]
+  Bib title:       The reasoning voter: Communication and persuasion in presidential campaigns
+  CrossRef title:  The Reasoning Voter
+  DOI:             10.7208/chicago/9780226772875.001.0001
+
+  [Sniderman1991-uj]
+  Bib title:       Cambridge studies in public opinion and political psychology: Reasoning and choice: Explorations in political psychology: Explorations in political psychology
+  CrossRef title:  Reasoning and Choice
+  DOI:             10.1017/cbo9780511720468
+
+──────────────────────────────────────────────────────────────────────
+YEAR MISMATCHES — may indicate wrong edition or version
+──────────────────────────────────────────────────────────────────────
+
+  [Freedom-House2025-gx]
+  Title:           Freedom in the world 2022: The annual survey of political rights and civil liberties
+  Bib date:        2025-06-19
+  CrossRef year:   2023
+  DOI:             10.5040/9798216424611
+
+  [Iyengar1994-fk]
+  Title:           Is Anyone Responsible?: How television frames political issues
+  Bib date:        1994-08-17
+  CrossRef year:   1991
+  DOI:             10.7208/chicago/9780226388533.001.0001
+
+  [Popkin1994-yv]
+  Title:           The reasoning voter: Communication and persuasion in presidential campaigns
+  Bib date:        1994-04-01
+  CrossRef year:   1991
+  DOI:             10.7208/chicago/9780226772875.001.0001
+
+======================================================================
+End of report
