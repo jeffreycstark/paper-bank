@@ -1,0 +1,109 @@
+---
+title: "Data Preparation and Cleaning"
+subtitle: "Asian Barometer Wave 6 - COVID, Trust, and Democracy Project"
+author: "Jeffrey Stark"
+date: today
+format:
+  html:
+    toc: true
+    toc-depth: 3
+    number-sections: true
+    code-fold: show
+    df-print: paged
+---
+
+::: {.callout-note}
+## Modular Pipeline
+
+This file now serves as a **wrapper** for the modular data preparation pipeline located in `data_prep_modules/`.
+
+The original monolithic version (2,820 lines) has been replaced with a 10-module pipeline that:
+- ✅ Achieves 100% functional equivalence (r = 1.0 for all composites)
+- ✅ Reduces code by 75% through helper functions
+- ✅ Improves maintainability with single-responsibility modules
+- ✅ Provides better documentation and validation
+
+**To modify data preparation:**
+- Edit modules in `data_prep_modules/01-10_*.R`
+- See `data_prep_modules/README.md` for architecture details
+
+**Archived:** Original monolithic version saved as `02_data_preparation_ARCHIVED.qmd`
+:::
+
+# Run Modular Data Pipeline
+
+```{r setup-here}
+#| include: false
+# Anchor here() to project root (needed when rendering from paper subdirectory)
+here::i_am("papers/01_vietnam_covid_paradox/analysis/02_data_preparation.qmd")
+```
+
+```{r run-modular-pipeline}
+#| output: true
+#| message: true
+
+# Run the complete modular data preparation pipeline
+# This executes modules 01-10 in sequence
+source(here::here("papers", "01_vietnam_covid_paradox", "analysis",
+                  "data_prep_modules", "00_run_all.R"))
+```
+
+# Load Prepared Datasets
+
+```{r load-datasets}
+#| message: false
+
+library(tidyverse)
+library(here)
+
+# Load main analysis dataset (all observations)
+ab_analysis <- readRDS(here("data", "processed", "ab_analysis_v2.rds"))
+
+# Load validated dataset (complete cases only, 88.1% retention)
+ab_analysis_validated <- readRDS(here("data", "processed", "ab_analysis_v2_validated.rds"))
+
+cat("✓ Loaded datasets:\n")
+cat("  - ab_analysis:", nrow(ab_analysis), "observations,", ncol(ab_analysis), "variables\n")
+cat("  - ab_analysis_validated:", nrow(ab_analysis_validated), "observations,",
+    ncol(ab_analysis_validated), "variables\n")
+```
+
+# Dataset Summary
+
+```{r dataset-summary}
+# Quick summary of key variables
+ab_analysis %>%
+  group_by(country_name) %>%
+  summarise(
+    n = n(),
+    pct_covid = round(100 * mean(covid_contracted, na.rm = TRUE), 1),
+    trust_mean = round(mean(institutional_trust_index, na.rm = TRUE), 2),
+    govt_perf_mean = round(mean(covid_govt_performance, na.rm = TRUE), 2)
+  ) %>%
+  knitr::kable(caption = "Dataset Overview by Country")
+```
+
+# Module Architecture
+
+The modular pipeline consists of:
+
+| Module | Purpose | Key Outputs |
+|--------|---------|-------------|
+| 01 | Configuration & Setup | CONFIG object, helper functions |
+| 02 | Load & Filter | 7-country subset |
+| 03 | Variable Selection | Clean missing, demographics, **political engagement** |
+| 04 | Trust Variables | `institutional_trust_index` |
+| 05 | Democracy Variables | `dem_satisfaction_z`, `dem_legitimacy_z` |
+| 06 | Authoritarianism | `regime_preference`, `auth_acceptance` |
+| 07 | Emergency Powers | `emergency_powers_support` |
+| 08 | COVID Variables | `covid_govt_performance`, impact variables |
+| 09 | Validation | Reliability checks, missing reports |
+| 10 | Finalization | Standardization, export |
+
+See `data_prep_modules/README.md` for detailed documentation.
+
+# Session Info
+
+```{r session-info}
+sessionInfo()
+```

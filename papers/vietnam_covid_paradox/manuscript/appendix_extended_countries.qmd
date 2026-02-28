@@ -1,0 +1,226 @@
+---
+title: "Extended Country Comparisons"
+subtitle: "The Vietnam Paradox: Information Control and Pandemic Approval in Southeast Asia"
+author: "Jeffrey Stark"
+date: today
+format:
+  pdf:
+    documentclass: article
+    geometry: margin=1in
+    fontsize: 11pt
+    number-sections: true
+execute:
+  echo: false
+  warning: false
+  message: false
+---
+
+```{r setup, include=FALSE}
+# Load packages
+library(tidyverse)
+library(here)
+library(gt)
+library(gtExtras)
+library(knitr)
+
+# Set global options
+knitr::opts_chunk$set(
+  echo = FALSE,
+  warning = FALSE,
+  message = FALSE
+)
+
+# Helper function to format wide gt tables for PDF
+format_wide_gt <- function(gt_table) {
+  gt_table %>%
+    tab_options(
+      table.font.size = px(9),
+      data_row.padding = px(2),
+      table.width = pct(100)
+    )
+}
+```
+
+# Extended Country Comparisons
+
+This appendix extends our three-country analysis (Cambodia, Thailand, Vietnam) to include four additional Asian democracies for comparative context: Indonesia, South Korea, Philippines, and Taiwan. This broader comparison allows us to situate the "Vietnam Paradox" within the wider Asian regional context.
+
+```{r load-data}
+# Load expanded dataset with 7 countries
+ab_v2 <- readRDS(here("..", "..", "..", "data", "processed", "ab_analysis_v2.rds"))
+
+# Verify countries
+cat("Countries in expanded dataset:", paste(unique(ab_v2$country_name), collapse=", "), "\n")
+cat("Total N =", nrow(ab_v2), "\n")
+```
+
+## Sample Characteristics (7-Country Comparison)
+
+```{r sample-table}
+#| label: tbl-sample-7countries
+#| tbl-cap: "Sample Characteristics Across Seven Asian Countries"
+
+ab_v2 %>%
+  count(country_name) %>%
+  mutate(
+    pct = round(n / sum(n) * 100, 1),
+    `Sample Size` = n,
+    `Percent` = paste0(pct, "%")
+  ) %>%
+  select(Country = country_name, `Sample Size`, Percent) %>%
+  gt() %>%
+  tab_header(
+    title = "Sample Distribution: 7-Country Dataset",
+    subtitle = "Asian Barometer Wave 6 (2021-2023)"
+  ) %>%
+  fmt_number(
+    columns = `Sample Size`,
+    decimals = 0,
+    use_seps = TRUE
+  ) %>%
+  tab_source_note(
+    source_note = "Note: Original analysis focused on Cambodia, Thailand, and Vietnam (N≈3,700). Extended analysis adds Indonesia, Korea, Philippines, and Taiwan (N≈9,200 total)."
+  ) %>%
+  format_wide_gt()
+```
+
+## COVID-19 Infection Rates (7-Country Comparison)
+
+```{r covid-rates}
+#| label: tbl-covid-7countries
+#| tbl-cap: "Self-Reported COVID-19 Infection Rates by Country"
+
+ab_v2 %>%
+  group_by(country_name) %>%
+  summarise(
+    n = n(),
+    `Infected (%)` = round(mean(covid_contracted, na.rm = TRUE) * 100, 1),
+    `Govt Approval Mean` = round(mean(covid_govt_performance, na.rm = TRUE), 2)
+  ) %>%
+  arrange(desc(`Infected (%)`)) %>%
+  gt() %>%
+  tab_header(
+    title = "COVID-19 Infections and Government Approval",
+    subtitle = "7-Country Comparison"
+  ) %>%
+  cols_label(
+    country_name = "Country",
+    n = "N",
+    `Infected (%)` = "COVID Infection (%)",
+    `Govt Approval Mean` = "Approval (1-4)"
+  ) %>%
+  fmt_number(
+    columns = n,
+    decimals = 0,
+    use_seps = TRUE
+  ) %>%
+  tab_source_note(
+    source_note = "Note: Vietnam maintains highest approval despite highest infections. Pattern varies considerably across other Asian democracies."
+  ) %>%
+  format_wide_gt()
+```
+
+\newpage
+
+## Key Variable Means (7-Country Comparison)
+
+```{r means-table}
+#| label: tbl-means-7countries
+#| tbl-cap: "Key Variable Means Across Seven Countries"
+
+ab_v2 %>%
+  group_by(country_name) %>%
+  summarise(
+    N = n(),
+    `Trust Index` = round(mean(institutional_trust_index, na.rm = TRUE), 2),
+    `Dem. Satisfaction` = round(mean(dem_satisfaction_index, na.rm = TRUE), 2),
+    `Dem. Legitimacy` = round(mean(dem_legitimacy_index, na.rm = TRUE), 2),
+    `Auth. Acceptance` = round(mean(auth_acceptance, na.rm = TRUE), 2),
+    `Emergency Powers` = round(mean(emergency_powers_support, na.rm = TRUE), 2)
+  ) %>%
+  gt() %>%
+  tab_header(
+    title = "Mean Values: Key Political Attitudes",
+    subtitle = "7-Country Comparison (Scales: 1-4 or 0-1 normalized)"
+  ) %>%
+  cols_label(
+    country_name = "Country"
+  ) %>%
+  fmt_number(
+    columns = N,
+    decimals = 0,
+    use_seps = TRUE
+  ) %>%
+  tab_source_note(
+    source_note = "Note: Trust Index = mean of 9 institutional trust items. Dem. Satisfaction/Legitimacy are 0-1 normalized indices. Higher values indicate greater trust, satisfaction, or acceptance."
+  ) %>%
+  format_wide_gt()
+```
+
+## Regime Type Classification
+
+```{r regime-table}
+#| label: tbl-regime-classification
+#| tbl-cap: "Regime Type Classifications (V-Dem 2022)"
+
+# Create regime classification table
+tibble(
+  Country = c("Cambodia", "Indonesia", "South Korea", "Philippines", "Taiwan", "Thailand", "Vietnam"),
+  `Regime Type` = c(
+    "Autocracy",
+    "Electoral Democracy",
+    "Liberal Democracy",
+    "Electoral Democracy",
+    "Liberal Democracy",
+    "Electoral Autocracy",
+    "Autocracy"
+  ),
+  `Electoral Democracy Index` = c(0.22, 0.55, 0.77, 0.54, 0.78, 0.41, 0.08),
+  `Civil Liberties Index` = c(0.23, 0.57, 0.74, 0.46, 0.80, 0.44, 0.12)
+) %>%
+  gt() %>%
+  tab_header(
+    title = "Regime Classifications by V-Dem",
+    subtitle = "2022 Indices (0-1 scale)"
+  ) %>%
+  fmt_number(
+    columns = c(`Electoral Democracy Index`, `Civil Liberties Index`),
+    decimals = 2
+  ) %>%
+  tab_source_note(
+    source_note = "Source: V-Dem v13 (2023). Classification based on Electoral Democracy Index: Liberal Democracy ≥0.75; Electoral Democracy 0.50-0.74; Electoral Autocracy 0.25-0.49; Autocracy <0.25."
+  ) %>%
+  format_wide_gt()
+```
+
+\newpage
+
+## Discussion
+
+The extended 7-country comparison reveals important context for the "Vietnam Paradox":
+
+**1. Infection-Approval Decoupling**
+
+Vietnam's pattern of high infections + high approval is unique. Other countries show more conventional patterns (Korea, Taiwan: low infections + moderate approval; Philippines, Indonesia: moderate infections + moderate approval).
+
+**2. Regime Type Variation**
+
+The pattern does not simply follow regime type. Taiwan and South Korea (liberal democracies) show moderate approval despite low infections, while Cambodia (autocracy) shows high approval with low infections.
+
+**3. Regional Specificity**
+
+The three original case countries (Cambodia, Thailand, Vietnam) capture substantial variation in both regime type and pandemic outcomes, making them appropriate for testing information environment theories.
+
+**4. Generalizability**
+
+The availability of these additional cases allows future research to test whether information control mechanisms identified in Vietnam operate similarly in other contexts.
+
+**5. Information Environment Hypothesis**
+
+The cross-national variation suggests that pandemic approval depends less on objective health outcomes and more on how those outcomes are communicated and interpreted within different information environments. Vietnam's high approval despite high infections supports this interpretation, particularly when contrasted with:
+
+- **Democratic cases** (Korea, Taiwan) where free media enabled critical coverage despite relatively good outcomes
+- **Other autocratic cases** (Cambodia) where controlled media accompanied genuinely better outcomes
+- **Hybrid regimes** (Thailand, Philippines) showing intermediate patterns
+
+This broader comparison strengthens the case for information control as a key mechanism of pandemic approval in authoritarian contexts.

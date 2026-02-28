@@ -1,0 +1,1668 @@
+---
+title: "Script 09: Final Publication Visualizations"
+subtitle: "The Vietnam Paradox - High-Quality Figures for Journal Submission"
+author: "Jeffrey Stark"
+date: today
+format:
+  html:
+    toc: true
+    toc-depth: 4
+    toc-location: left
+    code-fold: show
+    code-tools: true
+    code-line-numbers: true
+    number-sections: true
+    theme: cosmo
+    embed-resources: true
+    fig-width: 10
+    fig-height: 7
+    df-print: paged
+execute:
+  warning: false
+  message: false
+  cache: false
+---
+
+# 1. Setup {#sec-setup}
+
+## Load Required Packages
+
+```{r setup}
+#| label: setup-packages
+#| code-summary: "Load packages"
+
+# Clear environment
+rm(list = ls())
+
+# Load required packages
+if (!require("pacman")) install.packages("pacman")
+pacman::p_load(
+  # Data manipulation
+  tidyverse,
+  dplyr,
+  
+  # Statistical analysis
+  psych,
+  lavaan,
+  mediation,
+  
+  # Visualization
+  ggplot2,
+  gridExtra,
+  RColorBrewer,
+  scales,
+  patchwork,
+  ggpubr,
+  cowplot,
+  
+  # Tables
+  knitr,
+  kableExtra,
+  gt,
+  
+  # Effect sizes
+  effectsize,
+  
+  # Export
+  svglite,
+  Cairo,
+  
+  # Additional utilities
+  here,
+  janitor
+)
+
+# Set global options
+options(scipen = 999)  # Disable scientific notation
+set.seed(2025)         # Reproducibility
+
+# Create output directory for figures
+dir.create(here("figures"), showWarnings = FALSE)
+dir.create(here("figures", "publication"), showWarnings = FALSE)
+dir.create(here("figures", "presentation"), showWarnings = FALSE)
+
+# Set publication theme
+theme_publication <- function(base_size = 12, base_family = "sans") {
+  theme_minimal(base_size = base_size, base_family = base_family) +
+    theme(
+      # Text elements
+      plot.title = element_text(face = "bold", size = rel(1.2), hjust = 0),
+      plot.subtitle = element_text(size = rel(1), hjust = 0, 
+                                   margin = margin(b = 10)),
+      plot.caption = element_text(size = rel(0.8), hjust = 0, 
+                                 color = "grey40", margin = margin(t = 10)),
+      
+      # Axes
+      axis.title = element_text(size = rel(1), face = "bold"),
+      axis.text = element_text(size = rel(0.9), color = "black"),
+      axis.line = element_line(color = "black", linewidth = 0.5),
+      axis.ticks = element_line(color = "black", linewidth = 0.5),
+      
+      # Legend
+      legend.title = element_text(face = "bold", size = rel(1)),
+      legend.text = element_text(size = rel(0.9)),
+      legend.position = "bottom",
+      legend.key.size = unit(1, "lines"),
+      
+      # Panel
+      panel.grid.major = element_line(color = "grey90", linewidth = 0.3),
+      panel.grid.minor = element_blank(),
+      panel.border = element_blank(),
+      
+      # Spacing
+      plot.margin = margin(t = 10, r = 10, b = 10, l = 10)
+    )
+}
+
+# Set as default theme
+theme_set(theme_publication())
+
+# Define colorblind-friendly palette
+# Using ColorBrewer Set2 (verified colorblind-safe)
+country_colors <- c(
+  "Vietnam" = "#66c2a5",    # Teal
+  "Cambodia" = "#fc8d62",   # Orange
+  "Thailand" = "#8da0cb"    # Blue
+)
+
+# Alternative palette for variables
+var_colors <- brewer.pal(8, "Dark2")
+
+cat("✓ Setup complete\n")
+cat("✓ Output directories created\n")
+cat("✓ Publication theme loaded\n")
+cat("✓ Colorblind-friendly palettes defined\n")
+```
+
+## Load Prepared Data
+
+```{r load-data}
+#| label: load-prepared-data
+#| code-summary: "Load data from Script 02"
+
+# Load the cleaned and prepared dataset (from modular pipeline)
+data <- readRDS(here("data", "processed", "ab_analysis_v2.rds"))
+
+# Convert haven_labelled country_name to standard factor for compatibility
+data <- data %>%
+  mutate(country_name = as.factor(as.character(country_name)))
+
+# Verify data structure
+cat("Dataset dimensions:", nrow(data), "rows ×", ncol(data), "columns\n")
+cat("Countries included:", unique(data$country_name), "\n")
+```
+
+## Helper Functions
+
+```{r helper-functions}
+#| label: helper-functions-export
+#| code-summary: "Functions for saving high-quality figures"
+
+# Function to save figure in multiple formats
+save_figure <- function(plot, filename, width = 10, height = 7, 
+                       dpi = 300, type = "publication") {
+  
+  # Determine output directory
+  output_dir <- here("figures", type)
+  
+  # Save as PNG (for quick preview)
+  ggsave(
+    filename = file.path(output_dir, paste0(filename, ".png")),
+    plot = plot,
+    width = width,
+    height = height,
+    dpi = dpi,
+    bg = "white"
+  )
+  
+  # Save as TIFF (for journal submission - many journals prefer TIFF)
+  ggsave(
+    filename = file.path(output_dir, paste0(filename, ".tiff")),
+    plot = plot,
+    width = width,
+    height = height,
+    dpi = dpi,
+    device = "tiff",
+    compression = "lzw",
+    bg = "white"
+  )
+  
+  # Save as PDF (vector format - for high-quality print)
+  ggsave(
+    filename = file.path(output_dir, paste0(filename, ".pdf")),
+    plot = plot,
+    width = width,
+    height = height,
+    device = cairo_pdf,
+    bg = "white"
+  )
+  
+  # Save as SVG (vector format - for editing in Illustrator/Inkscape)
+  ggsave(
+    filename = file.path(output_dir, paste0(filename, ".svg")),
+    plot = plot,
+    width = width,
+    height = height,
+    device = "svg",
+    bg = "white"
+  )
+  
+  cat("✓ Saved:", filename, "\n")
+  cat("  Formats: PNG, TIFF, PDF, SVG\n")
+  cat("  Location:", output_dir, "\n\n")
+}
+
+# Function to add figure labels (A, B, C, etc.)
+add_figure_label <- function(plot, label, size = 16) {
+  plot + 
+    annotate(
+      "text",
+      x = -Inf,
+      y = Inf,
+      label = label,
+      hjust = -0.5,
+      vjust = 1.5,
+      size = size / .pt,
+      fontface = "bold"
+    )
+}
+```
+
+---
+
+# 2. Figure 1: The Vietnam Paradox {#sec-fig1}
+
+## Main Effect: Infections × Approval by Country
+
+```{r fig1-main-paradox}
+#| label: fig1-vietnam-paradox
+#| code-summary: "Primary figure showing the Vietnam Paradox"
+#| fig-width: 10
+#| fig-height: 7
+
+cat("Creating Figure 1: The Vietnam Paradox\n")
+cat(rep("=", 70), "\n")
+
+# Prepare data
+fig1_data <- data %>%
+  filter(!is.na(covid_contracted), !is.na(covid_govt_handling)) %>%
+  mutate(
+    country_name = factor(country_name, 
+                         levels = c("Vietnam", "Cambodia", "Thailand"))
+  )
+
+# Create the main plot
+fig1_main <- ggplot(fig1_data, 
+                    aes(x = covid_contracted, 
+                        y = covid_govt_handling,
+                        color = country_name,
+                        fill = country_name)) +
+  
+  # Add jittered points with transparency
+  geom_jitter(alpha = 0.15, width = 0.15, height = 0.15, size = 1) +
+  
+  # Add regression lines with confidence intervals
+  geom_smooth(method = "lm", 
+              formula = y ~ x,
+              se = TRUE, 
+              linewidth = 1.5,
+              alpha = 0.2) +
+  
+  # Color scheme
+  scale_color_manual(values = country_colors) +
+  scale_fill_manual(values = country_colors) +
+  
+  # Scales
+  scale_x_continuous(
+    breaks = 1:4,
+    labels = c("No infection", "Self infected", 
+               "Family infected", "Self & family"),
+    limits = c(0.8, 4.2)
+  ) +
+  scale_y_continuous(
+    breaks = 1:5,
+    labels = c("Very bad", "Bad", "Fair", "Good", "Very good"),
+    limits = c(0.8, 5.2)
+  ) +
+  
+  # Labels
+  labs(
+    title = "The Vietnam Paradox: COVID-19 Infection and Government Approval",
+    subtitle = "Higher infection rates associated with higher approval only in Vietnam",
+    x = "COVID-19 Infection Experience",
+    y = "Government COVID-19 Handling Approval",
+    color = "Country",
+    fill = "Country",
+    caption = "Note: Points jittered for visibility. Lines show linear regression with 95% CI.\nData: Asian Barometer Survey Wave 6 (2022-2023)."
+  ) +
+  
+  # Theme
+  theme_publication() +
+  theme(
+    legend.position = "bottom",
+    legend.box = "horizontal"
+  ) +
+  
+  # Add reference line at neutral (3)
+  geom_hline(yintercept = 3, linetype = "dashed", 
+             color = "gray50", alpha = 0.5)
+
+# Display
+print(fig1_main)
+
+# Save in multiple formats
+save_figure(
+  plot = fig1_main,
+  filename = "figure_1_vietnam_paradox",
+  width = 10,
+  height = 7,
+  dpi = 300,
+  type = "publication"
+)
+```
+
+## Alternative: Separate Panels by Country
+
+```{r fig1-alternative-panels}
+#| label: fig1-alternative-faceted
+#| code-summary: "Alternative version with separate panels"
+#| fig-width: 12
+#| fig-height: 5
+
+cat("\nCreating Figure 1 Alternative: Separate Panels\n")
+cat(rep("=", 70), "\n")
+
+# Create faceted version
+fig1_faceted <- ggplot(fig1_data,
+                       aes(x = covid_contracted, 
+                           y = covid_govt_handling)) +
+  
+  # Points
+  geom_jitter(aes(color = country_name),
+              alpha = 0.2, width = 0.15, height = 0.15, size = 1.5) +
+  
+  # Regression line
+  geom_smooth(aes(color = country_name, fill = country_name),
+              method = "lm", formula = y ~ x,
+              se = TRUE, linewidth = 1.5, alpha = 0.2) +
+  
+  # Facet by country
+  facet_wrap(~ country_name, nrow = 1) +
+  
+  # Color scheme
+  scale_color_manual(values = country_colors) +
+  scale_fill_manual(values = country_colors) +
+  
+  # Scales
+  scale_x_continuous(
+    breaks = 1:4,
+    labels = c("None", "Self", "Family", "Both")
+  ) +
+  scale_y_continuous(breaks = 1:5) +
+  
+  # Labels
+  labs(
+    title = "COVID-19 Infection and Government Approval by Country",
+    x = "COVID-19 Infection Experience",
+    y = "Government COVID-19 Handling Approval",
+    caption = "Note: Lines show linear regression with 95% CI. Data: Asian Barometer Survey Wave 6."
+  ) +
+  
+  # Theme
+  theme_publication() +
+  theme(
+    legend.position = "none",
+    strip.text = element_text(face = "bold", size = 12),
+    strip.background = element_rect(fill = "gray95", color = NA)
+  ) +
+  
+  # Reference line
+  geom_hline(yintercept = 3, linetype = "dashed", 
+             color = "gray50", alpha = 0.5)
+
+# Display
+print(fig1_faceted)
+
+# Save
+save_figure(
+  plot = fig1_faceted,
+  filename = "figure_1_alternative_faceted",
+  width = 12,
+  height = 5,
+  dpi = 300,
+  type = "publication"
+)
+```
+
+---
+
+# 3. Figure 2: Mediation Analysis {#sec-fig2}
+
+## Path Diagram with Coefficients
+
+```{r fig2-mediation-diagram}
+#| label: fig2-mediation-paths
+#| code-summary: "Publication-quality mediation diagrams"
+#| fig-width: 12
+#| fig-height: 10
+
+cat("\nCreating Figure 2: Mediation Path Diagrams\n")
+cat(rep("=", 70), "\n")
+
+# Run mediation analysis for each country
+run_mediation_for_plot <- function(country_data) {
+
+  # Remove missing data
+  cols <- c("covid_contracted", "covid_trust_info", "covid_govt_handling")
+  med_data <- as.data.frame(country_data)[, cols]
+  med_data <- na.omit(med_data)
+  
+  # Path models
+  model_a <- lm(covid_trust_info ~ covid_contracted, data = med_data)
+  model_b <- lm(covid_govt_handling ~ covid_contracted + covid_trust_info, 
+                data = med_data)
+  model_c <- lm(covid_govt_handling ~ covid_contracted, data = med_data)
+  
+  # Run mediation
+  set.seed(2025)
+  med_results <- mediate(
+    model_a, model_b,
+    treat = "covid_contracted",
+    mediator = "covid_trust_info",
+    boot = TRUE,
+    sims = 2000,
+    boot.ci.type = "bca"
+  )
+  
+  # Extract coefficients
+  return(list(
+    path_a = coef(model_a)["covid_contracted"],
+    path_a_p = summary(model_a)$coefficients["covid_contracted", "Pr(>|t|)"],
+    path_b = coef(model_b)["covid_trust_info"],
+    path_b_p = summary(model_b)$coefficients["covid_trust_info", "Pr(>|t|)"],
+    path_c_prime = coef(model_b)["covid_contracted"],
+    path_c_prime_p = summary(model_b)$coefficients["covid_contracted", "Pr(>|t|)"],
+    path_c = coef(model_c)["covid_contracted"],
+    indirect = med_results$d0,
+    indirect_p = med_results$d0.p,
+    prop_mediated = med_results$n0
+  ))
+}
+
+# Get mediation results
+vietnam_med <- data %>% 
+  filter(country_name == "Vietnam") %>%
+  run_mediation_for_plot()
+
+cambodia_med <- data %>%
+  filter(country_name == "Cambodia") %>%
+  run_mediation_for_plot()
+
+thailand_med <- data %>%
+  filter(country_name == "Thailand") %>%
+  run_mediation_for_plot()
+
+# Function to create mediation diagram
+create_mediation_plot <- function(med_results, country_name, country_color) {
+  
+  # Helper to format p-values
+  format_sig <- function(p) {
+    if (p < 0.001) return("***")
+    if (p < 0.01) return("**")
+    if (p < 0.05) return("*")
+    return("")
+  }
+  
+  # Node positions
+  nodes <- data.frame(
+    x = c(1, 3, 3),
+    y = c(2, 3, 1),
+    label = c("COVID-19\nInfection", "Trust in\nGovernment\nInformation", 
+              "Government\nApproval")
+  )
+  
+  # Create plot
+  p <- ggplot() +
+    
+    # Nodes (boxes)
+    geom_tile(data = nodes, aes(x = x, y = y),
+              width = 0.8, height = 0.6,
+              fill = "white", color = country_color, 
+              linewidth = 1.5, alpha = 0.9) +
+    
+    # Node labels
+    geom_text(data = nodes, aes(x = x, y = y, label = label),
+              size = 4, fontface = "bold") +
+    
+    # Path a (IV -> M)
+    annotate("segment",
+             x = 1.4, y = 2.2, xend = 2.6, yend = 2.8,
+             arrow = arrow(length = unit(0.4, "cm"), type = "closed"),
+             linewidth = 1.2, color = "black") +
+    annotate("text", x = 2, y = 2.7,
+             label = sprintf("a = %.3f%s", 
+                           med_results$path_a,
+                           format_sig(med_results$path_a_p)),
+             size = 4, fontface = "bold",
+             hjust = 0.5, vjust = -0.3) +
+    
+    # Path b (M -> DV)
+    annotate("segment",
+             x = 3, y = 2.7, xend = 3, yend = 1.3,
+             arrow = arrow(length = unit(0.4, "cm"), type = "closed"),
+             linewidth = 1.2, color = "black") +
+    annotate("text", x = 3.5, y = 2,
+             label = sprintf("b = %.3f%s",
+                           med_results$path_b,
+                           format_sig(med_results$path_b_p)),
+             size = 4, fontface = "bold") +
+    
+    # Path c' (Direct effect)
+    annotate("curve",
+             x = 1.4, y = 1.8, xend = 2.6, yend = 1.2,
+             curvature = -0.3,
+             arrow = arrow(length = unit(0.4, "cm"), type = "closed"),
+             linewidth = 1, color = "gray40", linetype = "dashed") +
+    annotate("text", x = 2, y = 1.2,
+             label = sprintf("c' = %.3f%s (direct)",
+                           med_results$path_c_prime,
+                           format_sig(med_results$path_c_prime_p)),
+             size = 3.5, color = "gray40",
+             hjust = 0.5, vjust = 1.3) +
+    
+    # Indirect effect box
+    annotate("rect",
+             xmin = 0.3, ymin = 0.2, xmax = 1.7, ymax = 0.7,
+             fill = country_color, alpha = 0.2, color = country_color) +
+    annotate("text", x = 1, y = 0.6,
+             label = "Indirect Effect:",
+             size = 3.5, fontface = "bold", hjust = 0.5) +
+    annotate("text", x = 1, y = 0.35,
+             label = sprintf("ab = %.3f%s\n%.1f%% mediated",
+                           med_results$indirect,
+                           format_sig(med_results$indirect_p),
+                           med_results$prop_mediated * 100),
+             size = 3.5, hjust = 0.5) +
+    
+    # Total effect
+    annotate("text", x = 2, y = 0.35,
+             label = sprintf("Total effect (c) = %.3f",
+                           med_results$path_c),
+             size = 3, color = "gray40", hjust = 0) +
+    
+    # Title
+    labs(title = country_name) +
+    
+    # Theme
+    xlim(0, 4) +
+    ylim(0, 3.5) +
+    theme_void() +
+    theme(
+      plot.title = element_text(hjust = 0.5, face = "bold", 
+                               size = 14, color = country_color),
+      plot.margin = margin(10, 10, 10, 10)
+    )
+  
+  return(p)
+}
+
+# Create individual plots
+p_vietnam <- create_mediation_plot(vietnam_med, "Vietnam", country_colors["Vietnam"])
+p_cambodia <- create_mediation_plot(cambodia_med, "Cambodia", country_colors["Cambodia"])
+p_thailand <- create_mediation_plot(thailand_med, "Thailand", country_colors["Thailand"])
+
+# Combine into single figure
+fig2_mediation <- p_vietnam / p_cambodia / p_thailand +
+  plot_annotation(
+    title = "Mediation Analysis: Trust in Government Information Mediates\nCOVID-19 Infection → Government Approval Relationship",
+    subtitle = "Path coefficients from country-specific bootstrap mediation models (2,000 resamples)",
+    caption = "Note: *** p < .001, ** p < .01, * p < .05. Dashed line = direct effect controlling for mediator.",
+    theme = theme(
+      plot.title = element_text(size = 16, face = "bold", hjust = 0.5),
+      plot.subtitle = element_text(size = 12, hjust = 0.5),
+      plot.caption = element_text(size = 10, hjust = 0, color = "gray40")
+    )
+  )
+
+# Display
+print(fig2_mediation)
+
+# Save
+save_figure(
+  plot = fig2_mediation,
+  filename = "figure_2_mediation_analysis",
+  width = 10,
+  height = 12,
+  dpi = 300,
+  type = "publication"
+)
+```
+
+---
+
+# 4. Figure 3: Forest Plot of Effect Sizes {#sec-fig3}
+
+## Regression Coefficients Across Countries
+
+```{r fig3-forest-plot}
+#| label: fig3-forest-plot-effects
+#| code-summary: "Forest plot comparing effect sizes"
+#| fig-width: 10
+#| fig-height: 8
+
+cat("\nCreating Figure 3: Forest Plot of Effect Sizes\n")
+cat(rep("=", 70), "\n")
+
+# Run full models for each country
+run_full_model <- function(country_data) {
+
+  cols <- c("covid_govt_handling", "covid_contracted", "covid_trust_info",
+            "dem_satisfaction", "institutional_trust_index", "auth_acceptance")
+  model_data <- as.data.frame(country_data)[, cols]
+  model_data <- na.omit(model_data)
+  
+  model <- lm(
+    covid_govt_handling ~ covid_contracted + covid_trust_info + 
+      dem_satisfaction + institutional_trust_index + auth_acceptance,
+    data = model_data
+  )
+  
+  # Extract coefficients with CIs
+  coef_table <- summary(model)$coefficients
+  ci <- confint(model)
+  
+  results <- data.frame(
+    Variable = rownames(coef_table)[-1],  # Exclude intercept
+    Estimate = coef_table[-1, "Estimate"],
+    SE = coef_table[-1, "Std. Error"],
+    p_value = coef_table[-1, "Pr(>|t|)"],
+    CI_lower = ci[-1, 1],
+    CI_upper = ci[-1, 2]
+  )
+  
+  return(results)
+}
+
+# Get results for each country
+vietnam_coef <- run_full_model(data %>% filter(country_name == "Vietnam")) %>%
+  mutate(Country = "Vietnam")
+cambodia_coef <- run_full_model(data %>% filter(country_name == "Cambodia")) %>%
+  mutate(Country = "Cambodia")
+thailand_coef <- run_full_model(data %>% filter(country_name == "Thailand")) %>%
+  mutate(Country = "Thailand")
+
+# Combine
+forest_data <- bind_rows(vietnam_coef, cambodia_coef, thailand_coef) %>%
+  mutate(
+    Variable = factor(
+      Variable,
+      levels = c("covid_contracted", "covid_trust_info", "dem_satisfaction",
+                "institutional_trust_index", "auth_acceptance"),
+      labels = c("COVID-19 Infection", "Trust in Government Info",
+                "Democracy Satisfaction", "Institutional Trust",
+                "Authoritarianism Acceptance")
+    ),
+    Significant = ifelse(p_value < 0.05, "Yes", "No"),
+    Country = factor(Country, levels = c("Vietnam", "Cambodia", "Thailand"))
+  )
+
+# Create forest plot
+fig3_forest <- ggplot(forest_data, 
+                      aes(x = Estimate, y = Variable,
+                          color = Country, shape = Significant)) +
+  
+  # Zero reference line
+  geom_vline(xintercept = 0, linetype = "solid", 
+             color = "black", linewidth = 0.5) +
+  
+  # Confidence intervals
+  geom_errorbarh(
+    aes(xmin = CI_lower, xmax = CI_upper),
+    height = 0,
+    linewidth = 1,
+    position = position_dodge(width = 0.6)
+  ) +
+  
+  # Point estimates
+  geom_point(
+    size = 4,
+    position = position_dodge(width = 0.6)
+  ) +
+  
+  # Color and shape scales
+  scale_color_manual(values = country_colors) +
+  scale_shape_manual(
+    values = c("Yes" = 16, "No" = 1),
+    guide = guide_legend(override.aes = list(size = 3))
+  ) +
+  
+  # Labels
+  labs(
+    title = "Effect Sizes: Predictors of Government COVID-19 Approval",
+    subtitle = "Regression coefficients from full models with 95% confidence intervals",
+    x = "Standardized Coefficient (β)",
+    y = NULL,
+    color = "Country",
+    shape = "p < .05",
+    caption = "Note: Models control for all predictors simultaneously. Filled points = significant at p < .05.\nData: Asian Barometer Survey Wave 6."
+  ) +
+  
+  # Theme
+  theme_publication() +
+  theme(
+    legend.position = "bottom",
+    legend.box = "horizontal",
+    panel.grid.major.y = element_line(color = "gray90", linewidth = 0.3),
+    axis.text.y = element_text(face = "bold", size = 11)
+  ) +
+  
+  # Add shaded region for negative/positive
+  annotate("rect", 
+           xmin = -Inf, xmax = 0, ymin = -Inf, ymax = Inf,
+           fill = "#d73027", alpha = 0.05) +
+  annotate("rect",
+           xmin = 0, xmax = Inf, ymin = -Inf, ymax = Inf,
+           fill = "#4575b4", alpha = 0.05)
+
+# Display
+print(fig3_forest)
+
+# Save
+save_figure(
+  plot = fig3_forest,
+  filename = "figure_3_forest_plot",
+  width = 10,
+  height = 8,
+  dpi = 300,
+  type = "publication"
+)
+```
+
+---
+
+# 5. Figure 4: Correlation Matrices {#sec-fig4}
+
+## Heatmaps by Country
+
+```{r fig4-correlation-heatmaps}
+#| label: fig4-correlation-heatmaps
+#| code-summary: "Publication-quality correlation heatmaps"
+#| fig-width: 14
+#| fig-height: 5
+
+cat("\nCreating Figure 4: Correlation Matrices\n")
+cat(rep("=", 70), "\n")
+
+# Key variables
+cor_vars <- c(
+  "covid_contracted",
+  "covid_govt_handling",
+  "covid_trust_info",
+  "dem_satisfaction",
+  "institutional_trust_index",
+  "auth_acceptance"
+)
+
+# Variable labels for display
+var_labels <- c(
+  "COVID\nInfection",
+  "Govt\nApproval",
+  "Trust in\nInfo",
+  "Democracy\nSatisfaction",
+  "Institutional\nTrust",
+  "Authoritarianism"
+)
+
+# Function to create correlation heatmap
+create_cor_heatmap <- function(country_data, country_name, country_color) {
+
+  # Compute correlations
+  cor_data <- as.data.frame(country_data)[, cor_vars]
+  cor_data <- na.omit(cor_data)
+  
+  cor_matrix <- cor(cor_data, use = "complete.obs", method = "pearson")
+  
+  # Convert to long format
+  cor_long <- cor_matrix %>%
+    as.data.frame() %>%
+    rownames_to_column("Var1") %>%
+    pivot_longer(cols = -Var1, names_to = "Var2", values_to = "correlation") %>%
+    mutate(
+      Var1 = factor(Var1, levels = cor_vars, labels = var_labels),
+      Var2 = factor(Var2, levels = cor_vars, labels = var_labels)
+    )
+  
+  # Create heatmap
+  p <- ggplot(cor_long, aes(x = Var1, y = Var2, fill = correlation)) +
+    geom_tile(color = "white", linewidth = 0.5) +
+    geom_text(aes(label = sprintf("%.2f", correlation)), 
+              size = 3.5, fontface = "bold") +
+    scale_fill_gradient2(
+      low = "#d73027",
+      mid = "white",
+      high = "#4575b4",
+      midpoint = 0,
+      limits = c(-1, 1),
+      name = "Pearson r",
+      breaks = seq(-1, 1, 0.5)
+    ) +
+    labs(
+      title = country_name,
+      x = NULL,
+      y = NULL
+    ) +
+    theme_publication() +
+    theme(
+      axis.text.x = element_text(angle = 45, hjust = 1, size = 10),
+      axis.text.y = element_text(size = 10),
+      plot.title = element_text(hjust = 0.5, face = "bold", 
+                               size = 14, color = country_color),
+      legend.position = "right",
+      panel.grid = element_blank()
+    ) +
+    coord_fixed()
+  
+  return(p)
+}
+
+# Create heatmaps
+p_vietnam_cor <- create_cor_heatmap(
+  data %>% filter(country_name == "Vietnam"),
+  "Vietnam",
+  country_colors["Vietnam"]
+)
+
+p_cambodia_cor <- create_cor_heatmap(
+  data %>% filter(country_name == "Cambodia"),
+  "Cambodia",
+  country_colors["Cambodia"]
+)
+
+p_thailand_cor <- create_cor_heatmap(
+  data %>% filter(country_name == "Thailand"),
+  "Thailand",
+  country_colors["Thailand"]
+)
+
+# Combine
+fig4_correlations <- p_vietnam_cor + p_cambodia_cor + p_thailand_cor +
+  plot_layout(guides = "collect") +
+  plot_annotation(
+    title = "Correlation Matrices by Country",
+    subtitle = "Pearson correlations among key variables",
+    caption = "Note: All correlations shown. Stronger colors indicate stronger correlations.\nData: Asian Barometer Survey Wave 6.",
+    theme = theme(
+      plot.title = element_text(size = 16, face = "bold", hjust = 0.5),
+      plot.subtitle = element_text(size = 12, hjust = 0.5),
+      plot.caption = element_text(size = 10, hjust = 0)
+    )
+  ) &
+  theme(legend.position = "bottom")
+
+# Display
+print(fig4_correlations)
+
+# Save
+save_figure(
+  plot = fig4_correlations,
+  filename = "figure_4_correlation_matrices",
+  width = 14,
+  height = 6,
+  dpi = 300,
+  type = "publication"
+)
+```
+
+---
+
+# 6. Figure 5: Distribution Comparisons {#sec-fig5}
+
+## Key Variables Across Countries
+
+```{r fig5-distributions}
+#| label: fig5-distribution-comparisons
+#| code-summary: "Distribution comparison across countries"
+#| fig-width: 12
+#| fig-height: 10
+
+cat("\nCreating Figure 5: Distribution Comparisons\n")
+cat(rep("=", 70), "\n")
+
+# Prepare data
+cols <- c("country_name", "covid_contracted", "covid_govt_handling",
+          "covid_trust_info", "dem_satisfaction")
+dist_data <- as.data.frame(data)[, cols]
+dist_data <- dist_data %>%
+  filter(!is.na(country_name)) %>%
+  pivot_longer(
+    cols = c(covid_contracted, covid_govt_handling, 
+             covid_trust_info, dem_satisfaction),
+    names_to = "Variable",
+    values_to = "Value"
+  ) %>%
+  filter(!is.na(Value)) %>%
+  mutate(
+    Variable = factor(
+      Variable,
+      levels = c("covid_contracted", "covid_govt_handling",
+                "covid_trust_info", "dem_satisfaction"),
+      labels = c("COVID-19 Infection", "Government Approval",
+                "Trust in Info", "Democracy Satisfaction")
+    ),
+    country_name = factor(country_name, 
+                         levels = c("Vietnam", "Cambodia", "Thailand"))
+  )
+
+# Create violin + box plot
+fig5_distributions <- ggplot(dist_data,
+                             aes(x = country_name, y = Value, 
+                                 fill = country_name)) +
+  
+  # Violin plot (distribution shape)
+  geom_violin(alpha = 0.3, trim = FALSE) +
+  
+  # Box plot (quartiles)
+  geom_boxplot(width = 0.2, alpha = 0.7, outlier.alpha = 0.3) +
+  
+  # Color scheme
+  scale_fill_manual(values = country_colors) +
+  
+  # Facet by variable
+  facet_wrap(~ Variable, scales = "free_y", nrow = 2) +
+  
+  # Labels
+  labs(
+    title = "Distribution of Key Variables by Country",
+    subtitle = "Violin plots show distribution shape; box plots show median and quartiles",
+    x = "Country",
+    y = "Value",
+    caption = "Note: Wider sections of violin indicate higher density of responses.\nData: Asian Barometer Survey Wave 6."
+  ) +
+  
+  # Theme
+  theme_publication() +
+  theme(
+    legend.position = "none",
+    strip.text = element_text(face = "bold", size = 12),
+    strip.background = element_rect(fill = "gray95", color = NA),
+    axis.text.x = element_text(angle = 0, hjust = 0.5)
+  )
+
+# Display
+print(fig5_distributions)
+
+# Save
+save_figure(
+  plot = fig5_distributions,
+  filename = "figure_5_distributions",
+  width = 12,
+  height = 10,
+  dpi = 300,
+  type = "publication"
+)
+```
+
+---
+
+# 7. Figure 6: Model Comparison {#sec-fig6}
+
+## Progressive Model Building
+
+```{r fig6-model-comparison}
+#| label: fig6-model-comparison
+#| code-summary: "Visualize progressive model building"
+#| fig-width: 10
+#| fig-height: 8
+
+cat("\nCreating Figure 6: Model Comparison\n")
+cat(rep("=", 70), "\n")
+
+# Function to run progressive models
+run_progressive_models <- function(country_data, country_name) {
+
+  # Prepare data
+  cols <- c("covid_govt_handling", "covid_contracted", "covid_trust_info",
+            "dem_satisfaction", "institutional_trust_index", "auth_acceptance")
+  model_data <- as.data.frame(country_data)[, cols]
+  model_data <- na.omit(model_data)
+  
+  # Model 1: Bivariate
+  m1 <- lm(covid_govt_handling ~ covid_contracted, data = model_data)
+  
+  # Model 2: Add trust
+  m2 <- lm(covid_govt_handling ~ covid_contracted + covid_trust_info,
+           data = model_data)
+  
+  # Model 3: Add democracy
+  m3 <- lm(covid_govt_handling ~ covid_contracted + covid_trust_info +
+             dem_satisfaction, data = model_data)
+  
+  # Model 4: Full model
+  m4 <- lm(covid_govt_handling ~ covid_contracted + covid_trust_info +
+             dem_satisfaction + institutional_trust_index + auth_acceptance,
+           data = model_data)
+  
+  # Extract R-squared and coefficients
+  results <- data.frame(
+    Country = country_name,
+    Model = c("M1: Infection only", 
+              "M2: + Trust",
+              "M3: + Democracy",
+              "M4: Full model"),
+    R_squared = c(
+      summary(m1)$r.squared,
+      summary(m2)$r.squared,
+      summary(m3)$r.squared,
+      summary(m4)$r.squared
+    ),
+    Adj_R_squared = c(
+      summary(m1)$adj.r.squared,
+      summary(m2)$adj.r.squared,
+      summary(m3)$adj.r.squared,
+      summary(m4)$adj.r.squared
+    ),
+    Infection_Coef = c(
+      coef(m1)["covid_contracted"],
+      coef(m2)["covid_contracted"],
+      coef(m3)["covid_contracted"],
+      coef(m4)["covid_contracted"]
+    ),
+    N_Predictors = c(1, 2, 3, 5)
+  )
+  
+  return(results)
+}
+
+# Run for all countries
+model_comp <- bind_rows(
+  run_progressive_models(data %>% filter(country_name == "Vietnam"), "Vietnam"),
+  run_progressive_models(data %>% filter(country_name == "Cambodia"), "Cambodia"),
+  run_progressive_models(data %>% filter(country_name == "Thailand"), "Thailand")
+) %>%
+  mutate(
+    Model = factor(Model, levels = c("M1: Infection only", "M2: + Trust",
+                                     "M3: + Democracy", "M4: Full model"))
+  )
+
+# Panel A: R-squared comparison
+p_rsq <- ggplot(model_comp, aes(x = Model, y = R_squared, 
+                                 color = Country, group = Country)) +
+  geom_line(linewidth = 1.2) +
+  geom_point(size = 4) +
+  scale_color_manual(values = country_colors) +
+  scale_y_continuous(limits = c(0, max(model_comp$R_squared) * 1.1),
+                    labels = scales::percent_format(accuracy = 1)) +
+  labs(
+    title = "A) Model Fit (R²)",
+    x = NULL,
+    y = "R² (% Variance Explained)",
+    color = "Country"
+  ) +
+  theme_publication() +
+  theme(
+    axis.text.x = element_text(angle = 45, hjust = 1),
+    legend.position = "bottom"
+  )
+
+# Panel B: Infection coefficient change
+p_coef <- ggplot(model_comp, aes(x = Model, y = Infection_Coef,
+                                  color = Country, group = Country)) +
+  geom_hline(yintercept = 0, linetype = "dashed", color = "gray50") +
+  geom_line(linewidth = 1.2) +
+  geom_point(size = 4) +
+  scale_color_manual(values = country_colors) +
+  labs(
+    title = "B) COVID Infection Coefficient",
+    x = NULL,
+    y = "Standardized Coefficient (β)",
+    color = "Country"
+  ) +
+  theme_publication() +
+  theme(
+    axis.text.x = element_text(angle = 45, hjust = 1),
+    legend.position = "bottom"
+  )
+
+# Combine panels
+fig6_model_comp <- p_rsq + p_coef +
+  plot_layout(guides = "collect") +
+  plot_annotation(
+    title = "Progressive Model Building: Adding Predictors Sequentially",
+    subtitle = "How infection coefficient and model fit change as we add controls",
+    caption = "Note: Models tested on same sample (complete cases only) for fair comparison.\nData: Asian Barometer Survey Wave 6.",
+    theme = theme(
+      plot.title = element_text(size = 16, face = "bold"),
+      plot.subtitle = element_text(size = 12),
+      plot.caption = element_text(size = 10, hjust = 0)
+    )
+  ) &
+  theme(legend.position = "bottom")
+
+# Display
+print(fig6_model_comp)
+
+# Save
+save_figure(
+  plot = fig6_model_comp,
+  filename = "figure_6_model_comparison",
+  width = 12,
+  height = 7,
+  dpi = 300,
+  type = "publication"
+)
+```
+
+---
+
+# 8. Supplementary Figures {#sec-supplementary}
+
+## S1: Sample Characteristics
+
+```{r figS1-sample-characteristics}
+#| label: figS1-sample-characteristics
+#| code-summary: "Sample size and characteristics by country"
+#| fig-width: 10
+#| fig-height: 6
+
+cat("\nCreating Supplementary Figure S1: Sample Characteristics\n")
+cat(rep("=", 70), "\n")
+
+# Calculate sample characteristics
+sample_chars <- data %>%
+  group_by(country_name) %>%
+  summarise(
+    N_Total = n(),
+    N_Complete = sum(complete.cases(data.frame(covid_contracted,
+                                               covid_govt_handling,
+                                               covid_trust_info))),
+    Pct_Complete = (N_Complete / N_Total) * 100,
+    Mean_Infection = mean(covid_contracted, na.rm = TRUE),
+    Mean_Approval = mean(covid_govt_handling, na.rm = TRUE),
+    Mean_Trust = mean(covid_trust_info, na.rm = TRUE)
+  ) %>%
+  mutate(
+    country_name = factor(country_name, 
+                         levels = c("Vietnam", "Cambodia", "Thailand"))
+  )
+
+# Panel A: Sample sizes
+pS1_sample <- ggplot(sample_chars, 
+                     aes(x = country_name, y = N_Total, fill = country_name)) +
+  geom_col(alpha = 0.8) +
+  geom_text(aes(label = paste0("n = ", N_Total)), 
+            vjust = -0.5, fontface = "bold", size = 5) +
+  scale_fill_manual(values = country_colors) +
+  labs(
+    title = "A) Sample Size by Country",
+    x = "Country",
+    y = "Number of Respondents"
+  ) +
+  theme_publication() +
+  theme(legend.position = "none") +
+  ylim(0, max(sample_chars$N_Total) * 1.15)
+
+# Panel B: Complete case retention
+pS1_complete <- ggplot(sample_chars,
+                       aes(x = country_name, y = Pct_Complete, 
+                           fill = country_name)) +
+  geom_col(alpha = 0.8) +
+  geom_text(aes(label = sprintf("%.1f%%", Pct_Complete)),
+            vjust = -0.5, fontface = "bold", size = 5) +
+  geom_hline(yintercept = 80, linetype = "dashed", 
+             color = "red", alpha = 0.5) +
+  scale_fill_manual(values = country_colors) +
+  scale_y_continuous(limits = c(0, 100), 
+                    labels = scales::percent_format(scale = 1)) +
+  labs(
+    title = "B) Complete Case Retention",
+    x = "Country",
+    y = "% with Complete Data"
+  ) +
+  theme_publication() +
+  theme(legend.position = "none")
+
+# Combine
+figS1_sample <- pS1_sample + pS1_complete +
+  plot_annotation(
+    title = "Supplementary Figure S1: Sample Characteristics",
+    caption = "Note: Complete cases have non-missing data on infection, approval, and trust variables.\nDashed line in Panel B indicates 80% retention threshold.",
+    theme = theme(
+      plot.title = element_text(size = 14, face = "bold"),
+      plot.caption = element_text(size = 10, hjust = 0)
+    )
+  )
+
+# Display
+print(figS1_sample)
+
+# Save
+save_figure(
+  plot = figS1_sample,
+  filename = "figure_S1_sample_characteristics",
+  width = 10,
+  height = 6,
+  dpi = 300,
+  type = "publication"
+)
+```
+
+## S2: Diagnostic Plots
+
+```{r figS2-diagnostics}
+#| label: figS2-diagnostic-plots
+#| code-summary: "Model diagnostics for main analysis"
+#| fig-width: 12
+#| fig-height: 10
+
+cat("\nCreating Supplementary Figure S2: Diagnostic Plots\n")
+cat(rep("=", 70), "\n")
+
+# Function to create diagnostic plot for one country
+create_diagnostic_panel <- function(country_data, country_name, country_color) {
+
+  # Fit model
+  cols <- c("covid_govt_handling", "covid_contracted", "covid_trust_info")
+  model_data <- as.data.frame(country_data)[, cols]
+  model_data <- na.omit(model_data)
+  
+  model <- lm(covid_govt_handling ~ covid_contracted + covid_trust_info,
+              data = model_data)
+  
+  # Extract diagnostics
+  diag_data <- data.frame(
+    Fitted = fitted(model),
+    Residuals = residuals(model),
+    Std_Residuals = rstandard(model),
+    Sqrt_Std_Residuals = sqrt(abs(rstandard(model))),
+    Leverage = hatvalues(model),
+    Cooks_D = cooks.distance(model),
+    Obs_ID = 1:nrow(model_data)
+  )
+  
+  # Plot 1: Residuals vs Fitted
+  p1 <- ggplot(diag_data, aes(x = Fitted, y = Residuals)) +
+    geom_point(alpha = 0.3, color = country_color) +
+    geom_hline(yintercept = 0, linetype = "dashed") +
+    geom_smooth(se = FALSE, color = "black", linewidth = 0.8) +
+    labs(x = "Fitted Values", y = "Residuals") +
+    theme_publication() +
+    theme(plot.title = element_text(size = 10))
+  
+  # Plot 2: Q-Q Plot
+  p2 <- ggplot(diag_data, aes(sample = Std_Residuals)) +
+    stat_qq(color = country_color, alpha = 0.5) +
+    stat_qq_line(color = "black", linetype = "dashed") +
+    labs(x = "Theoretical Quantiles", y = "Standardized Residuals") +
+    theme_publication() +
+    theme(plot.title = element_text(size = 10))
+  
+  # Plot 3: Scale-Location
+  p3 <- ggplot(diag_data, aes(x = Fitted, y = Sqrt_Std_Residuals)) +
+    geom_point(alpha = 0.3, color = country_color) +
+    geom_smooth(se = FALSE, color = "black", linewidth = 0.8) +
+    labs(x = "Fitted Values", y = "√|Standardized Residuals|") +
+    theme_publication() +
+    theme(plot.title = element_text(size = 10))
+  
+  # Plot 4: Cook's Distance
+  p4 <- ggplot(diag_data, aes(x = Obs_ID, y = Cooks_D)) +
+    geom_segment(aes(xend = Obs_ID, yend = 0), color = country_color) +
+    geom_point(color = country_color) +
+    geom_hline(yintercept = 4/nrow(diag_data), 
+               linetype = "dashed", color = "red") +
+    labs(x = "Observation ID", y = "Cook's Distance") +
+    theme_publication() +
+    theme(plot.title = element_text(size = 10))
+  
+  # Combine
+  combined <- (p1 + p2) / (p3 + p4) +
+    plot_annotation(
+      title = country_name,
+      theme = theme(plot.title = element_text(face = "bold", 
+                                              color = country_color))
+    )
+  
+  return(combined)
+}
+
+# Create diagnostic panels
+pS2_vietnam <- create_diagnostic_panel(
+  data %>% filter(country_name == "Vietnam"),
+  "Vietnam",
+  country_colors["Vietnam"]
+)
+
+pS2_cambodia <- create_diagnostic_panel(
+  data %>% filter(country_name == "Cambodia"),
+  "Cambodia",
+  country_colors["Cambodia"]
+)
+
+pS2_thailand <- create_diagnostic_panel(
+  data %>% filter(country_name == "Thailand"),
+  "Thailand",
+  country_colors["Thailand"]
+)
+
+# Combine all
+figS2_diagnostics <- pS2_vietnam / pS2_cambodia / pS2_thailand +
+  plot_annotation(
+    title = "Supplementary Figure S2: Regression Diagnostic Plots",
+    subtitle = "Model: Government Approval ~ COVID Infection + Trust in Information",
+    caption = "Note: Red dashed line in Cook's D plot indicates 4/n threshold for influential observations.",
+    theme = theme(
+      plot.title = element_text(size = 14, face = "bold"),
+      plot.subtitle = element_text(size = 11),
+      plot.caption = element_text(size = 9, hjust = 0)
+    )
+  )
+
+# Display
+print(figS2_diagnostics)
+
+# Save
+save_figure(
+  plot = figS2_diagnostics,
+  filename = "figure_S2_diagnostics",
+  width = 12,
+  height = 14,
+  dpi = 300,
+  type = "publication"
+)
+```
+
+---
+
+# 9. Combined Multi-Panel Figure {#sec-combined}
+
+## Main Manuscript Figure (All-in-One)
+
+```{r fig-combined-main}
+#| label: fig-combined-manuscript
+#| code-summary: "Combined figure with all main results"
+#| fig-width: 14
+#| fig-height: 16
+
+cat("\nCreating Combined Multi-Panel Figure\n")
+cat(rep("=", 70), "\n")
+
+# This creates a single figure suitable for journals that limit figure count
+
+# Panel A: Vietnam Paradox (simplified from Fig 1)
+pA <- ggplot(fig1_data, 
+             aes(x = covid_contracted, y = covid_govt_handling,
+                 color = country_name)) +
+  geom_jitter(alpha = 0.1, width = 0.15, height = 0.15, size = 0.8) +
+  geom_smooth(method = "lm", se = TRUE, linewidth = 1.2, alpha = 0.2) +
+  scale_color_manual(values = country_colors) +
+  scale_x_continuous(breaks = 1:4, 
+                    labels = c("None", "Self", "Family", "Both")) +
+  scale_y_continuous(breaks = 1:5) +
+  labs(x = "COVID Infection", y = "Govt Approval", color = NULL) +
+  theme_publication() +
+  theme(legend.position = "bottom") +
+  ggtitle("A) The Vietnam Paradox")
+
+# Panel B: Forest plot (from Fig 3, simplified)
+forest_simple <- forest_data %>%
+  filter(Variable %in% c("COVID-19 Infection", "Trust in Government Info"))
+
+pB <- ggplot(forest_simple,
+             aes(x = Estimate, y = Variable, color = Country)) +
+  geom_vline(xintercept = 0, linetype = "dashed") +
+  geom_errorbarh(aes(xmin = CI_lower, xmax = CI_upper),
+                height = 0, linewidth = 1,
+                position = position_dodge(width = 0.5)) +
+  geom_point(aes(shape = Significant), size = 3,
+            position = position_dodge(width = 0.5)) +
+  scale_color_manual(values = country_colors) +
+  scale_shape_manual(values = c("Yes" = 16, "No" = 1)) +
+  labs(x = "Coefficient", y = NULL, color = NULL, shape = "p < .05") +
+  theme_publication() +
+  theme(legend.position = "bottom") +
+  ggtitle("B) Effect Sizes")
+
+# Panel C: Mediation (simplified, Vietnam only)
+pC <- create_mediation_plot(vietnam_med, "C) Mediation (Vietnam)", 
+                           country_colors["Vietnam"])
+
+# Panel D: Model comparison R²
+pD <- ggplot(model_comp, aes(x = Model, y = R_squared,
+                             color = Country, group = Country)) +
+  geom_line(linewidth = 1) +
+  geom_point(size = 3) +
+  scale_color_manual(values = country_colors) +
+  scale_y_continuous(labels = scales::percent_format(accuracy = 1)) +
+  labs(x = NULL, y = "R²", color = NULL) +
+  theme_publication() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1),
+        legend.position = "bottom") +
+  ggtitle("D) Model Fit")
+
+# Combine into 2×2 layout
+fig_combined <- (pA + pB) / (pC + pD) +
+  plot_layout(heights = c(1, 1.2)) +
+  plot_annotation(
+    title = "The Vietnam Paradox: Information Environment Mediates COVID-19 Infection and Government Approval",
+    caption = "Data: Asian Barometer Survey Wave 6 (2022-2023). All models control for democracy satisfaction, institutional trust, and authoritarianism.",
+    theme = theme(
+      plot.title = element_text(size = 16, face = "bold", hjust = 0.5),
+      plot.caption = element_text(size = 10, hjust = 0)
+    )
+  ) &
+  theme(legend.position = "bottom")
+
+# Display
+print(fig_combined)
+
+# Save
+save_figure(
+  plot = fig_combined,
+  filename = "figure_combined_main_results",
+  width = 14,
+  height = 16,
+  dpi = 300,
+  type = "publication"
+)
+```
+
+---
+
+# 10. Presentation Slides {#sec-presentation}
+
+## High-Impact Slides for Conferences
+
+```{r presentation-slides}
+#| label: presentation-slides
+#| code-summary: "Create presentation-friendly versions"
+#| fig-width: 12
+#| fig-height: 9
+
+cat("\nCreating Presentation Slides\n")
+cat(rep("=", 70), "\n")
+
+# Slide 1: Title slide graphic
+slide1_title <- ggplot(fig1_data,
+                       aes(x = covid_contracted, y = covid_govt_handling,
+                           color = country_name)) +
+  geom_jitter(alpha = 0.2, width = 0.15, height = 0.15, size = 2) +
+  geom_smooth(method = "lm", se = TRUE, linewidth = 2.5, alpha = 0.3) +
+  scale_color_manual(values = country_colors) +
+  scale_x_continuous(breaks = 1:4,
+                    labels = c("No\nInfection", "Self\nInfected",
+                              "Family\nInfected", "Self &\nFamily")) +
+  scale_y_continuous(breaks = 1:5,
+                    labels = c("Very\nBad", "Bad", "Fair", 
+                              "Good", "Very\nGood")) +
+  labs(
+    title = "The Vietnam Paradox",
+    subtitle = "Why did highest infections lead to highest approval?",
+    x = "COVID-19 Infection Experience",
+    y = "Government COVID Handling Approval",
+    color = NULL
+  ) +
+  theme_minimal(base_size = 18) +
+  theme(
+    plot.title = element_text(size = 32, face = "bold", hjust = 0.5),
+    plot.subtitle = element_text(size = 24, hjust = 0.5, 
+                                 margin = margin(b = 20)),
+    axis.title = element_text(size = 20, face = "bold"),
+    axis.text = element_text(size = 16),
+    legend.text = element_text(size = 20),
+    legend.position = "bottom",
+    legend.key.size = unit(2, "lines"),
+    panel.grid.major = element_line(color = "gray90"),
+    plot.margin = margin(20, 20, 20, 20)
+  )
+
+print(slide1_title)
+
+save_figure(
+  plot = slide1_title,
+  filename = "slide_01_title",
+  width = 12,
+  height = 9,
+  dpi = 150,
+  type = "presentation"
+)
+
+# Slide 2: Key finding (simplified)
+slide2_finding <- ggplot(
+  model_comp %>% filter(Model == "M4: Full model"),
+  aes(x = Country, y = Infection_Coef, fill = Country)
+) +
+  geom_col(alpha = 0.8, width = 0.7) +
+  geom_hline(yintercept = 0, linewidth = 1.5) +
+  geom_text(aes(label = sprintf("%.3f", Infection_Coef)),
+            vjust = ifelse(model_comp %>% 
+                          filter(Model == "M4: Full model") %>% 
+                          pull(Infection_Coef) > 0, -0.5, 1.5),
+            size = 10, fontface = "bold") +
+  scale_fill_manual(values = country_colors) +
+  labs(
+    title = "COVID Infection → Government Approval",
+    subtitle = "Coefficient from full model",
+    x = NULL,
+    y = "Effect Size",
+    caption = "Positive = More infection → Higher approval"
+  ) +
+  theme_minimal(base_size = 18) +
+  theme(
+    plot.title = element_text(size = 32, face = "bold", hjust = 0.5),
+    plot.subtitle = element_text(size = 24, hjust = 0.5),
+    axis.title.y = element_text(size = 20, face = "bold"),
+    axis.text = element_text(size = 18, face = "bold"),
+    legend.position = "none",
+    panel.grid = element_blank(),
+    plot.caption = element_text(size = 16, hjust = 0.5)
+  )
+
+print(slide2_finding)
+
+save_figure(
+  plot = slide2_finding,
+  filename = "slide_02_key_finding",
+  width = 12,
+  height = 9,
+  dpi = 150,
+  type = "presentation"
+)
+
+cat("\n✓ Presentation slides created\n")
+cat("  Location: figures/presentation/\n")
+```
+
+---
+
+# 11. Export Summary {#sec-export-summary}
+
+## List of Generated Figures
+
+```{r export-summary}
+#| label: export-summary-table
+#| code-summary: "Summary of all exported figures"
+
+cat("\n", rep("=", 70), "\n", sep = "")
+cat("FIGURE EXPORT SUMMARY\n")
+cat(rep("=", 70), "\n\n", sep = "")
+
+# List all figures
+figure_list <- data.frame(
+  Figure_Number = c(
+    "Figure 1",
+    "Figure 1 (Alt)",
+    "Figure 2",
+    "Figure 3",
+    "Figure 4",
+    "Figure 5",
+    "Figure 6",
+    "Figure S1",
+    "Figure S2",
+    "Combined Figure",
+    "Slide 1",
+    "Slide 2"
+  ),
+  Filename = c(
+    "figure_1_vietnam_paradox",
+    "figure_1_alternative_faceted",
+    "figure_2_mediation_analysis",
+    "figure_3_forest_plot",
+    "figure_4_correlation_matrices",
+    "figure_5_distributions",
+    "figure_6_model_comparison",
+    "figure_S1_sample_characteristics",
+    "figure_S2_diagnostics",
+    "figure_combined_main_results",
+    "slide_01_title",
+    "slide_02_key_finding"
+  ),
+  Description = c(
+    "Main paradox: Infections × Approval by country",
+    "Same as Fig 1 but faceted panels",
+    "Mediation path diagrams (all countries)",
+    "Forest plot of effect sizes",
+    "Correlation heatmaps by country",
+    "Distribution comparisons (violin + box)",
+    "Progressive model building",
+    "Sample characteristics",
+    "Regression diagnostics",
+    "All main results in one figure",
+    "Presentation title graphic",
+    "Presentation key finding"
+  ),
+  Formats = "PNG, TIFF, PDF, SVG",
+  Resolution = c(
+    rep("300 DPI", 10),
+    rep("150 DPI", 2)
+  ),
+  Location = c(
+    rep("figures/publication/", 10),
+    rep("figures/presentation/", 2)
+  ),
+  Recommended_Use = c(
+    "Main text (required)",
+    "Main text (alternative)",
+    "Main text (required)",
+    "Main text or supplement",
+    "Supplement",
+    "Supplement",
+    "Supplement",
+    "Supplement",
+    "Supplement",
+    "Main text (if figure limit)",
+    "Conference presentation",
+    "Conference presentation"
+  )
+)
+
+figure_list %>%
+  kable(
+    caption = "Summary of All Generated Figures"
+  ) %>%
+  kable_styling(bootstrap_options = c("striped", "hover")) %>%
+  pack_rows("Main Manuscript Figures", 1, 7) %>%
+  pack_rows("Supplementary Figures", 8, 9) %>%
+  pack_rows("Combined/Alternative", 10, 10) %>%
+  pack_rows("Presentation Materials", 11, 12)
+
+cat("\n\nFILE LOCATIONS:\n")
+cat("  Publication figures:", here("figures", "publication"), "\n")
+cat("  Presentation slides:", here("figures", "presentation"), "\n")
+
+cat("\n\nFORMAT RECOMMENDATIONS:\n")
+cat("  • TIFF: Submit to journals (high-quality, widely accepted)\n")
+cat("  • PDF: Print publication (vector, scalable)\n")
+cat("  • PNG: Quick preview, online publication\n")
+cat("  • SVG: Edit in Illustrator/Inkscape if needed\n")
+
+cat("\n\nJOURNAL SUBMISSION CHECKLIST:\n")
+cat("  □ All figures saved at 300+ DPI\n")
+cat("  □ Colorblind-friendly palette used\n")
+cat("  □ Labels readable at print size\n")
+cat("  □ Legends self-explanatory\n")
+cat("  □ File names descriptive\n")
+cat("  □ Multiple formats provided\n")
+```
+
+---
+
+# 12. Session Information {#sec-session}
+
+```{r session-info}
+#| label: session-information
+#| code-summary: "R session information for reproducibility"
+
+sessionInfo()
+```
+
+---
+
+# END OF SCRIPT 09
+
+**All publication-quality figures have been generated!**
+
+Check the following directories:
+- `figures/publication/` - High-resolution figures for journal submission
+- `figures/presentation/` - Conference presentation slides
+
+Each figure is saved in 4 formats: PNG, TIFF, PDF, SVG

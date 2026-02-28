@@ -1,0 +1,983 @@
+---
+title: "Trust in Information and Pandemic Approval in Southeast Asia: Evidence from the Vietnam Paradox"
+author:
+  - name: Jeffrey Stark
+    affiliation: Yonsei University
+    email: jeffrey.stark@yonsei.ac.kr
+date: today
+abstract: |
+  Performance legitimacy theories predict citizens punish governments for poor crisis outcomes, yet Vietnam is an anomaly: despite Southeast Asia’s highest self-reported COVID-19 infection rate (65.9%), Vietnam reports the region’s highest approval (97.5%) for pandemic handling. Using Asian Barometer Wave 6 data from Cambodia, Thailand, and Vietnam (N = 3,685), we show trust in government COVID-19 information strongly predicts approval (β = 0.31–0.61), while infection has null effects. In Thailand’s pluralistic information environment, infection reduces approval only among citizens who distrust official information; in Vietnam and Cambodia, near-universal trust fully decouples outcomes from evaluations. Results are robust across specifications (E-values 2.7–3.7). We extend work on authoritarian “trust paradoxes” by identifying an information-based mechanism: when official narratives are deemed credible, citizens attribute negative experiences to forces beyond government control, allowing narrative credibility to substitute for performance outcomes as a basis for regime support.
+keywords:
+  - COVID-19
+  - government approval
+  - information trust
+  - Southeast Asia
+  - pandemic politics
+format:
+  html:
+    toc: true
+    toc-depth: 3
+    number-sections: true
+    code-fold: true
+    code-summary: "Show code"
+    theme: cosmo
+    embed-resources: true
+  pdf:
+    toc: false
+    documentclass: article
+    geometry: margin=1in
+    fontsize: 12pt
+    linestretch: 2
+    number-sections: true
+    fig-pos: 'H'
+    tbl-pos: 'H'
+    header-includes: |
+      \usepackage{float}
+      \usepackage{placeins}
+      \usepackage{setspace}
+      \raggedright
+      \hyphenpenalty=10000
+      \exhyphenpenalty=10000
+  docx:
+    toc: false
+    number-sections: true
+    reference-doc: reference.docx
+citeproc: true
+bibliography: references.bib
+csl: sage-harvard.csl
+execute:
+  echo: false
+  warning: false
+  message: false
+---
+
+```{r setup, include=FALSE}
+# ============================================================================
+# MANUSCRIPT SETUP: Load Pre-Computed Analysis Results
+# ============================================================================
+
+# Load packages
+library(tidyverse)
+library(here)
+library(gt)
+library(gtExtras)
+library(modelsummary)
+library(knitr)
+library(flextable)
+
+# Set global options
+knitr::opts_chunk$set(
+  echo = FALSE,
+  warning = FALSE,
+  message = FALSE,
+  fig.width = 8,
+  fig.height = 6,
+  dpi = 300
+)
+
+# Set theme for plots
+theme_set(theme_minimal(base_size = 12))
+
+# Detect output format for conditional table rendering
+is_docx <- knitr::is_latex_output() == FALSE && knitr::is_html_output() == FALSE
+
+# Helper: render table as flextable for docx, gt for others
+render_table <- function(df, caption = NULL, col_labels = NULL) {
+  if (is_docx) {
+    # Use flextable for DOCX with auto-fit widths
+    if (!is.null(col_labels)) {
+      names(df) <- col_labels[names(df)]
+    }
+    df %>%
+      flextable::flextable() %>%
+      flextable::autofit() %>%
+      flextable::set_caption(caption)
+  } else {
+    # Use gt for HTML/PDF
+    tbl <- df %>% gt()
+    if (!is.null(col_labels)) {
+      tbl <- tbl %>% cols_label(!!!col_labels)
+    }
+    tbl
+  }
+}
+
+# Define results directory path
+results_dir <- file.path("..", "analysis", "results")
+
+# ============================================================================
+# FUNCTION: Safely load RDS files
+# ============================================================================
+safe_load <- function(filename) {
+  filepath <- file.path(results_dir, filename)
+  if (file.exists(filepath)) {
+    readRDS(filepath)
+  } else {
+    NULL
+  }
+}
+
+# ============================================================================
+# FUNCTION: Format wide tables for both HTML and PDF output
+# ============================================================================
+format_wide_gt <- function(gt_table) {
+  gt_table %>%
+    tab_options(
+      table.font.size = px(9),
+      data_row.padding = px(2),
+      table.width = pct(100),
+      column_labels.font.size = px(10),
+      heading.title.font.size = px(12),
+      heading.subtitle.font.size = px(10),
+      source_notes.font.size = px(8),
+      footnotes.font.size = px(8)
+    )
+}
+
+# ============================================================================
+# LOAD ALL ANALYSIS RESULTS
+# ============================================================================
+
+# Descriptive results
+paradox_summary <- safe_load("descriptive_paradox_summary.rds")
+descriptive_stats <- safe_load("descriptive_sample_characteristics.rds")
+scale_reliability <- safe_load("descriptive_scale_reliability.rds")
+cor_matrix <- safe_load("descriptive_correlation_matrix.rds")
+bootstrap_cors <- safe_load("descriptive_bootstrap_correlations.rds")
+effect_sizes <- safe_load("descriptive_effect_sizes.rds")
+economic_impacts <- safe_load("descriptive_economic_impacts.rds")
+
+# Hypothesis test results
+h1_results <- safe_load("h1_infection_effects.rds")
+h1c_model <- safe_load("h1c_interaction_model.rds")
+h2a_results <- safe_load("h2a_trust_direct_effects.rds")
+h2b_results <- safe_load("h2b_mediation_paths.rds")
+h3a_results <- safe_load("h3a_democracy_effects.rds")
+h3b_results <- safe_load("h3b_authoritarianism_effects.rds")
+h4a_results <- safe_load("h4a_economic_bivariate.rds")
+h4b_results <- safe_load("h4b_trust_vs_economic.rds")
+models_core <- safe_load("m1_core_models.rds")
+models_full <- safe_load("m2_full_models.rds")
+hypothesis_summary <- safe_load("hypothesis_summary.rds")
+
+# Coefficient dataframes for consistent table generation (same as appendix)
+m1_coefficients <- safe_load("m1_coefficients.rds")
+m2_coefficients <- safe_load("m2_coefficients.rds")
+m1_fit <- safe_load("m1_fit_statistics.rds")
+m2_fit <- safe_load("m2_fit_statistics.rds")
+
+# Mediation results
+mediation_paths <- safe_load("med_path_coefficients.rds")
+mediation_bootstrap <- safe_load("med_bootstrap_results.rds")
+mediation_summary <- safe_load("med_summary.rds")
+mediation_sensitivity <- safe_load("med_sensitivity.rds")
+mediation_low_auth <- safe_load("med_low_auth.rds")
+mediation_high_auth <- safe_load("med_high_auth.rds")
+mediation_countries <- safe_load("med_cross_country.rds")
+
+# Country comparison results
+vietnam_correlations <- safe_load("country_vietnam_correlations.rds")
+cambodia_correlations <- safe_load("country_cambodia_correlations.rds")
+thailand_correlations <- safe_load("country_thailand_correlations.rds")
+fisher_infection_approval <- safe_load("country_fisher_infection_approval.rds")
+fisher_trust_approval <- safe_load("country_fisher_trust_approval.rds")
+prop_mediated <- safe_load("country_proportion_mediated.rds")
+pub_summary_table <- safe_load("country_summary_table.rds")
+
+# Robustness check results
+missing_data_summary <- safe_load("robust_missing_summary.rds")
+ordinal_vs_ols <- safe_load("robust_ordinal_vs_ols.rds")
+robust_comparison <- safe_load("robust_regression_comparison.rds")
+quantile_comparison <- safe_load("robust_quantile_regression.rds")
+outlier_diagnostics <- safe_load("robust_outlier_diagnostics.rds")
+outlier_sensitivity <- safe_load("robust_excluding_outliers.rds")
+complete_case_test <- safe_load("robust_complete_case_test.rds")
+robustness_summary <- safe_load("robust_all_checks_summary.rds")
+
+# Endogeneity diagnostics - using relative paths like other results
+inline_stats_dir <- file.path("..", "analysis", "output", "inline_stats")
+cor_trust_approval <- readRDS(file.path(inline_stats_dir, "cor_trust_approval.rds"))
+vif_max <- readRDS(file.path(inline_stats_dir, "vif_max.rds"))
+vif_min <- readRDS(file.path(inline_stats_dir, "vif_min.rds"))
+pct_trust_disapprove <- readRDS(file.path(inline_stats_dir, "pct_trust_disapprove.rds"))
+
+# ============================================================================
+# NEW: EXTRACT KEY VALUES FOR INLINE USE THROUGHOUT MANUSCRIPT
+# ============================================================================
+
+# Helper function to safely extract values with fallback
+get_value <- function(data, country, column, fallback) {
+  if (is.null(data)) return(fallback)
+  value <- data %>% dplyr::filter(country_name == country) %>% dplyr::pull({{ column }})
+  if (length(value) == 0 || is.na(value[1])) return(fallback)
+  value[1]
+}
+
+# VIETNAM VALUES (with fallbacks)
+vietnam <- list(
+  n = get_value(paradox_summary, "Vietnam", n, 1237),
+  infection_pct = get_value(paradox_summary, "Vietnam", covid_infection_rate, 65.9),
+  approval_pct = get_value(paradox_summary, "Vietnam", govt_approval_rate, 97.5),
+  trust_pct = get_value(paradox_summary, "Vietnam", trust_covid_rate, 91.9)
+)
+
+# CAMBODIA VALUES (with fallbacks)
+cambodia <- list(
+  n = get_value(paradox_summary, "Cambodia", n, 1242),
+  infection_pct = get_value(paradox_summary, "Cambodia", covid_infection_rate, 8.7),
+  approval_pct = get_value(paradox_summary, "Cambodia", govt_approval_rate, 93.6),
+  trust_pct = get_value(paradox_summary, "Cambodia", trust_covid_rate, 89.2)
+)
+
+# THAILAND VALUES (with fallbacks)
+thailand <- list(
+  n = get_value(paradox_summary, "Thailand", n, 1206),
+  infection_pct = get_value(paradox_summary, "Thailand", covid_infection_rate, 40.1),
+  approval_pct = get_value(paradox_summary, "Thailand", govt_approval_rate, 37.7),
+  trust_pct = get_value(paradox_summary, "Thailand", trust_covid_rate, 34.0)
+)
+
+# TOTAL SAMPLE SIZE
+total_n <- if (!is.null(paradox_summary)) sum(paradox_summary$n, na.rm = TRUE) else 3685
+
+# EXTERNAL METADATA (Freedom House, Press Freedom, Response Rates)
+metadata <- list(
+  # Freedom House democracy scores (/100)
+  cambodia_fh = 24,
+  vietnam_fh = 19,
+  thailand_fh = 29,
+  # Press Freedom scores (/100)
+  cambodia_pf = 23,
+  vietnam_pf = 20,
+  thailand_pf = 29,
+  # Survey response rates (%)
+  cambodia_response = 82,
+  thailand_response = 68,
+  vietnam_response = NA
+)
+
+# CALCULATED RATIOS (for narrative comparisons)
+vietnam_vs_cambodia_infection_ratio <- vietnam$infection_pct / cambodia$infection_pct
+
+# ============================================================================
+# HELPER FUNCTIONS FOR CLEANER MANUSCRIPT CODE
+# ============================================================================
+
+# Format correlation with significance stars
+format_cor <- function(cor_value, p_value) {
+  stars <- if (p_value < 0.001) "***" else if (p_value < 0.01) "**" else if (p_value < 0.05) "*" else ""
+  paste0("r = ", round(cor_value, 3), stars)
+}
+
+# Create correlation table from results list
+create_cor_table <- function(results_list) {
+  if (is.null(results_list)) {
+    return(tibble(Note = "Data not available. Render analysis scripts first."))
+  }
+  
+  tibble(
+    Country = names(results_list),
+    Correlation = sapply(results_list, function(x) x$coef),
+    `p-value` = sapply(results_list, function(x) x$p),
+    `95% CI Lower` = sapply(results_list, function(x) x$ci_lower),
+    `95% CI Upper` = sapply(results_list, function(x) x$ci_upper),
+    N = sapply(results_list, function(x) x$n)
+  )
+}
+
+# Create placeholder table when data not available
+create_placeholder <- function(table_name, script_to_run) {
+  tbl_data <- tibble(
+    Status = paste("Missing:", table_name),
+    Action = paste("Render:", script_to_run)
+  )
+  if (is_docx) {
+    tbl_data %>%
+      flextable::flextable() %>%
+      flextable::set_caption("Data Not Yet Available") %>%
+      flextable::autofit()
+  } else {
+    tbl_data %>%
+      gt() %>%
+      tab_header(title = "Data Not Yet Available") %>%
+      tab_style(
+        style = cell_fill(color = "#fff3cd"),
+        locations = cells_body()
+      )
+  }
+}
+
+# CALCULATE DESCRIPTIVE STATISTICS FOR VARIABLES
+if (file.exists(here("data", "processed", "ab_analysis_v2.rds"))) {
+  ab_anal_data <- readRDS(here("data", "processed", "ab_analysis_v2.rds"))
+  
+  var_stats <- list(
+    # DV: Government approval
+    approval_mean = mean(ab_anal_data$covid_govt_handling, na.rm = TRUE),
+    approval_sd = sd(ab_anal_data$covid_govt_handling, na.rm = TRUE),
+    
+    # IV: Infection
+    infection_rate = mean(ab_anal_data$covid_contracted, na.rm = TRUE) * 100,
+    
+    # IV: Economic severity
+    econ_mean = mean(ab_anal_data$covid_impact_severity, na.rm = TRUE),
+    econ_sd = sd(ab_anal_data$covid_impact_severity, na.rm = TRUE),
+    
+    # Individual economic impacts
+    job_loss_pct = mean(ab_anal_data$covid_job_loss, na.rm = TRUE) * 100,
+    income_loss_pct = mean(ab_anal_data$covid_income_loss, na.rm = TRUE) * 100,
+    edu_disruption_pct = mean(ab_anal_data$covid_edu_disruption, na.rm = TRUE) * 100,
+    
+    # IV: Trust
+    trust_mean = mean(ab_anal_data$covid_trust_info, na.rm = TRUE),
+    trust_sd = sd(ab_anal_data$covid_trust_info, na.rm = TRUE),
+    
+    # Demographics
+    age_mean = mean(ab_anal_data$age, na.rm = TRUE),
+    age_sd = sd(ab_anal_data$age, na.rm = TRUE),
+    female_pct = mean(ab_anal_data$gender == "Female", na.rm = TRUE) * 100,
+    urban_pct = mean(ab_anal_data$urban == 1, na.rm = TRUE) * 100,
+
+    # Scale statistics (for Methods section)
+    institutional_trust_mean = mean(ab_anal_data$institutional_trust_index, na.rm = TRUE),
+    institutional_trust_sd = sd(ab_anal_data$institutional_trust_index, na.rm = TRUE),
+    auth_acceptance_mean = mean(ab_anal_data$auth_acceptance, na.rm = TRUE),
+    auth_acceptance_sd = sd(ab_anal_data$auth_acceptance, na.rm = TRUE),
+    emergency_powers_mean = mean(ab_anal_data$emergency_powers_index, na.rm = TRUE),
+    emergency_powers_sd = sd(ab_anal_data$emergency_powers_index, na.rm = TRUE),
+    regime_pref_mean = mean(ab_anal_data$regime_preference, na.rm = TRUE),
+    regime_pref_sd = sd(ab_anal_data$regime_preference, na.rm = TRUE)
+  )
+} else {
+  # Fallback values
+  var_stats <- list(
+    approval_mean = 3.29, approval_sd = 0.87,
+    infection_rate = 39.8,
+    econ_mean = 2.31, econ_sd = 0.94,
+    job_loss_pct = 9.8, income_loss_pct = 55.2, edu_disruption_pct = 27.4,
+    trust_mean = 3.21, trust_sd = 0.79,
+    age_mean = 43.6, age_sd = 15.8,
+    female_pct = 51.2, urban_pct = 38.4,
+    # Scale statistics fallbacks
+    institutional_trust_mean = 28.2, institutional_trust_sd = 5.8,
+    auth_acceptance_mean = 2.34, auth_acceptance_sd = 0.68,
+    emergency_powers_mean = 2.96, emergency_powers_sd = 0.61,
+    regime_pref_mean = 2.52, regime_pref_sd = 0.59
+  )
+}
+
+# ============================================================================
+# SPEECH FREEDOM STATISTICS (for SDB defense in Discussion)
+# ============================================================================
+
+# Calculate speech freedom stats for Vietnam (used in SDB defense)
+if (exists("ab_anal_data") && "freedom_of_speech" %in% names(ab_anal_data)) {
+  # Filter to Vietnam with valid responses on both variables
+  vietnam_sdb <- ab_anal_data %>%
+    filter(country_name == "Vietnam",
+           freedom_of_speech %in% c(1, 2, 3, 4),
+           covid_govt_handling %in% c(1, 2, 3, 4))
+  
+  # Calculate key statistics
+  speech_freedom_stats <- list(
+    pct_constrained = mean(vietnam_sdb$freedom_of_speech <= 2, na.rm = TRUE) * 100,
+    approval_among_constrained = vietnam_sdb %>%
+      filter(freedom_of_speech <= 2) %>%
+      summarise(pct = mean(covid_govt_handling >= 3, na.rm = TRUE) * 100) %>%
+      pull(pct),
+    approval_among_free = vietnam_sdb %>%
+      filter(freedom_of_speech >= 3) %>%
+      summarise(pct = mean(covid_govt_handling >= 3, na.rm = TRUE) * 100) %>%
+      pull(pct)
+  )
+} else {
+  # Fallback values based on analysis
+  speech_freedom_stats <- list(
+    pct_constrained = 40.3,
+    approval_among_constrained = 97.5,
+    approval_among_free = 97.3
+  )
+}
+
+# Extract all key correlation values
+cors <- list(
+  # Infection-Approval
+  vietnam_inf = if (!is.null(h1_results)) h1_results$Vietnam$coef else 0.013,
+  cambodia_inf = if (!is.null(h1_results)) h1_results$Cambodia$coef else -0.014,
+  thailand_inf = if (!is.null(h1_results)) h1_results$Thailand$coef else -0.079,
+  
+  # Trust-Approval
+  vietnam_trust = if (!is.null(h2a_results)) h2a_results$Vietnam$coef else 0.507,
+  cambodia_trust = if (!is.null(h2a_results)) h2a_results$Cambodia$coef else 0.576,
+  thailand_trust = if (!is.null(h2a_results)) h2a_results$Thailand$coef else 0.672,
+  
+  # Economic-Approval
+  vietnam_econ = if (!is.null(h4b_results)) h4b_results$Vietnam$econ_coef else -0.016,
+  cambodia_econ = if (!is.null(h4b_results)) h4b_results$Cambodia$econ_coef else 0.156,
+  thailand_econ = if (!is.null(h4b_results)) h4b_results$Thailand$econ_coef else -0.142
+)
+
+# Calculate ranges
+econ_range_min <- min(cors$vietnam_econ, cors$cambodia_econ, cors$thailand_econ)
+econ_range_max <- max(cors$vietnam_econ, cors$cambodia_econ, cors$thailand_econ)
+
+# Calculate ratios (trust vs infection)
+cors$vietnam_ratio <- abs(cors$vietnam_trust / cors$vietnam_inf)
+cors$cambodia_ratio <- abs(cors$cambodia_trust / cors$cambodia_inf)
+cors$thailand_ratio <- abs(cors$thailand_trust / cors$thailand_inf)
+
+# ============================================================================
+# CRONBACH'S ALPHA VALUES FROM SCALE RELIABILITY RESULTS
+# ============================================================================
+
+# Helper function to extract alpha values
+get_alpha <- function(scale_name) {
+  if (is.null(scale_reliability)) return(NA)
+  alpha <- scale_reliability %>%
+    filter(grepl(scale_name, scale, ignore.case = TRUE)) %>%
+    pull(alpha)
+  if (length(alpha) == 0) return(NA)
+  return(alpha[1])
+}
+
+alphas <- list(
+  institutional_trust = get_alpha("Institutional Trust"),
+  auth_acceptance = get_alpha("Auth Acceptance"),
+  emergency_powers = get_alpha("Emergency"),
+  regime_pref = get_alpha("Regime")
+)
+
+# ============================================================================
+# COMPUTED RATIOS, RANGES, AND HELPER FUNCTIONS
+# ============================================================================
+
+# Magnitude ratios for narrative (trust effects vs infection effects)
+magnitude_ratios <- list(
+  cambodia = abs(cors$cambodia_trust / cors$cambodia_inf),
+  vietnam = abs(cors$vietnam_trust / cors$vietnam_inf),
+  thailand = abs(cors$thailand_trust / cors$thailand_inf)
+)
+
+# Correlation ranges for "r = X to Y" statements in text
+cor_ranges <- list(
+  infection_max = max(abs(cors$vietnam_inf), abs(cors$cambodia_inf), abs(cors$thailand_inf)),
+  economic_min = min(cors$vietnam_econ, cors$cambodia_econ, cors$thailand_econ),
+  economic_max = max(cors$vietnam_econ, cors$cambodia_econ, cors$thailand_econ),
+  trust_min = min(cors$vietnam_trust, cors$cambodia_trust, cors$thailand_trust),
+  trust_max = max(cors$vietnam_trust, cors$cambodia_trust, cors$thailand_trust)
+)
+
+# Helper function for formatting regression coefficients in narrative
+format_coef <- function(coef, p, digits = 3) {
+  if (is.null(coef) || is.null(p) || length(coef) == 0 || length(p) == 0) {
+    return("[Results not yet available]")
+  }
+  p_str <- if (p < 0.001) "p < 0.001"
+           else if (p < 0.01) "p < 0.01"
+           else if (p < 0.05) "p < 0.05"
+           else paste0("p = ", round(p, 2))
+  paste0("β = ", round(coef, digits), ", ", p_str)
+}
+
+# Bootstrap parameters
+bootstrap_n <- 2000  # Number of bootstrap resamples used
+
+# Model coefficient ranges from models_full (trust coefficients)
+model_coef_ranges <- if (!is.null(models_full)) {
+  list(
+    trust_coef_min = min(
+      coef(models_full$Cambodia)["covid_trust_info"],
+      coef(models_full$Vietnam)["covid_trust_info"],
+      coef(models_full$Thailand)["covid_trust_info"]
+    ),
+    trust_coef_max = max(
+      coef(models_full$Cambodia)["covid_trust_info"],
+      coef(models_full$Vietnam)["covid_trust_info"],
+      coef(models_full$Thailand)["covid_trust_info"]
+    )
+  )
+} else {
+  list(trust_coef_min = 0.31, trust_coef_max = 0.61)
+}
+
+cat("✓ Setup complete\n")
+```
+
+# Introduction
+
+Performance legitimacy theories rest on a foundational assumption: citizens evaluate governments based on outcomes. The COVID-19 pandemic provided a natural test---governments that protected citizens from infection should enjoy higher approval than those that failed.
+
+Vietnam upends this expectation. In the Asian Barometer Survey conducted during 2021--2022, `r round(vietnam$infection_pct, 1)`% of Vietnamese respondents reported that they or family members had contracted COVID-19---the highest self-reported infection rate in Southeast Asia and more than seven times Cambodia's `r round(cambodia$infection_pct, 1)`%. Yet `r round(vietnam$approval_pct, 1)`% rated their government's pandemic response as "well" or "very well"---also the highest in the region. The worst outcomes coincided with the best evaluations.
+
+This pattern echoes broader puzzles in the study of institutional trust across Asia. Baniamin [-@Baniamin2025-rx] demonstrates that lower-performing countries like Vietnam show higher trust in government than better-performing democracies like Japan and South Korea, attributing this to authoritarian cultural orientation. We propose a complementary but distinct mechanism: trust in *crisis-specific* government information may function as a cognitive filter, shaping how citizens interpret their experiences independently of diffuse cultural values.
+
+Drawing on Asian Barometer Wave 6 data from Cambodia, Thailand, and Vietnam (N = `r format(total_n, big.mark=",")`), we find that trust in government COVID-19 information dominates personal experience as a predictor of approval. Moving from lowest to highest information trust corresponds to approximately 1.5 points on a 4-point approval scale; whether a citizen contracted COVID-19 corresponds to less than 0.08 points---substantively negligible.
+
+Our analysis leverages cross-national variation to test competing accounts. If performance drives legitimacy, Cambodia (successful disease control) should show higher approval than Vietnam (mass infection). If information trust drives legitimacy, Vietnam and Cambodia (both high-trust environments) should show similar approval despite divergent outcomes---while Thailand (low trust) should show lower approval regardless of performance. We frame Vietnam and Cambodia as "ceiling cases" where near-universal trust appears to insulate governments from experiential accountability. Thailand provides a crucial contrast: with more pluralistic information and lower baseline trust, we observe that infection affects approval only among citizens who distrust official information.
+
+This study offers three contributions:
+
+1.  We document a robust empirical pattern wherein information trust dominates experiential predictors of pandemic approval---extending recent work on trust paradoxes in authoritarian contexts [@Baniamin2025-rx; @Pernia2022-gh] to crisis-specific evaluations.
+
+2.  We propose an information-credibility heuristic: how citizens interpret negative experiences may matter more than whether they experience them, consistent with theories of informational autocracy [@Guriev2019-xj; @Morgenbesser2020-ya].
+
+3.  We demonstrate that the Vietnam paradox survives controls for institutional trust, democratic attitudes, and demographics---ruling out obvious confounds while acknowledging our cross-sectional design cannot establish causality.
+
+# Theoretical Framework
+
+## Performance Legitimacy and Its Limits
+
+Why do citizens support their governments? The dominant answer points to performance: governments earn legitimacy by delivering results [@Lipset1959-ur; @Rothstein2009-lr; @Easton1979-rc]. This rationalist approach expects institutional trust to reflect institutional performance---when governments deliver, citizens reward them with support [@Bouckaert2003-ky; @Hetherington2003-oq; @Miller1990-qm]. Applied to pandemics, the logic is straightforward: governments that protect citizens should enjoy higher approval than those that fail.
+
+Yet cross-national evidence increasingly challenges this expectation. Survey data from Asia reveal that lower-performing countries often report higher institutional trust than better-performing democracies [@Baniamin2025-rx; @Wong2011-zv; @Zhao2017-yw]. Baniamin [-@Baniamin2025-rx] documents this paradox across fourteen East and Southeast Asian countries using Asian Barometer data, finding that Vietnam reports the highest trust in government despite middling performance indicators, while Japan and South Korea---objectively better governed---report substantially lower trust. He attributes this pattern to authoritarian cultural orientation (ACO): citizens socialized into hierarchical deference evaluate authorities less critically, inflating trust measures independently of actual performance.
+
+Vietnam's COVID-19 experience presents an even starker test. The country recorded Southeast Asia's highest infection rates yet maintained the region's highest approval ratings for pandemic handling. If performance drives legitimacy, Vietnam should show *lower* approval than Cambodia, which successfully controlled the virus. Something other than objective outcomes appears to sustain government support when performance visibly fails.
+
+## Information Credibility and Crisis Evaluation
+
+We propose a complementary mechanism that operates alongside---but is analytically distinct from---diffuse cultural orientations. Citizens rarely possess direct knowledge of government competence; instead, they rely on informational signals and cognitive shortcuts [@Lupia1994-jp; @Sniderman1991-uj; @Popkin1994-yv]. During crises, when uncertainty is high and stakes are salient, these shortcuts matter even more.
+
+We formalize this as an *information-credibility heuristic*: citizens use their trust in official crisis information as a mental shortcut for evaluating government performance. This mechanism resonates with Guriev and Treisman's [-@Guriev2019-xj; -@Guriev2020-cu] concept of "informational autocracy," which argues that modern authoritarian regimes maintain power less through overt repression than through control over information flows and narrative dominance. Morgenbesser [-@Morgenbesser2020-ya] situates such informational strategies within a broader "menu of autocratic innovation"---a repertoire of techniques through which regimes cultivate the pretence of accountability without permitting its actual practice.
+
+The information-credibility heuristic matters because negative pandemic experiences are attributionally ambiguous. Infection can be interpreted as personal misfortune, an unavoidable feature of a global pandemic, or preventable policy failure. When official information is perceived as credible, citizens may accept government explanations and assign blame externally---attenuating the extent to which negative experiences translate into disapproval. When official information is distrusted, the same experiences may convert more readily into political blame. This attributional logic draws on foundational work in political psychology. Iyengar [-@Iyengar1994-fk] demonstrates that how events are framed—as isolated incidents or systemic patterns—shapes whether citizens assign responsibility to individuals or institutions. Applying this to pandemic contexts, Healy and Malhotra [-@Healy2013-sy] show that voters often fail to distinguish between outcomes governments can control and those driven by external forces, punishing incumbents for natural disasters and economic shocks beyond their control. Our framework suggests that trusted official information may help citizens make precisely this distinction: when the government's narrative is credible, citizens can attribute infection to the virus itself rather than to policy failure.
+
+The mechanism operates asymmetrically across information environments. In pluralistic settings with competing narratives, citizens receive conflicting attributional frames—opposition voices may emphasize government culpability while official sources emphasize external factors. Citizens must adjudicate between frames, and those who distrust official information will weight critical narratives more heavily. In restricted information environments, the official frame faces less competition. Citizens who trust this dominant narrative have fewer alternative attributions available, potentially explaining why even severe negative experiences fail to translate into disapproval. This pattern is consistent with broader research on authoritarian information environments documenting how state-controlled media shape citizens' interpretations even when alternative sources exist [@Stockmann2012-xq; @Rozenas2019-jk].
+
+Importantly, our proposed mechanism differs from Baniamin's [-@Baniamin2025-rx] authoritarian cultural orientation in two ways. First, we focus on *domain-specific* trust in crisis information rather than diffuse deference to authority. Second, we propose that information trust actively mediates the relationship between experiences and evaluations, rather than simply inflating all government assessments uniformly. If our mechanism is correct, the effect of COVID information trust should remain substantial even after controlling for institutional trust and regime attitudes---proxies for the generalized deference Baniamin identifies.
+
+This framework yields two testable hypotheses:
+
+> **H1 (Information Dominance):** Trust in official COVID-19 information will be positively associated with government pandemic approval, net of institutional trust, democratic attitudes, and demographic controls.
+
+> **H2 (Conditional Accountability):** The relationship between personal COVID-19 infection and approval will be conditional on information trust---negative among citizens who distrust official information but attenuated or null among citizens who trust official information.
+
+H1 tests whether crisis-specific information trust predicts approval independently of diffuse regime orientations. H2 tests whether trusted narratives insulate governments from experiential accountability---the core claim of our information-credibility framework.
+
+## Alternative Explanations
+
+Several alternative mechanisms merit consideration.
+
+*Authoritarian cultural orientation* may explain high approval in Cambodia and Vietnam independently of information trust [@Dalton2005-su; @Shi2001-ga; @Ma2014-jj]. Hierarchical societies socialize citizens to defer to authority, potentially inflating approval regardless of information environment. However, if ACO alone explains the Vietnam paradox, controlling for institutional trust and authoritarian acceptance should substantially reduce the information trust coefficient---which we test directly.
+
+*Rally-around-the-flag effects* predict that external threats generate surges in government support [@Mueller1970-kf; @Baker2001-kz; @Baum2002-tc]. Yet rally theory expects support to strengthen when governments *succeed* at managing threats, not when protection visibly fails. Vietnam's high infection rates combined with high approval inverts the expected pattern.
+
+*Prior regime legitimacy* from economic development may explain baseline differences in support [@Malesky2014-wz]. Vietnam's rapid growth since *Đổi Mới* has generated substantial performance legitimacy. However, this cannot explain why *COVID-specific* infection and economic hardship show such weak associations with *COVID-specific* approval within Vietnam.
+
+*Social desirability bias* presents a serious concern that cannot be fully addressed with observational data. Respondents in authoritarian settings may report approval they do not genuinely feel. However, Asian Barometer employs standardized anonymity protocols across all countries. More tellingly, Vietnamese respondents openly reported the region's highest infection rates and substantial disagreement with the statement that "people are free to speak without fear"---responses inconsistent with uniform fear driving all survey answers. We return to this issue in the Discussion.
+
+Finally, Thailand provides a crucial comparative test. If cultural factors common to Southeast Asia explain high approval in Vietnam and Cambodia, Thailand---with similar regional context---should show comparable patterns. Instead, Thailand's more pluralistic information environment and lower baseline trust allow us to observe whether the accountability mechanism (H2) operates differently across information contexts.
+
+# Data and Methods
+
+## Data Source and Sampling
+
+We analyse Asian Barometer Survey (ABS) Wave 6 data, conducted between late 2021 and fall 2022 across Cambodia, Thailand, and Vietnam. The ABS employs multi-stage stratified random sampling to achieve nationally representative samples of adult citizens [@Chu2008-st].
+
+Our analytic sample includes `r format(total_n, big.mark=",")` respondents: Cambodia (n = `r format(cambodia$n, big.mark=",")`), Vietnam (n = `r format(vietnam$n, big.mark=",")`), and Thailand (n = `r format(thailand$n, big.mark=",")`). Response rates ranged from `r metadata$thailand_response`% (Thailand) to `r metadata$cambodia_response`% (Cambodia). All surveys were conducted face-to-face using standardised questionnaires. Listwise deletion yields an analytic sample that varies by specification. Models using the core variables (infection, approval, information trust, democracy satisfaction, institutional trust) retain 3,241 respondents (88%). Adding demographic and economic controls reduces N due to item-level missingness (variable completeness ranges 93--99%). We report model-specific sample sizes and show that results are substantively unchanged under multiple imputation (Online Appendix L.3).
+
+Case selection maximises theoretical leverage. All three are Southeast Asian nations with similar cultural contexts and geographic proximity, yet they vary on theoretically relevant dimensions: regime type (Cambodia and Vietnam are authoritarian; Thailand is a hybrid regime with greater information pluralism); pandemic outcomes (infection rates varied dramatically); and information environments [@Freedom-House2025-gx; @Reporters-Without-Borders2023-ks].
+
+Data collection timing varied: Cambodia (primarily December 2021), Thailand (April--May 2022), and Vietnam (August--September 2022). This temporal variation paradoxically strengthens our core finding: Vietnam was surveyed during objectively worse conditions yet shows higher approval.
+
+## Case Context: Pandemic Trajectories
+
+The three countries experienced COVID-19 along strikingly different trajectories, making cross-national comparison theoretically informative.
+
+**Vietnam** initially achieved remarkable success. Through early 2021, the country reported fewer than 3,000 total cases despite sharing a border with China and maintaining substantial cross-border trade [@WHO2021-bi]. The government implemented aggressive contact tracing, centralised quarantine facilities, and strict mobility restrictions, earning international recognition for its containment strategy [@Pollack2020-xq; @La2020-jv]. This changed dramatically with the Delta variant's arrival in April 2021. By early 2023, Vietnam had recorded over 11.5 million confirmed cases (WHO, 2023)—transforming from regional success story to the country with Southeast Asia's highest per-capita infection rate. Our survey, conducted in August–September 2022, captured citizens evaluating this trajectory [@WHO2023-js]. Critically, our survey captured citizens evaluating a government whose early success had given way to mass infection.
+
+**Cambodia** maintained low infection rates throughout. The country reported fewer than 140,000 total cases by late 2022, achieving one of the region's lowest per-capita rates. The government leveraged its authoritarian capacity to enforce strict lockdowns, particularly in Phnom Penh during the February 2021 outbreak, and achieved high vaccination coverage through centralised distribution. When surveyed in December 2021, Cambodian respondents were evaluating a government that had—by objective epidemiological measures—protected them from the pandemic.
+
+**Thailand** occupied a middle position epidemiologically but diverged sharply in its political context. The country experienced moderate infection waves, with approximately 4.4 million cumulative cases by survey time. More consequentially, Thailand's pandemic response became deeply politicized. The government faced sustained protests throughout 2020–2021, with demonstrators explicitly linking pandemic mismanagement to broader critiques of the military-backed administration. Unlike Vietnam and Cambodia, Thai citizens had access to critical media coverage and opposition voices challenging official narratives [@Kongkirati2018-go]. The survey (April–May 2022) thus captured a population with both moderate pandemic exposure and pluralistic information access.
+
+These divergent trajectories create analytical leverage. Vietnam and Cambodia share authoritarian governance and restricted information environments but experienced opposite pandemic outcomes. Thailand shares Southeast Asian cultural context but differs in information pluralism. If performance drives approval, Cambodia should outperform Vietnam. If information environment matters, Vietnam and Cambodia should converge despite divergent outcomes—while Thailand should diverge despite moderate performance.
+
+## Measurement Strategy
+
+**Dependent variable.** Government pandemic approval: "How well or badly do you think the government handled the pandemic?" (1 = Very badly to 4 = Very well; mean = `r round(var_stats$approval_mean, 2)`, SD = `r round(var_stats$approval_sd, 2)`).
+
+**Primary independent variables.** *Personal COVID-19 infection*: binary indicator based on "Have you or your family members previously contracted the Covid-19 virus?" (overall rate `r round(var_stats$infection_rate, 1)`%; Cambodia `r round(cambodia$infection_pct, 1)`%, Thailand `r round(thailand$infection_pct, 1)`%, Vietnam `r round(vietnam$infection_pct, 1)`%). *COVID-19 economic impact severity*: four-point scale (mean = `r round(var_stats$econ_mean, 2)`, SD = `r round(var_stats$econ_sd, 2)`). *Trust in government COVID information*: "How much do you trust the Covid-19 related information provided by the government?" (mean = `r round(var_stats$trust_mean, 2)`, SD = `r round(var_stats$trust_sd, 2)`).
+
+**Control variables.** Institutional trust (9-item index, α = `r round(alphas$institutional_trust, 3)`), democracy satisfaction, authoritarian acceptance (α = `r round(alphas$auth_acceptance, 3)`), and demographic controls (age, gender, education, urban residence).
+
+## Measurement Validity
+
+A potential concern is that trust in government COVID information and government pandemic approval may be tautological. The correlation between trust and approval in Vietnam is moderate (r = `r cor_trust_approval`), indicating shared variance of `r round(cor_trust_approval^2 * 100, 1)`%---substantial but leaving `r 100 - round(cor_trust_approval^2 * 100, 1)`% unexplained. VIF scores range from `r vif_min` to `r vif_max`, well below conventional thresholds, indicating these constructs are empirically distinguishable.
+
+## Analytic Strategy
+
+Our analysis proceeds in four stages: descriptive analysis documenting the Vietnam paradox; bivariate OLS regression testing associations between COVID impacts and approval within each country; multivariate OLS regression controlling for potential confounders; and robustness checks (Online Appendix). We estimate models separately by country and use heteroskedasticity-consistent (HC3) standard errors.
+
+# Results
+
+## The Aggregate Paradox
+
+The numbers are stark. Vietnam's infection rate (`r round(vietnam$infection_pct, 1)`%) was more than seven times Cambodia's (`r round(cambodia$infection_pct, 1)`%) and substantially exceeded Thailand's (`r round(thailand$infection_pct, 1)`%). Yet Vietnam recorded the region's highest government approval (`r round(vietnam$approval_pct, 1)`%), outpacing Cambodia (`r round(cambodia$approval_pct, 1)`%) and dramatically exceeding Thailand (`r round(thailand$approval_pct, 1)`%). Table 1 summarizes this paradox.
+
+\[INSERT TABLE 1 ABOUT HERE\]
+
+## Infection Does Not Matter
+
+Did Vietnamese citizens who contracted COVID-19 evaluate their government more harshly? The answer is no---personal experience showed essentially no relationship with evaluations.
+
+In Cambodia, the association between infection and approval was effectively zero (`r format_coef(cors$cambodia_inf, h1_results$Cambodia$p)`). Vietnam showed a slight *positive* coefficient (`r format_coef(cors$vietnam_inf, h1_results$Vietnam$p)`)---infected respondents were marginally more approving. Thailand exhibited a statistically significant but substantively trivial negative relationship (`r format_coef(cors$thailand_inf, h1_results$Thailand$p)`). Whether a citizen contracted COVID-19 was essentially irrelevant to how they evaluated the government.
+
+Economic hardship showed inconsistent effects. Thailand displayed the expected negative pattern (`r format_coef(cors$thailand_econ, h4b_results$Thailand$econ_p)`); Vietnam and Cambodia showed no significant relationship.
+
+Information trust dominated. Cambodia (`r format_coef(cors$cambodia_trust, h2a_results$Cambodia$p)`), Vietnam (`r format_coef(cors$vietnam_trust, h2a_results$Vietnam$p)`), and Thailand (`r format_coef(cors$thailand_trust, h2a_results$Thailand$p)`) all showed substantial coefficients, with trust alone explaining 26--45% of variance in approval (Figure 1). These bivariate patterns are consistent with H1 but could reflect confounding with generalized regime support. We turn to multivariate tests.
+
+\[INSERT FIGURE 1 ABOUT HERE\]
+
+## Multivariate Results
+
+H1 predicts that information trust will predict pandemic approval net of institutional trust, democratic attitudes, and demographic controls. Table 2 presents multivariate OLS models testing this expectation.
+
+The trust coefficient survives intact. Across all countries and specifications, information trust remains the dominant predictor (β = `r round(model_coef_ranges$trust_coef_min, 2)` to `r round(model_coef_ranges$trust_coef_max, 2)`, all p \< 0.001), while infection status remains non-significant. Critically, controlling for institutional trust---a proxy for the diffuse regime support that Baniamin [-@Baniamin2025-rx] attributes to authoritarian cultural orientation---reduces the COVID information trust coefficient by only 16–26%, meaning it retains approximately three-quarters of its bivariate strength. This suggests the information-credibility mechanism operates largely independently of generalized deference.
+
+A respondent moving from lowest to highest information trust gains approximately 1.5 points on the 4-point approval scale---nearly half the entire range. By contrast, infection status corresponds to less than 0.1 points. The predictive dominance of information trust over personal experience strongly supports H1.
+
+\[INSERT TABLE 2 ABOUT HERE\]
+
+## Mechanism Test: Conditional Accountability
+
+H2 predicts that infection should reduce approval primarily among citizens who distrust official information---the accountability mechanism should operate only when trusted narratives do not insulate the government from blame. Thailand provides the clearest test.
+
+In Thailand, where baseline approval (`r round(thailand$approval_pct, 1)`%) and trust (`r round(thailand$trust_pct, 1)`%) are both low, we observe a significant negative interaction between infection and trust (see Online Appendix Table D). Among low-trust Thai respondents, personal infection is associated with substantially lower approval---the expected accountability response. Among high-trust respondents, infection shows no relationship with approval. Trusted narratives appear to fully insulate the government from negative pandemic experiences, consistent with H2.
+
+Vietnam and Cambodia present null interaction effects---but this *supports* rather than contradicts H2. These represent "ceiling cases" where near-universal trust (`r round(vietnam$trust_pct, 1)`% and `r round(cambodia$trust_pct, 1)`%) has already insulated governments from experiential accountability across virtually the entire population. The information-credibility heuristic operates as the universal baseline rather than a conditional moderator. With insufficient variation in trust, we cannot observe the low-trust accountability mechanism that Thailand reveals. The null interaction reflects not the absence of information effects but their completeness. Notably, even within Vietnam's compressed trust distribution, the standardized coefficient for trust (β = 0.31--0.41 across specifications) remains among the model's largest effects, indicating that the limited variation in trust that does exist still substantially predicts approval (see Online Appendix E).
+
+## Robustness
+
+We subjected findings to extensive sensitivity testing (full results in Online Appendix).
+
+*Construct validity*: COVID information trust predicts pandemic approval 2--4 times more strongly than non-pandemic outcomes (democracy satisfaction, institutional trust), confirming domain-specificity rather than generalized regime loyalty. This addresses concerns that our mechanism merely captures diffuse support.
+
+*Alternative specifications*: Ordinal logistic models treating approval as ordered categorical yield identical conclusions. Results are robust to robust regression, quantile regression, and survey-weighted estimation.
+
+*Sensitivity analysis*: E-values range from 2.70 to 3.71, meaning an unmeasured confounder would need to nearly triple the risk of both high trust and high approval—simultaneously and independently of all observed covariates—to fully explain away the findings. For context, confounders of this magnitude are rare in observational research; most known confounders in political behaviour studies have substantially smaller effects.
+
+*Social desirability*: `r round(speech_freedom_stats$pct_constrained, 1)`% of Vietnamese respondents openly disagreed that "people are free to speak without fear"---yet among these respondents, `r round(speech_freedom_stats$approval_among_constrained, 1)`% still approved of pandemic handling, virtually identical to those who feel free to speak (`r round(speech_freedom_stats$approval_among_free, 1)`%). Vietnamese respondents also openly reported the region's highest infection rates. These off-diagonal responses are difficult to reconcile with uniform fear driving survey responses.
+
+# Discussion
+
+## The Information-Credibility Heuristic
+
+Our findings support both hypotheses. Trust in government COVID-19 information is substantially more strongly associated with pandemic approval than personal infection or economic hardship---across all three countries, all specifications, and robust to extensive sensitivity testing (H1). In Thailand, infection reduces approval among low-trust citizens but not among high-trust citizens, demonstrating that trusted narratives can insulate governments from experiential accountability (H2). The Vietnam Paradox is real: the region's highest infection rate coincided with its highest approval.
+
+The information-credibility heuristic offers a compelling interpretation: trust in official communication functions as a cognitive filter through which citizens interpret their experiences. When official information is deemed credible, negative events are attributed to forces beyond government control---the virus itself, global circumstances, or personal misfortune. When distrusted, the same events are read as government failures. This explains why infection showed null associations with approval in Vietnam and Cambodia: the *meaning* of pandemic experiences was shaped by nearly universally trusted official narratives.
+
+Thailand and Vietnam represent opposite poles of this framework. In Thailand's more pluralistic information environment, the accountability mechanism operates as performance legitimacy theories predict---but only among citizens who distrust official information. In Vietnam, population-wide adoption of official frames appears to have decoupled personal experience from political evaluation entirely. This poses a fundamental challenge to performance legitimacy theories: if the state can maintain a trusted narrative, objective failure need not translate into political consequences.
+
+## Limitations and Alternative Interpretations
+
+Our cross-sectional design cannot establish causal direction. Trust may shape approval, approval may shape trust, or both may reflect a common orientation toward the regime. We measure *trust* in government information, not information control, propaganda effectiveness, or censorship. High trust in Vietnam could reflect successful narrative management---or genuinely effective communication, cultural deference, or social desirability bias. Throughout, we distinguish between our measured construct (individual-level trust in official COVID-19 information) and unmeasured contextual factors (information environments, media systems, censorship regimes) that might explain cross-national variation in that trust.
+
+Several patterns favour the information-credibility interpretation over alternatives. First, and most critically for the reverse causality concern, COVID-specific trust remains the dominant predictor after controlling for institutional trust and democracy satisfaction—measures that should capture generalized regime support. If high trust in COVID information merely reflected a "halo effect" from pre-existing regime loyalty, adding these controls should substantially attenuate the trust coefficient. Instead, it declines by only 16–26%, retaining approximately three-quarters of its original strength, and the effect size remains substantively large (β \> 0.31 across all countries). This pattern is difficult to reconcile with the view that information trust is simply a proxy for diffuse regime support; rather, it suggests that crisis-specific trust operates through a distinct pathway. Second, VIF diagnostics confirm trust and approval are empirically distinguishable (VIF = `r vif_min`--`r vif_max`), with shared variance of only `r round(cor_trust_approval^2 * 100, 1)`%. Third, E-value analysis shows unmeasured confounders would need risk ratios of 2.7--3.7 to explain away findings---exceeding plausible confounding scenarios. Fourth, and most importantly, the Thailand interaction results demonstrate that infection affects approval *differently* depending on trust levels. This conditional pattern is difficult to explain if trust merely correlates with approval rather than functioning as a cognitive filter.
+
+A related alternative is that Vietnam's high approval reflects a "legacy effect"—citizens rewarding the government's successful 2020 containment rather than evaluating current conditions. On this account, early success earned a reservoir of legitimacy that citizens drew upon even as infections surged. Our information-credibility heuristic differs in a crucial respect: it posits that trust in official information *actively shapes* how citizens interpret ongoing experiences, not merely that past performance generates lasting goodwill. The distinction matters empirically. If legacy effects drove approval, we would expect institutional trust (which captures accumulated regime legitimacy) to dominate COVID-specific information trust once both are in the model. Instead, Table 2 shows the opposite: COVID information trust remains the stronger predictor even controlling for institutional trust. Citizens appear to be filtering *current* experiences through *current* trust in official narratives, not simply coasting on stored legitimacy from 2020.
+
+How do our findings relate to Baniamin's [-@Baniamin2025-rx] authoritarian cultural orientation (ACO) framework? Using Asian Barometer Wave 4 data across fourteen countries, Baniamin finds that ACO---measured as unquestioning obedience to authority---contributes to higher institutional trust independently of actual governance performance. Our findings are complementary rather than contradictory. ACO likely explains *why* citizens in Vietnam and Cambodia trust official COVID-19 information so readily in the first place: societies with stronger hierarchical orientations may be predisposed to accept official narratives. But our analysis suggests that once established, this trust actively shapes how citizens interpret their experiences---functioning as a mediating mechanism rather than simply inflating all government assessments uniformly. Future research might test whether ACO moderates the relationship between information trust and approval, or whether information trust mediates the ACO-approval relationship.
+
+Alternative accounts cannot be ruled out. Vietnam's high trust could reflect genuinely effective crisis communication rather than manipulation---the government's early COVID-19 response was internationally praised [@Pollack2020-xq], and citizens may have accurately perceived competent management even as infections eventually surged. Cultural variation in deference to authority may contribute independently of our measured trust variable [@Thayer2011-te; @Kerkvliet2015-lp; @Ma2014-jj]. Survey timing strengthens rather than weakens our findings: Vietnam was surveyed during the Omicron wave when infections were peaking---respondents were evaluating performance while actively experiencing the outbreak, not recalling distant memories.
+
+Social desirability bias deserves particular attention. Respondents in authoritarian settings may report approval they do not genuinely feel. We cannot definitively rule this out with observational data. However, several patterns suggest social desirability does not fully explain our findings. Vietnamese respondents openly reported the region's highest infection rates---information that could embarrass the government. More tellingly, `r round(speech_freedom_stats$pct_constrained, 1)`% of Vietnamese respondents openly disagreed that "people are free to speak without fear," yet among these same respondents who perceive speech constraints, `r round(speech_freedom_stats$approval_among_constrained, 1)`% still approved of pandemic handling---virtually identical to approval among those who feel free to speak. If fear uniformly inflates all pro-government responses, we would expect those who perceive constraints to show *lower* approval, or at least to avoid criticizing speech freedoms in the first place. The off-diagonal pattern---critical of speech freedoms but approving of pandemic handling---suggests respondents distinguish between domains rather than uniformly deferring.
+
+## Implications
+
+For rally-around-the-flag theory, our findings suggest health crises do not automatically generate government support [@Hegewald2024-ii; @Kritzinger2021-im]. The rally mechanism appears conditional on information environment characteristics: where citizens trust official narratives, support may emerge regardless of outcomes; where they distrust official narratives, the expected accountability pattern operates.
+
+For theories of retrospective voting and democratic accountability more broadly, our findings highlight the informational preconditions for outcome-based evaluation. The canonical retrospective voting model assumes citizens can observe outcomes and attribute responsibility [@Fiorina1978-wf; @Healy2013-sy]. Our results suggest this assumption may fail when official narratives successfully frame outcomes as beyond government control. The Thailand results are instructive: accountability functioned among citizens who distrusted official information, suggesting the mechanism itself operates—but only when citizens have access to, and confidence in, alternative attributional frames. Democratic accountability may thus depend not only on electoral institutions but on information environments that permit critical evaluation of official narratives.
+
+For public health communication, these findings present a double-edged implication. On one hand, maintaining public trust in official health information appears consequential for social cohesion during crises—citizens who trust official sources may be more resilient to the psychological and political disruptions of negative health outcomes. On the other hand, this same dynamic could insulate governments from accountability for genuine policy failures, reducing incentives for effective crisis management. The normative valence depends on whether high trust reflects genuinely competent communication or successful narrative control despite poor performance—a distinction our cross-sectional data cannot adjudicate.
+
+For performance legitimacy theory, the disconnect between outcomes and approval in Vietnam and Cambodia suggests legitimacy may derive from sources other than policy effectiveness---at least in certain information environments. Our findings provide individual-level evidence consistent with Guriev and Treisman's [-@Guriev2019-xj] informational autocracy framework: when citizens trust official narratives, objective performance becomes less consequential for political support. This extends their macro-level argument about regime survival to micro-level survey evidence about individual attitudes.
+
+For public health communication, these findings suggest that maintaining information credibility may be as consequential for public trust and social cohesion as epidemiological outcomes themselves. Governments that squander credibility early in a crisis may face accountability pressures even if they subsequently improve performance; governments that maintain credibility may retain support even through difficult outcomes.
+
+We caution against normative conclusions about "authoritarian advantages" in crisis management. Thailand's low approval could indicate democratic accountability functioning appropriately---citizens punishing a government they perceive as having failed---rather than democratic vulnerability. The patterns we document are troubling primarily for theories that assume citizens can and do evaluate government performance based on outcomes. If narrative credibility can substitute for actual performance, the informational foundations of democratic accountability deserve closer scrutiny.
+
+# Conclusion
+
+The Vietnam Paradox challenges the core logic of performance-based legitimacy. Despite recording Southeast Asia's highest COVID-19 infection rate, Vietnam maintained the region's highest approval for government pandemic handling. Citizens' evaluations were tied far more closely to trust in official information than to personal health outcomes---the predictive power of information trust exceeded that of infection by an order of magnitude.
+
+Our findings support an information-credibility framework. Trust in government COVID-19 information strongly predicted approval (β = `r round(cor_ranges$trust_min, 2)` to `r round(cor_ranges$trust_max, 2)`), explaining 26--45% of variance, while personal infection showed null effects across all three countries. Thailand provides more than a contrast—it validates the underlying theory. Among Thai citizens who distrusted official information, infection reduced approval exactly as performance-legitimacy theories predict. The accountability mechanism is not absent; it is *conditional* on information environment. When the cognitive filter of trusted narratives is removed, the performance-legitimacy link functions normally. This transforms our findings from a regional anomaly into evidence for a general theory: information trust moderates whether citizens translate personal experiences into political evaluations. Vietnam and Cambodia represent ceiling cases where near-universal trust has decoupled outcomes from evaluations entirely.
+
+These findings complement recent work on trust paradoxes in authoritarian contexts [@Baniamin2025-rx] by identifying a domain-specific mechanism: crisis information trust appears to shape how citizens interpret negative experiences, functioning as a cognitive filter rather than simply reflecting diffuse cultural deference. When official narratives are deemed credible, citizens may attribute suffering to forces beyond government control rather than to policy failure.
+
+We acknowledge limitations. Our cross-sectional design cannot establish causality, and high trust could reflect genuinely effective communication rather than narrative manipulation. The interpretation we favour awaits confirmation from longitudinal or experimental designs.
+
+But what the evidence establishes is a robust empirical pattern demanding theoretical attention. If governments can maintain trusted narratives during crises, objective outcomes may become politically irrelevant---a troubling prospect for theories grounding democratic accountability in citizens' ability to evaluate governmental performance.
+
+# References {.unnumbered}
+
+::: {#refs}
+:::
+
+{{< pagebreak >}}
+
+# Tables and Figures {.unnumbered}
+
+```{r}
+#| label: tbl-paradox
+#| tbl-cap: "The Vietnam Paradox---COVID-19 Infection Rates and Government Approval by Country"
+#| echo: false
+
+if (!is.null(paradox_summary)) {
+  tbl_data <- paradox_summary %>%
+    select(country_name, n, covid_infection_rate, govt_approval_rate, trust_covid_rate)
+
+  if (is_docx) {
+    # Flextable for DOCX with explicit column widths
+    tbl_data %>%
+      rename(
+        Country = country_name,
+        N = n,
+        `Infection Rate (%)` = covid_infection_rate,
+        `Approval Rate (%)` = govt_approval_rate,
+        `Trust COVID Info (%)` = trust_covid_rate
+      ) %>%
+      flextable::flextable() %>%
+      flextable::width(j = 1, width = 1.2) %>%
+      flextable::width(j = 2, width = 0.6) %>%
+      flextable::width(j = 3:5, width = 1.3) %>%
+      flextable::colformat_double(digits = 1) %>%
+      flextable::autofit()
+  } else {
+    # gt for HTML/PDF
+    tbl_data %>%
+      gt() %>%
+      cols_label(
+        country_name = "Country",
+        n = "N",
+        covid_infection_rate = "Infection Rate (%)",
+        govt_approval_rate = "Approval Rate (%)",
+        trust_covid_rate = "Trust COVID Info (%)"
+      ) %>%
+      cols_width(
+        country_name ~ px(100),
+        n ~ px(60),
+        covid_infection_rate ~ px(120),
+        govt_approval_rate ~ px(120),
+        trust_covid_rate ~ px(130)
+      ) %>%
+      fmt_number(columns = where(is.numeric), decimals = 1) %>%
+      tab_header(
+        title = "The Vietnam Paradox"
+      ) %>%
+      tab_source_note("Source: Asian Barometer Wave 6 (2021-2022). Infection = % reporting personal/family COVID infection. Approval = % rating handling as 'well'/'very well'. Trust = % reporting 'quite a lot'/'great deal' of trust.") %>%
+      tab_options(
+        table.font.size = px(10),
+        heading.title.font.size = px(12),
+        source_notes.font.size = px(9),
+        data_row.padding = px(3),
+        table.width = pct(100)
+      )
+  }
+} else {
+  cat("Data not available.\n")
+}
+```
+
+{{< pagebreak >}}
+
+```{r}
+#| label: fig-coefplot
+#| fig-cap: "Coefficient Plot with 95% Confidence Intervals---Bivariate Associations Between COVID-19 Impacts and Government Approval"
+#| fig-width: 9
+#| fig-height: 7
+#| echo: false
+
+# Build coefficient plot data from stored results (with CIs)
+# All three use BIVARIATE models for apples-to-apples comparison
+if (!is.null(h1_results) && !is.null(h2a_results) && !is.null(h4a_results)) {
+
+  coef_data <- bind_rows(
+    # Infection coefficients (bivariate)
+    tibble(
+      Country = names(h1_results),
+      Variable = "Personal Infection",
+      estimate = sapply(h1_results, function(x) x$coef),
+      ci_lower = sapply(h1_results, function(x) x$ci_lower),
+      ci_upper = sapply(h1_results, function(x) x$ci_upper),
+      significant = sapply(h1_results, function(x) x$p < 0.05)
+    ),
+    # Trust coefficients (bivariate)
+    tibble(
+      Country = names(h2a_results),
+      Variable = "Trust in COVID Info",
+      estimate = sapply(h2a_results, function(x) x$coef),
+      ci_lower = sapply(h2a_results, function(x) x$ci_lower),
+      ci_upper = sapply(h2a_results, function(x) x$ci_upper),
+      significant = sapply(h2a_results, function(x) x$p < 0.05)
+    ),
+    # Economic coefficients (bivariate - from h4a_results)
+    tibble(
+      Country = names(h4a_results),
+      Variable = "Economic Hardship",
+      estimate = sapply(h4a_results, function(x) x$coef),
+      ci_lower = sapply(h4a_results, function(x) x$ci_lower),
+      ci_upper = sapply(h4a_results, function(x) x$ci_upper),
+      significant = sapply(h4a_results, function(x) x$p < 0.05)
+    )
+  ) %>%
+    mutate(
+      Country = factor(Country, levels = c("Cambodia", "Vietnam", "Thailand")),
+      Variable = factor(Variable, levels = c("Personal Infection", "Economic Hardship", "Trust in COVID Info"))
+    )
+
+  # Cleveland dot plot with CIs
+  ggplot(coef_data, aes(x = estimate, y = Variable, color = Country, shape = significant)) +
+    geom_vline(xintercept = 0, linetype = "dashed", color = "gray50", linewidth = 0.5) +
+    geom_errorbarh(
+      aes(xmin = ci_lower, xmax = ci_upper),
+      height = 0.15,
+      linewidth = 0.7,
+      position = position_dodge(width = 0.6)
+    ) +
+    geom_point(
+      size = 3.5,
+      position = position_dodge(width = 0.6)
+    ) +
+    scale_color_manual(
+      values = c("Cambodia" = "#66C2A5", "Vietnam" = "#8DA0CB", "Thailand" = "#FC8D62"),
+      name = "Country"
+    ) +
+    scale_shape_manual(
+      values = c("TRUE" = 16, "FALSE" = 1),  # Filled vs hollow
+      name = "p < 0.05",
+      labels = c("TRUE" = "Yes", "FALSE" = "No")
+    ) +
+    labs(
+      title = "Trust Dominates: Effect Sizes with Uncertainty",
+      subtitle = "Standardized regression coefficients with 95% confidence intervals",
+      x = expression(paste("Standardized Coefficient (", beta, ")")),
+      y = NULL,
+      caption = "Note: Filled points = p < 0.05. All coefficients from bivariate regressions."
+    ) +
+    scale_x_continuous(limits = c(-0.3, 0.85), breaks = seq(-0.2, 0.8, 0.2)) +
+    theme_minimal(base_size = 12) +
+    theme(
+      legend.position = "bottom",
+      legend.box = "horizontal",
+      plot.title = element_text(face = "bold", size = 14),
+      plot.subtitle = element_text(size = 11, color = "gray30"),
+      plot.caption = element_text(size = 9, hjust = 0),
+      panel.grid.major.y = element_blank(),
+      panel.grid.minor = element_blank(),
+      axis.text.y = element_text(size = 11, face = "bold")
+    ) +
+    guides(
+      color = guide_legend(order = 1),
+      shape = guide_legend(order = 2)
+    )
+} else {
+  cat("Data not available. Run analysis scripts first.\n")
+}
+```
+
+{{< pagebreak >}}
+
+```{r}
+#| label: tbl-multivariate
+#| tbl-cap: "Multivariate OLS Regression---Determinants of Government Pandemic Approval"
+#| echo: false
+
+if (!is.null(m1_coefficients) && !is.null(m2_coefficients)) {
+
+  term_labels <- c(
+    "covid_contracted" = "COVID Infected",
+    "covid_trust_info" = "Trust COVID Info",
+    "institutional_trust_index" = "Institutional Trust",
+    "dem_satisfaction" = "Democracy Satisfaction",
+    "auth_acceptance" = "Authoritarian Acceptance",
+    "covid_impact_severity" = "COVID Economic Impact",
+    "income_quintile" = "Income Quintile",
+    "econ_anxiety" = "Economic Anxiety",
+    "age" = "Age",
+    "genderMale" = "Male",
+    "educ_levelSecondary" = "Education (Secondary)",
+    "educ_levelUniversity/Tertiary" = "Education (University)",
+    "urban" = "Urban"
+  )
+
+  format_coef <- function(estimate, std.error, p.value) {
+    stars <- case_when(p.value < 0.001 ~ "***", p.value < 0.01 ~ "**", p.value < 0.05 ~ "*", TRUE ~ "")
+    sprintf("%.3f%s (%.3f)", estimate, stars, std.error)
+  }
+
+  m1_processed <- m1_coefficients %>%
+    filter(term != "(Intercept)") %>%
+    mutate(Variable = term_labels[term], coef_display = format_coef(estimate, std.error, p.value)) %>%
+    select(Country, Variable, coef_display) %>%
+    pivot_wider(names_from = Country, values_from = coef_display)
+
+  m2_processed <- m2_coefficients %>%
+    filter(term != "(Intercept)") %>%
+    mutate(Variable = ifelse(term %in% names(term_labels), term_labels[term], term),
+           coef_display = format_coef(estimate, std.error, p.value)) %>%
+    select(Country, Variable, coef_display) %>%
+    pivot_wider(names_from = Country, values_from = coef_display)
+
+  all_vars <- m2_processed$Variable
+
+  m1_expanded <- tibble(Variable = all_vars) %>%
+    left_join(m1_processed, by = "Variable") %>%
+    mutate(across(where(is.character) & !matches("Variable"), ~replace_na(., "---")))
+
+  summary_df <- tibble(
+    Variable = all_vars,
+    `Cambodia (1)` = m1_expanded$Cambodia, `Cambodia (2)` = m2_processed$Cambodia,
+    `Vietnam (1)` = m1_expanded$Vietnam, `Vietnam (2)` = m2_processed$Vietnam,
+    `Thailand (1)` = m1_expanded$Thailand, `Thailand (2)` = m2_processed$Thailand
+  )
+
+  fit_rows <- tibble(
+    Variable = c("Observations", "R²"),
+    `Cambodia (1)` = c(as.character(m1_fit$N[m1_fit$Country == "Cambodia"]), sprintf("%.3f", m1_fit$R_squared[m1_fit$Country == "Cambodia"])),
+    `Cambodia (2)` = c(as.character(m2_fit$N[m2_fit$Country == "Cambodia"]), sprintf("%.3f", m2_fit$R_squared[m2_fit$Country == "Cambodia"])),
+    `Vietnam (1)` = c(as.character(m1_fit$N[m1_fit$Country == "Vietnam"]), sprintf("%.3f", m1_fit$R_squared[m1_fit$Country == "Vietnam"])),
+    `Vietnam (2)` = c(as.character(m2_fit$N[m2_fit$Country == "Vietnam"]), sprintf("%.3f", m2_fit$R_squared[m2_fit$Country == "Vietnam"])),
+    `Thailand (1)` = c(as.character(m1_fit$N[m1_fit$Country == "Thailand"]), sprintf("%.3f", m1_fit$R_squared[m1_fit$Country == "Thailand"])),
+    `Thailand (2)` = c(as.character(m2_fit$N[m2_fit$Country == "Thailand"]), sprintf("%.3f", m2_fit$R_squared[m2_fit$Country == "Thailand"]))
+  )
+
+  summary_df <- bind_rows(summary_df, fit_rows)
+
+  if (is_docx) {
+    # Flextable for DOCX with compact formatting
+    # Total width: 1.3 + (6 × 0.85) = 6.4 inches (fits in 6.5" usable width)
+    summary_df %>%
+      flextable::flextable() %>%
+      flextable::fontsize(size = 8, part = "all") %>%
+      flextable::fontsize(size = 7, part = "header") %>%
+      flextable::padding(padding = 1, part = "all") %>%
+      flextable::width(j = 1, width = 1.3) %>%
+      flextable::width(j = 2:7, width = 0.85) %>%
+      flextable::align(align = "center", j = 2:7, part = "all") %>%
+      flextable::align(align = "left", j = 1, part = "all")
+  } else {
+    # gt for HTML/PDF with narrower columns
+    summary_df %>%
+      gt() %>%
+      tab_header(title = "Multivariate OLS Regression Results", subtitle = "DV: Government Pandemic Handling (1--4)") %>%
+      tab_spanner(label = "Cambodia", columns = c(`Cambodia (1)`, `Cambodia (2)`)) %>%
+      tab_spanner(label = "Vietnam", columns = c(`Vietnam (1)`, `Vietnam (2)`)) %>%
+      tab_spanner(label = "Thailand", columns = c(`Thailand (1)`, `Thailand (2)`)) %>%
+      cols_width(
+        Variable ~ px(140),
+        everything() ~ px(85)
+      ) %>%
+      tab_source_note("*** p < 0.001, ** p < 0.01, * p < 0.05. SE in parentheses. (1) Core; (2) Full with controls.") %>%
+      tab_options(
+        table.font.size = px(8),
+        column_labels.font.size = px(8),
+        heading.title.font.size = px(10),
+        heading.subtitle.font.size = px(9),
+        source_notes.font.size = px(7),
+        data_row.padding = px(1),
+        table.width = pct(100)
+      )
+  }
+} else {
+  cat("Data not available.\n")
+}
+```

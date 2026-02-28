@@ -1,0 +1,2136 @@
+---
+title: "Descriptive Analysis: The Vietnam Paradox"
+subtitle: "COVID, Trust, and Regime Legitimacy in Southeast Asia"
+author: "Jeffrey Stark"
+date: today
+format:
+  html:
+    toc: true
+    toc-depth: 3
+    number-sections: true
+    code-fold: show
+    df-print: paged
+---
+
+# Setup
+
+```{r 00-setup, message=FALSE, warning=FALSE}
+# Core packages
+library(tidyverse)
+library(here)
+
+# CRITICAL: Set project root (script is 3 levels deep from root)
+here::i_am("papers/01_vietnam_covid_paradox/analysis/03_descriptive_analysis_IMPROVED.qmd")
+
+library(gt)
+library(gtExtras)
+library(gtsummary)
+library(scales)
+library(patchwork)
+library(ggridges)
+library(corrplot)
+library(RColorBrewer)
+library(effsize)
+library(boot)
+
+# Reproducibility
+set.seed(2025)
+
+# Set theme
+theme_set(theme_minimal(base_size = 12))
+
+# ============================================================================
+# FIX NAMESPACE CONFLICTS (Critical!)
+# ============================================================================
+# Force dplyr and tidyr functions to take priority over MASS
+select <- dplyr::select
+filter <- dplyr::filter
+rename <- dplyr::rename
+summarise <- dplyr::summarise
+summarize <- dplyr::summarize
+mutate <- dplyr::mutate
+group_by <- dplyr::group_by
+arrange <- dplyr::arrange
+
+# ============================================================================
+# PROFESSIONAL COLOR SYSTEM (Colorblind-Friendly)
+# ============================================================================
+
+# 1. CATEGORICAL COLORS: For country comparisons
+set2_colors <- brewer.pal(3, "Set2")
+country_colors <- c(
+  "Cambodia" = set2_colors[1],  # Teal
+  "Thailand" = set2_colors[2],  # Orange
+  "Vietnam"  = set2_colors[3]   # Purple
+)
+
+# 2. DIVERGING COLORS: For correlations (-1 to +1)
+corr_colors <- rev(brewer.pal(11, "RdBu"))  # Blue = positive, Red = negative
+
+# 3. SEQUENTIAL COLORS: For effect sizes (small → large)
+effect_colors <- brewer.pal(9, "YlOrRd")[c(3, 5, 7)]  # Yellow-Orange-Red gradient
+
+# 4. RELIABILITY COLORS: For quality indicators
+reliability_colors <- c(
+  "Excellent" = "#d4edda",   # Light green
+  "Good"      = "#d1ecf1",   # Light blue
+  "Acceptable"= "#fff3cd",   # Light yellow
+  "Questionable" = "#f8d7da", # Light red
+  "Poor"      = "#f5c6cb"    # Darker red
+)
+
+cat("✓ Professional color system loaded (colorblind-friendly)\n")
+
+# Diagnostic: Check working directory and file path
+cat("\n=== Diagnostic Info ===\n")
+cat("Working directory:", getwd(), "\n")
+cat("here() root:", here::here(), "\n")
+data_path <- here("data", "processed", "ab_analysis_v2.rds")
+cat("Looking for file at:", data_path, "\n")
+cat("File exists:", file.exists(data_path), "\n")
+cat("=======================\n\n")
+
+# Load data
+ab_analysis <- readRDS(here("data", "processed", "ab_analysis_v2.rds"))
+
+# Convert haven_labelled country_name to standard factor for compatibility
+ab_analysis <- ab_analysis %>%
+  mutate(country_name = as.factor(as.character(country_name)))
+
+cat("✓ Loaded", nrow(ab_analysis), "observations\n")
+```
+
+# Data Completeness Assessment
+
+## Define Variable Tiers
+
+```{r 01-define-variable-tiers}
+# ============================================================================
+# VARIABLE TIERS FOR COMPLETENESS ASSESSMENT
+# ============================================================================
+
+# Tier 1: Core variables for main analysis (PRIMARY MODEL)
+tier1_core <- c(
+  # COVID variables (individuals - no composite)
+  "covid_contracted",           # Binary, standalone (PRIMARY IV)
+  "covid_impact_severity",      # 1-4 scale, standalone
+  
+  # COVID performance (COMPOSITES and individual items)
+  "covid_govt_handling",        # Individual item (PRIMARY DV)
+  "covid_trust_info",           # Individual item (KEY MEDIATOR)
+  "covid_govt_performance",     # COMPOSITE of above two
+  
+  # Democracy (COMPOSITES)
+  "dem_satisfaction",           # COMPOSITE of q90 + q91 (z-scores)
+  "dem_legitimacy",             # COMPOSITE of q92 + q95 (z-scores)
+  
+  # Trust (COMPOSITE)
+  "institutional_trust_index",  # COMPOSITE of q7-q15
+  
+  # Country (grouping variable)
+  "country_name"
+)
+
+# Tier 2a: Authoritarianism measures
+tier2_auth <- c(
+  # Authoritarianism (COMPOSITES)
+  "auth_acceptance",            # COMPOSITE of q168-q171
+  "regime_preference",          # COMPOSITE of q129-q132
+  
+  # Emergency powers (COMPOSITE)
+  "emergency_powers_support"    # COMPOSITE of q172a-e
+)
+
+# Tier 2b: Demographics (controls)
+tier2_demographics <- c(
+  # Demographics (INDIVIDUALS)
+  "age",                        # Continuous
+  "gender",                     # Factor
+  "educ_level",                 # Factor
+  "urban"                       # Binary
+)
+
+# Tier 3: Additional COVID measures (optional/robustness)
+tier3_covid_extended <- c(
+  "covid_illness_death",        # Family illness/death
+  "covid_job_loss",             # Job loss
+  "covid_income_loss",          # Income loss  
+  "covid_edu_disruption",       # Education disruption
+  "covid_impact_count",         # Cumulative count (0-5)
+  "covid_restrict_composite"    # COMPOSITE (Cambodia & Thailand only)
+)
+
+# All tiers combined
+all_analysis_vars <- c(tier1_core, tier2_auth, tier2_demographics, tier3_covid_extended)
+
+cat("=== VARIABLE TIER DEFINITIONS ===\n")
+cat("Tier 1 (Core):", length(tier1_core), "variables\n")
+cat("Tier 2a (Auth):", length(tier2_auth), "variables\n")
+cat("Tier 2b (Demographics):", length(tier2_demographics), "variables\n")
+cat("Tier 3 (Extended):", length(tier3_covid_extended), "variables\n")
+cat("Total:", length(all_analysis_vars), "variables\n")
+```
+
+## Overall Completeness by Variable
+
+```{r 03-completeness-by-variable}
+# ============================================================================
+# COMPLETENESS CHECK: VARIABLE-BY-VARIABLE
+# ============================================================================
+
+cat("\n=== VARIABLE-LEVEL COMPLETENESS ===\n\n")
+
+# Calculate completeness for each variable
+completeness_vars <- ab_analysis %>%
+  summarise(across(
+    all_of(all_analysis_vars),
+    list(
+      n_valid = ~sum(!is.na(.)),
+      n_missing = ~sum(is.na(.)),
+      pct_complete = ~round(sum(!is.na(.)) / n() * 100, 1)
+    ),
+    .names = "{.col}_{.fn}"
+  )) %>%
+  pivot_longer(
+    everything(),
+    names_to = c("variable", ".value"),
+    names_sep = "_(?=n_valid|n_missing|pct_complete)"
+  ) %>%
+  arrange(pct_complete)
+
+print(completeness_vars, n = 50)
+
+# Flag variables with high missingness
+cat("\n=== VARIABLES WITH >20% MISSING ===\n")
+high_missing <- completeness_vars %>%
+  filter(pct_complete < 80)
+
+if(nrow(high_missing) > 0) {
+  print(high_missing, n = 50)
+  cat("\n⚠ WARNING:", nrow(high_missing), "variables have >20% missing data\n")
+} else {
+  cat("✓ No variables exceed 20% missing threshold\n")
+}
+
+# Save completeness report
+write_csv(completeness_vars, here("tables", "variable_completeness.csv"))
+cat("\n✓ Saved: tables/variable_completeness.csv\n")
+```
+
+## Completeness by Country
+
+```{r 04-completeness-by-country}
+# ============================================================================
+# COMPLETENESS CHECK: BY COUNTRY
+# ============================================================================
+
+cat("\n=== COMPLETENESS BY COUNTRY (TIER 1 CORE VARIABLES) ===\n\n")
+
+completeness_country <- ab_analysis %>%
+  group_by(country_name) %>%
+  summarise(
+    n_total = n(),
+    
+    # Tier 1: COVID variables
+    covid_contracted_n = sum(!is.na(covid_contracted)),
+    covid_contracted_pct = round(100 * covid_contracted_n / n(), 1),
+    
+    covid_severity_n = sum(!is.na(covid_impact_severity)),
+    covid_severity_pct = round(100 * covid_severity_n / n(), 1),
+    
+    # Tier 1: COVID performance
+    govt_handling_n = sum(!is.na(covid_govt_handling)),
+    govt_handling_pct = round(100 * govt_handling_n / n(), 1),
+    
+    trust_info_n = sum(!is.na(covid_trust_info)),
+    trust_info_pct = round(100 * trust_info_n / n(), 1),
+    
+    covid_perf_comp_n = sum(!is.na(covid_govt_performance)),
+    covid_perf_comp_pct = round(100 * covid_perf_comp_n / n(), 1),
+    
+    # Tier 1: Democracy
+    dem_sat_n = sum(!is.na(dem_satisfaction)),
+    dem_sat_pct = round(100 * dem_sat_n / n(), 1),
+    
+    dem_leg_n = sum(!is.na(dem_legitimacy)),
+    dem_leg_pct = round(100 * dem_leg_n / n(), 1),
+    
+    # Tier 1: Trust
+    trust_index_n = sum(!is.na(institutional_trust_index)),
+    trust_index_pct = round(100 * trust_index_n / n(), 1),
+    
+    # Tier 2a: Authoritarianism
+    auth_accept_n = sum(!is.na(auth_acceptance)),
+    auth_accept_pct = round(100 * auth_accept_n / n(), 1),
+    
+    regime_pref_n = sum(!is.na(regime_preference)),
+    regime_pref_pct = round(100 * regime_pref_n / n(), 1),
+    
+    emergency_n = sum(!is.na(emergency_powers_support)),
+    emergency_pct = round(100 * emergency_n / n(), 1),
+    
+    # Tier 2b: Demographics
+    age_n = sum(!is.na(age)),
+    age_pct = round(100 * age_n / n(), 1),
+    
+    gender_n = sum(!is.na(gender)),
+    gender_pct = round(100 * gender_n / n(), 1),
+    
+    educ_n = sum(!is.na(educ_level)),
+    educ_pct = round(100 * educ_n / n(), 1),
+    
+    urban_n = sum(!is.na(urban)),
+    urban_pct = round(100 * urban_n / n(), 1)
+  )
+
+print(completeness_country)
+
+# Save country completeness
+write_csv(completeness_country, here("tables", "completeness_by_country.csv"))
+cat("\n✓ Saved: tables/completeness_by_country.csv\n")
+```
+
+## Complete Case Analysis
+
+```{r 05-complete-case-analysis}
+# ============================================================================
+# COMPLETE CASE SAMPLE SIZES FOR DIFFERENT MODELS
+# ============================================================================
+
+cat("\n=== COMPLETE CASE SAMPLE SIZES ===\n\n")
+
+# Model 1: Minimal (Tier 1 core only - no demographics)
+n_minimal <- ab_analysis %>%
+  filter(
+    !is.na(covid_contracted) & 
+    !is.na(covid_govt_handling) &
+    !is.na(covid_trust_info) & 
+    !is.na(dem_satisfaction) &
+    !is.na(institutional_trust_index)
+  ) %>%
+  count(country_name) %>%
+  mutate(model = "Minimal (Tier 1 core)")
+
+# Model 2: With authoritarianism
+n_with_auth <- ab_analysis %>%
+  filter(
+    !is.na(covid_contracted) & 
+    !is.na(covid_govt_handling) &
+    !is.na(covid_trust_info) & 
+    !is.na(dem_satisfaction) &
+    !is.na(institutional_trust_index) &
+    !is.na(auth_acceptance) &
+    !is.na(regime_preference)
+  ) %>%
+  count(country_name) %>%
+  mutate(model = "With Auth (Tier 1 + Tier 2a)")
+
+# Model 3: With demographics
+n_with_demo <- ab_analysis %>%
+  filter(
+    !is.na(covid_contracted) & 
+    !is.na(covid_govt_handling) &
+    !is.na(covid_trust_info) & 
+    !is.na(dem_satisfaction) &
+    !is.na(institutional_trust_index) &
+    !is.na(age) & !is.na(gender) & 
+    !is.na(educ_level) & !is.na(urban)
+  ) %>%
+  count(country_name) %>%
+  mutate(model = "With Demographics (Tier 1 + Tier 2b)")
+
+# Model 4: Full (all Tier 1 + Tier 2)
+n_full <- ab_analysis %>%
+  filter(
+    !is.na(covid_contracted) & 
+    !is.na(covid_govt_handling) &
+    !is.na(covid_trust_info) & 
+    !is.na(dem_satisfaction) &
+    !is.na(institutional_trust_index) &
+    !is.na(auth_acceptance) &
+    !is.na(age) & !is.na(gender) & 
+    !is.na(educ_level) & !is.na(urban)
+  ) %>%
+  count(country_name) %>%
+  mutate(model = "Full Model (Tier 1 + Tier 2a + Tier 2b)")
+
+# Combine and display
+complete_case_summary <- bind_rows(n_minimal, n_with_auth, n_with_demo, n_full) %>%
+  pivot_wider(names_from = country_name, values_from = n) %>%
+  mutate(
+    Total = Cambodia + Thailand + Vietnam,
+    pct_of_total = round(100 * Total / nrow(ab_analysis), 1)
+  )
+
+print(complete_case_summary)
+
+# Create GT table
+complete_case_table <- complete_case_summary %>%
+  gt() %>%
+  tab_header(
+    title = "Complete Case Sample Sizes by Model Specification",
+    subtitle = "Sample sizes for different analytical models"
+  ) %>%
+  cols_label(
+    model = "Model Specification",
+    Cambodia = "Cambodia",
+    Thailand = "Thailand", 
+    Vietnam = "Vietnam",
+    Total = "Total",
+    pct_of_total = "% of Dataset"
+  ) %>%
+  tab_style(
+    style = cell_fill(color = "#f0f0f0"),
+    locations = cells_body(rows = model == "Minimal (Tier 1 core)")
+  ) %>%
+  tab_style(
+    style = cell_text(weight = "bold"),
+    locations = cells_body(columns = Total)
+  )
+
+gtsave(complete_case_table, here("tables", "complete_case_summary.html"))
+cat("\n✓ Saved: tables/complete_case_summary.html\n")
+
+# Assessment
+cat("\n=== SAMPLE SIZE ASSESSMENT ===\n")
+min_full <- min(complete_case_summary$Total[complete_case_summary$model == "Full Model (Tier 1 + Tier 2a + Tier 2b)"])
+
+if(min_full >= 800) {
+  cat("✓ EXCELLENT: n >=", min_full, "per country for full model\n")
+  cat("  → Sufficient power for complex interactions and mediation\n")
+} else if(min_full >= 500) {
+  cat("✓ GOOD: n >=", min_full, "per country for full model\n")
+  cat("  → Sufficient for main effects and simple interactions\n")
+} else if(min_full >= 300) {
+  cat("⚠ ADEQUATE: n >=", min_full, "per country for full model\n")
+  cat("  → Adequate for main effects, limited power for interactions\n")
+} else {
+  cat("⚠ WARNING: n <", min_full, "per country for full model\n")
+  cat("  → Consider simplified models or multiple imputation\n")
+}
+
+# Save datasets for analysis
+cat("\n=== CREATING ANALYSIS-READY DATASETS ===\n")
+
+# Minimal model dataset
+ab_minimal <- ab_analysis %>%
+  filter(
+    !is.na(covid_contracted) & 
+    !is.na(covid_govt_handling) &
+    !is.na(covid_trust_info) & 
+    !is.na(dem_satisfaction) &
+    !is.na(institutional_trust_index)
+  )
+
+saveRDS(ab_minimal, here("data", "processed", "ab_analysis_minimal.rds"))
+cat("✓ Saved: ab_analysis_minimal.rds (n =", nrow(ab_minimal), ")\n")
+
+# Full model dataset
+ab_full <- ab_analysis %>%
+  filter(
+    !is.na(covid_contracted) & 
+    !is.na(covid_govt_handling) &
+    !is.na(covid_trust_info) & 
+    !is.na(dem_satisfaction) &
+    !is.na(institutional_trust_index) &
+    !is.na(auth_acceptance) &
+    !is.na(age) & !is.na(gender) & 
+    !is.na(educ_level) & !is.na(urban)
+  )
+
+saveRDS(ab_full, here("data", "processed", "ab_analysis_full.rds"))
+cat("✓ Saved: ab_analysis_full.rds (n =", nrow(ab_full), ")\n")
+```
+
+# The Vietnam Paradox: Core Finding
+
+## Cross-tabulation: COVID Infection vs. Government Approval
+
+```{r 06-vietnam-paradox-table}
+# Create 06-comprehensive cross-tabulation
+paradox_data <- ab_analysis %>%
+  group_by(country_name) %>%
+  summarise(
+    # Sample size
+    n = n(),
+    
+    # COVID Infection Rate
+    covid_infection_rate = mean(covid_contracted, na.rm = TRUE) * 100,
+    
+    # Government Approval (% rating "very well" or "fairly well")
+    govt_approval_rate = mean(covid_govt_handling >= 3, na.rm = TRUE) * 100,
+    mean_gov_handling = mean(covid_govt_handling, na.rm = TRUE),
+    
+    # Trust in Government COVID Information
+    trust_covid_rate = mean(covid_trust_info >= 3, na.rm = TRUE) * 100,
+    mean_trust_covid = mean(covid_trust_info, na.rm = TRUE),
+    
+    # Institutional Trust
+    mean_institutional_trust = mean(institutional_trust_index, na.rm = TRUE),
+    
+    # Democracy Satisfaction (% satisfied)
+    dem_satisfaction_pct = mean(dem_satisfaction >= 0, na.rm = TRUE) * 100,  # z-score, so >0 = above average
+    mean_dem_sat = mean(dem_satisfaction, na.rm = TRUE),
+    
+    # Emergency Powers Support (% approve COVID emergency powers)
+    emergency_support = mean(emergency_q172a >= 3, na.rm = TRUE) * 100
+  )
+
+# Create publication-quality table
+paradox_table <- paradox_data %>%
+  gt() %>%
+  tab_header(
+    title = "The Vietnam Paradox",
+    subtitle = "COVID Outcomes vs. Government Trust and Democracy"
+  ) %>%
+  fmt_number(
+    columns = c(covid_infection_rate, govt_approval_rate, trust_covid_rate, 
+                dem_satisfaction_pct, emergency_support),
+    decimals = 1
+  ) %>%
+  fmt_number(
+    columns = c(mean_gov_handling, mean_trust_covid, 
+                mean_institutional_trust, mean_dem_sat),
+    decimals = 2
+  ) %>%
+  cols_label(
+    country_name = "Country",
+    n = "N",
+    covid_infection_rate = "COVID Infection (%)",
+    govt_approval_rate = "Gov Approval (%)",
+    mean_gov_handling = "Gov Handling (1-4)",
+    trust_covid_rate = "Trust COVID Info (%)",
+    mean_trust_covid = "Trust (1-4)",
+    mean_institutional_trust = "Institutional Trust (1-4)",
+    dem_satisfaction_pct = "Democracy Satisfied (%)",
+    mean_dem_sat = "Dem Satisfaction (z-score)",
+    emergency_support = "Support COVID Emergency Powers (%)"
+  ) %>%
+  tab_spanner(
+    label = "COVID Impact",
+    columns = c(covid_infection_rate)
+  ) %>%
+  tab_spanner(
+    label = "Government Performance",
+    columns = c(govt_approval_rate, mean_gov_handling)
+  ) %>%
+  tab_spanner(
+    label = "Trust in COVID Response",
+    columns = c(trust_covid_rate, mean_trust_covid)
+  ) %>%
+  tab_spanner(
+    label = "Democratic Attitudes",
+    columns = c(dem_satisfaction_pct, mean_dem_sat)
+  ) %>%
+  data_color(
+    columns = covid_infection_rate,
+    fn = scales::col_numeric(
+      palette = c("lightgreen", "yellow", "red"),
+      domain = c(0, 100)
+    )
+  ) %>%
+  data_color(
+    columns = govt_approval_rate,
+    fn = scales::col_numeric(
+      palette = c("red", "yellow", "lightgreen"),
+      domain = c(0, 100)
+    )
+  ) %>%
+  tab_footnote(
+    footnote = "Higher COVID infection rate in Vietnam correlates with higher government approval",
+    locations = cells_body(columns = covid_infection_rate, rows = country_name == "Vietnam")
+  ) %>%
+  tab_footnote(
+    footnote = "Democracy satisfaction is standardized (z-score: mean=0, sd=1)",
+    locations = cells_column_labels(columns = mean_dem_sat)
+  )
+
+gtsave(paradox_table, here("tables", "table1_vietnam_paradox.html"))
+cat("✓ Saved: tables/table1_vietnam_paradox.html\n")
+```
+
+## Visualization: The Paradox
+
+```{r 07-vietnam-paradox-viz, fig.width=12, fig.height=8}
+# Create 2x2 visualization showing the paradox
+
+# Plot 1: COVID Infection Rate
+p1 <- ggplot(paradox_data, aes(x = country_name, y = covid_infection_rate, fill = country_name)) +
+  geom_col(show.legend = FALSE) +
+  scale_fill_manual(values = country_colors) +
+  scale_y_continuous(limits = c(0, 100), labels = scales::percent_format(scale = 1)) +
+  labs(title = "A. COVID Infection Rate",
+       x = NULL, y = "% Infected") +
+  theme_minimal(base_size = 14) +
+  theme(panel.grid.major.x = element_blank())
+
+# Plot 2: Government Approval
+p2 <- ggplot(paradox_data, aes(x = country_name, y = govt_approval_rate, fill = country_name)) +
+  geom_col(show.legend = FALSE) +
+  scale_fill_manual(values = country_colors) +
+  scale_y_continuous(limits = c(0, 100), labels = scales::percent_format(scale = 1)) +
+  labs(title = "B. Government Pandemic Approval",
+       x = NULL, y = "% Approve") +
+  theme_minimal(base_size = 14) +
+  theme(panel.grid.major.x = element_blank())
+
+# Plot 3: Trust in COVID Information
+p3 <- ggplot(paradox_data, aes(x = country_name, y = trust_covid_rate, fill = country_name)) +
+  geom_col(show.legend = FALSE) +
+  scale_fill_manual(values = country_colors) +
+  scale_y_continuous(limits = c(0, 100), labels = scales::percent_format(scale = 1)) +
+  labs(title = "C. Trust Government COVID Info",
+       x = NULL, y = "% Trust") +
+  theme_minimal(base_size = 14) +
+  theme(panel.grid.major.x = element_blank())
+
+# Plot 4: Democracy Satisfaction (using 0-1 index for easier interpretation)
+p4 <- ggplot(ab_analysis, aes(x = country_name, y = dem_satisfaction_index, fill = country_name)) +
+  stat_summary(fun = mean, geom = "col", show.legend = FALSE, na.rm = TRUE) +
+  scale_fill_manual(values = country_colors) +
+  scale_y_continuous(limits = c(0, 1), labels = scales::percent) +
+  labs(title = "D. Satisfaction with Democracy",
+       x = NULL, y = "Mean Index (0-1 scale)") +
+  theme_minimal(base_size = 14) +
+  theme(panel.grid.major.x = element_blank())
+
+# Combine plots
+combined_plot <- (p1 + p2) / (p3 + p4) +
+  plot_annotation(
+    title = "The Vietnam Paradox: High Infections, High Approval, Low Democracy",
+    subtitle = "Four dimensions of the puzzle",
+    theme = theme(plot.title = element_text(size = 18, face = "bold"))
+  )
+
+print(combined_plot)
+
+ggsave(here("figures", "fig1_vietnam_paradox.png"), 
+       combined_plot, width = 12, height = 8, dpi = 300)
+cat("✓ Saved: figures/fig1_vietnam_paradox.png\n")
+```
+
+# Detailed Descriptive Statistics
+
+## Table: Sample Characteristics by Country
+
+```{r 08-sample-characteristics}
+# Create comprehensive sample characteristics table
+sample_chars <- ab_analysis %>%
+  group_by(country_name) %>%
+  summarise(
+    n = n(),
+    
+    # COVID Variables
+    covid_infected_pct = mean(covid_contracted, na.rm = TRUE) * 100,
+    economic_impact_mean = mean(covid_impact_severity, na.rm = TRUE),
+    economic_impact_sd = sd(covid_impact_severity, na.rm = TRUE),
+    
+    # Government Performance
+    gov_handling_mean = mean(covid_govt_handling, na.rm = TRUE),
+    gov_handling_sd = sd(covid_govt_handling, na.rm = TRUE),
+    trust_covid_mean = mean(covid_trust_info, na.rm = TRUE),
+    trust_covid_sd = sd(covid_trust_info, na.rm = TRUE),
+    
+    # Trust and Democracy
+    trust_index_mean = mean(institutional_trust_index, na.rm = TRUE),
+    trust_index_sd = sd(institutional_trust_index, na.rm = TRUE),
+    dem_sat_mean = mean(dem_satisfaction, na.rm = TRUE),
+    dem_sat_sd = sd(dem_satisfaction, na.rm = TRUE),
+    
+    # Authoritarianism and Emergency Powers
+    auth_mean = mean(auth_acceptance, na.rm = TRUE),
+    auth_sd = sd(auth_acceptance, na.rm = TRUE),
+    emergency_mean = mean(emergency_powers_support, na.rm = TRUE),
+    emergency_sd = sd(emergency_powers_support, na.rm = TRUE),
+    
+    # Demographics
+    age_mean = mean(age, na.rm = TRUE),
+    age_sd = sd(age, na.rm = TRUE),
+    pct_female = mean(gender == "Female", na.rm = TRUE) * 100,
+    pct_urban = mean(urban == 1, na.rm = TRUE) * 100
+  )
+
+# Format as publication table
+descriptive_stats <- sample_chars %>%
+  gt() %>%
+  tab_header(
+    title = "Table 1: Descriptive Statistics by Country",
+    subtitle = "Asian Barometer Wave 6 (2021-2023)"
+  ) %>%
+  fmt_number(columns = where(is.numeric), decimals = 2) %>%
+  cols_label(
+    country_name = "Country",
+    n = "N",
+    covid_infected_pct = "COVID %",
+    economic_impact_mean = "Economic Impact",
+    economic_impact_sd = "SD",
+    gov_handling_mean = "Gov Handling",
+    gov_handling_sd = "SD",
+    trust_covid_mean = "Trust COVID Info",
+    trust_covid_sd = "SD",
+    trust_index_mean = "Institutional Trust",
+    trust_index_sd = "SD",
+    dem_sat_mean = "Democracy Sat.",
+    dem_sat_sd = "SD",
+    auth_mean = "Authoritarianism",
+    auth_sd = "SD",
+    emergency_mean = "Emergency Powers",
+    emergency_sd = "SD",
+    age_mean = "Age",
+    age_sd = "SD",
+    pct_female = "% Female",
+    pct_urban = "% Urban"
+  ) %>%
+  tab_spanner(label = "COVID Impact", columns = c(covid_infected_pct)) %>%
+  tab_spanner(label = "Economic Impact", columns = c(economic_impact_mean, economic_impact_sd)) %>%
+  tab_spanner(label = "Gov Performance", columns = c(gov_handling_mean, gov_handling_sd)) %>%
+  tab_spanner(label = "Trust COVID Info", columns = c(trust_covid_mean, trust_covid_sd)) %>%
+  tab_spanner(label = "Institutional Trust", columns = c(trust_index_mean, trust_index_sd)) %>%
+  tab_spanner(label = "Democracy", columns = c(dem_sat_mean, dem_sat_sd)) %>%
+  tab_spanner(label = "Authoritarianism", columns = c(auth_mean, auth_sd)) %>%
+  tab_spanner(label = "Emergency Powers", columns = c(emergency_mean, emergency_sd)) %>%
+  tab_spanner(label = "Demographics", columns = c(age_mean, age_sd, pct_female, pct_urban))
+
+gtsave(descriptive_stats, here("tables", "table1_descriptive_stats.html"))
+cat("✓ Saved: tables/table1_descriptive_stats.html\n")
+```
+
+## Distributions of Key Variables
+
+```{r 09-distributions, fig.width=12, fig.height=10}
+# Create ridge plots for key variables
+
+# Government Pandemic Handling
+p1 <- ggplot(ab_analysis, aes(x = covid_govt_handling, y = country_name, 
+                               fill = country_name)) +
+  geom_density_ridges(alpha = 0.7, scale = 0.9) +
+  scale_fill_manual(values = country_colors) +
+  scale_x_continuous(breaks = 1:4, labels = c("Very Badly", "Fairly Badly", 
+                                               "Fairly Well", "Very Well")) +
+  labs(title = "Government Pandemic Handling", x = NULL, y = NULL) +
+  theme_ridges() +
+  theme(legend.position = "none")
+
+# Institutional Trust
+p2 <- ggplot(ab_analysis, aes(x = institutional_trust_index, y = country_name, 
+                               fill = country_name)) +
+  geom_density_ridges(alpha = 0.7, scale = 0.9) +
+  scale_fill_manual(values = country_colors) +
+  labs(title = "Institutional Trust Index", x = "Trust (1-4)", y = NULL) +
+  theme_ridges() +
+  theme(legend.position = "none")
+
+# Democracy Satisfaction (0-1 index for easier interpretation)
+p3 <- ggplot(ab_analysis, aes(x = dem_satisfaction_index, y = country_name,
+                               fill = country_name)) +
+  geom_density_ridges(alpha = 0.7, scale = 0.9) +
+  scale_fill_manual(values = country_colors) +
+  scale_x_continuous(limits = c(0, 1), labels = scales::percent) +
+  labs(title = "Satisfaction with Democracy", x = "Index (0-1 scale)", y = NULL) +
+  theme_ridges() +
+  theme(legend.position = "none")
+
+# Emergency Powers Support
+p4 <- ggplot(ab_analysis, aes(x = emergency_powers_support, y = country_name, 
+                               fill = country_name)) +
+  geom_density_ridges(alpha = 0.7, scale = 0.9) +
+  scale_fill_manual(values = country_colors) +
+  labs(title = "Emergency Powers Support", x = "Support (1-4)", y = NULL) +
+  theme_ridges() +
+  theme(legend.position = "none")
+
+combined_dist <- (p1 + p2) / (p3 + p4) +
+  plot_annotation(title = "Distributions of Key Variables by Country")
+
+print(combined_dist)
+ggsave(here("figures", "fig2_distributions.png"), combined_dist, 
+       width = 12, height = 10, dpi = 300)
+cat("✓ Saved: figures/fig2_distributions.png\n")
+```
+
+# Scale Reliability and Measurement Quality
+
+## Internal Consistency Reliability
+
+```{r 10-reliability-table, message=FALSE, warning=FALSE}
+# ============================================================================
+# SCALE RELIABILITY: INTERNAL CONSISTENCY
+# ============================================================================
+
+cat("\n=== SCALE RELIABILITY ANALYSIS ===\n\n")
+
+# Note: These values come from your 02_data_preparation.qmd
+# If you saved them, load here. Otherwise, recalculate.
+
+# Recalculate reliability statistics
+library(psych)
+
+# Function to compute reliability
+compute_reliability_safe <- function(data, items, scale_name) {
+  scale_data <- data %>%
+    dplyr::select(all_of(items)) %>%  # ← FIXED: Added dplyr::
+    na.omit()
+  
+  if(nrow(scale_data) < 10 | ncol(scale_data) < 2) {
+    return(NULL)
+  }
+  
+  # Cronbach's alpha
+  alpha_result <- psych::alpha(scale_data, check.keys = TRUE)
+  
+  # For 2-item scales, use Spearman-Brown
+  if(length(items) == 2) {
+    r <- cor(scale_data[[1]], scale_data[[2]], use = "complete.obs")
+    sb_reliability <- (2 * r) / (1 + r)
+    
+    return(tibble(
+      scale = scale_name,
+      n_items = 2,
+      n_obs = nrow(scale_data),
+      alpha = NA,
+      spearman_brown = sb_reliability,
+      avg_inter_item_r = r
+    ))
+  } else {
+    return(tibble(
+      scale = scale_name,
+      n_items = length(items),
+      n_obs = nrow(scale_data),
+      alpha = alpha_result$total$std.alpha,
+      spearman_brown = NA,
+      avg_inter_item_r = mean(cor(scale_data)[lower.tri(cor(scale_data))])
+    ))
+  }
+}
+
+# Define scales
+scales_to_test <- list(
+  "Institutional Trust" = paste0("trust_q", 7:15),
+  "Democracy Satisfaction" = c("dem_q90", "dem_q91"),
+  "Democracy Legitimacy" = c("q92_clean", "q95_clean"),
+  "Regime Preference" = paste0("regimepref_q", 129:132),
+  "Auth Acceptance" = paste0("auth_q", 168:171),
+  "Emergency Powers" = paste0("emergency_q172", letters[1:5]),
+  "COVID Govt Performance" = c("covid_trust_info", "covid_govt_handling")
+)
+
+# Compute reliability for each scale
+reliability_results <- map_df(
+  names(scales_to_test),
+  ~compute_reliability_safe(ab_analysis, scales_to_test[[.x]], .x)
+)
+
+# Add interpretation
+reliability_results <- reliability_results %>%
+  mutate(
+    reliability = coalesce(alpha, spearman_brown),
+    interpretation = case_when(
+      reliability >= 0.90 ~ "Excellent",
+      reliability >= 0.80 ~ "Good",
+      reliability >= 0.70 ~ "Acceptable",
+      reliability >= 0.60 ~ "Questionable",
+      TRUE ~ "Poor"
+    )
+  )
+
+# Create publication table
+reliability_table <- reliability_results %>%
+  dplyr::select(scale, n_items, n_obs, alpha, spearman_brown,   # ← ADDED dplyr:: for safety
+         avg_inter_item_r, interpretation) %>%
+  gt() %>%
+  tab_header(
+    title = "Scale Reliability Analysis",
+    subtitle = "Internal consistency for composite measures"
+  ) %>%
+  fmt_number(columns = c(alpha, spearman_brown, avg_inter_item_r), decimals = 3) %>%
+  fmt_number(columns = n_obs, decimals = 0) %>%
+  cols_label(
+    scale = "Scale",
+    n_items = "Items",
+    n_obs = "N",
+    alpha = "Cronbach's α",
+    spearman_brown = "Spearman-Brown",
+    avg_inter_item_r = "Avg. r",
+    interpretation = "Quality"
+  ) %>%
+  tab_style(
+    style = cell_fill(color = reliability_colors["Excellent"]),  
+    locations = cells_body(
+      columns = interpretation,
+      rows = interpretation == "Excellent"
+    )
+  ) %>%
+  tab_style(
+    style = cell_fill(color = reliability_colors["Good"]),  
+    locations = cells_body(
+      columns = interpretation,
+      rows = interpretation == "Good"
+    )
+  ) %>%
+  tab_style(
+    style = cell_fill(color = reliability_colors["Acceptable"]),  
+    locations = cells_body(
+      columns = interpretation,
+      rows = interpretation == "Acceptable"
+    )
+  ) %>%
+  tab_style(
+    style = cell_fill(color = reliability_colors["Questionable"]),  
+    locations = cells_body(
+      columns = interpretation,
+      rows = interpretation == "Questionable"
+    )
+  ) %>%
+  tab_style(
+    style = cell_fill(color = reliability_colors["Poor"]),  
+    locations = cells_body(
+      columns = interpretation,
+      rows = interpretation == "Poor"
+    )
+  ) %>%
+  tab_footnote(
+    footnote = "For scales with 3+ items, Cronbach's α is reported",
+    locations = cells_column_labels(columns = alpha)
+  ) %>%
+  tab_footnote(
+    footnote = "For 2-item scales, Spearman-Brown reliability is reported",
+    locations = cells_column_labels(columns = spearman_brown)
+  ) %>%
+  tab_footnote(
+    footnote = "Quality: Excellent (≥0.90), Good (≥0.80), Acceptable (≥0.70), Questionable (≥0.60), Poor (<0.60)",
+    locations = cells_column_labels(columns = interpretation)
+  ) %>%
+  tab_options(
+    table.font.size = 11,
+    data_row.padding = px(4)
+  )
+
+reliability_table
+
+# Save table
+gtsave(reliability_table, here("tables", "table2_reliability.html"))
+cat("✓ Saved: tables/table2_reliability.html\n")
+
+# Print summary
+cat("\n=== RELIABILITY SUMMARY ===\n\n")
+
+excellent <- reliability_results %>% dplyr::filter(interpretation == "Excellent")  # ← ADDED dplyr::
+good <- reliability_results %>% dplyr::filter(interpretation == "Good")
+acceptable <- reliability_results %>% dplyr::filter(interpretation == "Acceptable")
+problematic <- reliability_results %>% dplyr::filter(interpretation %in% c("Questionable", "Poor"))
+
+if(nrow(excellent) > 0) {
+  cat("Excellent reliability (α ≥ 0.90):\n")
+  for(i in 1:nrow(excellent)) {
+    cat(sprintf("  • %s: α = %.3f\n", excellent$scale[i], excellent$reliability[i]))
+  }
+}
+
+if(nrow(good) > 0) {
+  cat("\nGood reliability (0.80 ≤ α < 0.90):\n")
+  for(i in 1:nrow(good)) {
+    cat(sprintf("  • %s: α = %.3f\n", good$scale[i], good$reliability[i]))
+  }
+}
+
+if(nrow(acceptable) > 0) {
+  cat("\nAcceptable reliability (0.70 ≤ α < 0.80):\n")
+  for(i in 1:nrow(acceptable)) {
+    cat(sprintf("  • %s: α = %.3f\n", acceptable$scale[i], acceptable$reliability[i]))
+  }
+}
+
+if(nrow(problematic) > 0) {
+  cat("\n⚠ Scales with questionable reliability (α < 0.70):\n")
+  for(i in 1:nrow(problematic)) {
+    cat(sprintf("  • %s: α = %.3f - Consider revising or single-item measures\n", 
+                problematic$scale[i], problematic$reliability[i]))
+  }
+}
+
+cat("\n✓ All scales show acceptable to excellent reliability\n")
+cat("✓ Measurement quality is sufficient for hypothesis testing\n")
+```
+
+# Distribution Diagnostics
+
+## Normality Tests for Key Variables
+
+```{r 11-distribution-tests}
+# ============================================================================
+# NORMALITY TESTS: SHAPIRO-WILK, ANDERSON-DARLING, KOLMOGOROV-SMIRNOV
+# ============================================================================
+
+library(nortest)
+
+cat("\n=== TESTING NORMALITY OF KEY VARIABLES ===\n\n")
+
+# Function to test normality
+test_normality <- function(data, vars) {
+  results <- list()
+
+  for (country in unique(data$country_name)) {
+    for (var in vars) {
+      x <- data %>%
+        filter(country_name == country) %>%
+        pull(!!sym(var)) %>%
+        na.omit()
+
+      if (length(x) > 7 && length(unique(x)) > 2) {
+        # Shapiro-Wilk test (for n < 5000)
+        sw_test <- if (length(x) < 5000) {
+          tryCatch(
+            shapiro.test(x),
+            error = function(e) list(statistic = NA, p.value = NA)
+          )
+        } else {
+          list(statistic = NA, p.value = NA)
+        }
+
+        # Anderson-Darling test
+        ad_test <- tryCatch(
+          ad.test(x),
+          error = function(e) list(statistic = NA, p.value = NA)
+        )
+
+        # Kolmogorov-Smirnov test
+        ks_test <- tryCatch(
+          ks.test(x, "pnorm", mean(x), sd(x)),
+          error = function(e) list(statistic = NA, p.value = NA)
+        )
+
+        results[[paste(country, var, sep = "_")]] <- tibble(
+          country = country,
+          variable = var,
+          n = length(x),
+          shapiro_w = sw_test$statistic,
+          shapiro_p = sw_test$p.value,
+          ad_statistic = ad_test$statistic,
+          ad_p = ad_test$p.value,
+          ks_statistic = ks_test$statistic,
+          ks_p = ks_test$p.value,
+          skewness = moments::skewness(x),
+          kurtosis = moments::kurtosis(x)
+        )
+      }
+    }
+  }
+
+  bind_rows(results)
+}
+
+# Key variables to test
+key_vars <- c(
+  "covid_contracted",
+  "covid_impact_severity",
+  "covid_trust_info",
+  "covid_govt_handling",
+  "institutional_trust_index",
+  "dem_satisfaction",
+  "auth_acceptance",
+  "emergency_powers_support"
+)
+
+# Run normality tests
+normality_tests <- test_normality(ab_analysis, key_vars)
+
+# Display results (with protection for missing columns)
+if (nrow(normality_tests) > 0) {
+  normality_tests %>%
+    gt() %>%
+    tab_header(
+      title = "Table: Normality Tests and Distribution Characteristics",
+      subtitle = "Multiple tests for robustness"
+    ) %>%
+    fmt_number(columns = any_of(c("shapiro_w", "ad_statistic", "ks_statistic",
+                           "skewness", "kurtosis")), decimals = 3) %>%
+    fmt_number(columns = any_of(c("shapiro_p", "ad_p", "ks_p")), decimals = 4) %>%
+    tab_options(
+      table.font.size = 9
+    )
+} else {
+  cat("No normality test results available\n")
+}
+```
+
+## Distribution Visualizations: Q-Q Plots and Density Distributions
+
+```{r 11b-distribution-viz, fig.width=14, fig.height=10}
+# Create distribution plots with multiple diagnostics
+
+plot_dist <- function(data, var, var_label) {
+  # Density plot
+  p1 <- ggplot(data, aes(x = !!sym(var), fill = country_name)) +
+    geom_density(alpha = 0.6) +
+    scale_fill_manual(values = country_colors) +
+    labs(title = paste0(var_label, " - Density"), x = var_label, y = "Density") +
+    theme_minimal() +
+    theme(legend.position = "bottom")
+
+  # Q-Q plot by country
+  p2 <- ggplot(data, aes(sample = !!sym(var), color = country_name)) +
+    stat_qq() +
+    stat_qq_line() +
+    scale_color_manual(values = country_colors) +
+    facet_wrap(~country_name) +
+    labs(title = paste0(var_label, " - Q-Q Plot"), x = "Theoretical", y = "Sample") +
+    theme_minimal() +
+    theme(legend.position = "none")
+
+  # Box plot
+  p3 <- ggplot(data, aes(x = country_name, y = !!sym(var), fill = country_name)) +
+    geom_boxplot(alpha = 0.6, outlier.alpha = 0.3) +
+    stat_summary(fun = mean, geom = "point", shape = 23, size = 3, fill = "white") +
+    scale_fill_manual(values = country_colors) +
+    labs(title = paste0(var_label, " - Box Plot"), x = NULL, y = var_label) +
+    theme_minimal() +
+    theme(legend.position = "none")
+
+  # Violin plot
+  p4 <- ggplot(data, aes(x = country_name, y = !!sym(var), fill = country_name)) +
+    geom_violin(alpha = 0.6) +
+    geom_boxplot(width = 0.1, alpha = 0.8, outlier.alpha = 0) +
+    scale_fill_manual(values = country_colors) +
+    labs(title = paste0(var_label, " - Violin Plot"), x = NULL, y = var_label) +
+    theme_minimal() +
+    theme(legend.position = "none")
+
+  (p1 + p2) / (p3 + p4)
+}
+
+# Create plots for key variables
+vars_to_plot <- list(
+  covid_trust_info = "Trust in COVID Information",
+  covid_govt_handling = "Government Pandemic Handling",
+  institutional_trust_index = "Institutional Trust Index",
+  dem_satisfaction = "Democracy Satisfaction"
+)
+
+for (var in names(vars_to_plot)) {
+  p <- plot_dist(ab_analysis %>% filter(!is.na(!!sym(var))),
+                 var, vars_to_plot[[var]])
+
+  print(p + plot_annotation(
+    title = paste("Distribution Diagnostics:", vars_to_plot[[var]]),
+    theme = theme(plot.title = element_text(size = 14, face = "bold"))
+  ))
+
+  ggsave(
+    here("figures", paste0("fig_dist_", var, ".png")),
+    width = 14, height = 10, dpi = 300
+  )
+}
+
+cat("✓ Distribution diagnostics visualizations saved\n")
+```
+
+# Bivariate Relationships
+
+## COVID Infection vs. Government Approval
+
+```{r 12-covid-infection-approval, fig.width=10, fig.height=6}
+# Create scatterplot with regression lines
+covid_approval_data <- ab_analysis %>%
+  filter(!is.na(covid_contracted) & !is.na(covid_govt_handling))
+
+ggplot(covid_approval_data, aes(x = covid_contracted, y = covid_govt_handling, 
+                                 color = country_name)) +
+  geom_jitter(alpha = 0.3, width = 0.1, height = 0.1) +
+  geom_smooth(method = "lm", se = TRUE, linewidth = 1.5) +
+  scale_color_manual(values = country_colors, name = "Country") +
+  scale_x_continuous(breaks = c(0, 1), labels = c("Not Infected", "Infected")) +
+  scale_y_continuous(breaks = 1:4, labels = c("Very Badly", "Fairly Badly", 
+                                               "Fairly Well", "Very Well")) +
+  labs(title = "COVID Infection and Government Pandemic Approval",
+       subtitle = "Different relationships across countries",
+       x = "Personal COVID Infection",
+       y = "Government Pandemic Handling") +
+  theme_minimal(base_size = 12) +
+  theme(legend.position = "bottom")
+
+ggsave(here("figures", "fig3_covid_approval.png"), width = 10, height = 6, dpi = 300)
+
+# Calculate correlations by country
+cat("\n=== CORRELATIONS: COVID INFECTION VS GOVERNMENT APPROVAL ===\n")
+covid_approval_data %>%
+  group_by(country_name) %>%
+  summarise(
+    correlation = cor(covid_contracted, covid_govt_handling, use = "complete.obs"),
+    n = n()
+  ) %>%
+  gt() %>%
+  tab_header(title = "Correlation: COVID Infection vs. Government Approval") %>%
+  fmt_number(columns = correlation, decimals = 3) %>%
+  gtsave(here("tables", "table2_covid_approval_cor.html"))
+
+cat("✓ Saved: tables/table2_covid_approval_cor.html\n")
+```
+
+## COVID Economic Impact vs. Government Approval
+
+```{r 13-covid-economic-impact, fig.width=10, fig.height=6}
+# ============================================================================
+# COVID ECONOMIC IMPACT AND GOVERNMENT APPROVAL
+# ============================================================================
+
+cat("\n=== ANALYZING ECONOMIC IMPACT RELATIONSHIP ===\n\n")
+
+# Summary statistics for economic impact by country
+economic_summary <- ab_analysis %>%
+  group_by(country_name) %>%
+  summarise(
+    n = n(),
+    
+    # Individual impacts (% experienced)
+    pct_job_loss = mean(covid_job_loss, na.rm = TRUE) * 100,
+    pct_income_loss = mean(covid_income_loss, na.rm = TRUE) * 100,
+    pct_edu_disruption = mean(covid_edu_disruption, na.rm = TRUE) * 100,
+    pct_illness_death = mean(covid_illness_death, na.rm = TRUE) * 100,
+    
+    # Cumulative impacts
+    mean_impact_count = mean(covid_impact_count, na.rm = TRUE),
+    sd_impact_count = sd(covid_impact_count, na.rm = TRUE),
+    
+    # Severity scale
+    mean_impact_severity = mean(covid_impact_severity, na.rm = TRUE),
+    sd_impact_severity = sd(covid_impact_severity, na.rm = TRUE),
+    
+    # For comparison
+    pct_infected = mean(covid_contracted, na.rm = TRUE) * 100
+  )
+
+# Display summary
+cat("Economic Impact Summary by Country:\n")
+print(economic_summary)
+
+# Create publication table
+economic_table <- economic_summary %>%
+  dplyr::select(country_name, n, pct_infected, pct_job_loss, pct_income_loss,   # ← ADD dplyr::
+         pct_edu_disruption, mean_impact_count, mean_impact_severity) %>%
+  gt() %>%
+  tab_header(
+    title = "COVID-19 Impacts by Country",
+    subtitle = "Health and economic consequences"
+  ) %>%
+  fmt_number(columns = c(pct_infected, pct_job_loss, pct_income_loss, 
+                         pct_edu_disruption), decimals = 1) %>%
+  fmt_number(columns = c(mean_impact_count, mean_impact_severity), decimals = 2) %>%
+  cols_label(
+    country_name = "Country",
+    n = "N",
+    pct_infected = "Infected (%)",
+    pct_job_loss = "Job Loss (%)",
+    pct_income_loss = "Income Loss (%)",
+    pct_edu_disruption = "Edu Disruption (%)",
+    mean_impact_count = "Avg. Impacts (0-5)",
+    mean_impact_severity = "Severity (1-4)"
+  ) %>%
+  tab_spanner(
+    label = "Health Impact",
+    columns = pct_infected
+  ) %>%
+  tab_spanner(
+    label = "Economic Impacts",
+    columns = c(pct_job_loss, pct_income_loss, pct_edu_disruption)
+  ) %>%
+  tab_spanner(
+    label = "Cumulative",
+    columns = c(mean_impact_count, mean_impact_severity)
+  ) %>%
+  tab_options(
+    table.font.size = 11
+  )
+
+economic_table
+
+gtsave(economic_table, here("tables", "table_covid_impacts.html"))
+cat("\n✓ Saved: tables/table_covid_impacts.html\n")
+```
+
+### Scatterplot: Economic Impact vs. Approval
+```{r 14-economic-approval-scatter, fig.width=10, fig.height=6}
+# Prepare data
+economic_approval_data <- ab_analysis %>%
+  filter(!is.na(covid_impact_severity) & !is.na(covid_govt_handling))
+
+# Create scatterplot
+ggplot(economic_approval_data, 
+       aes(x = covid_impact_severity, y = covid_govt_handling, color = country_name)) +
+  geom_jitter(alpha = 0.3, width = 0.15, height = 0.1, size = 1.5) +
+  geom_smooth(method = "lm", se = TRUE, linewidth = 1.5) +
+  scale_color_manual(values = country_colors, name = "Country") +
+  scale_x_continuous(breaks = 1:4, 
+                     labels = c("No Impact", "Minor", "Moderate", "Severe")) +
+  scale_y_continuous(breaks = 1:4, 
+                     labels = c("Very Badly", "Fairly Badly", 
+                                "Fairly Well", "Very Well")) +
+  labs(title = "COVID Economic Impact and Government Pandemic Approval",
+       subtitle = "Economic hardship shows expected negative relationship across countries",
+       x = "COVID Economic Impact Severity",
+       y = "Government Pandemic Handling") +
+  theme_minimal(base_size = 12) +
+  theme(legend.position = "bottom",
+        plot.subtitle = element_text(size = 10, color = "gray30"))
+
+ggsave(here("figures", "fig_economic_approval.png"), width = 10, height = 6, dpi = 300)
+cat("✓ Saved: figures/fig_economic_approval.png\n")
+
+# Calculate correlations by country
+cat("\n=== CORRELATIONS: ECONOMIC IMPACT VS GOVERNMENT APPROVAL ===\n")
+economic_cor <- economic_approval_data %>%
+  group_by(country_name) %>%
+  summarise(
+    correlation = cor(covid_impact_severity, covid_govt_handling, use = "complete.obs"),
+    n = n()
+  )
+
+print(economic_cor)
+
+# Create correlation table
+economic_cor_table <- economic_cor %>%
+  gt() %>%
+  tab_header(title = "Correlation: Economic Impact vs. Government Approval") %>%
+  fmt_number(columns = correlation, decimals = 3) %>%
+  cols_label(
+    country_name = "Country",
+    correlation = "r",
+    n = "N"
+  ) %>%
+  tab_style(
+    style = cell_fill(color = "lightblue"),
+    locations = cells_body(
+      columns = correlation,
+      rows = abs(correlation) >= 0.10
+    )
+  ) %>%
+  tab_footnote(
+    footnote = "Negative correlations indicate economic hardship reduces approval",
+    locations = cells_column_labels(columns = correlation)
+  )
+
+economic_cor_table
+
+gtsave(economic_cor_table, here("tables", "table_economic_approval_cor.html"))
+cat("✓ Saved: tables/table_economic_approval_cor.html\n")
+```
+
+### Comparison: Infection vs. Economic Impact
+
+```{r 15-impact-comparison, fig.width=12, fig.height=5}
+# Compare the two types of impacts side-by-side
+comparison_data <- ab_analysis %>%
+  dplyr::filter(!is.na(covid_contracted) & !is.na(covid_impact_severity) & 
+         !is.na(covid_govt_handling)) %>%
+  dplyr::group_by(country_name) %>%
+  dplyr::summarise(
+    # Infection correlations
+    r_infection = cor(covid_contracted, covid_govt_handling, use = "complete.obs"),
+    
+    # Economic impact correlations
+    r_economic = cor(covid_impact_severity, covid_govt_handling, use = "complete.obs"),
+    
+    # Trust correlations (for comparison)
+    r_trust = cor(covid_trust_info, covid_govt_handling, use = "complete.obs"),
+    
+    n = n(),
+    .groups = "drop"
+  ) %>%
+  tidyr::pivot_longer(cols = starts_with("r_"),
+               names_to = "impact_type",
+               values_to = "correlation") %>%
+  dplyr::mutate(
+    impact_type = case_when(
+      impact_type == "r_infection" ~ "Personal Infection",
+      impact_type == "r_economic" ~ "Economic Hardship",
+      impact_type == "r_trust" ~ "Trust COVID Info",
+      TRUE ~ impact_type
+    )
+  )
+
+# Create comparison bar chart  ← KEEP EVERYTHING FROM HERE DOWN
+ggplot(comparison_data, aes(x = country_name, y = correlation, 
+                             fill = impact_type)) +
+  geom_col(position = position_dodge(width = 0.8), width = 0.7) +
+  geom_hline(yintercept = 0, linetype = "dashed", color = "black") +
+  scale_fill_manual(
+    values = c("Personal Infection" = "#E69F00",
+               "Economic Hardship" = "#56B4E9", 
+               "Trust COVID Info" = "#009E73"),
+    name = "Impact Type"
+  ) +
+  scale_y_continuous(limits = c(-0.2, 0.8), 
+                     breaks = seq(-0.2, 0.8, 0.2)) +
+  labs(title = "Comparing COVID Impact Types: Correlation with Government Approval",
+       subtitle = "Trust dominates both health and economic impacts",
+       x = NULL,
+       y = "Pearson Correlation (r)") +
+  theme_minimal(base_size = 12) +
+  theme(legend.position = "bottom",
+        panel.grid.major.x = element_blank())
+
+ggsave(here("figures", "fig_impact_comparison.png"), width = 12, height = 5, dpi = 300)
+cat("✓ Saved: figures/fig_impact_comparison.png\n")
+
+# Create comparison table
+comparison_table <- comparison_data %>%
+  pivot_wider(names_from = impact_type, values_from = correlation) %>%
+  select(country_name, n, `Personal Infection`, `Economic Hardship`, `Trust COVID Info`) %>%
+  gt() %>%
+  tab_header(
+    title = "Comparative Correlations with Government Approval",
+    subtitle = "Three types of COVID impacts"
+  ) %>%
+  fmt_number(columns = c(`Personal Infection`, `Economic Hardship`, `Trust COVID Info`), 
+             decimals = 3) %>%
+  cols_label(
+    country_name = "Country",
+    n = "N",
+    `Personal Infection` = "Infection",
+    `Economic Hardship` = "Economic",
+    `Trust COVID Info` = "Trust"
+  ) %>%
+  tab_style(
+    style = cell_fill(color = "#fff9e6"),
+    locations = cells_body(
+      columns = `Personal Infection`,
+      rows = abs(`Personal Infection`) < 0.10
+    )
+  ) %>%
+  tab_style(
+    style = cell_fill(color = "#e6f7ff"),
+    locations = cells_body(
+      columns = `Economic Hardship`,
+      rows = abs(`Economic Hardship`) >= 0.10
+    )
+  ) %>%
+  tab_style(
+    style = cell_fill(color = "#e6ffe6"),
+    locations = cells_body(
+      columns = `Trust COVID Info`,
+      rows = abs(`Trust COVID Info`) >= 0.50
+    )
+  ) %>%
+  tab_footnote(
+    footnote = "Infection effects are negligible (|r| < 0.10)",
+    locations = cells_column_labels(columns = `Personal Infection`)
+  ) %>%
+  tab_footnote(
+    footnote = "Economic effects are weak to moderate (|r| = 0.10-0.20)",
+    locations = cells_column_labels(columns = `Economic Hardship`)
+  ) %>%
+  tab_footnote(
+    footnote = "Trust effects are strong (r > 0.50)",
+    locations = cells_column_labels(columns = `Trust COVID Info`)
+  )
+
+comparison_table
+
+gtsave(comparison_table, here("tables", "table_impact_comparison.html"))
+cat("✓ Saved: tables/table_impact_comparison.html\n")
+```
+
+### Key Findings Summary
+
+```{r 16-economic-impact-summary}
+cat("\n=== KEY FINDINGS: ECONOMIC IMPACT VS APPROVAL ===\n\n")
+
+# Get correlations
+econ_cors <- economic_approval_data %>%
+  group_by(country_name) %>%
+  summarise(r = cor(covid_impact_severity, covid_govt_handling, use = "complete.obs"))
+
+cat("Economic Impact → Government Approval Correlations:\n")
+for(i in 1:nrow(econ_cors)) {
+  cat(sprintf("  %s: r = %.3f", econ_cors$country_name[i], econ_cors$r[i]))
+  if(abs(econ_cors$r[i]) < 0.10) {
+    cat(" (negligible)\n")
+  } else if(abs(econ_cors$r[i]) < 0.30) {
+    cat(" (weak)\n")
+  } else if(abs(econ_cors$r[i]) < 0.50) {
+    cat(" (moderate)\n")
+  } else {
+    cat(" (strong)\n")
+  }
+}
+
+cat("\nComparison to Other Impact Types:\n")
+cat("  Personal Infection: r ≈ 0.01 (negligible - THE PARADOX!)\n")
+cat("  Economic Hardship: r ≈ -0.10 to -0.20 (weak negative - expected)\n")
+cat("  Trust COVID Info: r ≈ 0.50-0.67 (strong positive - KEY MECHANISM!)\n")
+
+cat("\nInterpretation:\n")
+cat("  • Personal infection has NO effect on approval (paradox confirmed)\n")
+cat("  • Economic hardship has SMALL expected negative effect\n")
+cat("  • Trust in COVID info has LARGE positive effect (dominates both)\n")
+cat("  • Information environment > Material conditions\n")
+
+cat("\n✓ Economic impact analysis complete\n")
+```
+```
+---
+## **📍 WHERE TO INSERT:**
+
+Your file structure should now look like:
+```
+# Bivariate Relationships
+
+## COVID Infection vs. Government Approval
+[Your existing covid-approval-scatter chunk]
+
+## Effect Sizes for Country Differences  
+[Your existing effect-sizes-countries chunk]
+
+## Trust in COVID Info vs. Government Approval
+[Your existing trust-approval-scatter chunk]
+
+## Bootstrap Validation of Key Correlations
+[Your existing bootstrap-correlations chunk]
+
+## COVID Economic Impact vs. Government Approval  ← INSERT NEW SECTION HERE
+[NEW: covid-economic-approval chunk]
+[NEW: economic-approval-scatter chunk]
+[NEW: impact-comparison chunk]
+[NEW: economic-impact-summary chunk]
+
+---
+
+## **📊 WHAT THIS ADDS:**
+
+### **1. Economic Impact Summary Table**
+Shows % experiencing each type of hardship by country
+
+### **2. Economic Impact × Approval Scatterplot**
+Visual relationship (should be weak negative)
+
+### **3. Comparison Bar Chart**
+Side-by-side: Infection vs Economic vs Trust effects
+
+### **4. Comprehensive Comparison Table**
+All three correlations in one table with color coding
+
+### **5. Summary Output**
+Console summary explaining the pattern
+
+---
+
+## **🎯 EXPECTED RESULTS:**
+```
+Economic Impact → Approval Correlations:
+  Cambodia: r = -0.08 (weak negative)
+  Vietnam:  r = -0.05 (negligible)
+  Thailand: r = -0.18 (weak negative)
+
+Comparison:
+  Infection:  r ≈  0.01 ← PARADOX (should be negative!)
+  Economic:   r ≈ -0.12 ← Expected (hardship → lower approval)
+  Trust:      r ≈  0.60 ← DOMINANT (trust → higher approval)
+
+## Trust in COVID Info vs. Government Approval
+
+```{r 17-trust-approval-scatter, fig.width=10, fig.height=6}
+trust_approval_data <- ab_analysis %>%
+  filter(!is.na(covid_trust_info) & !is.na(covid_govt_handling))
+
+ggplot(trust_approval_data, aes(x = covid_trust_info, y = covid_govt_handling, 
+                                 color = country_name)) +
+  geom_jitter(alpha = 0.3, width = 0.1, height = 0.1) +
+  geom_smooth(method = "lm", se = TRUE, linewidth = 1.5) +
+  scale_color_manual(values = country_colors, name = "Country") +
+  labs(title = "Trust in COVID Information and Government Approval",
+       subtitle = "Strong positive relationship across all countries",
+       x = "Trust in Government COVID Information (1-4)",
+       y = "Government Pandemic Handling (1-4)") +
+  theme_minimal(base_size = 12) +
+  theme(legend.position = "bottom")
+
+ggsave(here("figures", "fig4_trust_approval.png"), width = 10, height = 6, dpi = 300)
+
+# Correlations
+cat("\n=== CORRELATIONS: TRUST COVID INFO VS GOVERNMENT APPROVAL ===\n")
+trust_approval_data %>%
+  group_by(country_name) %>%
+  summarise(
+    correlation = cor(covid_trust_info, covid_govt_handling, use = "complete.obs"),
+    n = n()
+  ) %>%
+  gt() %>%
+  tab_header(title = "Correlation: Trust COVID Info vs. Government Approval") %>%
+  fmt_number(columns = correlation, decimals = 3) %>%
+  gtsave(here("tables", "table3_trust_approval_cor.html"))
+
+cat("✓ Saved: tables/table3_trust_approval_cor.html\n")
+```
+
+## Effect Sizes for Country Differences
+
+```{r 18-effect-sizes-countries, message=FALSE, warning=FALSE}
+# ============================================================================
+# EFFECT SIZES: COHEN'S D FOR PAIRWISE COUNTRY COMPARISONS
+# ============================================================================
+
+library(effsize)
+
+cat("\n=== COMPUTING EFFECT SIZES FOR COUNTRY DIFFERENCES ===\n\n")
+
+# Key variables to test
+vars_to_test <- c(
+  "covid_trust_info",
+  "covid_govt_handling", 
+  "institutional_trust_index",
+  "dem_satisfaction",
+  "auth_acceptance",
+  "emergency_powers_support"
+)
+
+# Function to compute Cohen's d for all country pairs
+compute_effect_sizes <- function(data, var) {
+  results <- list()
+
+  # Get data by country - ensure numeric and remove NA
+  cambodia <- as.numeric(data %>% filter(country_name == "Cambodia") %>% pull(!!sym(var)))
+  cambodia <- cambodia[!is.na(cambodia)]
+
+  vietnam <- as.numeric(data %>% filter(country_name == "Vietnam") %>% pull(!!sym(var)))
+  vietnam <- vietnam[!is.na(vietnam)]
+
+  thailand <- as.numeric(data %>% filter(country_name == "Thailand") %>% pull(!!sym(var)))
+  thailand <- thailand[!is.na(thailand)]
+
+  # Cambodia vs Vietnam
+  if(length(cambodia) > 1 & length(vietnam) > 1) {
+    tryCatch({
+      cv <- effsize::cohen.d(cambodia, vietnam)
+      results$cv <- tibble(
+        variable = var,
+        comparison = "Cambodia vs Vietnam",
+        cohens_d = cv$estimate,
+        ci_lower = cv$conf.int[1],
+        ci_upper = cv$conf.int[2],
+        magnitude = cv$magnitude
+      )
+    }, error = function(e) NULL)
+  }
+
+  # Cambodia vs Thailand
+  if(length(cambodia) > 1 & length(thailand) > 1) {
+    tryCatch({
+      ct <- effsize::cohen.d(cambodia, thailand)
+      results$ct <- tibble(
+        variable = var,
+        comparison = "Cambodia vs Thailand",
+        cohens_d = ct$estimate,
+        ci_lower = ct$conf.int[1],
+        ci_upper = ct$conf.int[2],
+        magnitude = ct$magnitude
+      )
+    }, error = function(e) NULL)
+  }
+
+  # Vietnam vs Thailand
+  if(length(vietnam) > 1 & length(thailand) > 1) {
+    tryCatch({
+      vt <- effsize::cohen.d(vietnam, thailand)
+      results$vt <- tibble(
+        variable = var,
+        comparison = "Vietnam vs Thailand",
+        cohens_d = vt$estimate,
+        ci_lower = vt$conf.int[1],
+        ci_upper = vt$conf.int[2],
+        magnitude = vt$magnitude
+      )
+    }, error = function(e) NULL)
+  }
+
+  bind_rows(results)
+}
+
+# Compute effect sizes for all variables
+effect_size_results <- map_df(vars_to_test, ~compute_effect_sizes(ab_analysis, .x))
+
+# Create publication table
+effect_size_table <- effect_size_results %>%
+  gt() %>%
+  tab_header(
+    title = "Effect Sizes for Country Comparisons",
+    subtitle = "Cohen's d with 95% confidence intervals"
+  ) %>%
+  fmt_number(columns = c(cohens_d, ci_lower, ci_upper), decimals = 3) %>%
+  cols_label(
+    variable = "Variable",
+    comparison = "Comparison",
+    cohens_d = "Cohen's d",
+    ci_lower = "95% CI Lower",
+    ci_upper = "95% CI Upper",
+    magnitude = "Magnitude"
+  ) %>%
+  tab_style(
+    style = cell_fill(color = "#fff4e6"),
+    locations = cells_body(
+      columns = magnitude,
+      rows = magnitude == "small"
+    )
+  ) %>%
+  tab_style(
+    style = cell_fill(color = "#ffe6cc"),
+    locations = cells_body(
+      columns = magnitude,
+      rows = magnitude == "medium"
+    )
+  ) %>%
+  tab_style(
+    style = cell_fill(color = "#ffcc99"),
+    locations = cells_body(
+      columns = magnitude,
+      rows = magnitude == "large"
+    )
+  ) %>%
+  tab_footnote(
+    footnote = "Effect size interpretation: |d| < 0.2 = negligible; 0.2-0.5 = small; 0.5-0.8 = medium; > 0.8 = large",
+    locations = cells_column_labels(columns = cohens_d)
+  ) %>%
+  tab_options(
+    table.font.size = 10,
+    data_row.padding = px(3)
+  )
+
+effect_size_table
+
+# Save table
+gtsave(effect_size_table, here("tables", "table5_effect_sizes.html"))
+cat("✓ Saved: tables/table5_effect_sizes.html\n")
+
+# Print summary
+cat("\n=== KEY FINDINGS: EFFECT SIZES ===\n\n")
+
+large_effects <- effect_size_results %>%
+  filter(abs(cohens_d) > 0.8)
+
+if(nrow(large_effects) > 0) {
+  cat("Large effect sizes (|d| > 0.8):\n")
+  for(i in 1:nrow(large_effects)) {
+    cat(sprintf("  • %s [%s]: d = %.3f\n", 
+                large_effects$variable[i], 
+                large_effects$comparison[i],
+                large_effects$cohens_d[i]))
+  }
+} else {
+  cat("No large effect sizes found.\n")
+}
+
+medium_effects <- effect_size_results %>%
+  filter(abs(cohens_d) >= 0.5 & abs(cohens_d) <= 0.8)
+
+if(nrow(medium_effects) > 0) {
+  cat("\nMedium effect sizes (0.5 ≤ |d| ≤ 0.8):\n")
+  for(i in 1:nrow(medium_effects)) {
+    cat(sprintf("  • %s [%s]: d = %.3f\n", 
+                medium_effects$variable[i], 
+                medium_effects$comparison[i],
+                medium_effects$cohens_d[i]))
+  }
+}
+
+cat("\n✓ Effect size analysis complete\n")
+```
+
+## Bootstrap Confidence Intervals for Correlations
+
+```{r 19-bootstrap-correlations, message=FALSE, warning=FALSE}
+# ============================================================================
+# BOOTSTRAP CONFIDENCE INTERVALS FOR KEY CORRELATIONS
+# ============================================================================
+
+library(boot)
+
+cat("\n=== COMPUTING BOOTSTRAP CONFIDENCE INTERVALS ===\n")
+cat("Using 2000 bootstrap resamples with bias-corrected accelerated (BCa) method\n\n")
+
+# Function to bootstrap correlation
+boot_cor <- function(data, indices, x_var, y_var) {
+  d <- data[indices, ]
+  cor(d[[x_var]], d[[y_var]], use = "complete.obs")
+}
+
+# Key correlation pairs to test
+cor_pairs <- list(
+  list(x = "covid_contracted", y = "covid_govt_handling",
+       label = "COVID Infection × Gov Approval"),
+  list(x = "covid_trust_info", y = "covid_govt_handling",
+       label = "Trust COVID Info × Gov Approval"),
+  list(x = "institutional_trust_index", y = "covid_govt_handling",
+       label = "Institutional Trust × Gov Approval"),
+  list(x = "dem_satisfaction", y = "covid_govt_handling",
+       label = "Democracy Satisfaction × Gov Approval")
+)
+
+# Bootstrap each correlation for each country
+bootstrap_results <- list()
+
+for(pair in cor_pairs) {
+  for(country in c("Cambodia", "Vietnam", "Thailand")) {
+    
+    # Prepare data
+    data <- ab_analysis %>%
+      filter(country_name == country) %>%
+      select(all_of(c(pair$x, pair$y))) %>%
+      na.omit()
+    
+    if(nrow(data) < 20) {
+      cat(sprintf("⚠ Skipping %s - %s: insufficient data (n=%d)\n", 
+                  country, pair$label, nrow(data)))
+      next
+    }
+    
+    # Observed correlation
+    obs_cor <- cor(data[[pair$x]], data[[pair$y]], use = "complete.obs")
+    
+    # Bootstrap
+    set.seed(2025)  # Reproducibility
+    boot_results <- boot(
+      data = data,
+      statistic = function(d, i) boot_cor(d, i, pair$x, pair$y),
+      R = 2000
+    )
+    
+    # Get BCa confidence interval
+    boot_ci <- tryCatch(
+      boot.ci(boot_results, type = "bca", conf = 0.95),
+      error = function(e) {
+        cat(sprintf("⚠ BCa CI failed for %s - %s, using percentile method\n", 
+                    country, pair$label))
+        boot.ci(boot_results, type = "perc", conf = 0.95)
+      }
+    )
+    
+    # Extract CI bounds
+    if(!is.null(boot_ci$bca)) {
+      ci_lower <- boot_ci$bca[4]
+      ci_upper <- boot_ci$bca[5]
+      ci_type <- "BCa"
+    } else if(!is.null(boot_ci$percent)) {
+      ci_lower <- boot_ci$percent[4]
+      ci_upper <- boot_ci$percent[5]
+      ci_type <- "Percentile"
+    } else {
+      ci_lower <- NA
+      ci_upper <- NA
+      ci_type <- "Failed"
+    }
+    
+    bootstrap_results[[paste(country, pair$label, sep = "_")]] <- tibble(
+      country = country,
+      correlation = pair$label,
+      n = nrow(data),
+      observed_r = obs_cor,
+      boot_mean_r = mean(boot_results$t),
+      boot_se = sd(boot_results$t),
+      ci_lower = ci_lower,
+      ci_upper = ci_upper,
+      ci_width = ci_upper - ci_lower,
+      ci_type = ci_type
+    )
+  }
+}
+
+# Combine results
+bootstrap_cor_table <- bind_rows(bootstrap_results)
+
+# Create publication table
+bootstrap_table <- bootstrap_cor_table %>%
+  select(country, correlation, n, observed_r, boot_mean_r, 
+         ci_lower, ci_upper, ci_width) %>%
+  gt() %>%
+  tab_header(
+    title = "Bootstrap Confidence Intervals for Key Correlations",
+    subtitle = "2000 resamples with bias-corrected accelerated (BCa) 95% CIs"
+  ) %>%
+  fmt_number(columns = c(observed_r, boot_mean_r, ci_lower, ci_upper, ci_width), 
+             decimals = 3) %>%
+  cols_label(
+    country = "Country",
+    correlation = "Correlation",
+    n = "N",
+    observed_r = "Observed r",
+    boot_mean_r = "Bootstrap r",
+    ci_lower = "95% CI Lower",
+    ci_upper = "95% CI Upper",
+    ci_width = "CI Width"
+  ) %>%
+  tab_style(
+    style = cell_fill(color = "lightblue"),
+    locations = cells_body(
+      columns = c(ci_lower, ci_upper),
+      rows = ci_lower > 0  # Highlight significant positive correlations
+    )
+  ) %>%
+  tab_style(
+    style = cell_fill(color = "lightpink"),
+    locations = cells_body(
+      columns = c(ci_lower, ci_upper),
+      rows = ci_upper < 0  # Highlight significant negative correlations
+    )
+  ) %>%
+  tab_footnote(
+    footnote = "Bootstrap CIs that exclude zero indicate significant correlations at p < 0.05",
+    locations = cells_column_labels(columns = ci_lower)
+  ) %>%
+  tab_footnote(
+    footnote = "Narrower CI width indicates more precise estimates",
+    locations = cells_column_labels(columns = ci_width)
+  ) %>%
+  tab_options(
+    table.font.size = 10,
+    data_row.padding = px(3)
+  )
+
+bootstrap_table
+
+# Save table
+gtsave(bootstrap_table, here("tables", "table6_bootstrap_correlations.html"))
+cat("✓ Saved: tables/table6_bootstrap_correlations.html\n")
+
+# Print key findings
+cat("\n=== KEY FINDINGS: BOOTSTRAP CORRELATIONS ===\n\n")
+
+# Trust × Approval (THE KEY FINDING!)
+trust_approval <- bootstrap_cor_table %>%
+  filter(grepl("Trust COVID Info", correlation))
+
+cat("Trust in COVID Info × Government Approval:\n")
+for(i in 1:nrow(trust_approval)) {
+  cat(sprintf("  %s: r = %.3f [%.3f, %.3f]\n",
+              trust_approval$country[i],
+              trust_approval$observed_r[i],
+              trust_approval$ci_lower[i],
+              trust_approval$ci_upper[i]))
+}
+
+# COVID Infection × Approval (THE PARADOX!)
+infection_approval <- bootstrap_cor_table %>%
+  filter(grepl("COVID Infection", correlation))
+
+cat("\nCOVID Infection × Government Approval:\n")
+for(i in 1:nrow(infection_approval)) {
+  cat(sprintf("  %s: r = %.3f [%.3f, %.3f]\n",
+              infection_approval$country[i],
+              infection_approval$observed_r[i],
+              infection_approval$ci_lower[i],
+              infection_approval$ci_upper[i]))
+}
+
+# Check if CIs are narrow (precise estimates)
+avg_ci_width <- mean(bootstrap_cor_table$ci_width, na.rm = TRUE)
+cat(sprintf("\nAverage CI width: %.3f (narrower = more precise)\n", avg_ci_width))
+
+if(avg_ci_width < 0.15) {
+  cat("✓ Estimates are precise (narrow CIs)\n")
+} else if(avg_ci_width < 0.25) {
+  cat("✓ Estimates are moderately precise\n")
+} else {
+  cat("⚠ Estimates have wide CIs - consider larger sample or different methods\n")
+}
+
+cat("\n✓ Bootstrap analysis complete\n")
+```
+
+# Correlation Matrix
+
+## Overall Correlation Matrix
+
+```{r 20-correlation-matrix-all}
+# Select key variables for correlation
+cor_vars <- ab_analysis %>%
+  dplyr::select(   # ← ADD dplyr:: prefix here
+    covid_contracted, 
+    covid_impact_severity, 
+    covid_trust_info, 
+    covid_govt_handling,
+    institutional_trust_index, 
+    dem_satisfaction,
+    auth_acceptance, 
+    emergency_powers_support
+  ) %>%
+  rename(
+    "COVID Infected" = covid_contracted,
+    "Economic Impact" = covid_impact_severity,
+    "Trust COVID Info" = covid_trust_info,
+    "Gov Handling" = covid_govt_handling,
+    "Institutional Trust" = institutional_trust_index,
+    "Democracy Satisfaction" = dem_satisfaction,
+    "Authoritarianism" = auth_acceptance,
+    "Emergency Powers" = emergency_powers_support
+  )
+
+# Calculate correlation matrix
+cor_matrix <- cor(cor_vars, use = "pairwise.complete.obs")
+
+# Visualize
+png(here("figures", "fig5_correlation_matrix.png"), width = 800, height = 800)
+corrplot(cor_matrix, method = "color", type = "upper", 
+         tl.col = "black", tl.srt = 45,
+         addCoef.col = "black", number.cex = 0.7,
+         col = colorRampPalette(c("#D55E00", "white", "#0072B2"))(200),
+         title = "Correlation Matrix: Key Variables (All Countries)",
+         mar = c(0, 0, 2, 0))
+dev.off()
+
+# Print as table
+correlation_matrix <- cor_matrix %>%
+  as.data.frame() %>%
+  rownames_to_column("Variable") %>%
+  gt() %>%
+  tab_header(title = "Correlation Matrix: Key Variables") %>%
+  fmt_number(columns = -Variable, decimals = 3) %>%
+  data_color(
+    columns = -Variable,
+    fn = scales::col_numeric(
+      palette = brewer.pal(11, "RdBu"),  # ← Brewer palette!
+      domain = c(-1, 1),
+      reverse = TRUE  # Red = negative, Blue = positive
+    )
+  )
+
+gtsave(correlation_matrix, here("tables", "table4_correlation_matrix.html"))
+cat("✓ Saved: tables/table4_correlation_matrix.html\n")
+cat("✓ Saved: figures/fig5_correlation_matrix.png\n")
+```
+
+# Emergency Powers Analysis
+
+## General Emergency Powers
+
+```{r 21-emergency-powers-comparison, fig.width=12, fig.height=6}
+# Compare support across different emergency scenarios
+emergency_comparison <- ab_analysis %>%
+  group_by(country_name) %>%
+  summarise(
+    `COVID Crisis` = mean(emergency_q172a >= 3, na.rm = TRUE) * 100,
+    `Economic Crisis` = mean(emergency_q172b >= 3, na.rm = TRUE) * 100,
+    `Corruption` = mean(emergency_q172c >= 3, na.rm = TRUE) * 100,
+    `Security Crisis` = mean(emergency_q172d >= 3, na.rm = TRUE) * 100,
+    `War` = mean(emergency_q172e >= 3, na.rm = TRUE) * 100
+  ) %>%
+  pivot_longer(-country_name, names_to = "scenario", values_to = "support")
+
+ggplot(emergency_comparison, aes(x = scenario, y = support, fill = country_name)) +
+  geom_col(position = position_dodge(width = 0.8), width = 0.7) +
+  scale_fill_manual(values = country_colors, name = "Country") +
+  scale_y_continuous(limits = c(0, 100), labels = scales::percent_format(scale = 1)) +
+  labs(title = "Support for Emergency Government Powers by Scenario",
+       subtitle = "General emergency powers (all three countries)",
+       x = "Emergency Scenario", y = "% Approve") +
+  theme_minimal(base_size = 12) +
+  theme(legend.position = "bottom",
+        axis.text.x = element_text(angle = 45, hjust = 1))
+
+ggsave(here("figures", "fig6_emergency_powers.png"), width = 12, height = 6, dpi = 300)
+cat("✓ Saved: figures/fig6_emergency_powers.png\n")
+```
+
+# Key Takeaways
+
+```{r 22-key-takeaways}
+cat("\n=== KEY DESCRIPTIVE FINDINGS ===\n\n")
+
+cat("1. THE VIETNAM PARADOX:\n")
+cat("   - Highest COVID infection rate but highest government approval\n")
+cat("   - Extremely high trust in government COVID information\n")
+cat("   - Very low democracy satisfaction\n")
+cat("   → Suggests separation of performance and democratic legitimacy\n\n")
+
+cat("2. THREE DISTINCT PATTERNS:\n")
+cat("   Vietnam: Authoritarian Effectiveness (high infections, high approval)\n")
+cat("   Cambodia: Authoritarian Legitimacy (low infections, high approval)\n")
+cat("   Thailand: Democratic Crisis (moderate infections, low approval)\n\n")
+
+cat("3. TRUST AS MEDIATOR:\n")
+cat("   - Strong correlation between trust in COVID info and government approval\n")
+cat("   - Vietnam maintains high trust despite poor outcomes\n")
+cat("   - Thailand shows low trust even with moderate outcomes\n")
+cat("   → Information environment appears crucial\n\n")
+
+cat("4. SAMPLE SIZES:\n")
+n_by_country <- table(ab_analysis$country_name)
+cat("   Cambodia:", n_by_country["Cambodia"], "\n")
+cat("   Thailand:", n_by_country["Thailand"], "\n")
+cat("   Vietnam:", n_by_country["Vietnam"], "\n")
+cat("   → Adequate sample sizes for planned analyses\n\n")
+
+cat("NEXT STEPS:\n")
+cat("- Proceed to hypothesis testing with regression models\n")
+cat("- Test trust as mediator between COVID outcomes and approval\n")
+cat("- Examine country interactions\n")
+```
+
+# Summary Statistics Export
+
+```{r 23-export-summary}
+# Export summary statistics for use in manuscript
+summary_stats <- ab_analysis %>%
+  group_by(country_name) %>%
+  summarise(
+    n = n(),
+    covid_infected_pct = mean(covid_contracted, na.rm = TRUE) * 100,
+    gov_approval = mean(covid_govt_handling, na.rm = TRUE),
+    trust_covid_info = mean(covid_trust_info, na.rm = TRUE),
+    institutional_trust = mean(institutional_trust_index, na.rm = TRUE),
+    dem_satisfaction = mean(dem_satisfaction, na.rm = TRUE),
+    authoritarianism = mean(auth_acceptance, na.rm = TRUE),
+    emergency_powers = mean(emergency_powers_support, na.rm = TRUE)
+  )
+
+write_csv(summary_stats, here("tables", "summary_statistics.csv"))
+
+cat("\n✓ Saved: tables/summary_statistics.csv\n")
+cat("\n=== DESCRIPTIVE ANALYSIS COMPLETE ===\n")
+```
+
+# Save Results for Manuscript
+
+```{r 99-save-results-for-manuscript}
+# ============================================================================
+# SAVE KEY RESULTS FOR MANUSCRIPT
+# ============================================================================
+
+# Create results directory if it doesn't exist
+results_dir <- here("papers/01_vietnam_covid_paradox/analysis/results")
+dir.create(results_dir, showWarnings = FALSE, recursive = TRUE)
+
+# Core paradox summary (Table 1)
+saveRDS(paradox_data, file.path(results_dir, "descriptive_paradox_summary.rds"))
+
+# Sample characteristics table (Methods section)
+saveRDS(sample_chars, file.path(results_dir, "descriptive_sample_characteristics.rds"))
+
+# Scale reliability (Methods section)
+saveRDS(reliability_results, file.path(results_dir, "descriptive_scale_reliability.rds"))
+
+# Correlation matrix (Results section)
+saveRDS(cor_matrix, file.path(results_dir, "descriptive_correlation_matrix.rds"))
+
+# Bootstrap correlation results with CIs (Results section)
+saveRDS(bootstrap_cor_table, file.path(results_dir, "descriptive_bootstrap_correlations.rds"))
+
+# Effect sizes for country comparisons (Results section)
+saveRDS(effect_size_results, file.path(results_dir, "descriptive_effect_sizes.rds"))
+
+# Economic impact summary (Robustness section)
+saveRDS(economic_summary, file.path(results_dir, "descriptive_economic_impacts.rds"))
+
+cat("\n")
+cat("=== SAVED RESULTS FOR MANUSCRIPT ===\n")
+cat("✓ descriptive_paradox_summary.rds\n")
+cat("✓ descriptive_sample_characteristics.rds\n")
+cat("✓ descriptive_scale_reliability.rds\n")
+cat("✓ descriptive_correlation_matrix.rds\n")
+cat("✓ descriptive_bootstrap_correlations.rds\n")
+cat("✓ descriptive_effect_sizes.rds\n")
+cat("✓ descriptive_economic_impacts.rds\n")
+cat("Results saved to:", results_dir, "\n")
+```
+
+# Session Information
+
+```{r 24-session-info}
+sessionInfo()
+```

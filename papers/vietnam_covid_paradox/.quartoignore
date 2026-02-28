@@ -1,0 +1,8 @@
+# Exclude documentation files from paper rendering
+INTEGRATION_WORKFLOW.md
+*_GUIDE.md
+*_TEMPLATE.md
+README.md
+
+# Exclude various_md directory containing template files
+various_md/

@@ -1,0 +1,280 @@
+---
+title: "Pandemic Governance and Regime Legitimacy in Southeast Asia"
+subtitle: "Theoretical Framework and Hypotheses"
+author: "Jeffrey Stark"
+date: today
+format:
+  html:
+    toc: true
+    toc-depth: 3
+    number-sections: true
+    code-fold: true
+# PDF format commented out - requires scrartcl.cls LaTeX class
+#  pdf:
+#    toc: true
+#    number-sections: true
+bibliography: ../../../references.bib
+---
+
+# The Puzzle: The Vietnam Paradox
+
+When the COVID-19 pandemic swept across Southeast Asia in 2020-2022, conventional wisdom suggested that government performance in managing the crisis would directly correlate with public trust and legitimacy. Countries that successfully limited infections and deaths should, logically, receive higher approval ratings, while those experiencing severe outbreaks should face declining public support. Yet preliminary evidence from the Asian Barometer Survey Wave 6 reveals a striking counterintuitive pattern—what we term the **Vietnam Paradox**.
+
+Despite experiencing the highest COVID-19 infection rate among three Southeast Asian nations (65.9% of respondents reporting infection), Vietnam simultaneously recorded:
+
+-   The highest government approval rating for pandemic handling (97.5%)
+-   The highest trust in government COVID information (91.9%)
+-   Exceptionally high institutional trust (93% trust in national government)
+-   The lowest satisfaction with democracy (2.6%)
+
+This paradox challenges fundamental assumptions about the relationship between governance outcomes and regime legitimacy. It suggests that citizens' evaluations of government performance during crises may be decoupled from both objective health outcomes and democratic satisfaction—operating instead through mechanisms specific to regime type, information environments, and pre-existing institutional trust.
+
+Moreover, comparison with Cambodia and Thailand reveals three distinct patterns of pandemic governance and legitimacy:
+
+-   **Vietnam**: High infections + high approval + low democracy satisfaction
+-   **Cambodia**: Low infections + high approval + low democracy satisfaction\
+-   **Thailand**: Moderate infections + low approval + moderate democracy satisfaction
+
+These divergent patterns demand theoretical explanation. Why does high infection not erode authoritarian support in Vietnam? What mechanisms allow authoritarian regimes to maintain performance legitimacy despite poor health outcomes? And how do citizens distinguish between evaluations of government effectiveness and democratic quality?
+
+## Research Questions
+
+This paper addresses four interrelated questions:
+
+1.  **Why does the relationship between COVID outcomes and government approval vary across regime contexts?** Specifically, why do Vietnamese citizens express high approval despite high infection rates, while Thai citizens express low approval despite moderate infections?
+
+2.  **What mediates the connection between pandemic experiences and regime legitimacy?** Do information environments, economic impacts, or pre-existing institutional trust explain the observed patterns?
+
+3.  **How do citizens distinguish between government performance and democratic quality?** Can authoritarian regimes secure performance-based legitimacy while maintaining low democratic satisfaction?
+
+4.  **Under what conditions do citizens support expanded emergency government powers?** Does support for pandemic-specific powers differ from support for general emergency measures, and how does this relate to regime type?
+
+# Theoretical Framework
+
+## Performance Legitimacy in Authoritarian Regimes
+
+Traditional conceptions of authoritarian durability emphasized coercion and repression as primary mechanisms of regime maintenance. However, recent scholarship recognizes that authoritarian regimes also cultivate **performance legitimacy**—citizen support based on government effectiveness in delivering economic growth, public goods, and social stability rather than democratic procedures.
+
+Zhao (2009) and others argue that China's post-Tiananmen legitimacy rests substantially on performance rather than ideological commitment or democratic mandate. This "performance legitimacy model" suggests that citizens evaluate authoritarian governments based on tangible results: GDP growth, infrastructure development, poverty reduction, and increasingly, crisis management capacity.
+
+However, the literature contains an unresolved tension: **Do citizens evaluate performance based on objective outcomes or perceived efforts?** Most studies assume that poor outcomes (economic recession, health crises, natural disasters) erode performance legitimacy. Yet if performance legitimacy can persist despite negative outcomes, this challenges outcome-based theories and suggests that **perception management, narrative control, and attribution of responsibility** matter more than material results.
+
+The Vietnam Paradox provides a critical test: If an authoritarian regime can maintain performance legitimacy during a severe health crisis with high infection rates, this suggests that:
+
+1.  Citizens may evaluate government effort and responsiveness rather than outcomes
+2.  Information environments shape how citizens interpret crisis performance
+3.  Rally-round-the-flag effects may be stronger in authoritarian contexts with limited alternative information sources
+
+## Rally-Round-the-Flag Effects and Crisis Governance
+
+Democratic governance literature has long documented "rally-round-the-flag" effects—temporary increases in government approval during national crises, particularly external threats or security emergencies. This phenomenon typically involves:
+
+-   Heightened national unity and patriotic sentiment
+-   Reduced partisan criticism of government
+-   Media emphasis on collective identity over political divisions
+-   Temporary suspension of normal political competition
+
+However, rally effects in democracies typically dissipate as crises persist and negative outcomes accumulate. Opposition parties eventually resume criticism, media scrutiny intensifies, and voters punish incumbents for poor crisis management.
+
+**Do rally effects operate differently in authoritarian regimes?** We theorize three mechanisms that may produce stronger or more durable rally effects in non-democratic contexts:
+
+1.  **Information Control**: State control over media limits dissemination of negative information about government performance, preventing erosion of the rally effect even when outcomes worsen
+
+2.  **Attribution Management**: Authoritarian regimes can more effectively shift blame for negative outcomes to external forces (foreign governments, individual behavior) while claiming credit for positive developments
+
+3.  **Absence of Credible Alternatives**: Without organized opposition parties or independent media providing alternative leadership narratives, citizens may lack cognitive frameworks for attributing failure to the government
+
+The COVID-19 pandemic provides an ideal setting to test these mechanisms. Unlike economic performance (which can be attributed to global factors) or military conflicts (which involve clear external enemies), pandemic management primarily reflects domestic governance capacity. Yet state control over information about infection rates, hospital capacity, and government response remains variable across regime types.
+
+## Information Environments and Government Trust
+
+A growing body of research emphasizes that citizens' political attitudes are shaped not just by objective conditions but by the **information environments** in which they form opinions. Authoritarian regimes invest heavily in controlling information flows through:
+
+-   State ownership or influence over major media outlets
+-   Censorship of critical content and alternative narratives
+-   Strategic flooding of information space with pro-government messaging
+-   Punishment of critics and alternative information sources
+
+These information control strategies may be particularly effective during crises when:
+
+1.  Citizens face high uncertainty and seek authoritative information
+2.  Government controls access to technical expertise and data
+3.  External information sources are difficult to verify
+4.  Collective action problems prevent coordination on alternative narratives
+
+We theorize that **information environments mediate the relationship between objective pandemic outcomes and government trust**. Specifically:
+
+-   In countries with state-controlled media (Vietnam, Cambodia), negative health outcomes may not translate to negative performance evaluations because citizens lack access to comparative information or critical framing
+-   In countries with more pluralistic media (Thailand), the same outcomes receive critical coverage that undermines government approval
+-   Trust in government information becomes a crucial intervening variable, potentially explaining why high infections in Vietnam correlate with high approval while moderate infections in Thailand correlate with low approval
+
+This suggests a **two-stage process**: 1. Information environment → Trust in government COVID information 2. Trust in government information → Government approval (despite objective outcomes)
+
+## Dual Legitimacy: Separating Performance from Democracy
+
+Perhaps the most theoretically consequential pattern in the data is the apparent **decoupling of performance legitimacy from democratic satisfaction**. All three countries show low democratic satisfaction (2-13%), yet government approval ratings vary wildly (38% in Thailand vs. 94-97% in Cambodia/Vietnam).
+
+This pattern challenges theories that assume citizens make holistic regime evaluations. Instead, it suggests that citizens can simultaneously:
+
+-   Recognize that their government is not democratic (low democracy satisfaction)
+-   Evaluate government performance favorably (high approval for pandemic handling)
+-   Support continued authoritarian rule (high emergency powers support)
+
+This "dual legitimacy" framework has important implications:
+
+1.  **Authoritarian regimes need not deliver democracy to maintain support**—performance suffices for a substantial portion of the population
+
+2.  **Democratic dissatisfaction does not automatically translate to regime opposition**—citizens may prefer effective authoritarianism to ineffective democracy
+
+3.  **Crisis performance may provide authoritarian regimes with legitimacy reserves**—successful crisis management strengthens the performance pillar even as democratic deficits persist
+
+However, existing literature provides limited guidance on **what conditions enable this separation**. We theorize several possibilities:
+
+-   **Political sophistication**: Less politically engaged citizens may not distinguish between performance and democratic quality, while more sophisticated citizens can make separate evaluations
+-   **Regime socialization**: Long-term authoritarian rule may normalize the separation by establishing performance as the primary evaluation criterion
+-   **Comparative reference points**: Citizens in countries with histories of both democratic and authoritarian rule (Thailand) may conflate performance with regime type, while those with primarily authoritarian experience (Vietnam) more easily separate the dimensions
+
+## Emergency Powers and Democratic Trade-offs
+
+The pandemic prompted governments worldwide to adopt extraordinary measures: lockdowns, travel restrictions, contact tracing, censorship of "misinformation," and postponement of elections. These emergency powers raised fundamental questions about the trade-off between collective health and individual liberty.
+
+Existing research on civil liberties during emergencies emphasizes:
+
+1.  **Ratchet effects**: Emergency powers often persist after crises end
+2.  **Partisan asymmetry**: Government supporters more readily accept restrictions than opposition
+3.  **Threat perception**: Higher perceived threat correlates with greater acceptance of restrictions
+
+However, most research focuses on democracies where such trade-offs are politically contested. **How do citizens in authoritarian regimes evaluate emergency powers?**
+
+We theorize that support for emergency powers may be **"sticky" in authoritarian contexts** because:
+
+-   Citizens already accept substantial government authority in non-emergency times
+-   There is limited political space to contest emergency measures
+-   State narratives emphasize crisis threats rather than liberty concerns
+-   Historical experience normalizes government intervention
+
+The Asian Barometer data provides a unique opportunity to test this by distinguishing:
+
+-   **General emergency powers** (corruption, economic crisis, security threats, war)—measured across all three countries
+-   **Pandemic-specific government powers** (postponing elections, limiting speech, censoring media, tracking citizens, long-term lockdowns)—measured only in Cambodia and Thailand
+
+If emergency powers support is uniformly high across crisis types, this suggests authoritarian citizens have generalized acceptance of state authority. If pandemic-specific powers receive different support than other emergencies, this indicates context-specific evaluation of legitimate government intervention.
+
+# Hypotheses
+
+Building on this theoretical framework, we propose five sets of testable hypotheses:
+
+## H1: Country Context Moderates COVID-Performance Relationships
+
+**H1a**: The relationship between personal COVID infection and government approval varies by country, with weaker (or positive) effects in Vietnam and stronger negative effects in Thailand.
+
+**H1b**: The relationship between COVID economic impact and democratic satisfaction varies by country.
+
+**Theoretical logic**: Regime type and information environment condition how citizens interpret pandemic experiences. In authoritarian contexts with information control, negative experiences may trigger rally-around-the-flag rather than government criticism.
+
+## H2: Information Environment Mediation
+
+**H2a**: Trust in government COVID information mediates the relationship between country context and government pandemic approval.
+
+**H2b**: Vietnamese citizens' high government approval despite high infections operates through exceptionally high trust in government information sources.
+
+**Theoretical logic**: State control over information in Vietnam prevents negative pandemic outcomes from translating into government criticism by managing narratives about government effort, external factors, and comparative performance.
+
+## H3: Institutional Trust Moderation
+
+**H3a**: Pre-existing institutional trust moderates the relationship between COVID infection and government approval—high baseline trust strengthens rally effects, low baseline trust amplifies blame.
+
+**H3b**: The institutional trust × COVID infection interaction differs across countries, strongest in Vietnam and weakest in Thailand.
+
+**Theoretical logic**: Rally-round-the-flag effects depend on pre-existing confidence in government. Where institutional trust is high, citizens attribute negative outcomes to circumstances beyond government control; where trust is low, citizens blame government incompetence.
+
+## H4: Dual Legitimacy—Separating Performance from Democracy
+
+**H4a**: Government pandemic handling approval is statistically independent from democratic satisfaction across all three countries.
+
+**H4b**: Citizens can simultaneously evaluate government pandemic performance favorably while expressing dissatisfaction with democratic quality.
+
+**H4c**: The relationship between pandemic handling and democratic satisfaction is moderated by political interest—only politically sophisticated citizens clearly distinguish the two dimensions.
+
+**Theoretical logic**: Citizens evaluate governments on multiple dimensions. Performance legitimacy (pandemic handling) operates independently from procedural legitimacy (democratic quality), allowing authoritarian regimes to secure support through effectiveness without democratic reform.
+
+## H5: Emergency Powers Support
+
+**H5a**: Support for COVID-related emergency powers correlates with general institutional trust rather than pandemic-specific factors.
+
+**H5b**: Support for general emergency powers (q172a-e) predicts support for pandemic-specific government powers (q143a-e) in Cambodia and Thailand (Vietnam data not available).
+
+**H5c**: Vietnamese citizens show higher support for emergency powers across all crisis types compared to Cambodian and Thai citizens, reflecting generalized acceptance of state authority.
+
+**Theoretical logic**: Emergency powers support reflects baseline regime orientations rather than crisis-specific calculations. Citizens in authoritarian regimes with high institutional trust grant governments broad discretion across multiple emergency scenarios.
+
+# Empirical Strategy Preview
+
+To test these hypotheses, we employ multiple statistical approaches:
+
+1.  **Interaction Models**: Test whether country context moderates relationships between COVID experiences and political attitudes (H1, H3)
+
+2.  **Mediation Analysis**: Examine whether trust in government COVID information mediates the country-approval relationship (H2)
+
+3.  **Factor Analysis**: Validate scales for institutional trust, authoritarianism support, and emergency powers acceptance
+
+4.  **Country-Specific Models**: Compare Cambodia and Thailand on pandemic-specific emergency powers where Vietnam data is unavailable
+
+5.  **Robustness Checks**: Alternative specifications, subset analyses, and diagnostic tests
+
+## Data: Asian Barometer Wave 6
+
+The Asian Barometer Survey Wave 6, conducted in 2021-2023, provides unique leverage for examining these questions because:
+
+-   **Timing**: Conducted during the pandemic, capturing real-time attitudes rather than retrospective evaluations
+-   **Cross-national comparison**: Three Southeast Asian countries with distinct regime types and pandemic experiences
+-   **Comprehensive measurement**: Includes COVID-specific questions (infection, economic impact, government trust) alongside standard democracy and authoritarianism items
+-   **Emergency powers questions**: Rare measure of citizen attitudes toward extraordinary government authority
+
+**Key limitations** will be addressed in the empirical analysis:
+
+-   Cross-sectional data limits causal inference
+-   Potential social desirability bias in authoritarian contexts
+-   Self-reported COVID infection may undercount actual rates
+
+# Expected Contributions
+
+This paper will make three primary contributions to scholarship:
+
+## Theoretical Contribution
+
+We challenge **outcome-based theories of performance legitimacy**, demonstrating that authoritarian regimes can maintain support during crises despite poor objective outcomes. This requires scholars to distinguish between:
+
+-   **Outcome legitimacy**: Support based on material results
+-   **Process legitimacy**: Support based on perceived government effort and responsiveness
+-   **Attribution management**: Government capacity to shape causal narratives
+
+## Substantive Contribution
+
+We explain the **mechanisms of authoritarian resilience during crises**, showing how information control and rally-around-the-flag effects interact to insulate authoritarian governments from accountability for pandemic failures. This has implications for understanding:
+
+-   Why democracies may face disadvantages in crisis governance (exposure to criticism even during rally periods)
+-   How authoritarian regimes build legitimacy reserves that sustain them through poor performance
+-   The limits of "performance legitimacy" as a constraint on authoritarian rule
+
+## Methodological Contribution
+
+We demonstrate the value of **distinguishing multiple dimensions of regime legitimacy** rather than treating citizen attitudes as unidimensional regime support. The separation of performance evaluation from democratic satisfaction suggests that:
+
+-   Scholars should measure multiple legitimacy dimensions
+-   Authoritarian regime support cannot be reduced to either coercion or satisfaction
+-   Citizens in authoritarian regimes exhibit political sophistication in evaluating governments on multiple criteria simultaneously
+
+------------------------------------------------------------------------
+
+# Next Steps
+
+With this theoretical framework established, we proceed to:
+
+1.  **Data preparation** (Script 02): Clean AsianBarometer data, handle missing values, create composite indices
+2.  **Descriptive analysis** (Script 03): Document the three regime patterns and basic relationships
+3.  **Factor analysis** (Script 04): Validate measurement scales for institutional trust, authoritarianism, emergency powers
+4.  **Hypothesis testing** (Scripts 05-08): Systematic evaluation of each hypothesis using appropriate statistical models
+5.  **Manuscript development**: Integrate theory and findings into publishable paper
+
+The Vietnam Paradox presents both a puzzle and an opportunity—a chance to deepen our understanding of how citizens evaluate governments during crises and how authoritarian regimes maintain legitimacy despite poor governance outcomes.
