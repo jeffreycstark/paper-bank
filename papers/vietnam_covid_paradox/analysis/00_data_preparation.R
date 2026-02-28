@@ -181,7 +181,29 @@ cat("✓ auth_acceptance (mean of auth_govt_censor_ideas, auth_judges_defer_exec
 cat("  NOTE: Old pipeline used 4 items (q168-q171); harmonized W6 has 2 items\n\n")
 
 # ==============================================================================
-# 8. Variables not in harmonized dataset — set to NA with warnings
+# 8. Control variables
+#
+# econ_anxiety  = econ_worried_lose_income (q161, already reversed: 4=very worried)
+# educ_level    = education_level (1-10 ordinal)
+# urban         = urban_rural (0=rural, 1=urban)
+# income_quintile already present in harmonized data
+# ==============================================================================
+
+cat("[controls] Renaming control variables...\n")
+
+d <- d |>
+  mutate(
+    econ_anxiety = as.numeric(econ_worried_lose_income),  # 4=very worried
+    educ_level   = as.numeric(education_level),           # 1-10 ordinal
+    urban        = as.integer(urban_rural)                # 0=rural, 1=urban
+  )
+
+cat("✓ econ_anxiety (from econ_worried_lose_income; 4=most worried)\n")
+cat("✓ educ_level (from education_level; 1-10)\n")
+cat("✓ urban (from urban_rural; 1=urban)\n\n")
+
+# ==============================================================================
+# 9. Variables not in harmonized dataset — set to NA with warnings
 # ==============================================================================
 
 # Emergency powers support (q172a-e): not in harmonized W6 ABS
