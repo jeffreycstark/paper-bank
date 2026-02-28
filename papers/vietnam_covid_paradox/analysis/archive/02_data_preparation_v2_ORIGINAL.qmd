@@ -2020,7 +2020,7 @@ missing_matrix <- missing_plot_data %>%
 color_palette <- colorRampPalette(c("lightblue", "darkred"))(100)
 
 # Create the heatmap
-png(here("figures", "missing_data_heatmap.png"), width = 10, height = 12, units = "in", res = 300)
+png(here("papers", "vietnam_covid_paradox", "analysis", "output", "figures", "missing_data_heatmap.png"), width = 10, height = 12, units = "in", res = 300)
 
 par(mar = c(6, 8, 4, 6))  # Margins: bottom, left, top, right
 
@@ -2075,7 +2075,7 @@ missing_summary_table <- missing_by_country %>%
   arrange(desc(Cambodia))
 
 write_csv(missing_summary_table, 
-          here("tables", "missing_data_summary.csv"))
+          here("papers", "vietnam_covid_paradox", "analysis", "output", "tables", "missing_data_summary.csv"))
 ```
 
 # Construct Validation
@@ -2111,7 +2111,7 @@ print(round(cor_matrix, 3))
 
 # Export for paper
 write.csv(round(cor_matrix, 3), 
-          here("tables", "construct_correlations.csv"))
+          here("papers", "vietnam_covid_paradox", "analysis", "output", "tables", "construct_correlations.csv"))
 
 # Flag problematic correlations
 cat("\n--- Correlation Diagnostics ---\n")
@@ -2259,7 +2259,7 @@ print(reliability_summary)
 
 # Save for paper
 write_csv(reliability_summary, 
-          here("tables", "construct_summary.csv"))
+          here("papers", "vietnam_covid_paradox", "analysis", "output", "tables", "construct_summary.csv"))
 
 cat("\n=== 21 CONSTRUCT VALIDATION COMPLETE ===\n")
 cat("All constructs validated. Proceeding to standardization.\n")
@@ -2795,15 +2795,15 @@ demo_table <- ab_analysis %>%
     pct_tertiary = round(mean(educ_level == "University/Tertiary", na.rm = TRUE) * 100, 1)
   )
 
-write_csv(demo_table, here("tables", "demographics_summary.csv"))
+write_csv(demo_table, here("papers", "vietnam_covid_paradox", "analysis", "output", "tables", "demographics_summary.csv"))
 cat("✓ Saved: tables/demographics_summary.csv\n")
 
 # Descriptives table
-write_csv(descriptives, here("tables", "descriptives_by_country.csv"))
+write_csv(descriptives, here("papers", "vietnam_covid_paradox", "analysis", "output", "tables", "descriptives_by_country.csv"))
 cat("✓ Saved: tables/descriptives_by_country.csv\n")
 
 # Quality table
-write_csv(quality_by_country, here("tables", "data_quality_by_country.csv"))
+write_csv(quality_by_country, here("papers", "vietnam_covid_paradox", "analysis", "output", "tables", "data_quality_by_country.csv"))
 cat("✓ Saved: tables/data_quality_by_country.csv\n")
 
 cat("\n=== DATA PREPARATION COMPLETE ===\n")

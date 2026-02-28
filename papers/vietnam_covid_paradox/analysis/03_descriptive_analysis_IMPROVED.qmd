@@ -20,7 +20,7 @@ library(tidyverse)
 library(here)
 
 # CRITICAL: Set project root (script is 3 levels deep from root)
-here::i_am("papers/01_vietnam_covid_paradox/analysis/03_descriptive_analysis_IMPROVED.qmd")
+here::i_am("papers/vietnam_covid_paradox/analysis/03_descriptive_analysis_IMPROVED.qmd")
 
 library(gt)
 library(gtExtras)
@@ -213,7 +213,7 @@ if(nrow(high_missing) > 0) {
 }
 
 # Save completeness report
-write_csv(completeness_vars, here("tables", "variable_completeness.csv"))
+write_csv(completeness_vars, here("papers", "vietnam_covid_paradox", "analysis", "output", "tables", "variable_completeness.csv"))
 cat("\n✓ Saved: tables/variable_completeness.csv\n")
 ```
 
@@ -286,7 +286,7 @@ completeness_country <- ab_analysis %>%
 print(completeness_country)
 
 # Save country completeness
-write_csv(completeness_country, here("tables", "completeness_by_country.csv"))
+write_csv(completeness_country, here("papers", "vietnam_covid_paradox", "analysis", "output", "tables", "completeness_by_country.csv"))
 cat("\n✓ Saved: tables/completeness_by_country.csv\n")
 ```
 
@@ -388,7 +388,7 @@ complete_case_table <- complete_case_summary %>%
     locations = cells_body(columns = Total)
   )
 
-gtsave(complete_case_table, here("tables", "complete_case_summary.html"))
+gtsave(complete_case_table, here("papers", "vietnam_covid_paradox", "analysis", "output", "tables", "complete_case_summary.html"))
 cat("\n✓ Saved: tables/complete_case_summary.html\n")
 
 # Assessment
@@ -545,7 +545,7 @@ paradox_table <- paradox_data %>%
     locations = cells_column_labels(columns = mean_dem_sat)
   )
 
-gtsave(paradox_table, here("tables", "table1_vietnam_paradox.html"))
+gtsave(paradox_table, here("papers", "vietnam_covid_paradox", "analysis", "output", "tables", "table1_vietnam_paradox.html"))
 cat("✓ Saved: tables/table1_vietnam_paradox.html\n")
 ```
 
@@ -604,7 +604,7 @@ combined_plot <- (p1 + p2) / (p3 + p4) +
 
 print(combined_plot)
 
-ggsave(here("figures", "fig1_vietnam_paradox.png"), 
+ggsave(here("papers", "vietnam_covid_paradox", "analysis", "output", "figures", "fig1_vietnam_paradox.png"), 
        combined_plot, width = 12, height = 8, dpi = 300)
 cat("✓ Saved: figures/fig1_vietnam_paradox.png\n")
 ```
@@ -691,7 +691,7 @@ descriptive_stats <- sample_chars %>%
   tab_spanner(label = "Emergency Powers", columns = c(emergency_mean, emergency_sd)) %>%
   tab_spanner(label = "Demographics", columns = c(age_mean, age_sd, pct_female, pct_urban))
 
-gtsave(descriptive_stats, here("tables", "table1_descriptive_stats.html"))
+gtsave(descriptive_stats, here("papers", "vietnam_covid_paradox", "analysis", "output", "tables", "table1_descriptive_stats.html"))
 cat("✓ Saved: tables/table1_descriptive_stats.html\n")
 ```
 
@@ -743,7 +743,7 @@ combined_dist <- (p1 + p2) / (p3 + p4) +
   plot_annotation(title = "Distributions of Key Variables by Country")
 
 print(combined_dist)
-ggsave(here("figures", "fig2_distributions.png"), combined_dist, 
+ggsave(here("papers", "vietnam_covid_paradox", "analysis", "output", "figures", "fig2_distributions.png"), combined_dist, 
        width = 12, height = 10, dpi = 300)
 cat("✓ Saved: figures/fig2_distributions.png\n")
 ```
@@ -908,7 +908,7 @@ reliability_table <- reliability_results %>%
 reliability_table
 
 # Save table
-gtsave(reliability_table, here("tables", "table2_reliability.html"))
+gtsave(reliability_table, here("papers", "vietnam_covid_paradox", "analysis", "output", "tables", "table2_reliability.html"))
 cat("✓ Saved: tables/table2_reliability.html\n")
 
 # Print summary
@@ -1116,7 +1116,7 @@ for (var in names(vars_to_plot)) {
   ))
 
   ggsave(
-    here("figures", paste0("fig_dist_", var, ".png")),
+    here("papers", "vietnam_covid_paradox", "analysis", "output", "figures", paste0("fig_dist_", var, ".png")),
     width = 14, height = 10, dpi = 300
   )
 }
@@ -1148,7 +1148,7 @@ ggplot(covid_approval_data, aes(x = covid_contracted, y = covid_govt_handling,
   theme_minimal(base_size = 12) +
   theme(legend.position = "bottom")
 
-ggsave(here("figures", "fig3_covid_approval.png"), width = 10, height = 6, dpi = 300)
+ggsave(here("papers", "vietnam_covid_paradox", "analysis", "output", "figures", "fig3_covid_approval.png"), width = 10, height = 6, dpi = 300)
 
 # Calculate correlations by country
 cat("\n=== CORRELATIONS: COVID INFECTION VS GOVERNMENT APPROVAL ===\n")
@@ -1161,7 +1161,7 @@ covid_approval_data %>%
   gt() %>%
   tab_header(title = "Correlation: COVID Infection vs. Government Approval") %>%
   fmt_number(columns = correlation, decimals = 3) %>%
-  gtsave(here("tables", "table2_covid_approval_cor.html"))
+  gtsave(here("papers", "vietnam_covid_paradox", "analysis", "output", "tables", "table2_covid_approval_cor.html"))
 
 cat("✓ Saved: tables/table2_covid_approval_cor.html\n")
 ```
@@ -1243,7 +1243,7 @@ economic_table <- economic_summary %>%
 
 economic_table
 
-gtsave(economic_table, here("tables", "table_covid_impacts.html"))
+gtsave(economic_table, here("papers", "vietnam_covid_paradox", "analysis", "output", "tables", "table_covid_impacts.html"))
 cat("\n✓ Saved: tables/table_covid_impacts.html\n")
 ```
 
@@ -1272,7 +1272,7 @@ ggplot(economic_approval_data,
   theme(legend.position = "bottom",
         plot.subtitle = element_text(size = 10, color = "gray30"))
 
-ggsave(here("figures", "fig_economic_approval.png"), width = 10, height = 6, dpi = 300)
+ggsave(here("papers", "vietnam_covid_paradox", "analysis", "output", "figures", "fig_economic_approval.png"), width = 10, height = 6, dpi = 300)
 cat("✓ Saved: figures/fig_economic_approval.png\n")
 
 # Calculate correlations by country
@@ -1310,7 +1310,7 @@ economic_cor_table <- economic_cor %>%
 
 economic_cor_table
 
-gtsave(economic_cor_table, here("tables", "table_economic_approval_cor.html"))
+gtsave(economic_cor_table, here("papers", "vietnam_covid_paradox", "analysis", "output", "tables", "table_economic_approval_cor.html"))
 cat("✓ Saved: tables/table_economic_approval_cor.html\n")
 ```
 
@@ -1368,7 +1368,7 @@ ggplot(comparison_data, aes(x = country_name, y = correlation,
   theme(legend.position = "bottom",
         panel.grid.major.x = element_blank())
 
-ggsave(here("figures", "fig_impact_comparison.png"), width = 12, height = 5, dpi = 300)
+ggsave(here("papers", "vietnam_covid_paradox", "analysis", "output", "figures", "fig_impact_comparison.png"), width = 12, height = 5, dpi = 300)
 cat("✓ Saved: figures/fig_impact_comparison.png\n")
 
 # Create comparison table
@@ -1425,7 +1425,7 @@ comparison_table <- comparison_data %>%
 
 comparison_table
 
-gtsave(comparison_table, here("tables", "table_impact_comparison.html"))
+gtsave(comparison_table, here("papers", "vietnam_covid_paradox", "analysis", "output", "tables", "table_impact_comparison.html"))
 cat("✓ Saved: tables/table_impact_comparison.html\n")
 ```
 
@@ -1543,7 +1543,7 @@ ggplot(trust_approval_data, aes(x = covid_trust_info, y = covid_govt_handling,
   theme_minimal(base_size = 12) +
   theme(legend.position = "bottom")
 
-ggsave(here("figures", "fig4_trust_approval.png"), width = 10, height = 6, dpi = 300)
+ggsave(here("papers", "vietnam_covid_paradox", "analysis", "output", "figures", "fig4_trust_approval.png"), width = 10, height = 6, dpi = 300)
 
 # Correlations
 cat("\n=== CORRELATIONS: TRUST COVID INFO VS GOVERNMENT APPROVAL ===\n")
@@ -1556,7 +1556,7 @@ trust_approval_data %>%
   gt() %>%
   tab_header(title = "Correlation: Trust COVID Info vs. Government Approval") %>%
   fmt_number(columns = correlation, decimals = 3) %>%
-  gtsave(here("tables", "table3_trust_approval_cor.html"))
+  gtsave(here("papers", "vietnam_covid_paradox", "analysis", "output", "tables", "table3_trust_approval_cor.html"))
 
 cat("✓ Saved: tables/table3_trust_approval_cor.html\n")
 ```
@@ -1696,7 +1696,7 @@ effect_size_table <- effect_size_results %>%
 effect_size_table
 
 # Save table
-gtsave(effect_size_table, here("tables", "table5_effect_sizes.html"))
+gtsave(effect_size_table, here("papers", "vietnam_covid_paradox", "analysis", "output", "tables", "table5_effect_sizes.html"))
 cat("✓ Saved: tables/table5_effect_sizes.html\n")
 
 # Print summary
@@ -1886,7 +1886,7 @@ bootstrap_table <- bootstrap_cor_table %>%
 bootstrap_table
 
 # Save table
-gtsave(bootstrap_table, here("tables", "table6_bootstrap_correlations.html"))
+gtsave(bootstrap_table, here("papers", "vietnam_covid_paradox", "analysis", "output", "tables", "table6_bootstrap_correlations.html"))
 cat("✓ Saved: tables/table6_bootstrap_correlations.html\n")
 
 # Print key findings
@@ -1965,7 +1965,7 @@ cor_vars <- ab_analysis %>%
 cor_matrix <- cor(cor_vars, use = "pairwise.complete.obs")
 
 # Visualize
-png(here("figures", "fig5_correlation_matrix.png"), width = 800, height = 800)
+png(here("papers", "vietnam_covid_paradox", "analysis", "output", "figures", "fig5_correlation_matrix.png"), width = 800, height = 800)
 corrplot(cor_matrix, method = "color", type = "upper", 
          tl.col = "black", tl.srt = 45,
          addCoef.col = "black", number.cex = 0.7,
@@ -1990,7 +1990,7 @@ correlation_matrix <- cor_matrix %>%
     )
   )
 
-gtsave(correlation_matrix, here("tables", "table4_correlation_matrix.html"))
+gtsave(correlation_matrix, here("papers", "vietnam_covid_paradox", "analysis", "output", "tables", "table4_correlation_matrix.html"))
 cat("✓ Saved: tables/table4_correlation_matrix.html\n")
 cat("✓ Saved: figures/fig5_correlation_matrix.png\n")
 ```
@@ -2023,7 +2023,7 @@ ggplot(emergency_comparison, aes(x = scenario, y = support, fill = country_name)
   theme(legend.position = "bottom",
         axis.text.x = element_text(angle = 45, hjust = 1))
 
-ggsave(here("figures", "fig6_emergency_powers.png"), width = 12, height = 6, dpi = 300)
+ggsave(here("papers", "vietnam_covid_paradox", "analysis", "output", "figures", "fig6_emergency_powers.png"), width = 12, height = 6, dpi = 300)
 cat("✓ Saved: figures/fig6_emergency_powers.png\n")
 ```
 
@@ -2079,7 +2079,7 @@ summary_stats <- ab_analysis %>%
     emergency_powers = mean(emergency_powers_support, na.rm = TRUE)
   )
 
-write_csv(summary_stats, here("tables", "summary_statistics.csv"))
+write_csv(summary_stats, here("papers", "vietnam_covid_paradox", "analysis", "output", "tables", "summary_statistics.csv"))
 
 cat("\n✓ Saved: tables/summary_statistics.csv\n")
 cat("\n=== DESCRIPTIVE ANALYSIS COMPLETE ===\n")
@@ -2093,7 +2093,7 @@ cat("\n=== DESCRIPTIVE ANALYSIS COMPLETE ===\n")
 # ============================================================================
 
 # Create results directory if it doesn't exist
-results_dir <- here("papers/01_vietnam_covid_paradox/analysis/results")
+results_dir <- here("papers/vietnam_covid_paradox/analysis/results")
 dir.create(results_dir, showWarnings = FALSE, recursive = TRUE)
 
 # Core paradox summary (Table 1)

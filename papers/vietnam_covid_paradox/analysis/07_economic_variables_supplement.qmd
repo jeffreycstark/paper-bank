@@ -302,7 +302,7 @@ merge_path <- here("data", "processed", "ab_econ_merge.rds")
 saveRDS(ab_econ_merge, merge_path)
 
 # Save results for appendix
-results_dir <- here("papers", "01_vietnam_covid_paradox", "analysis", "results")
+results_dir <- here("papers", "vietnam_covid_paradox", "analysis", "results")
 dir.create(results_dir, showWarnings = FALSE, recursive = TRUE)
 
 # Save descriptive table

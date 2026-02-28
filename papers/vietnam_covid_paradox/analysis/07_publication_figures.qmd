@@ -77,9 +77,9 @@ options(scipen = 999)  # Disable scientific notation
 set.seed(2025)         # Reproducibility
 
 # Create output directory for figures
-dir.create(here("figures"), showWarnings = FALSE)
-dir.create(here("figures", "publication"), showWarnings = FALSE)
-dir.create(here("figures", "presentation"), showWarnings = FALSE)
+dir.create(here("papers", "vietnam_covid_paradox", "analysis", "output", "figures"), showWarnings = FALSE)
+dir.create(here("papers", "vietnam_covid_paradox", "analysis", "output", "figures", "publication"), showWarnings = FALSE)
+dir.create(here("papers", "vietnam_covid_paradox", "analysis", "output", "figures", "presentation"), showWarnings = FALSE)
 
 # Set publication theme
 theme_publication <- function(base_size = 12, base_family = "sans") {
@@ -163,7 +163,7 @@ save_figure <- function(plot, filename, width = 10, height = 7,
                        dpi = 300, type = "publication") {
   
   # Determine output directory
-  output_dir <- here("figures", type)
+  output_dir <- here("papers", "vietnam_covid_paradox", "analysis", "output", "figures", type)
   
   # Save as PNG (for quick preview)
   ggsave(
@@ -1626,8 +1626,8 @@ figure_list %>%
   pack_rows("Presentation Materials", 11, 12)
 
 cat("\n\nFILE LOCATIONS:\n")
-cat("  Publication figures:", here("figures", "publication"), "\n")
-cat("  Presentation slides:", here("figures", "presentation"), "\n")
+cat("  Publication figures:", here("papers", "vietnam_covid_paradox", "analysis", "output", "figures", "publication"), "\n")
+cat("  Presentation slides:", here("papers", "vietnam_covid_paradox", "analysis", "output", "figures", "presentation"), "\n")
 
 cat("\n\nFORMAT RECOMMENDATIONS:\n")
 cat("  • TIFF: Submit to journals (high-quality, widely accepted)\n")

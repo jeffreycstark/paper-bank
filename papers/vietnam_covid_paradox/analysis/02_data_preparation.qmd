@@ -35,7 +35,7 @@ The original monolithic version (2,820 lines) has been replaced with a 10-module
 ```{r setup-here}
 #| include: false
 # Anchor here() to project root (needed when rendering from paper subdirectory)
-here::i_am("papers/01_vietnam_covid_paradox/analysis/02_data_preparation.qmd")
+here::i_am("papers/vietnam_covid_paradox/analysis/02_data_preparation.qmd")
 ```
 
 ```{r run-modular-pipeline}
@@ -44,7 +44,7 @@ here::i_am("papers/01_vietnam_covid_paradox/analysis/02_data_preparation.qmd")
 
 # Run the complete modular data preparation pipeline
 # This executes modules 01-10 in sequence
-source(here::here("papers", "01_vietnam_covid_paradox", "analysis",
+source(here::here("papers", "vietnam_covid_paradox", "analysis",
                   "data_prep_modules", "00_run_all.R"))
 ```
 

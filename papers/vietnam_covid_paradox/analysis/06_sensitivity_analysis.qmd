@@ -864,7 +864,7 @@ cat("╚════════════════════════
 #| label: export
 
 # Save key results for manuscript
-results_dir <- here("papers", "01_vietnam_covid_paradox", "analysis", "results")
+results_dir <- here("papers", "vietnam_covid_paradox", "analysis", "results")
 
 saveRDS(evalue_results, file.path(results_dir, "sensitivity_evalues.rds"))
 saveRDS(falsification_results, file.path(results_dir, "sensitivity_falsification.rds"))

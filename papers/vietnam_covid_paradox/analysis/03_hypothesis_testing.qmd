@@ -288,7 +288,7 @@ h1_gt <- h1_table %>%
 
 h1_gt
 
-gtsave(h1_gt, here("tables", "h1_covid_infection_effects.html"))
+gtsave(h1_gt, here("papers", "vietnam_covid_paradox", "analysis", "output", "tables", "h1_covid_infection_effects.html"))
 cat("✓ Saved: tables/h1_covid_infection_effects.html\n")
 ```
 
@@ -333,7 +333,7 @@ h1c_coef_table <- tidy(h1c_model, conf.int = TRUE) %>%
 
 h1c_coef_table
 
-gtsave(h1c_coef_table, here("tables", "h1c_interaction_model.html"))
+gtsave(h1c_coef_table, here("papers", "vietnam_covid_paradox", "analysis", "output", "tables", "h1c_interaction_model.html"))
 
 # Visualize interaction
 h1c_plot <- interact_plot(h1c_model,
@@ -351,7 +351,7 @@ h1c_plot <- interact_plot(h1c_model,
 
 print(h1c_plot)
 
-ggsave(here("figures", "h1c_interaction_plot.png"), h1c_plot, 
+ggsave(here("papers", "vietnam_covid_paradox", "analysis", "output", "figures", "h1c_interaction_plot.png"), h1c_plot, 
        width = 10, height = 6, dpi = 300)
 
 cat("\n✓ H1 Analysis Complete\n")
@@ -465,7 +465,7 @@ h2a_gt <- h2a_table %>%
 
 h2a_gt
 
-gtsave(h2a_gt, here("tables", "h2a_trust_direct_effect.html"))
+gtsave(h2a_gt, here("papers", "vietnam_covid_paradox", "analysis", "output", "tables", "h2a_trust_direct_effect.html"))
 
 cat("\n✓ H2a: Trust shows STRONG direct effects (R² > 0.30 in all countries)\n")
 ```
@@ -593,7 +593,7 @@ h2b_gt <- h2b_summary %>%
 
 h2b_gt
 
-gtsave(h2b_gt, here("tables", "h2b_mediation_analysis.html"))
+gtsave(h2b_gt, here("papers", "vietnam_covid_paradox", "analysis", "output", "tables", "h2b_mediation_analysis.html"))
 ```
 
 ## H2c: Country Differences in Mediation
@@ -646,7 +646,7 @@ trust_plot <- ggplot(mediation_plot_data,
 
 print(trust_plot)
 
-ggsave(here("figures", "h2c_trust_by_infection.png"), trust_plot,
+ggsave(here("papers", "vietnam_covid_paradox", "analysis", "output", "figures", "h2c_trust_by_infection.png"), trust_plot,
        width = 10, height = 6, dpi = 300)
 
 cat("\n✓ H2 Analysis Complete\n")
@@ -700,7 +700,7 @@ h3a_gt <- h3a_table %>%
 
 h3a_gt
 
-gtsave(h3a_gt, here("tables", "h3a_democracy_effects.html"))
+gtsave(h3a_gt, here("papers", "vietnam_covid_paradox", "analysis", "output", "tables", "h3a_democracy_effects.html"))
 ```
 
 ## H3b: Authoritarianism → Government Approval
@@ -749,7 +749,7 @@ h3b_gt <- h3b_table %>%
 
 h3b_gt
 
-gtsave(h3b_gt, here("tables", "h3b_authoritarianism_effects.html"))
+gtsave(h3b_gt, here("papers", "vietnam_covid_paradox", "analysis", "output", "tables", "h3b_authoritarianism_effects.html"))
 ```
 
 ## H3c: Vietnam's Dissociation (Democracy vs. Performance)
@@ -851,7 +851,7 @@ h4a_gt <- h4a_table %>%
 
 h4a_gt
 
-gtsave(h4a_gt, here("tables", "h4a_economic_impact.html"))
+gtsave(h4a_gt, here("papers", "vietnam_covid_paradox", "analysis", "output", "tables", "h4a_economic_impact.html"))
 ```
 
 ## H4b: Trust vs. Economic Impact (Comparative)
@@ -938,7 +938,7 @@ h4b_gt <- h4b_comparison %>%
 
 h4b_gt
 
-gtsave(h4b_gt, here("tables", "h4b_trust_vs_economic.html"))
+gtsave(h4b_gt, here("papers", "vietnam_covid_paradox", "analysis", "output", "tables", "h4b_trust_vs_economic.html"))
 
 cat("✓ H4b: Trust consistently DOMINATES economic impact\n")
 ```
@@ -1053,7 +1053,7 @@ m1_table
 # Save as HTML
 m1_table %>%
   as_gt() %>%
-  gtsave(here("tables", "model1_core.html"))
+  gtsave(here("papers", "vietnam_covid_paradox", "analysis", "output", "tables", "model1_core.html"))
 
 cat("✓ Saved: tables/model1_core.html\n")
 ```
@@ -1148,7 +1148,7 @@ m2_table
 # Save as HTML
 m2_table %>%
   as_gt() %>%
-  gtsave(here("tables", "model2_full.html"))
+  gtsave(here("papers", "vietnam_covid_paradox", "analysis", "output", "tables", "model2_full.html"))
 
 cat("✓ Saved: tables/model2_full.html\n")
 ```
@@ -1184,7 +1184,7 @@ comparison_gt <- comparison %>%
 
 comparison_gt
 
-gtsave(comparison_gt, here("tables", "model_comparison.html"))
+gtsave(comparison_gt, here("papers", "vietnam_covid_paradox", "analysis", "output", "tables", "model_comparison.html"))
 ```
 
 # 8. Summary of Hypothesis Tests
@@ -1271,7 +1271,7 @@ hypothesis_gt <- hypothesis_summary %>%
 
 hypothesis_gt
 
-gtsave(hypothesis_gt, here("tables", "hypothesis_summary.html"))
+gtsave(hypothesis_gt, here("papers", "vietnam_covid_paradox", "analysis", "output", "tables", "hypothesis_summary.html"))
 
 cat("✓ HYPOTHESIS TESTING COMPLETE\n")
 ```
@@ -1319,7 +1319,7 @@ cat("═════════════════════════
 # SAVE KEY RESULTS FOR MANUSCRIPT
 # ============================================================================
 
-results_dir <- here("papers/01_vietnam_covid_paradox/analysis/results")
+results_dir <- here("papers/vietnam_covid_paradox/analysis/results")
 dir.create(results_dir, showWarnings = FALSE, recursive = TRUE)
 
 # ----------------------------------------------------------------------------

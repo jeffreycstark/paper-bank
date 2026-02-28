@@ -213,10 +213,10 @@ cor_matrix <- cor(vietnam_cor_data, use = "complete.obs")
 
 # Save key correlation for manuscript
 cor_trust_approval <- cor_matrix["covid_trust_info", "covid_govt_handling"]
-dir.create(here("papers/01_vietnam_covid_paradox/analysis/output/inline_stats"),
+dir.create(here("papers/vietnam_covid_paradox/analysis/output/inline_stats"),
            recursive = TRUE, showWarnings = FALSE)
 saveRDS(round(cor_trust_approval, 2),
-        here("papers/01_vietnam_covid_paradox/analysis/output/inline_stats/cor_trust_approval.rds"))
+        here("papers/vietnam_covid_paradox/analysis/output/inline_stats/cor_trust_approval.rds"))
 
 cat("VIETNAM - Correlation Matrix:\n\n")
 cor_matrix %>%
@@ -484,10 +484,10 @@ stratified_results <- list(
   thailand = thailand_stratified$results
 )
 
-dir.create(here("papers/01_vietnam_covid_paradox/analysis/results"),
+dir.create(here("papers/vietnam_covid_paradox/analysis/results"),
            recursive = TRUE, showWarnings = FALSE)
 saveRDS(stratified_results,
-        here("papers/01_vietnam_covid_paradox/analysis/results/health_trauma_stratification.rds"))
+        here("papers/vietnam_covid_paradox/analysis/results/health_trauma_stratification.rds"))
 
 cat("\n✓ Results saved to results/health_trauma_stratification.rds\n")
 ```
@@ -562,12 +562,12 @@ thailand_vif <- data %>%
 # Save for manuscript
 all_vif_max <- max(vietnam_vif$VIF, cambodia_vif$VIF, thailand_vif$VIF)
 all_vif_min <- min(vietnam_vif$VIF, cambodia_vif$VIF, thailand_vif$VIF)
-dir.create(here("papers/01_vietnam_covid_paradox/analysis/output/inline_stats"),
+dir.create(here("papers/vietnam_covid_paradox/analysis/output/inline_stats"),
            recursive = TRUE, showWarnings = FALSE)
 saveRDS(round(all_vif_max, 2),
-        here("papers/01_vietnam_covid_paradox/analysis/output/inline_stats/vif_max.rds"))
+        here("papers/vietnam_covid_paradox/analysis/output/inline_stats/vif_max.rds"))
 saveRDS(round(all_vif_min, 2),
-        here("papers/01_vietnam_covid_paradox/analysis/output/inline_stats/vif_min.rds"))
+        here("papers/vietnam_covid_paradox/analysis/output/inline_stats/vif_min.rds"))
 
 cat("\n\nConclusion across all countries:\n")
 cat("VIF range:", round(all_vif_min, 2), "to", round(all_vif_max, 2), "\n")
@@ -635,10 +635,10 @@ create_crosstab <- function(country_data, country_name) {
   
   # Save for Vietnam (main case)
   if(country_name == "Vietnam") {
-    dir.create(here("papers/01_vietnam_covid_paradox/analysis/output/inline_stats"),
+    dir.create(here("papers/vietnam_covid_paradox/analysis/output/inline_stats"),
                recursive = TRUE, showWarnings = FALSE)
     saveRDS(round(pct_trust_disapprove, 1),
-            here("papers/01_vietnam_covid_paradox/analysis/output/inline_stats/pct_trust_disapprove.rds"))
+            here("papers/vietnam_covid_paradox/analysis/output/inline_stats/pct_trust_disapprove.rds"))
   }
   
   return(list(
@@ -779,10 +779,10 @@ endogeneity_summary <- list(
   polychoric = poly_results
 )
 
-dir.create(here("papers/01_vietnam_covid_paradox/analysis/results"),
+dir.create(here("papers/vietnam_covid_paradox/analysis/results"),
            recursive = TRUE, showWarnings = FALSE)
 saveRDS(endogeneity_summary,
-        here("papers/01_vietnam_covid_paradox/analysis/results/endogeneity_diagnostics.rds"))
+        here("papers/vietnam_covid_paradox/analysis/results/endogeneity_diagnostics.rds"))
 
 cat("\n✓ Endogeneity diagnostics saved to results/endogeneity_diagnostics.rds\n")
 ```
@@ -2050,15 +2050,15 @@ if(sum(!is.na(vietnam_timing$covid_govt_handling)) > 100) {
       max_timing_p <- max(timing_p_values)
 
       # Save for manuscript
-      dir.create(here("papers/01_vietnam_covid_paradox/analysis/output/inline_stats"),
+      dir.create(here("papers/vietnam_covid_paradox/analysis/output/inline_stats"),
                  recursive = TRUE, showWarnings = FALSE)
       saveRDS(round(max_timing_p, 3),
-              here("papers/01_vietnam_covid_paradox/analysis/output/inline_stats/vietnam_timing_p.rds"))
+              here("papers/vietnam_covid_paradox/analysis/output/inline_stats/vietnam_timing_p.rds"))
 
       # Also save R² change
       r2_change <- summary(model_with_timing)$r.squared - summary(model_no_timing)$r.squared
       saveRDS(round(r2_change, 3),
-              here("papers/01_vietnam_covid_paradox/analysis/output/inline_stats/vietnam_timing_r2_change.rds"))
+              here("papers/vietnam_covid_paradox/analysis/output/inline_stats/vietnam_timing_r2_change.rds"))
 
       cat("\nSaved for manuscript:\n")
       cat("  Timing p-value (max):", round(max_timing_p, 3), "\n")
@@ -2367,7 +2367,7 @@ cat("\n---\n\n")
 # SAVE KEY RESULTS FOR MANUSCRIPT
 # ============================================================================
 
-results_dir <- here("papers/01_vietnam_covid_paradox/analysis/results")
+results_dir <- here("papers/vietnam_covid_paradox/analysis/results")
 dir.create(results_dir, showWarnings = FALSE, recursive = TRUE)
 
 # Missing data summary

@@ -94,7 +94,7 @@ trust_desc %>%
 trust_cor <- cor(trust_items %>% select(trust_q7:trust_q15), use = "pairwise.complete.obs")
 
 # Correlation matrix visualization
-# png(here("figures", "trust_correlation_matrix.png"), width = 800, height = 800)
+# png(here("papers", "vietnam_covid_paradox", "analysis", "output", "figures", "trust_correlation_matrix.png"), width = 800, height = 800)
 # corrplot(trust_cor, method = "color", type = "upper",
 #          tl.col = "black", tl.srt = 45, tl.cex = 0.8,
 #          addCoef.col = "black", number.cex = 0.6,
@@ -191,7 +191,7 @@ if (trust_parallel$nfact >= 2) {
 }
 
 # Visualize factor loadings
-# png(here("figures", "trust_factor_loadings.png"), width = 800, height = 600)
+# png(here("papers", "vietnam_covid_paradox", "analysis", "output", "figures", "trust_factor_loadings.png"), width = 800, height = 600)
 # fa.diagram(trust_fa1, main = "Institutional Trust: Factor Structure")
 # dev.off()
 # Note: fa.diagram visualization commented out due to SVG conversion issues
@@ -326,7 +326,7 @@ auth_fa1_loadings %>%
   )
 
 # Visualize
-# png(here("figures", "auth_factor_loadings.png"), width = 800, height = 600)
+# png(here("papers", "vietnam_covid_paradox", "analysis", "output", "figures", "auth_factor_loadings.png"), width = 800, height = 600)
 # fa.diagram(auth_fa1, main = "Authoritarianism Support: Factor Structure")
 # dev.off()
 # Note: fa.diagram visualization commented out due to SVG conversion issues
@@ -454,7 +454,7 @@ cat("\nCOVID Emergency Powers (q172a) Loading:",
     round(emergency_fa1_loadings$loading[emergency_fa1_loadings$item == "emergency_q172a"], 3), "\n")
 
 # Visualize
-# png(here("figures", "emergency_factor_loadings.png"), width = 800, height = 600)
+# png(here("papers", "vietnam_covid_paradox", "analysis", "output", "figures", "emergency_factor_loadings.png"), width = 800, height = 600)
 # fa.diagram(emergency_fa1, main = "Emergency Powers Support: Factor Structure")
 # dev.off()
 # Note: fa.diagram visualization commented out due to SVG conversion issues
@@ -533,7 +533,7 @@ cfa_fit <- cfa(cfa_model, data = cfa_data)
 summary(cfa_fit, fit.measures = TRUE, standardized = TRUE)
 
 # Visualize
-# png(here("figures", "cfa_model.png"), width = 1000, height = 800)
+# png(here("papers", "vietnam_covid_paradox", "analysis", "output", "figures", "cfa_model.png"), width = 1000, height = 800)
 # semPaths(cfa_fit, "std", layout = "tree",
 #          edge.label.cex = 0.8, curvePivot = TRUE,
 #          title = FALSE, label.cex = 0.8)
@@ -585,7 +585,7 @@ scale_summary %>%
   )
 
 # Save the table to HTML file
-# gtsave(scale_summary_table, here("tables", "scale_properties_summary.html"))
+# gtsave(scale_summary_table, here("papers", "vietnam_covid_paradox", "analysis", "output", "tables", "scale_properties_summary.html"))
 # Note: Table saving commented out - not using last_gt() which doesn't exist
 ```
 

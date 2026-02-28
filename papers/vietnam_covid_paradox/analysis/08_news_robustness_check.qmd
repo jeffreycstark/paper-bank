@@ -172,7 +172,7 @@ news_control_results %>%
   tab_footnote("Note: Minimal change in trust coefficient (<10%) indicates results are not driven by political engagement levels.")
 
 # Save for appendix
-results_dir <- here("papers", "01_vietnam_covid_paradox", "analysis", "results")
+results_dir <- here("papers", "vietnam_covid_paradox", "analysis", "results")
 dir.create(results_dir, showWarnings = FALSE, recursive = TRUE)
 saveRDS(news_control_results, file.path(results_dir, "news_frequency_robustness.rds"))
 ```
@@ -266,7 +266,7 @@ p <- ab_data %>%
 print(p)
 
 # Save plot
-figures_dir <- here("figures")
+figures_dir <- here("papers", "vietnam_covid_paradox", "analysis", "output", "figures")
 dir.create(figures_dir, showWarnings = FALSE, recursive = TRUE)
 ggsave(file.path(figures_dir, "news_source_moderation.png"),
        p, width = 10, height = 4, dpi = 300)
