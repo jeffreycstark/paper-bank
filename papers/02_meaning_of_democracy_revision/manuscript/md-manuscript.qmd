@@ -299,17 +299,34 @@ Table 1 reports the average marginal effect of loser status on the probability o
 ```{r pooled-table}
 #| output: asis
 
-# Build the main results table
-tbl <- pooled %>%
+# Build the main results table — Sets 1-4 first, W2 panel below
+tbl_sets <- pooled %>%
+  filter(set != "W2") %>%
   arrange(desc(ame)) %>%
   mutate(
     Type = str_to_title(item_type),
-    Item = ifelse(set == "W2", paste0(item_label, " (W2)"), item_label),
+    Item = item_label,
     `AME (pp)` = sprintf("%+.1f", ame * 100),
     SE = sprintf("%.1f", se * 100),
     Sig = sig
   ) %>%
   select(Item, Type, `AME (pp)`, SE, Sig)
+
+tbl_w2 <- pooled %>%
+  filter(set == "W2") %>%
+  arrange(desc(ame)) %>%
+  mutate(
+    Type = str_to_title(item_type),
+    Item = item_label,
+    `AME (pp)` = sprintf("%+.1f", ame * 100),
+    SE = sprintf("%.1f", se * 100),
+    Sig = sig
+  ) %>%
+  select(Item, Type, `AME (pp)`, SE, Sig)
+
+tbl <- bind_rows(tbl_sets, tbl_w2)
+n_sets <- nrow(tbl_sets)
+n_w2   <- nrow(tbl_w2)
 
 if (knitr::is_latex_output()) {
   tbl_out <- tbl %>%
@@ -324,8 +341,12 @@ if (knitr::is_latex_output()) {
       font_size = 10,
       full_width = TRUE
     ) %>%
+    pack_rows("Sets 1–4 battery (Waves 3, 4, 6)", 1, n_sets,
+              bold = TRUE, italic = FALSE, latex_gap_space = "0.3em") %>%
+    pack_rows("Wave 2 battery (single forced-choice item)", n_sets + 1, n_sets + n_w2,
+              bold = TRUE, italic = FALSE, latex_gap_space = "0.3em") %>%
     footnote(
-      general = "Average marginal effects from multinomial logit with country and wave fixed effects and demographic controls (age, gender, education, urban residence). Positive values indicate losers are more likely to select the item. Bootstrap SEs clustered at the country level. Items marked (W2) are from the Wave 2 instrument, which employed a different forced-choice format; all other items are from the Sets 1--4 battery used in Waves 3, 4, and 6.",
+      general = "Average marginal effects from multinomial logit with country and wave fixed effects and demographic controls (age, gender, education, urban residence). Positive values indicate losers are more likely to select the item. Bootstrap SEs clustered at the country level. The two panels reflect different instruments: Sets 1--4 asked respondents to choose among four items within each battery; Wave 2 asked respondents to identify the single most essential characteristic of democracy from a separate four-item list.",
       symbol = c("$\\\\dagger$ p < 0.10, * p < 0.05, ** p < 0.01, *** p < 0.001"),
       general_title = "Note: ",
       footnote_as_chunk = TRUE,
