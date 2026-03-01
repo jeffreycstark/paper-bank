@@ -1,5 +1,6 @@
 ---
-title: "03 — Robustness Checks: PAPER TITLE"
+title: "03 — Robustness Checks: The Accountability Paradox"
+subtitle: "Ordered logit, alternative groupings, alternative econ, weighted vs. unweighted"
 format:
   html:
     toc: true
@@ -15,22 +16,39 @@ execute:
   cache: true
 ---
 
-**Purpose**: Robustness and sensitivity checks for main findings.
+**Purpose**: Robustness and sensitivity checks for the main accountability paradox findings.
 
-- **Input**: `analysis/results/analysis_data.rds`,
-  `analysis/results/model_results.rds`
-- **Output**: `analysis/results/robustness_results.rds`,
-  figures → `analysis/figures/`, tables → `analysis/tables/`
+The most consequential robustness check asks whether the trust divergence result is an
+artifact of OLS assumptions about the ordinal trust scale. The ordered logit specification
+is theoretically closer to the data-generating process. Two further checks verify that the
+three-way institution classification is not driving results through arbitrary boundaries
+(alternative groupings), and that the output legitimacy mechanism is not sensitive to how
+economic evaluation is operationalized.
+
+- **Inputs**:
+  - `analysis/results/kamos_wide.rds`
+  - `analysis/results/kamos_long.rds`
+  - `analysis/results/threeway_model.rds`
+  - `analysis/results/output_legitimacy_model.rds`
+- **Outputs**:
+  - `analysis/results/ologit_model.rds`
+  - `analysis/results/alt_grouping_model.rds`
+  - `analysis/results/econ_alt_model.rds`
+  - `analysis/figures/figC1_abs_dip.pdf/png`
+  - `analysis/figures/figC2_weighted_vs_unweighted.pdf/png`
 
 ```{r setup}
 library(tidyverse)
+library(MASS)            # polr() for ordered logit
+library(sandwich)
+library(lmtest)
 library(broom)
-library(modelsummary)
+library(marginaleffects)
 library(knitr)
 library(kableExtra)
 
 project_root <- "/Users/jeffreystark/Development/Research/paper-bank"
-paper_dir    <- file.path(project_root, "papers/00-model")
+paper_dir    <- file.path(project_root, "papers/08_south_korea_impeachment")
 analysis_dir <- file.path(paper_dir, "analysis")
 results_dir  <- file.path(analysis_dir, "results")
 fig_dir      <- file.path(analysis_dir, "figures")
@@ -38,53 +56,498 @@ tables_dir   <- file.path(analysis_dir, "tables")
 
 source(file.path(paper_dir, "R", "helpers.R"))
 
-dat <- readRDS(file.path(results_dir, "analysis_data.rds"))
-mr  <- if (file.exists(file.path(results_dir, "model_results.rds"))) {
-  readRDS(file.path(results_dir, "model_results.rds"))
+kamos_wide <- readRDS(file.path(results_dir, "kamos_wide.rds"))
+kamos_long <- readRDS(file.path(results_dir, "kamos_long.rds"))
+main_res   <- readRDS(file.path(results_dir, "threeway_model.rds"))
+outleg_res <- readRDS(file.path(results_dir, "output_legitimacy_model.rds"))
+
+# Restore factor coding from 02_models.qmd
+kamos_long <- kamos_long |>
+  mutate(
+    inst_type = relevel(factor(inst_type), ref = "Executive"),
+    wave_num  = as.integer(wave_num),
+    # Ordinal trust variable for polr()
+    trust_ordinal = ordered(trust_score_raw,
+                            levels = 1:5,
+                            labels = c("None", "Little", "Some", "Much", "Full"))
+  )
+
+controls <- c("age_n", "gender", "edu_n", "income_n", "ideology_n")
+controls_f <- paste(controls, collapse = " + ")
+```
+
+---
+
+## Check 1: Ordered logit on original 1–5 scale
+
+OLS imposes interval-level assumptions on a five-category ordinal scale. The ordered
+logit specification respects the scale's ordinality. Coefficients are proportional-odds
+log-odds rather than mean differences, but the substantive comparison — whether Wave ×
+Horizontal and Wave × Societal interactions are significantly negative — is directly
+comparable.
+
+```{r ologit-estimate}
+# Ordered logit via polr() — no built-in cluster SEs, so we compute manually
+f_olog <- as.formula(
+  paste("trust_ordinal ~ wave_num * inst_type +", controls_f)
+)
+
+# polr() does not accept weights directly for survey weights; use frequency weights
+# as an approximation. For a clean comparison, run both weighted and unweighted.
+ologit_unweighted <- polr(f_olog, data = kamos_long, Hess = TRUE)
+ologit_weighted   <- polr(f_olog, data = kamos_long,
+                          weights = round(weight * 100),  # integer frequency weights
+                          Hess = TRUE)
+
+# Tidy coefficients (proportional-odds log-odds)
+olog_ct_uw <- coeftest(ologit_unweighted)
+olog_ct_wt <- coeftest(ologit_weighted)
+
+cat("=== Check 1: Ordered logit (unweighted) ===\n")
+cat("N:", nobs(ologit_unweighted), "\n\n")
+olog_ct_uw |>
+  tidy() |>
+  filter(str_detect(term, "wave_num|inst_type")) |>
+  select(term, estimate, std.error, p.value) |>
+  mutate(across(where(is.numeric), ~round(.x, 4)),
+         stars = sig_stars(p.value)) |>
+  print()
+
+cat("\n=== Check 1: Ordered logit (frequency-weighted) ===\n")
+olog_ct_wt |>
+  tidy() |>
+  filter(str_detect(term, "wave_num|inst_type")) |>
+  select(term, estimate, std.error, p.value) |>
+  mutate(across(where(is.numeric), ~round(.x, 4)),
+         stars = sig_stars(p.value)) |>
+  print()
+```
+
+### OLS vs. ordered logit comparison
+
+```{r ologit-comparison}
+# Compare key interaction coefficients across OLS (main model) and ordered logit
+main_ols <- main_res$coeftest |>
+  tidy() |>
+  filter(str_detect(term, "wave_num:inst_type")) |>
+  mutate(model = "OLS (weighted, main)")
+
+olog_uw <- olog_ct_uw |>
+  tidy() |>
+  filter(str_detect(term, "wave_num:inst_type")) |>
+  mutate(model = "Ordered logit (unweighted)")
+
+olog_wt <- olog_ct_wt |>
+  tidy() |>
+  filter(str_detect(term, "wave_num:inst_type")) |>
+  mutate(model = "Ordered logit (weighted)")
+
+comparison_tbl <- bind_rows(main_ols, olog_uw, olog_wt) |>
+  select(model, term, estimate, std.error, p.value) |>
+  mutate(
+    stars = sig_stars(p.value),
+    term  = recode(term,
+      `wave_num:inst_typeHorizontal` = "Wave × Horizontal",
+      `wave_num:inst_typeSocietal`   = "Wave × Societal"
+    )
+  ) |>
+  mutate(across(c(estimate, std.error), ~round(.x, 4)),
+         p.value = round(p.value, 4))
+
+write_csv(comparison_tbl, file.path(tables_dir, "tblC1_ols_vs_ologit.csv"))
+
+comparison_tbl |>
+  kbl(caption = "OLS vs. ordered logit: key Wave × InstType interactions",
+      col.names = c("Model", "Term", "Estimate", "SE", "p", "")) |>
+  kable_styling(bootstrap_options = c("striped", "hover"), full_width = FALSE) |>
+  footnote(general = paste0(
+    "OLS coefficients: mean differences in 0–1 normalized trust. ",
+    "Ordered logit: proportional-odds log-odds. ",
+    "Reference: Executive, Wave 1 (2016). *** p<0.001, ** p<0.01, * p<0.05."
+  ))
+```
+
+---
+
+## Check 2: Alternative institution groupings
+
+The three-way classification (Executive / Horizontal / Societal) is theoretically
+motivated, but a critic could argue that the Horizontal category is too narrow with a
+single institution (National Assembly) and that including courts would change results.
+This check expands the Horizontal category to include `trust_le_raw` (legislature/courts)
+and re-estimates the main model.
+
+```{r alt-grouping}
+# Create alternative long dataset with 6 institutions (adding trust_le_n explicitly)
+kamos_long_alt <- kamos_wide |>
+  pivot_longer(
+    cols      = c(trust_cg_n, trust_lg_n, trust_na_n, trust_le_n, trust_md_n, trust_ng_n),
+    names_to  = "institution",
+    values_to = "trust_score_n"
+  ) |>
+  mutate(
+    inst_type_alt = factor(
+      recode(institution,
+        trust_cg_n = "Executive",
+        trust_lg_n = "Executive",
+        trust_na_n = "Horizontal",
+        trust_le_n = "Horizontal",     # Added to horizontal
+        trust_md_n = "Societal",
+        trust_ng_n = "Societal"
+      ),
+      levels = c("Executive", "Horizontal", "Societal")
+    )
+  )
+
+f_alt <- as.formula(
+  paste("trust_score_n ~ wave_num * inst_type_alt +", controls_f)
+)
+
+alt_group_mod  <- lm(f_alt, data = kamos_long_alt, weights = weight)
+alt_group_vcov <- vcovCL(alt_group_mod, cluster = ~resp_id, type = "HC1")
+alt_group_ct   <- coeftest(alt_group_mod, vcov = alt_group_vcov)
+
+cat("=== Check 2: Alternative grouping (6 institutions) ===\n")
+cat("N:", nobs(alt_group_mod), "\n")
+alt_group_ct |>
+  tidy() |>
+  filter(str_detect(term, "wave_num|inst_type_alt")) |>
+  select(term, estimate, std.error, p.value) |>
+  mutate(across(where(is.numeric), ~round(.x, 4)),
+         stars = sig_stars(p.value)) |>
+  print()
+```
+
+### Comparison: original vs. alternative grouping
+
+```{r alt-grouping-comparison}
+orig_int <- main_res$coeftest |>
+  tidy() |>
+  filter(str_detect(term, "wave_num:inst_type")) |>
+  mutate(grouping = "Original (5 institutions)")
+
+alt_int <- alt_group_ct |>
+  tidy() |>
+  filter(str_detect(term, "wave_num:inst_type_alt")) |>
+  mutate(grouping = "Alternative (6 institutions)")
+
+bind_rows(orig_int, alt_int) |>
+  select(grouping, term, estimate, std.error, p.value) |>
+  mutate(
+    stars = sig_stars(p.value),
+    term  = str_replace_all(term, "wave_num:|:inst_type.*", "") |>
+            str_replace("inst_type.*Horizontal", "Wave × Horizontal") |>
+            str_replace("inst_type.*Societal", "Wave × Societal")
+  ) |>
+  mutate(across(c(estimate, std.error), ~round(.x, 4)),
+         p.value = round(p.value, 4)) |>
+  kbl(caption = "Alternative institution grouping: key interactions",
+      col.names = c("Grouping", "Term", "Estimate", "SE", "p", "")) |>
+  kable_styling(bootstrap_options = c("striped", "hover"), full_width = FALSE)
+```
+
+---
+
+## Check 3: Alternative economic operationalizations
+
+The output legitimacy mechanism rests on the claim that economic evaluation moderates
+Executive trust but not intermediary trust. The main model uses current economic
+conditions (`econ_present_n`). This check substitutes two alternatives: (1) the
+economic composite (present + national economy average), and (2) a satisfaction-with-
+democracy-as-proxy-for-performance operationalization (if available in KAMOS).
+
+```{r econ-alt}
+# Alternative 1: economic composite (if both components available)
+f_econ1 <- as.formula(
+  paste("trust_score_n ~ wave_num * inst_type * econ_composite_n +",
+        paste(setdiff(controls, "ideology_n"), collapse = " + "))
+)
+
+econ_alt_mod1  <- lm(f_econ1, data = kamos_long, weights = weight)
+econ_alt_vcov1 <- vcovCL(econ_alt_mod1, cluster = ~resp_id, type = "HC1")
+econ_alt_ct1   <- coeftest(econ_alt_mod1, vcov = econ_alt_vcov1)
+
+cat("=== Check 3a: Alternative econ (composite) ===\n")
+econ_alt_ct1 |>
+  tidy() |>
+  filter(str_detect(term, "econ_composite") & str_detect(term, ":")) |>
+  select(term, estimate, std.error, p.value) |>
+  mutate(across(where(is.numeric), ~round(.x, 4)),
+         stars = sig_stars(p.value)) |>
+  print()
+
+# Alternative 2: standardized z-score instead of 0-1 normalization
+kamos_long <- kamos_long |>
+  mutate(econ_z = as.numeric(scale(econ_present_raw, center = TRUE, scale = TRUE)))
+
+f_econ2 <- as.formula(
+  paste("trust_score_n ~ wave_num * inst_type * econ_z +",
+        paste(setdiff(controls, "ideology_n"), collapse = " + "))
+)
+
+econ_alt_mod2  <- lm(f_econ2, data = kamos_long, weights = weight)
+econ_alt_vcov2 <- vcovCL(econ_alt_mod2, cluster = ~resp_id, type = "HC1")
+econ_alt_ct2   <- coeftest(econ_alt_mod2, vcov = econ_alt_vcov2)
+
+cat("\n=== Check 3b: Alternative econ (z-score) ===\n")
+econ_alt_ct2 |>
+  tidy() |>
+  filter(str_detect(term, "econ_z") & str_detect(term, ":")) |>
+  select(term, estimate, std.error, p.value) |>
+  mutate(across(where(is.numeric), ~round(.x, 4)),
+         stars = sig_stars(p.value)) |>
+  print()
+```
+
+### Comparison table: economic operationalizations
+
+```{r econ-comparison}
+# Pull three-way interactions from original and both alternatives
+get_econ_ints <- function(ct, label, pattern) {
+  ct |> tidy() |>
+    filter(str_detect(term, pattern) & str_detect(term, "inst_type")) |>
+    mutate(specification = label)
 }
+
+orig_econ <- get_econ_ints(
+  outleg_res$coeftest, "Original (econ_present_n)", "econ_present_n"
+)
+alt1_econ <- get_econ_ints(econ_alt_ct1, "Composite (present + national)", "econ_composite_n")
+alt2_econ <- get_econ_ints(econ_alt_ct2, "Z-score normalization", "econ_z")
+
+bind_rows(orig_econ, alt1_econ, alt2_econ) |>
+  select(specification, term, estimate, std.error, p.value) |>
+  mutate(stars = sig_stars(p.value),
+         term  = str_replace(term, "wave_num:inst_type", "Wave × ") |>
+                 str_replace(":(econ_present_n|econ_composite_n|econ_z)", ":Econ"),
+         across(c(estimate, std.error), ~round(.x, 4)),
+         p.value = round(p.value, 4)) |>
+  kbl(caption = "Econ moderation robustness: three-way interaction terms across operationalizations",
+      col.names = c("Specification", "Term", "Estimate", "SE", "p", "")) |>
+  kable_styling(bootstrap_options = c("striped", "hover"), full_width = FALSE)
 ```
 
-## Alternative specifications
+---
 
-```{r alt-specs}
-# TODO: re-estimate main models with alternative control sets, estimators,
-# or clustering choices.
-#
-# Example: logistic regression for binary DV
-# Example: fixed-effects panel model
-# Example: dropping control variables one at a time
+## Check 4: Weighted vs. unweighted comparison
+
+Survey weights in KAMOS are designed to bring the sample to population proportions on
+age, gender, and region. If the divergence pattern is an artifact of weighting, it should
+weaken or reverse in unweighted models.
+
+```{r weighted-unweighted}
+f_main <- as.formula(
+  paste("trust_score_n ~ wave_num * inst_type +", controls_f)
+)
+
+# Unweighted OLS
+mod_unweighted  <- lm(f_main, data = kamos_long)
+mod_unw_vcov    <- vcovCL(mod_unweighted, cluster = ~resp_id, type = "HC1")
+mod_unw_ct      <- coeftest(mod_unweighted, vcov = mod_unw_vcov)
+
+# Weighted OLS (main model, already estimated in 02_models.qmd)
+mod_weighted_ct <- main_res$coeftest
+
+comparison_wt <- bind_rows(
+  mod_weighted_ct |> tidy() |>
+    filter(str_detect(term, "wave_num:inst_type")) |>
+    mutate(model = "Weighted (survey weights)"),
+  mod_unw_ct |> tidy() |>
+    filter(str_detect(term, "wave_num:inst_type")) |>
+    mutate(model = "Unweighted")
+) |>
+  select(model, term, estimate, std.error, p.value) |>
+  mutate(
+    stars = sig_stars(p.value),
+    term  = recode(term,
+      `wave_num:inst_typeHorizontal` = "Wave × Horizontal",
+      `wave_num:inst_typeSocietal`   = "Wave × Societal"
+    ),
+    across(c(estimate, std.error), ~round(.x, 4)),
+    p.value = round(p.value, 4)
+  )
+
+write_csv(comparison_wt, file.path(tables_dir, "tblC4_weighted_unweighted.csv"))
+
+comparison_wt |>
+  kbl(caption = "Weighted vs. unweighted: main interaction coefficients",
+      col.names = c("Model", "Term", "Estimate", "SE", "p", "")) |>
+  kable_styling(bootstrap_options = c("striped", "hover"), full_width = FALSE)
 ```
 
-## Alternative measures
+### Figure C2: Weighted vs. unweighted predicted margins
 
-```{r alt-measures}
-# TODO: re-estimate main models substituting alternative operationalizations
-# of the DV and/or IV (e.g., z-scores instead of 0-1 normalization,
-# individual items instead of indices).
+```{r figC2-weighted-unweighted}
+# Predicted means for both specifications
+pred_uw <- predictions(
+  mod_unweighted,
+  newdata = datagrid(
+    wave_num  = c(0, 1),
+    inst_type = levels(kamos_long$inst_type)
+  ),
+  vcov = mod_unw_vcov
+) |>
+  as.data.frame() |>
+  mutate(model = "Unweighted")
+
+pred_wt <- predictions(
+  main_res$model,
+  newdata = datagrid(
+    wave_num  = c(0, 1),
+    inst_type = levels(kamos_long$inst_type)
+  ),
+  vcov = main_res$vcov
+) |>
+  as.data.frame() |>
+  mutate(model = "Survey-weighted")
+
+pred_both <- bind_rows(pred_uw, pred_wt) |>
+  mutate(
+    wave_f    = factor(wave_num, levels = c(0, 1),
+                       labels = c("W1 (2016)", "W4 (2019)")),
+    inst_type = factor(inst_type, levels = c("Executive", "Horizontal", "Societal"))
+  )
+
+pC2 <- ggplot(pred_both,
+              aes(x = inst_type, y = estimate,
+                  colour = wave_f, shape = wave_f,
+                  linetype = model, group = interaction(wave_f, model))) +
+  geom_point(size = 2.8, position = position_dodge(width = 0.5)) +
+  geom_errorbar(aes(ymin = conf.low, ymax = conf.high),
+                width = 0.15, linewidth = 0.6,
+                position = position_dodge(width = 0.5)) +
+  geom_line(position = position_dodge(width = 0.5), linewidth = 0.5, alpha = 0.5) +
+  scale_colour_manual(values = c("W1 (2016)" = "#4575B4", "W4 (2019)" = "#D73027")) +
+  scale_shape_manual(values = c(16, 17)) +
+  scale_linetype_manual(values = c("Survey-weighted" = "solid", "Unweighted" = "dashed")) +
+  facet_wrap(~model) +
+  labs(
+    x = "Institution accountability function",
+    y = "Predicted trust (0–1 scale)",
+    colour = NULL, shape = NULL, linetype = NULL,
+    caption = "Note: Cluster-robust SEs (cluster = respondent). Source: KAMOS W1/W4."
+  ) +
+  theme_pub +
+  theme(legend.position = "bottom",
+        strip.background = element_rect(fill = "grey92", colour = NA),
+        strip.text = element_text(face = "bold"))
+
+ggsave(file.path(fig_dir, "figC2_weighted_vs_unweighted.pdf"), pC2, width = 8, height = 4.5)
+ggsave(file.path(fig_dir, "figC2_weighted_vs_unweighted.png"), pC2, width = 8, height = 4.5, dpi = 300)
+cat("✓ Figure C2 saved\n")
+pC2
 ```
 
-## Subsample sensitivity
+---
 
-```{r subsamples}
-# TODO: check whether results hold in demographic subgroups, excluding
-# particular waves, or with different country subsets.
-#
-# Example:
-# for (grp in c("Younger", "Older")) {
-#   sub <- dat |> filter(age_group == grp)
-#   # ... estimate and collect
-# }
+## Check 5: ABS Wave 5–6 institutional trust dip
+
+The KAMOS captures 2016–2019. The ABS data provides long-run context. This check
+plots ABS Wave 5 (2015–2016) and Wave 6 (2021–2022) trust levels for Korean respondents
+to confirm that the wave 6 trust levels are not recovering toward pre-crisis levels,
+ruling out a simple reversion-to-mean interpretation.
+
+```{r figC1-abs-dip}
+abs_means <- readRDS(file.path(results_dir, "abs_wave_means.rds")) |>
+  mutate(year = case_when(
+    wave == 1 ~ 2003, wave == 2 ~ 2006, wave == 3 ~ 2010,
+    wave == 4 ~ 2014, wave == 5 ~ 2016, wave == 6 ~ 2021,
+    TRUE ~ NA_real_
+  ))
+
+# Long format for the three trust trajectories
+abs_trust_long <- abs_means |>
+  select(year, wave, trust_exec, trust_legis, trust_media) |>
+  pivot_longer(-c(year, wave), names_to = "institution", values_to = "mean_trust") |>
+  mutate(
+    institution = recode(institution,
+      trust_exec  = "Executive",
+      trust_legis = "Horizontal",
+      trust_media = "Societal"
+    ),
+    institution = factor(institution, levels = c("Executive", "Horizontal", "Societal")),
+    # Shade W5-W6 (impeachment and aftermath period)
+    period = if_else(wave >= 5, "Post-crisis (W5–W6)", "Pre-crisis (W1–W4)")
+  )
+
+pC1 <- ggplot(abs_trust_long,
+              aes(x = year, y = mean_trust, colour = institution, shape = institution)) +
+  geom_rect(aes(xmin = 2015, xmax = 2022, ymin = -Inf, ymax = Inf),
+            fill = "grey90", colour = NA, alpha = 0.02, inherit.aes = FALSE) +
+  geom_line(linewidth = 0.9) +
+  geom_point(size = 2.5) +
+  scale_x_continuous(breaks = c(2003, 2006, 2010, 2014, 2016, 2021),
+                     labels = c("2003\n(W1)", "2006\n(W2)", "2010\n(W3)",
+                                "2014\n(W4)", "2016\n(W5)", "2021\n(W6)")) +
+  scale_y_continuous(limits = c(0, 0.8),
+                     labels = scales::number_format(accuracy = 0.01)) +
+  scale_colour_manual(values = c(
+    "Executive"  = "#2166AC",
+    "Horizontal" = "#D6604D",
+    "Societal"   = "#4DAC26"
+  )) +
+  scale_shape_manual(values = c(16, 17, 15)) +
+  annotate("text", x = 2018.5, y = 0.76, label = "Impeachment\nperiod",
+           size = 3, colour = "grey40", fontface = "italic") +
+  labs(
+    x      = NULL,
+    y      = "Mean trust (0–1 scale)",
+    colour = "Institution type",
+    shape  = "Institution type",
+    caption = paste0(
+      "Note: ABS Korea, Waves 1–6 (2003–2021). Shaded region = impeachment and immediate aftermath.\n",
+      "Source: Asian Barometer Survey harmonized data."
+    )
+  ) +
+  theme_pub +
+  theme(legend.position = "bottom")
+
+ggsave(file.path(fig_dir, "figC1_abs_trust_dip.pdf"), pC1, width = 6.5, height = 4.5)
+ggsave(file.path(fig_dir, "figC1_abs_trust_dip.png"), pC1, width = 6.5, height = 4.5, dpi = 300)
+cat("✓ Figure C1 saved\n")
+pC1
 ```
+
+---
 
 ## Save robustness results
 
 ```{r save}
-# TODO: collect robustness outputs and save
-# rob <- list(
-#   alt_spec    = ...,
-#   alt_measure = ...,
-#   subsamples  = ...
-# )
-# saveRDS(rob, file.path(results_dir, "robustness_results.rds"))
-cat("✓ Robustness checks complete\n")
+ologit_results <- list(
+  model_unweighted = ologit_unweighted,
+  model_weighted   = ologit_weighted,
+  coeftest_uw      = olog_ct_uw,
+  coeftest_wt      = olog_ct_wt,
+  comparison       = comparison_tbl
+)
+saveRDS(ologit_results, file.path(results_dir, "ologit_model.rds"))
+cat("✓ ologit_model.rds saved\n")
+
+alt_group_results <- list(
+  model    = alt_group_mod,
+  vcov     = alt_group_vcov,
+  coeftest = alt_group_ct,
+  kamos_long_alt = kamos_long_alt
+)
+saveRDS(alt_group_results, file.path(results_dir, "alt_grouping_model.rds"))
+cat("✓ alt_grouping_model.rds saved\n")
+
+econ_alt_results <- list(
+  model_composite = econ_alt_mod1,
+  vcov_composite  = econ_alt_vcov1,
+  coeftest_comp   = econ_alt_ct1,
+  model_zscore    = econ_alt_mod2,
+  vcov_zscore     = econ_alt_vcov2,
+  coeftest_z      = econ_alt_ct2
+)
+saveRDS(econ_alt_results, file.path(results_dir, "econ_alt_model.rds"))
+cat("✓ econ_alt_model.rds saved\n")
+
+cat("\n=== Robustness checks complete ===\n")
+cat("Checks completed:\n")
+cat("  1. Ordered logit (unweighted and weighted)\n")
+cat("  2. Alternative institution grouping (6-institution)\n")
+cat("  3. Alternative economic operationalizations (composite, z-score)\n")
+cat("  4. Weighted vs. unweighted comparison\n")
+cat("  5. ABS W5-W6 trust trajectory figure\n")
 ```

@@ -1,5 +1,6 @@
 ---
-title: "01 — Descriptive Analysis: PAPER TITLE"
+title: "01 — Descriptive Analysis: The Accountability Paradox"
+subtitle: "ABS long-run trends + KAMOS trust architecture figures and tables"
 format:
   html:
     toc: true
@@ -15,11 +16,21 @@ execute:
   cache: true
 ---
 
-**Purpose**: Descriptive statistics, trend plots, and exploratory figures.
+**Purpose**: Produce the descriptive figures and tables for the manuscript.
+Specifically: ABS long-run trust/satisfaction trends (Figure 1, Table 1) and
+KAMOS three-way trust divergence (Figure 2, Table 2). Also saves `kamos_trust_means.rds`
+for use by the manuscript setup chunk.
 
-- **Input**: `analysis/results/analysis_data.rds`
-- **Output**: figures → `analysis/figures/`, tables → `analysis/tables/`,
-  summary objects → `analysis/results/descriptives.rds`
+- **Inputs**:
+  - `analysis/results/abs_wave_means.rds`
+  - `analysis/results/kamos_wide.rds`
+  - `analysis/results/kamos_long.rds`
+- **Outputs**:
+  - `analysis/results/kamos_trust_means.rds`
+  - `analysis/figures/fig1_abs_trust_trajectories.pdf/png`
+  - `analysis/figures/fig2_kamos_trust_divergence.pdf/png`
+  - `analysis/tables/tbl1_abs_wave_means.csv`
+  - `analysis/tables/tbl2_kamos_trust_means.csv`
 
 ```{r setup}
 library(tidyverse)
@@ -27,7 +38,7 @@ library(knitr)
 library(kableExtra)
 
 project_root <- "/Users/jeffreystark/Development/Research/paper-bank"
-paper_dir    <- file.path(project_root, "papers/00-model")
+paper_dir    <- file.path(project_root, "papers/08_south_korea_impeachment")
 analysis_dir <- file.path(paper_dir, "analysis")
 results_dir  <- file.path(analysis_dir, "results")
 fig_dir      <- file.path(analysis_dir, "figures")
@@ -35,76 +46,336 @@ tables_dir   <- file.path(analysis_dir, "tables")
 
 source(file.path(paper_dir, "R", "helpers.R"))
 
-dat <- readRDS(file.path(results_dir, "analysis_data.rds"))
+abs_means  <- readRDS(file.path(results_dir, "abs_wave_means.rds"))
+kamos_wide <- readRDS(file.path(results_dir, "kamos_wide.rds"))
+kamos_long <- readRDS(file.path(results_dir, "kamos_long.rds"))
+
+# ABS wave year labels
+abs_means <- abs_means |>
+  mutate(year = case_when(
+    wave == 1 ~ 2003, wave == 2 ~ 2006, wave == 3 ~ 2010,
+    wave == 4 ~ 2014, wave == 5 ~ 2016, wave == 6 ~ 2021,
+    TRUE ~ NA_real_
+  ))
 ```
 
-## Sample overview
+## 1. ABS Long-Run Trends (Figure 1 and Table 1)
 
-```{r sample-table}
-# Wave-by-country sample size table
-sample_tbl <- dat |>
-  group_by(country_label, wave) |>
-  summarise(n = n(), .groups = "drop") |>
-  pivot_wider(names_from = wave, values_from = n, names_prefix = "Wave ")
+### Figure 1: Democratic satisfaction and institutional trust trajectories
 
-sample_tbl |>
-  kbl(caption = "Sample size by country and wave") |>
-  kable_styling(bootstrap_options = c("striped", "hover"))
+```{r fig1-abs-trajectories}
+# Reshape to long for ggplot — satisfaction/quality divergence panel
+abs_long_sat <- abs_means |>
+  select(year, wave, dem_sat, dem_quality, govt_resp, econ_eval) |>
+  pivot_longer(-c(year, wave),
+               names_to  = "series",
+               values_to = "mean_value") |>
+  mutate(series = recode(series,
+    dem_sat    = "Democracy satisfaction",
+    dem_quality = "Democratic quality assessment",
+    govt_resp  = "Government responsiveness",
+    econ_eval  = "Economic evaluation"
+  ),
+  series = factor(series, levels = c(
+    "Democracy satisfaction", "Democratic quality assessment",
+    "Government responsiveness", "Economic evaluation"
+  )))
 
-write_csv(sample_tbl, file.path(tables_dir, "sample_by_wave.csv"))
+# Reshape institutional trust to long
+abs_long_trust <- abs_means |>
+  select(year, wave, trust_exec, trust_legis, trust_media) |>
+  pivot_longer(-c(year, wave),
+               names_to  = "institution",
+               values_to = "mean_trust") |>
+  mutate(institution = recode(institution,
+    trust_exec  = "Central government (executive)",
+    trust_legis = "National Assembly (horizontal)",
+    trust_media = "News media (societal)"
+  ),
+  institution = factor(institution, levels = c(
+    "Central government (executive)",
+    "National Assembly (horizontal)",
+    "News media (societal)"
+  )))
+
+# Panel A: Satisfaction / quality divergence
+p1a <- ggplot(abs_long_sat,
+              aes(x = year, y = mean_value, colour = series, linetype = series)) +
+  geom_line(linewidth = 0.9) +
+  geom_point(size = 2.2) +
+  scale_x_continuous(breaks = c(2003, 2006, 2010, 2014, 2016, 2021),
+                     labels = c("2003\n(W1)", "2006\n(W2)", "2010\n(W3)",
+                                "2014\n(W4)", "2016\n(W5)", "2021\n(W6)")) +
+  scale_y_continuous(limits = c(0, 1), labels = scales::number_format(accuracy = 0.1)) +
+  scale_colour_manual(values = c(
+    "Democracy satisfaction"        = "#2166AC",
+    "Democratic quality assessment" = "#4DAC26",
+    "Government responsiveness"     = "#D6604D",
+    "Economic evaluation"           = "#7B2D8B"
+  )) +
+  scale_linetype_manual(values = c(
+    "Democracy satisfaction"        = "solid",
+    "Democratic quality assessment" = "dashed",
+    "Government responsiveness"     = "dotdash",
+    "Economic evaluation"           = "dotted"
+  )) +
+  labs(
+    x = NULL, y = "Mean (0–1 scale)",
+    colour = NULL, linetype = NULL,
+    title = "A. Satisfaction, quality, and responsiveness"
+  ) +
+  theme_pub +
+  theme(legend.position = "bottom",
+        legend.text = element_text(size = 8))
+
+# Panel B: Institutional trust trajectories
+p1b <- ggplot(abs_long_trust,
+              aes(x = year, y = mean_trust, colour = institution, shape = institution)) +
+  geom_line(linewidth = 0.9) +
+  geom_point(size = 2.5) +
+  scale_x_continuous(breaks = c(2003, 2006, 2010, 2014, 2016, 2021),
+                     labels = c("2003\n(W1)", "2006\n(W2)", "2010\n(W3)",
+                                "2014\n(W4)", "2016\n(W5)", "2021\n(W6)")) +
+  scale_y_continuous(limits = c(0, 1), labels = scales::number_format(accuracy = 0.1)) +
+  scale_colour_manual(values = c(
+    "Central government (executive)"  = "#2166AC",
+    "National Assembly (horizontal)"  = "#D6604D",
+    "News media (societal)"           = "#4DAC26"
+  )) +
+  scale_shape_manual(values = c(16, 17, 15)) +
+  labs(
+    x = NULL, y = "Mean trust (0–1 scale)",
+    colour = NULL, shape = NULL,
+    title = "B. Institutional trust by accountability function"
+  ) +
+  theme_pub +
+  theme(legend.position = "bottom",
+        legend.text = element_text(size = 8))
+
+# Save each panel
+ggsave(file.path(fig_dir, "fig1a_abs_satisfaction.pdf"), p1a,
+       width = 6.5, height = 4.5)
+ggsave(file.path(fig_dir, "fig1a_abs_satisfaction.png"), p1a,
+       width = 6.5, height = 4.5, dpi = 300)
+ggsave(file.path(fig_dir, "fig1b_abs_trust.pdf"), p1b,
+       width = 6.5, height = 4.5)
+ggsave(file.path(fig_dir, "fig1b_abs_trust.png"), p1b,
+       width = 6.5, height = 4.5, dpi = 300)
+
+cat("✓ Figure 1 panels saved\n")
+p1a
 ```
 
-## Descriptive statistics
-
-```{r descriptives}
-# TODO: replace variable list with this paper's DVs and IVs
-desc_vars <- c()  # e.g. c("dv1_n", "iv1_n", "age_n", "edu_n", "polint_n")
-
-if (length(desc_vars) > 0) {
-  desc_tbl <- dat |>
-    group_by(country_label) |>
-    summarise(
-      across(all_of(desc_vars),
-             list(mean = ~mean(.x, na.rm = TRUE),
-                  sd   = ~sd(.x,   na.rm = TRUE),
-                  n    = ~sum(!is.na(.x)))),
-      .groups = "drop"
-    )
-  print(desc_tbl)
-  write_csv(desc_tbl, file.path(tables_dir, "descriptives.csv"))
-}
+```{r fig1b}
+p1b
 ```
 
-## Trend plots
+### Table 1: ABS wave means
 
-```{r trends}
-# TODO: compute country-wave means for key DVs and plot trends
+```{r tbl1-abs-wave-means}
+tbl1 <- abs_means |>
+  mutate(
+    Year = paste0(year, " (W", wave, ")")
+  ) |>
+  select(Year, n,
+         dem_sat, dem_quality, govt_resp, econ_eval,
+         trust_exec, trust_legis, trust_media) |>
+  mutate(across(where(is.numeric), ~round(.x, 3)))
 
-# Example pattern:
-# trend_dat <- dat |>
-#   group_by(country_label, wave) |>
-#   summarise(
-#     dv1_mean = mean(dv1_n, na.rm = TRUE),
-#     .groups = "drop"
-#   )
-#
-# p_trend <- ggplot(trend_dat, aes(x = wave, y = dv1_mean,
-#                                  colour = country_label)) +
-#   geom_line(linewidth = 0.8) +
-#   geom_point(size = 2) +
-#   theme_pub +
-#   labs(title = "DV1 by wave", x = "Wave", y = "Mean (0-1)")
-#
-# ggsave(file.path(fig_dir, "fig1_trends.pdf"), p_trend,
-#        width = 6, height = 4)
-# ggsave(file.path(fig_dir, "fig1_trends.png"), p_trend,
-#        width = 6, height = 4, dpi = 300)
+names(tbl1) <- c("Wave (Year)", "N", "Dem. satisfaction",
+                  "Dem. quality", "Govt. responsiveness", "Econ. evaluation",
+                  "Executive trust", "Legislature trust", "Media trust")
+
+write_csv(tbl1, file.path(tables_dir, "tbl1_abs_wave_means.csv"))
+
+tbl1 |>
+  kbl(caption = "ABS Korea: Wave-level means (0–1 normalized scale)",
+      digits   = 3) |>
+  kable_styling(bootstrap_options = c("striped", "hover"), full_width = FALSE) |>
+  add_header_above(c(" " = 2,
+                     "Democratic attitudes" = 4,
+                     "Institutional trust" = 3))
 ```
 
-## Save summary objects
+---
+
+## 2. KAMOS Trust Architecture (Figure 2 and Table 2)
+
+### Compute trust means by wave and institution type
+
+```{r kamos-trust-means}
+# Weighted means with 95% CIs — by wave × institution type
+kamos_trust_means <- kamos_long |>
+  group_by(wave_f, inst_type) |>
+  summarise(
+    n          = n(),
+    mean_trust = weighted.mean(trust_score_n, weight, na.rm = TRUE),
+    # Weighted variance for CI
+    var_trust  = Hmisc::wtd.var(trust_score_n, weights = weight, na.rm = TRUE),
+    .groups    = "drop"
+  ) |>
+  mutate(
+    se   = sqrt(var_trust / n),
+    ci_lo = mean_trust - 1.96 * se,
+    ci_hi = mean_trust + 1.96 * se
+  )
+
+# Also by institution (5-way, not just 3-way)
+kamos_trust_by_inst <- kamos_long |>
+  group_by(wave_f, inst_label) |>
+  summarise(
+    n          = n(),
+    mean_trust = weighted.mean(trust_score_n, weight, na.rm = TRUE),
+    se         = sd(trust_score_n, na.rm = TRUE) / sqrt(n()),
+    ci_lo      = mean_trust - 1.96 * se,
+    ci_hi      = mean_trust + 1.96 * se,
+    .groups    = "drop"
+  )
+
+cat("=== KAMOS trust means by wave and institution type ===\n")
+kamos_trust_means |>
+  select(wave_f, inst_type, n, mean_trust, ci_lo, ci_hi) |>
+  print()
+
+# Compute trust change (W4 - W1) for each institution type
+trust_change <- kamos_trust_means |>
+  select(wave_f, inst_type, mean_trust) |>
+  pivot_wider(names_from = wave_f, values_from = mean_trust) |>
+  rename(w1 = `W1 (2016)`, w4 = `W4 (2019)`) |>
+  mutate(change = w4 - w1, change_pct = round(change * 100, 1))
+
+cat("\n=== Trust change (W4 − W1) by institution type ===\n")
+print(trust_change)
+```
+
+### Figure 2: Three-way trust divergence
+
+```{r fig2-trust-divergence}
+# Grouped bar chart with error bars showing W1 and W4 side by side
+p2 <- ggplot(kamos_trust_means,
+             aes(x = inst_type, y = mean_trust,
+                 fill = wave_f, group = wave_f)) +
+  geom_col(position = position_dodge(width = 0.6), width = 0.5) +
+  geom_errorbar(aes(ymin = ci_lo, ymax = ci_hi),
+                position = position_dodge(width = 0.6),
+                width = 0.18, linewidth = 0.6) +
+  scale_fill_manual(
+    values = c("W1 (2016)" = "#4575B4", "W4 (2019)" = "#D73027"),
+    labels = c("W1 (2016) — During crisis",
+               "W4 (2019) — Post-impeachment")
+  ) +
+  scale_y_continuous(limits = c(0, 0.75),
+                     labels = scales::number_format(accuracy = 0.01)) +
+  labs(
+    x    = "Institution accountability function",
+    y    = "Mean trust (0–1 scale)",
+    fill = NULL,
+    caption = "Note: Error bars = 95% confidence intervals. Weights applied.\nSource: KAMOS Wave 1 (2016) and Wave 4 (2019)."
+  ) +
+  theme_pub +
+  theme(legend.position = "bottom",
+        axis.title.x = element_text(margin = margin(t = 8)))
+
+ggsave(file.path(fig_dir, "fig2_kamos_trust_divergence.pdf"), p2,
+       width = 6.5, height = 4.5)
+ggsave(file.path(fig_dir, "fig2_kamos_trust_divergence.png"), p2,
+       width = 6.5, height = 4.5, dpi = 300)
+
+cat("✓ Figure 2 saved\n")
+p2
+```
+
+### Figure 2 (alternative): Five-institution breakdown
+
+```{r fig2-alt-five-inst}
+# Order institutions by W1 mean trust descending
+inst_order <- kamos_trust_by_inst |>
+  filter(wave_f == "W1 (2016)") |>
+  arrange(desc(mean_trust)) |>
+  pull(inst_label)
+
+p2b <- kamos_trust_by_inst |>
+  mutate(inst_label = factor(inst_label, levels = inst_order)) |>
+  ggplot(aes(x = inst_label, y = mean_trust,
+             fill = wave_f, group = wave_f)) +
+  geom_col(position = position_dodge(width = 0.65), width = 0.55) +
+  geom_errorbar(aes(ymin = ci_lo, ymax = ci_hi),
+                position = position_dodge(width = 0.65),
+                width = 0.18, linewidth = 0.55) +
+  scale_fill_manual(
+    values = c("W1 (2016)" = "#4575B4", "W4 (2019)" = "#D73027")
+  ) +
+  scale_y_continuous(limits = c(0, 0.75)) +
+  labs(x = NULL, y = "Mean trust (0–1 scale)", fill = NULL,
+       caption = "Source: KAMOS W1 (2016) and W4 (2019). Error bars = 95% CI.") +
+  theme_pub +
+  theme(legend.position = "bottom",
+        axis.text.x = element_text(angle = 20, hjust = 1, size = 9))
+
+ggsave(file.path(fig_dir, "fig2b_kamos_five_inst.pdf"), p2b, width = 7, height = 4.5)
+ggsave(file.path(fig_dir, "fig2b_kamos_five_inst.png"), p2b, width = 7, height = 4.5, dpi = 300)
+
+p2b
+```
+
+### Table 2: KAMOS trust means by institution type
+
+```{r tbl2-kamos-trust-means}
+# Wide format: institution type × (W1, W4, change)
+tbl2 <- kamos_trust_means |>
+  select(inst_type, wave_f, n, mean_trust, ci_lo, ci_hi) |>
+  pivot_wider(
+    names_from  = wave_f,
+    values_from = c(n, mean_trust, ci_lo, ci_hi)
+  ) |>
+  left_join(
+    trust_change |> select(inst_type, change),
+    by = "inst_type"
+  ) |>
+  mutate(across(where(is.numeric), ~round(.x, 3)))
+
+write_csv(tbl2, file.path(tables_dir, "tbl2_kamos_trust_means.csv"))
+
+# Formatted display table
+tbl2_display <- kamos_trust_means |>
+  mutate(
+    mean_ci = sprintf("%.3f [%.3f, %.3f]", mean_trust, ci_lo, ci_hi)
+  ) |>
+  select(inst_type, wave_f, n, mean_ci) |>
+  pivot_wider(names_from = wave_f, values_from = c(n, mean_ci)) |>
+  left_join(
+    trust_change |> select(inst_type, change),
+    by = "inst_type"
+  ) |>
+  rename(
+    "Institution type"   = inst_type,
+    "N (2016)"          = `n_W1 (2016)`,
+    "N (2019)"          = `n_W4 (2019)`,
+    "W1 2016 (mean [95% CI])" = `mean_ci_W1 (2016)`,
+    "W4 2019 (mean [95% CI])" = `mean_ci_W4 (2019)`,
+    "Change (W4 − W1)"  = change
+  )
+
+tbl2_display |>
+  kbl(caption = "KAMOS: Trust means by accountability function and wave (0–1 normalized scale)") |>
+  kable_styling(bootstrap_options = c("striped", "hover"), full_width = FALSE) |>
+  footnote(general = "Weighted means. Source: KAMOS W1 (Nov–Dec 2016) and W4 (2019).")
+```
+
+## Save results
 
 ```{r save}
-# TODO: save any pre-computed descriptive objects needed by the manuscript
-# saveRDS(list(...), file.path(results_dir, "descriptives.rds"))
-cat("✓ Descriptive analysis complete\n")
+# kamos_trust_means is loaded by the manuscript setup chunk
+saveRDS(kamos_trust_means, file.path(results_dir, "kamos_trust_means.rds"))
+cat("✓ kamos_trust_means.rds saved:", nrow(kamos_trust_means), "rows\n")
+
+cat("\n=== Key descriptive findings ===\n")
+cat("ABS waves:", nrow(abs_means), "\n")
+cat("KAMOS long obs:", nrow(kamos_long), "\n")
+cat("\nKAMOS trust change by institution type:\n")
+trust_change |>
+  mutate(label = paste0(inst_type, ": ", round(change, 3), " (", change_pct, "pp)")) |>
+  pull(label) |>
+  cat(sep = "\n")
+cat("\n✓ Descriptive analysis complete\n")
 ```
