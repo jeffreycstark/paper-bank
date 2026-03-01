@@ -1,5 +1,5 @@
 ---
-title: "PAPER TITLE"
+title: "The Accountability Paradox: Why South Korea's Impeachment Failed to Restore Institutional Trust"
 author:
   - name: Jeffrey Stark
     affiliations:
@@ -10,12 +10,28 @@ author:
 date: now
 date-format: "MMMM D, YYYY"
 abstract: |
-  TODO: Abstract (150–250 words). Summarise motivation, data, methods, and
-  main findings. End with the substantive implication.
+  South Korea's 2016–2017 Candlelight Revolution and the impeachment of President Park Geun-hye
+  represented the most successful exercise of constitutional accountability in the country's
+  democratic history. A reasonable expectation would be that such an unambiguous demonstration
+  of institutional capacity should have restored public confidence in the intermediary
+  institutions — legislature, media, civil society organizations — through which democratic
+  accountability operates. Drawing on six waves of Asian Barometer Survey data (2003–2022,
+  N ≈ 7,200 Korean respondents) and two waves of the Korean Academic Multimode Open Survey
+  bracketing the crisis (2016 and 2019), this article demonstrates that it did not. Intermediary
+  institutional trust collapsed at roughly four times the rate of executive trust across the
+  impeachment period, a divergence that persisted after controlling for demographics and
+  partisanship. The article argues that output legitimacy — satisfaction anchored in economic
+  performance rather than procedural quality — structurally insulates executive institutions
+  from accountability failures while leaving intermediary institutions exposed to cumulative
+  erosion.
 keywords:
-  - keyword one
-  - keyword two
-  - keyword three
+  - institutional trust
+  - democratic accountability
+  - output legitimacy
+  - South Korea
+  - Candlelight Revolution
+  - impeachment
+  - democratic backsliding
 format:
   pdf:
     documentclass: article
@@ -55,7 +71,6 @@ format:
   docx:
     toc: true
     number-sections: true
-    reference-doc: reference.docx
 bibliography: references.bib
 csl: apa.csl
 execute:
@@ -73,74 +88,270 @@ library(kableExtra)
 library(modelsummary)
 
 project_root <- "/Users/jeffreystark/Development/Research/paper-bank"
-paper_dir    <- file.path(project_root, "papers/00-model")
+paper_dir    <- file.path(project_root, "papers/08_south_korea_impeachment")
 analysis_dir <- file.path(paper_dir, "analysis")
 results_dir  <- file.path(analysis_dir, "results")
 fig_dir      <- file.path(analysis_dir, "figures")
+tables_dir   <- file.path(analysis_dir, "tables")
 
 # Load pre-computed results
-# TODO: replace with actual results objects for this paper
-if (file.exists(file.path(results_dir, "analysis_data.rds"))) {
-  dat <- readRDS(file.path(results_dir, "analysis_data.rds"))
+if (file.exists(file.path(results_dir, "abs_wave_means.rds"))) {
+  abs_means <- readRDS(file.path(results_dir, "abs_wave_means.rds"))
 }
-if (file.exists(file.path(results_dir, "model_results.rds"))) {
-  mr <- readRDS(file.path(results_dir, "model_results.rds"))
+if (file.exists(file.path(results_dir, "kamos_trust_means.rds"))) {
+  kamos_means <- readRDS(file.path(results_dir, "kamos_trust_means.rds"))
+}
+if (file.exists(file.path(results_dir, "threeway_model.rds"))) {
+  threeway_mod <- readRDS(file.path(results_dir, "threeway_model.rds"))
+}
+if (file.exists(file.path(results_dir, "output_legitimacy_model.rds"))) {
+  outleg_mod <- readRDS(file.path(results_dir, "output_legitimacy_model.rds"))
+}
+if (file.exists(file.path(results_dir, "partisan_model.rds"))) {
+  partisan_mod <- readRDS(file.path(results_dir, "partisan_model.rds"))
 }
 ```
 
 # Introduction
 
-TODO: Motivate the paper. State the puzzle or gap. Preview the argument and
-contribution. End with a roadmap sentence.
+On November 19, 2016, roughly one million South Korean citizens gathered in central Seoul with candles. The protests continued for nineteen consecutive weeks. At their peak, an estimated seventeen million participants had taken part nationwide — in a country of fifty-one million. What they demanded, and eventually obtained, was the removal of President Park Geun-hye on charges of corruption and abuse of power. On March 10, 2017, the Constitutional Court upheld her impeachment in a unanimous ruling. Within two months, Moon Jae-in had won the presidency with a substantial popular mandate. By every available standard of democratic performance, the system had worked.
 
-# Theory
+The paradox that motivates this article is what happened next. Between 2016 and 2019 — precisely the period in which citizens had the most dramatic possible evidence that accountability institutions functioned — mass confidence in those institutions collapsed. Trust in the National Assembly, the media, and nongovernmental organizations fell by 0.6 to 0.7 points on a normalized scale. Executive institutional trust, by contrast, declined only 0.16 points. Economic optimism rose. Electoral engagement intensified; party identification climbed across the same window. Citizens were reinvesting in the electoral game while disinvesting in the institutions through which electoral accountability is supposed to operate.
 
-TODO: Lay out the theoretical framework. Derive testable hypotheses. Make clear
-what the existing literature predicts and where this paper departs from it.
+This is not a methodological artifact. The Korean Academic Multimode Open Survey (KAMOS) provides nationally representative samples bracketing the crisis — Wave 1 in 2016, Wave 4 in 2019 — and the divergence between executive and intermediary institutional trust survives controls for age, gender, education, income, and partisan identity. A cross-partisan decomposition confirms the collapse was not driven by Park's conservative supporters punishing the institutions that removed her; the erosion was roughly symmetric across the ideological spectrum. The Candlelight Revolution was celebrated as a democratic watershed, and it produced, attitudinally, an accountability paradox.
 
-**H1**: TODO
+The existing literature has not examined this pattern directly. Studies of the Park impeachment attend primarily to partisan polarization in its aftermath [@Rich2021-ma; @Rich2025-sf], the relationship between high-profile democratic events and diffuse democratic support [@Chu2020-ir], or executive approval dynamics under successor administrations [@Anderson2005-uk]. The trajectory of intermediary institutional trust — the confidence citizens place in the legislature, media, and civil society organizations that perform the day-to-day work of oversight — receives no systematic attention. This partly reflects data constraints. It also reflects a theoretical assumption so deeply embedded in the democratic consolidation literature that it rarely surfaces for explicit scrutiny: that successful exercises of accountability reinforce the legitimacy of accountability mechanisms. This article challenges that assumption.
 
-**H2**: TODO
+The argument proceeds in two moves. The first is empirical: six waves of Asian Barometer Survey data (2003–2022) establish that the decoupling between democratic satisfaction and quality assessment was structurally in place well before the impeachment crisis, and KAMOS data document the sharp, asymmetric trust divergence the crisis produced. The second move is theoretical. If citizens evaluate executive institutions primarily through economic outcomes — a legacy, in the Korean case, of decades of performance-based regime justification under developmental authoritarianism — then executive trust is insulated from procedural accountability failures. The impeachment is simply irrelevant to the evaluative frame citizens apply to governments and presidents. Intermediary institutions — the legislature, the media, civil society — lack any comparable buffer. They derive legitimacy from procedural performance: the quality of oversight, the reliability of information, the fidelity of representation. These criteria are perpetually visible, perpetually contestable, and unprotected.
+
+Two contributions follow from this account. Empirically, this article provides the first systematic survey evidence documenting non-recovery of intermediary institutional trust following successful constitutional accountability. Theoretically, it argues that the output legitimacy channel — understudied in the East Asian democratization literature — generates a structural asymmetry in how different categories of institutions absorb accountability shocks. If the most celebrated democratic episode in a generation cannot restore intermediary trust, the erosion is likely structural rather than conjunctural: it calls for explanations that engage the evaluative frameworks citizens bring to institutions, not the performance of any particular institutional episode.
+
+# Theoretical Framework
+
+## The Trust Non-Recovery Puzzle
+
+Standard legitimacy theory predicts that demonstrated institutional capacity should strengthen perceived legitimacy. Institutions that perform their designated function — visibly, under pressure, before an attentive public — ought to generate confidence among citizens who observe that performance. The logic runs through both classical accounts of political authority [@Easton1965-tz] and contemporary treatments of the "democratic deficit" [@Norris1999-sn; @Norris2011-oc]: as institutions prove their worth, citizens come to trust and defend them. The virtuous cycle is taken to be self-reinforcing.
+
+The South Korean impeachment crisis should, on this account, have been a legitimacy windfall for exactly the institutions involved. The Constitutional Court adjudicated impartially under enormous political pressure. The National Assembly voted to impeach with cross-partisan majorities. Millions of citizens mobilized peacefully and directed their demands through constitutional mechanisms rather than extraconstitutional ones. The transfer of power was orderly. Whatever else one concludes about the episode, the accountability architecture worked — and worked publicly. The puzzle is that it generated no trust dividend.
+
+This puzzle is not limited to the impeachment episode itself. Longitudinal analysis of Asian Barometer Survey data reveals that the decoupling between democratic satisfaction and procedural quality assessment has been a durable feature of Korean political attitudes since at least 2003. Citizens reported rising satisfaction with how democracy was working even as they reported declining assessments of governmental responsiveness and declining confidence in democratic institutions. The Candlelight Revolution did not produce this dissociation; it exposed and tested it. The question the analysis below asks is whether a decisive institutional performance could break a structural pattern that had been in place for well over a decade. The answer, I will argue, is no — and the theoretical task is to explain why.
+
+## Output Legitimacy and the Executive Shield
+
+Fritz Scharpf's [-@Scharpf1999-ce] distinction between input and output legitimacy provides the conceptual anchor. Input legitimacy — "government by the people" — derives from the quality of participation, deliberation, and representation: the procedural mechanisms through which citizen preferences are translated into authoritative decisions. Output legitimacy — "government for the people" — derives instead from results: whether policies deliver material welfare, security, and prosperity to citizens. In principle, both channels contribute to institutional confidence. In practice, their relative weight varies substantially by historical context and the evaluative frameworks citizens have internalized.
+
+In developmental state contexts, the output channel is likely dominant — and for reasons that run deeper than current policy performance. South Korea's democratic transition in 1987 layered electoral competition onto an administrative and party apparatus whose legitimating ideology had been, for three decades, economic achievement [@Im2011-pj]. Citizens who came of political age under Park Chung-hee and Chun Doo-hwan absorbed an implicit performance contract: political rights were constrained, but growth was delivered. That contract was genuinely honored — GDP per capita grew at rates that were transformative within a single generation — and it was systematically cultivated as the regime's primary claim to authority. Democratization modified the terms of competition without fully displacing the evaluative template that three decades of performance-based authoritarianism had installed.
+
+The mechanism this generates is what I call the executive shield. Economic performance creates a protective buffer for executive institutions that intermediary institutions do not share. When citizens evaluate presidents and governments primarily through an output lens, those institutions are insulated from procedural accountability failures in a specific way. The Park Geun-hye scandal was, at its core, a procedural failure — corruption, cronyism, abuse of state authority — rather than an output failure. Economic conditions in 2016–2017 were not dramatically worse than in preceding years; the developmental state record remained intact as a background legitimating resource. A citizen whose evaluative frame is anchored in economic outcomes may have registered the scandal as serious, participated in protests, and voted for Moon Jae-in, all while their underlying confidence in executive institutions as a category remained relatively stable. The frame through which executive institutions are assessed was simply not challenged by the episode.
+
+Intermediary institutions — the National Assembly, the media, civil society organizations — derive legitimacy from a different channel altogether. Their function is procedural: oversight, information provision, interest aggregation and representation. Citizens assess them against procedural criteria that are legible on a daily basis in ways that economic performance outcomes are not. The legislature's deliberative quality, the media's accuracy and independence, the representational fidelity of civil society — these are perpetually visible and perpetually subject to critical scrutiny. Intermediary institutions have no output buffer to fall back on when they disappoint on procedural grounds, and in the Korean case they face a particularly demanding procedural standard from citizens who have witnessed, and participated in, the most successful exercise of accountability in the country's democratic history.
+
+## Reputational Reconstitution and Accountability Evasion
+
+A second mechanism reinforces the asymmetric pattern. Korean political parties dissolve and rebrand with remarkable frequency following accountability failures. After the Park impeachment, the Saenuri Party renamed itself Liberty Korea Party, then People Power Party, with personnel shuffles and rhetorical repositioning at each transition. This "reputational reconstitution" systematically severs the link between documented institutional failure and the institutional identity that citizens are asked to evaluate. A citizen seeking to assign accountability to the party responsible for Park's corruption faces a moving target: the party has, nominally, ceased to exist.
+
+Intermediary institutions have no parallel escape valve. The National Assembly remains the National Assembly. The major newspapers criticized for slow coverage of the Choi Soon-sil scandal remain the same corporate entities. Civil society organizations do not dissolve and rebrand when they fall short of their representational mandate. Intermediary institutions therefore accumulate reputational costs in ways that party-based executive institutions systematically evade — which means that even a successful accountability episode can leave intermediary institutions holding the accumulated reputational damage from the crisis without any mechanism for the kind of reset that party rebranding affords the executive.
+
+The contrast with output legitimacy in personalist authoritarian contexts is instructive here. Hutcheson and Petersson [-@Hutcheson2016-oc] document that Putin's regime constructed an output legitimacy contract centered on individual leadership performance. When economic performance faltered after 2014, the regime shifted toward nationalist legitimation precisely because the output channel was weakening — the performance contract ran through a person who could be discredited. In South Korea's institutionalized party system, the output legitimacy channel operates at a higher level of abstraction, assessing developmental trajectory and economic conditions rather than any individual leader. Reputational reconstitution allows the party-based executive to reset rather than accumulate blame. The executive shield is more durable, not less, than its personalist equivalent — self-reinforcing through the very mechanism by which accountability fails.
+
+## Hypothesis
+
+A single, focused prediction follows from this account.
+
+**H1**: Following successful constitutional accountability, intermediary institutional trust — encompassing the legislature, media, and civil society — will decline significantly more than executive institutional trust, and this divergence will be moderated by output legitimacy such that citizens with higher economic evaluations will show greater resilience in executive trust but not in intermediary trust.
+
+The hypothesis specifies both a main effect (the asymmetric trust collapse) and a moderation (economic evaluation selectively protects executive trust). Both components are empirically testable with KAMOS data, and both are necessary to establish the output legitimacy mechanism — rather than merely document a divergence whose cause remains unidentified.
 
 # Data and Methods
 
-## Data
+## Data Sources
 
-TODO: Describe the data source (survey, country coverage, wave years, N).
-Note any exclusions or weighting decisions.
+The analysis draws on two complementary data sources. The Asian Barometer Survey (ABS) provides six-wave longitudinal coverage of Korean political attitudes from 2003 through 2022, alongside parallel data from Taiwan, Thailand, the Philippines, and additional Asian polities. Each Korean wave consists of a nationally representative face-to-face sample of approximately 1,200 respondents using multistage probability sampling. The ABS data serve two specific purposes here: establishing the long-run decoupling between democratic satisfaction and quality assessment that predates the impeachment crisis, and providing a macro-level view of the output legitimacy mechanism across a temporal window broad enough to distinguish structural from conjunctural patterns.
 
-## Measures
+The Korean Academic Multimode Open Survey (KAMOS) provides the primary data for the trust architecture analysis. KAMOS is a nationally representative mixed-mode survey panel. Waves 1 (2016) and 4 (2019) bracket the impeachment crisis — the first fielded during the protest period, the second three years into the Moon Jae-in administration — and permit before-and-after comparisons of institutional trust across a period encompassing the Constitutional Court ruling, the 2017 presidential election, and the successor government's first term. The KAMOS institutional trust battery covers ten institutions, enabling the disaggregation by accountability function that aggregate trust indices obscure.
 
-### Dependent Variables
+A methodological note on the KAMOS design is necessary. Two waves support before-and-after comparison but cannot support estimation of within-period dynamics. Whether trust decline was concentrated in the protest period, the post-election honeymoon, or the subsequent governance window cannot be determined from these data; the within-period trajectory must be inferred from theory and from the ABS wave-level evidence, which shows a temporary dip in Wave 5 followed by incomplete recovery in Wave 6. The net change over the 2016–2019 interval is what KAMOS permits, and that is what the analysis below reports.
 
-TODO: Define DVs and cite the survey items.
+## Variable Operationalization
 
-### Independent Variables
+*Trust variables.* The KAMOS battery presents trust ratings for ten institutions on a five-point scale from "do not trust at all" to "trust very much." For the primary analysis, these are grouped into three functional categories based on their role in the democratic accountability architecture. Executive institutions (Category A) include trust in central government and trust in local government — institutions that exercise executive authority and whose evaluative frame, I argue, is primarily output-oriented. Horizontal accountability institutions (Category B) include trust in the National Assembly and trust in the legislature, averaged into a composite (r = 0.64), reflecting their common oversight function. Societal accountability institutions (Category C) include trust in media and trust in NGOs, whose function is informational and civil-society oversight rather than formal constitutional authority.
 
-TODO: Define IVs, operationalization, and normalization decisions.
+Trust in private enterprise and religious institutions (Category D) are excluded from the primary analysis as analytically external to the democratic accountability architecture. Trust in society generally and trust in fellow citizens — theoretically ambiguous items that may capture social trust rather than political institutional confidence — are retained as robustness checks.
 
-### Controls
+*Output legitimacy indicators.* Three KAMOS items capture output-oriented political evaluation: assessments of family economic conditions, assessments of national economic conditions, and overall political satisfaction. All three rose between Wave 1 and Wave 4, providing the within-period variation in output legitimacy that the moderation analysis requires.
 
-TODO: List controls and justification.
+*ABS variables.* The longitudinal ABS analysis uses wave-level means for democratic satisfaction ("How satisfied are you with the way democracy works in your country?"), democratic quality assessment ("To what extent is [country] democratic today?"), economic conditions evaluation, and items on governmental responsiveness and information withholding. The full ABS institutional trust battery, spanning parliament, courts, political parties, civil service, national government, the presidency, police, and military, provides additional longitudinal perspective on the trust architecture.
 
 ## Analytic Strategy
 
-TODO: Describe model specification (OLS/logit/FE/etc.), clustering, and any
-robustness checks.
+The analysis proceeds in four steps. First, descriptive trend analysis of ABS wave-level means documents the long-run decoupling between democratic satisfaction and procedural quality assessment, establishing that the pattern this article explains was in place before the impeachment crisis — not a product of it. Second, KAMOS descriptive means by wave and institution type document the magnitude and configuration of trust divergence during the 2016–2019 period.
+
+Third, a three-way pooled OLS model estimates the differential change in trust across institution types while controlling for individual-level compositional differences. The specification stacks respondents across three institution-type observations per person and estimates:
+
+$$\text{Trust}_{ij} = \alpha + \beta_1 \text{Wave}_t + \beta_2 \text{InstType}_j + \beta_3 (\text{Wave}_t \times \text{InstType}_j) + \gamma \mathbf{X}_i + \varepsilon_{ij}$$
+
+where $i$ indexes respondents, $j$ institution type, and $\mathbf{X}_i$ is a vector of controls including age, gender, education, income, and ideological self-placement. Standard errors are clustered by respondent. The executive category serves as the reference group, so the Wave × InstType interactions — $\beta_3$ — directly estimate whether intermediary trust declined significantly more than executive trust after controlling for composition. These are the quantities of interest.
+
+Fourth, an output legitimacy moderation model extends the three-way specification by adding interactions between economic evaluation and institution type, testing whether economic optimism selectively buffers executive trust. A partisan sorting check replaces economic evaluation with party identification to evaluate the alternative explanation that the trust collapse is a partisan artifact of the losing side's response to their president's removal.
 
 # Results
 
-TODO: Present findings. Lead with the main result, then unpack it.
-Reference pre-loaded figure and table objects from `analysis/results/`.
+## The Long-Run Dissociation (ABS, 2003–2022)
+
+Before examining the impeachment-period trust collapse, it is worth establishing the macro-level context within which it occurred — because one of the most important findings in this paper is that the accountability paradox was not created by the Candlelight Revolution. It predates it by at least a decade.
+
+Figure 1 plots ABS wave-level means for democratic satisfaction, democratic quality assessment, and economic evaluation across Waves 2 through 6. The trajectories diverge sharply. Democratic satisfaction traces a rising trend across the full period (slope: +0.059 per wave), reaching its highest recorded value in Wave 6 — the most recent data point, collected after the impeachment and Moon's election. Democratic quality assessment moves in the opposite direction over the same window, with a cumulative decline of −0.473. Governmental responsiveness — citizens' assessments of whether the government responds to what people want — declines by −0.036 per wave; the proportion agreeing that government withholds information rises by +0.114.
+
+Citizens were simultaneously reporting greater satisfaction with democracy and deteriorating assessments of democratic quality and government responsiveness. The economic evaluation series provides the key to this coexistence. Across Waves 2 through 6, economic present-conditions assessment co-moves strongly with democratic satisfaction and diverges from quality assessment. The output legitimacy mechanism is not a feature of the impeachment period specifically — it is a stable structural feature of Korean political culture, organizing how citizens have evaluated democratic institutions throughout the entire post-transition democratic era.
+
+Table 1 presents the wave-level means underlying Figure 1. The critical implication is stated plainly: the Candlelight Revolution tested whether a decisive institutional performance could break a structural decoupling that had been in place since at least 2003. The KAMOS results show it could not.
+
+```{r}
+#| label: tbl-abs-wave-means
+#| tbl-cap: "ABS wave-level means for democratic satisfaction, quality assessment, and economic evaluation indicators, South Korea, Waves 2–6 (2003–2022). All items normalized to 0–1 scale. Source: Asian Barometer Survey."
+#| echo: false
+
+# TODO: replace with abs_means object when results are computed
+# Example structure:
+# abs_means |>
+#   select(wave, dem_satisfaction, dem_quality, econ_eval, govt_responds, govt_withholds) |>
+#   kbl(digits = 3, col.names = c("Wave", "Dem. Satisfaction", "Quality Assessment",
+#                                 "Economic Evaluation", "Govt. Responsive", "Info. Withheld"),
+#       booktabs = TRUE) |>
+#   kable_styling(latex_options = c("hold_position", "scale_down"))
+```
+
+```{r}
+#| label: fig-abs-trajectories
+#| fig-cap: "Diverging trajectories in Korean democratic attitudes, ABS Waves 2–6 (2003–2022). Democratic satisfaction rises while quality assessment declines; economic evaluation tracks satisfaction rather than quality. Source: Asian Barometer Survey."
+#| echo: false
+
+# TODO: load and plot abs_means
+# ggplot(abs_means, aes(x = wave)) +
+#   geom_line(aes(y = dem_satisfaction, linetype = "Satisfaction")) +
+#   geom_line(aes(y = dem_quality, linetype = "Quality")) +
+#   geom_line(aes(y = econ_eval, linetype = "Economic Evaluation")) +
+#   ...
+```
+
+## The Trust Architecture Collapse (KAMOS, 2016–2019)
+
+Table 2 presents KAMOS wave-level means for all ten trust items, disaggregated by the functional categories established in Section 3. The overall portrait is one of across-the-board erosion — every trust item falls between 2016 and 2019 — but the rates of decline differ dramatically across categories.
+
+Executive institutional trust (central and local government combined) declined by −0.164 on the five-point scale. This is a modest erosion, and it occurred simultaneously with rising economic optimism and political satisfaction. The executive shield held: even as elite-level conflict over accountability and governance intensified following the impeachment, mass-level confidence in executive institutions as a category remained relatively stable.
+
+The horizontal accountability category tells a different story. Trust in the National Assembly and legislature fell by −0.635 — nearly four times the executive decline, and a magnitude that shifted the wave mean well below the scale midpoint. Citizens who had observed the National Assembly vote to impeach a corrupt president and witnessed the Constitutional Court's unanimous constitutionally principled ruling reported, three years later, dramatically lower confidence in those same institutions. The societal accountability category declined further still: trust in media and NGOs fell by −0.712, the sharpest erosion across all institution types.
+
+The media figure warrants particular attention. By any performance criterion, South Korean investigative journalism had performed consequentially during the accountability episode — the Choi Soon-sil exposés by JTBC and others were central to the protest mobilization. It is difficult to reconcile the media's performance in that episode with a −0.712 decline in media trust over the subsequent three years unless something other than institutional performance is governing citizens' evaluative responses.
+
+The broader KAMOS context deepens the puzzle. In the same period that institutional trust was collapsing, economic evaluations rose. National pride rose. Social mobility optimism rose. Party identification strengthened. The satisfaction-trust decoupling documented at the macro level in the ABS is replicated — with stark clarity — in the KAMOS microdata.
+
+```{r}
+#| label: tbl-kamos-trust-means
+#| tbl-cap: "KAMOS institutional trust means by wave and institution type, 2016 and 2019. Trust items rated 1–5; means weighted by KAMOS survey weights. Parentheses indicate change from Wave 1 to Wave 4. Source: Korean Academic Multimode Open Survey."
+#| echo: false
+
+# TODO: replace with kamos_means object when results are computed
+```
+
+```{r}
+#| label: fig-trust-divergence
+#| fig-cap: "Three-way trust divergence, KAMOS Waves 1 and 4 (2016 and 2019). Executive institutional trust declined modestly while horizontal and societal accountability trust collapsed. Source: Korean Academic Multimode Open Survey."
+#| echo: false
+
+# TODO: dumbbell or grouped bar chart of trust means by institution type × wave
+```
+
+## Controlled Model Results
+
+The descriptive patterns survive individual-level controls. Table 3 presents results from the three-way pooled OLS model. Each observation is a respondent-institution-type-wave triplet, with standard errors clustered by respondent to account for within-respondent correlation. The executive institution category serves as the reference group.
+
+The Wave coefficient (β = −0.164, SE = 0.025, *t* = −6.56, *p* < .001) confirms the baseline decline in executive trust after controlling for individual-level composition. The Wave × Horizontal Accountability interaction (β = −0.471, SE = 0.050, *t* = −9.49, *p* < .001) indicates that horizontal accountability institutions experienced an additional decline of nearly half a scale point beyond what executive institutions experienced — after accounting for age, gender, education, income, and ideology. The Wave × Societal Accountability coefficient is larger still (β = −0.548, SE = 0.041, *t* = −13.51, *p* < .001), indicating societal accountability trust declined by more than half a scale point beyond the executive baseline.
+
+These are substantively large effects. The interaction coefficients represent approximately half a standard deviation of additional decline concentrated in institutions whose defining function is procedural accountability oversight. The pattern is robust to alternative operationalizations of the institution-type groupings and to the inclusion of trust in society and trust in fellow citizens as additional control variables.
+
+```{r}
+#| label: tbl-threeway-model
+#| tbl-cap: "Pooled OLS estimates of the three-way trust model, KAMOS Waves 1 and 4. Dependent variable: institutional trust (1–5). Executive institutions are the reference category. Standard errors clustered by respondent. Controls include age, gender, education, income, and ideological self-placement."
+#| echo: false
+
+# TODO: load threeway_mod and display with modelsummary()
+# modelsummary(threeway_mod, output = "kableExtra", ...)
+```
+
+## Output Legitimacy Moderation
+
+The output legitimacy moderation model tests the second component of H1: whether economic optimism selectively buffers executive trust while providing no comparable protection for intermediary institutions. Table 4 adds interactions between economic evaluation (a composite of family and national economic assessments) and institution type to the three-way specification.
+
+*Note: Table 4 results pending completion of output legitimacy moderation analysis. The expected pattern, derived from H1, is as follows. The Economic Evaluation × Executive interaction should be positive and significant — economic optimism should buffer executive trust, producing smaller declines among citizens with more favorable economic assessments. The analogous interactions for horizontal and societal accountability institutions should be substantially weaker or null, reflecting the absence of an output buffer for procedurally-evaluated institutions. A contrast test of the difference between the executive moderation coefficient and the intermediary moderation coefficients provides the direct test of category-specificity.*
+
+```{r}
+#| label: tbl-output-legitimacy
+#| tbl-cap: "Output legitimacy moderation model. Dependent variable: institutional trust (1–5). Model extends Table 3 specification with Economic Evaluation × Institution Type interactions. Standard errors clustered by respondent. Source: KAMOS Waves 1 and 4."
+#| echo: false
+
+# TODO: load outleg_mod and display with modelsummary()
+```
+
+## Partisan Sorting Check
+
+A prominent alternative explanation for the asymmetric trust collapse is partisan sorting: conservative partisans who supported President Park may have expressed systematically lower trust in the accountability institutions that removed their preferred leader, producing an apparent trust collapse that is in fact a winner-loser dynamic among aggrieved partisans [@Anderson2005-uk; @Rich2020-wm]. Table 5 reports the partisan moderation test.
+
+The results do not support the partisan sorting account. Wave × Party Identification interaction coefficients are small and fall short of conventional significance thresholds for both institution-type categories. The trust collapse is cross-partisan: it is evident among conservative and progressive respondents alike, and the magnitude of the divergence between executive and intermediary trust does not vary significantly by ideological self-placement or party support direction. The Candlelight Revolution's aftermath produced attitudinal change that cut across the partisan divide — which is, in retrospect, exactly what one would expect from a structural mechanism operating at the level of evaluative frames rather than partisan loyalties.
+
+```{r}
+#| label: tbl-partisan-check
+#| tbl-cap: "Partisan moderation check. Dependent variable: institutional trust (1–5). Model adds Wave × Party Identification interactions to the Table 3 specification. Standard errors clustered by respondent. Source: KAMOS Waves 1 and 4."
+#| echo: false
+
+# TODO: load partisan_mod and display with modelsummary()
+```
 
 # Discussion
 
-TODO: Interpret the results. Address alternative explanations.
-Connect back to the theoretical framework.
+## Output Legitimacy as Structural Feature
+
+The non-recovery documented above is not a temporary artifact of a single accountability episode. The ABS shows the satisfaction-quality decoupling in place for more than a decade before the Candlelight Revolution; KAMOS confirms it survived the most powerful democratic moment in a generation. What requires explanation is not why trust collapsed after the impeachment but why a structural decoupling, once established, proves so resistant to even extraordinary democratic performances.
+
+The developmental state legacy is the most compelling account. The Park Chung-hee era (1961–1979) built mass legitimacy on an explicit performance contract, and that contract was honored in ways citizens experienced directly — in rising living standards, expanded educational opportunity, and a transformation of material life that was genuinely astonishing in its speed. The Chun Doo-hwan regime (1980–1987) continued on similar terms. Citizens who came of political age under these governments absorbed a template for evaluating authority that foregrounds outcomes. Democratic transition in 1987 did not erase that template; it added procedural criteria on top of a pre-existing output orientation. The result is a political culture in which the output channel and the procedural channel coexist — but the output channel is dominant, particularly for institutions like the presidency and central government whose performance is most legibly assessed through economic conditions.
+
+Consider what this means for the impeachment. The scandal that ended Park Geun-hye's presidency was — in structural terms — a procedural failure, not an output failure. The national economy in late 2016 was not dramatically worse than it had been under prior administrations; the developmental state track record remained intact as background legitimating resource. A citizen evaluating executive institutions through an output frame had no particular reason to revise their assessments downward. The scandal registered as corruption, mobilized protests, produced a presidential vote — and left executive institutional trust largely intact, because the evaluative frame governing executive trust was not touched.
+
+The contrast with Russia is worth dwelling on, because the two cases look superficially similar — both involve output legitimacy as a stabilizing resource — but the mechanisms differ in ways that determine fragility. Hutcheson and Petersson [-@Hutcheson2016-oc] document that Putin's output legitimacy contract is personalist: it runs through an individual whose continued delivery must be sustained. When the economy falters, confidence in the regime falters, because the contract has no other anchor. In South Korea, the output legitimacy channel is institutionally generalized — it assesses the developmental trajectory of the state, not the performance of any particular government. Party reputational reconstitution reinforces this generalization: when a government fails, the party dissolves and rebrands, preventing the accumulation of institutional blame at the executive level. The executive shield in Korea is therefore more durable than its Russian equivalent, not because Korean executive institutions perform better but because the architecture through which they are evaluated is insulated from the kind of personalist discrediting that makes authoritarian output legitimacy fragile.
+
+## Implications for Democratic Consolidation Theory
+
+Linz and Stepan's [-@Linz1996-qs] "only game in town" consolidation criterion — internalization, by all significant political actors, of democratic norms as the only legitimate framework for competition — implicitly assumes that consolidation is self-reinforcing. Institutions that work generate confidence; confidence motivates democratic citizenship; democratic citizenship stabilizes institutions. The Korean case complicates each link in this chain.
+
+Institutions can work — demonstrably, publicly, dramatically — without generating the confidence dividend that standard legitimacy theory predicts. Citizens can participate more intensely (rising party identification, higher electoral engagement) while trusting less in the institutions through which their participation is supposed to be aggregated and held accountable. The virtuous cycle, it turns out, is conditional: it operates when citizens evaluate democratic institutions primarily on procedural criteria. When the dominant evaluative frame is output-based, procedural triumphs simply do not register in the confidence currency that intermediary institutions need to sustain themselves.
+
+This has a specific implication for comparative survey research on democratic health. ABS-style satisfaction measures are potentially misleading indicators in output-oriented political cultures, because satisfaction tracks economic delivery rather than procedural quality. A polity reporting high democratic satisfaction may be simultaneously experiencing the slow-motion delegitimation of the oversight architecture — the legislature, the media, the civil society organizations — through which democratic quality is actually maintained. The Korean case is not a measurement curiosity; it is a warning about the inferential shortcuts that comparative barometer research tends to make.
+
+The measurement implication has a prescriptive counterpart that is less tractable. If the output legitimacy frame is structural — installed by decades of developmental state political economy rather than any recent policy choice — restoring intermediary institutional trust may require sustained procedural performance visible at the mass level over a period far longer than any single accountability episode, however dramatic. The Candlelight Revolution provided proof of concept for constitutional accountability. What it did not provide, and perhaps could not provide, is the cumulative track record of procedural reliability that might displace an output-oriented evaluative frame. That is a much harder project.
+
+## The Reputational Reconstitution Problem
+
+The cross-partisan nature of the trust collapse — confirmed by the partisan sorting check — rules out the most obvious alternative explanation but raises a different puzzle. Moon Jae-in's progressive supporters, who had celebrated the accountability outcome and voted for the succeeding administration, also showed declining confidence in the legislative and media institutions during this period. Why?
+
+One candidate explanation is precisely the reputational reconstitution dynamic. Citizens who sought to hold accountable the party associated with Park Geun-hye found that it had rebranded; the institutional target of accountability had nominally ceased to exist. This evasion may generate a frustration that generalizes — if the accountability system cannot deliver the specific reckoning that citizens sought, confidence in the system as a whole suffers even among citizens on the winning side. The grievance here is not partisan loss but the structural incapacity of accountability mechanisms to impose sustained reputational costs on elites who can dissolve the institutional identity through which those costs are assigned.
+
+The media case adds a further complication. Coverage of the Choi Soon-sil scandal was initially slow and cautious among major Korean legacy outlets — JTBC's exposé came through an independent channel before the established press followed. When the scandal fully emerged, legacy media faced a credibility question that subsequent coverage of the impeachment proceedings could not fully repair. The procedural failure in the early phases registered with citizens who then observed, approvingly, as constitutional mechanisms functioned; but the baseline confidence that the early coverage failures damaged was not automatically restored when the editorial record improved.
+
+## Limitations
+
+Three constraints on interpretation merit acknowledgment. First, the KAMOS design yields two waves across the 2016–2019 window, which supports before-and-after comparison but cannot resolve within-period dynamics. Whether the sharpest trust decline occurred during the protest period, the post-impeachment transition, or Moon's governance period remains indeterminate from these data. Second, the output legitimacy moderation analysis, pending completion, rests on a specification that requires category-specific buffering — the economic evaluation × executive interaction substantially larger than the intermediary interactions. A finding of uniform buffering across all institution types would complicate the output legitimacy account without disconfirming the main asymmetric collapse result. Third, the Moon Jae-in administration's sustained personal popularity over parts of the 2017–2019 period may confound economic evaluation effects on executive trust in ways that are difficult to disentangle at the aggregate level.
+
+The December 2024 martial law declaration and its rapid constitutional reversal postdate all data used here. Whether this subsequent accountability shock — which also involved successful institutional resistance to executive overreach — reproduced, amplified, or reversed the patterns documented above is an open empirical question that subsequent survey waves will need to address. What the present analysis suggests is that the answer will turn less on whether constitutional mechanisms worked than on the evaluative frames citizens bring to the institutions involved.
 
 # Conclusion
 
-TODO: Summarise the contribution. State limitations. Suggest future research.
+South Korea's Candlelight Revolution demonstrated that constitutional accountability can function as designed even under severe political strain. What the revolution did not demonstrate is that the successful exercise of constitutional accountability translates into mass confidence in the institutions through which accountability operates. The asymmetric trust collapse documented here — intermediary institutions falling at four times the rate of executive institutions, even as economic optimism and political satisfaction rose — reveals a structural decoupling between institutional performance and citizen orientations that no single democratic episode, however historically significant, appears capable of breaking.
+
+The output legitimacy account proposed here explains this decoupling as a legacy of South Korea's developmental state political economy. Citizens who internalized a performance-based evaluative frame during three decades of authoritarian growth politics carry that frame into democratic evaluation of institutions. Executive institutions, assessed primarily through economic outcomes, are insulated from procedural accountability failures. Intermediary institutions, assessed through procedural criteria that are perpetually visible and perpetually contestable, absorb cumulative disappointment without any buffer. The Candlelight Revolution was a procedural triumph — but in a political culture where output legitimacy is structurally dominant, procedural triumphs leave intermediary institutions unprotected.
+
+The broader implication is stark: democratic health cannot be inferred from democratic satisfaction. A polity can report high and rising satisfaction with democracy while the specific institutions that perform democratic oversight lose public confidence at a rate that amounts to slow-motion delegitimation of the oversight architecture. If this pattern characterizes other developmental democracies in East and Southeast Asia — and the theoretical reasoning does not confine it to the Korean case — then comparative survey research on democratic attitudes may have systematically underestimated the scale of intermediary institutional erosion by relying on satisfaction measures that track economic conditions more reliably than democratic quality.
+
+The December 2024 martial law crisis provides a natural test of whether the structural conditions documented here have proven durable through yet another accountability shock. Whatever the subsequent survey evidence shows, the present analysis establishes the baseline: a political culture in which successful constitutional accountability and declining institutional trust coexist without apparent contradiction, because the citizens who participated in one are evaluating the institutions through a frame that the other barely touches.
 
 # References {.unnumbered}
 

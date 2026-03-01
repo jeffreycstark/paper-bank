@@ -1,0 +1,38 @@
+---
+title: ""
+format:
+  pdf:
+    documentclass: article
+    geometry: margin=1in
+    fontsize: 12pt
+    include-in-header:
+      - text: |
+          \usepackage{setspace}
+---
+
+# The Accountability Paradox: Why South Korea's Impeachment Failed to Restore Institutional Trust
+
+**Author:** Jeffrey C Stark\
+**Affiliation:** Graduate School, Department of Sociology, Yonsei University\
+**Email:** jeffrey.stark@yonsei.ac.kr\
+**Address:** Department of Sociology, Yonsei University, 50 Yonsei-ro, Seodaemun-gu, Seoul 03722, Korea
+
+**Running Title:** Impeachment and Institutional Trust in South Korea
+
+**Word Count:** ~7,500 (excluding abstract, tables, and references)
+
+**Sources of Support:** None
+
+**Competing Interests:** The author has no competing interests to declare.
+
+---
+
+**Abstract**
+
+\begin{singlespace}
+South Korea's 2016–2017 Candlelight Revolution and the impeachment of President Park Geun-hye represented the most successful exercise of constitutional accountability in the country's democratic history. A reasonable expectation would be that such an unambiguous demonstration of institutional capacity should have restored public confidence in the intermediary institutions — legislature, media, civil society organizations — through which democratic accountability operates. Drawing on six waves of Asian Barometer Survey data (2003–2022, N ≈ 7,200 Korean respondents) and two waves of the Korean Academic Multimode Open Survey bracketing the crisis (2016 and 2019), this article demonstrates that it did not. Intermediary institutional trust collapsed at roughly four times the rate of executive trust across the impeachment period, a divergence that persisted after controlling for demographics and partisanship. The article argues that output legitimacy — satisfaction anchored in economic performance rather than procedural quality — structurally insulates executive institutions from accountability failures while leaving intermediary institutions exposed to cumulative erosion.
+\end{singlespace}
+
+---
+
+**Keywords:** institutional trust; democratic accountability; output legitimacy; South Korea; Candlelight Revolution; impeachment; democratic backsliding

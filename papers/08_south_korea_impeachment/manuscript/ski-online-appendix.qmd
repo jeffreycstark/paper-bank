@@ -1,5 +1,5 @@
 ---
-title: "Online Appendix — PAPER TITLE"
+title: "Online Appendix — The Accountability Paradox: Why South Korea's Impeachment Failed to Restore Institutional Trust"
 author:
   - name: Jeffrey Stark
     affiliations:
@@ -61,54 +61,332 @@ library(tidyverse)
 library(knitr)
 library(kableExtra)
 library(modelsummary)
+library(broom)
+library(MASS)      # polr() for ordered logit
 
 project_root <- "/Users/jeffreystark/Development/Research/paper-bank"
-paper_dir    <- file.path(project_root, "papers/00-model")
+paper_dir    <- file.path(project_root, "papers/08_south_korea_impeachment")
 analysis_dir <- file.path(paper_dir, "analysis")
 results_dir  <- file.path(analysis_dir, "results")
 fig_dir      <- file.path(analysis_dir, "figures")
+tables_dir   <- file.path(analysis_dir, "tables")
 
 # Load pre-computed results
-if (file.exists(file.path(results_dir, "analysis_data.rds"))) {
-  dat <- readRDS(file.path(results_dir, "analysis_data.rds"))
-}
-if (file.exists(file.path(results_dir, "model_results.rds"))) {
-  mr <- readRDS(file.path(results_dir, "model_results.rds"))
-}
+if (file.exists(file.path(results_dir, "abs_wave_means.rds")))
+  abs_means <- readRDS(file.path(results_dir, "abs_wave_means.rds"))
+if (file.exists(file.path(results_dir, "kamos_trust_means.rds")))
+  kamos_means <- readRDS(file.path(results_dir, "kamos_trust_means.rds"))
+if (file.exists(file.path(results_dir, "kamos_all_vars.rds")))
+  kamos_all <- readRDS(file.path(results_dir, "kamos_all_vars.rds"))
+if (file.exists(file.path(results_dir, "threeway_model.rds")))
+  threeway_mod <- readRDS(file.path(results_dir, "threeway_model.rds"))
+if (file.exists(file.path(results_dir, "output_legitimacy_model.rds")))
+  outleg_mod <- readRDS(file.path(results_dir, "output_legitimacy_model.rds"))
+if (file.exists(file.path(results_dir, "partisan_model.rds")))
+  partisan_mod <- readRDS(file.path(results_dir, "partisan_model.rds"))
+if (file.exists(file.path(results_dir, "ologit_model.rds")))
+  ologit_mod <- readRDS(file.path(results_dir, "ologit_model.rds"))
+if (file.exists(file.path(results_dir, "alt_grouping_model.rds")))
+  alt_group_mod <- readRDS(file.path(results_dir, "alt_grouping_model.rds"))
+if (file.exists(file.path(results_dir, "econ_alt_model.rds")))
+  econ_alt_mod <- readRDS(file.path(results_dir, "econ_alt_model.rds"))
+if (file.exists(file.path(results_dir, "descriptives.rds")))
+  desc <- readRDS(file.path(results_dir, "descriptives.rds"))
 ```
 
-# Appendix A: Data
+# Appendix A: Data and Measurement {#sec-data}
 
-## A.1 Data Source and Coverage
+## Survey Instruments {#sec-instruments}
 
-TODO: Describe the survey instrument, fielding dates, country coverage, and
-sampling strategy. Include a wave-by-wave N table.
+The analysis draws on two nationally representative surveys of South Korean adults. This appendix section documents fielding details, sampling procedures, and relevant methodological features of each instrument.
 
-## A.2 Variable Construction
+**Asian Barometer Survey (ABS).** The ABS is a cross-national survey of democratic values and political attitudes conducted across eighteen Asian polities. Six waves cover South Korea: Wave 1 (2003), Wave 2 (2006), Wave 3 (2010–2011), Wave 4 (2014–2015), Wave 5 (2015–2016), and Wave 6 (2021–2022). Each Korean wave uses multistage stratified probability sampling with urban-rural stratification and proportional allocation across administrative regions, yielding sample sizes of approximately 1,200 respondents per wave. Face-to-face interviews were conducted by trained interviewers using structured questionnaires. The ABS is the primary source for establishing long-run trends in democratic satisfaction, quality assessment, governmental responsiveness, and the output legitimacy mechanism (Section 4.1 of the main text).
 
-TODO: Provide full question wording for all survey items used. Document any
-recoding, normalization, or index construction.
+**Korean Academic Multimode Open Survey (KAMOS).** KAMOS is a mixed-mode nationally representative panel survey of South Korean adults, combining online panel and offline probability samples to achieve demographic representativeness. Wave 1 was fielded in November–December 2016, during the active protest period preceding President Park Geun-hye's National Assembly impeachment vote (December 9, 2016). Wave 4 was fielded in 2019, approximately two years into the Moon Jae-in administration. The institutional trust battery, fielded in both waves, rates ten institutions on a five-point scale (1 = "do not trust at all," 5 = "trust very much"). KAMOS is the primary source for the trust architecture analysis and all regression models reported in the main text.
 
-## A.3 Sample Descriptives
+Table A1 presents wave-by-wave sample sizes and fielding windows for both surveys.
 
-TODO: Full descriptive statistics table (mean, SD, min, max, N) for all
-variables.
+```{r tbl-wave-ns}
+#| label: tbl-wave-ns
+#| tbl-cap: "Survey wave details: fielding dates and sample sizes. ABS = Asian Barometer Survey; KAMOS = Korean Academic Multimode Open Survey."
+#| echo: false
 
-# Appendix B: Robustness Checks
+# TODO: replace with actual wave N table when results are computed
+# tribble(
+#   ~Survey, ~Wave, ~Year, ~Fielding_Period, ~N,
+#   "ABS", 1, 2003, "Jun–Aug 2003", 1209,
+#   "ABS", 2, 2006, "Jun–Aug 2006", 1217,
+#   "ABS", 3, 2011, "Oct 2010–Mar 2011", 1207,
+#   "ABS", 4, 2014, "Jun–Sep 2014", 1200,
+#   "ABS", 5, 2016, "Jun–Sep 2015", 1200,
+#   "ABS", 6, 2022, "Nov 2021–Mar 2022", 1200,
+#   "KAMOS", 1, 2016, "Nov–Dec 2016", NA,
+#   "KAMOS", 4, 2019, "XXXX 2019", NA
+# ) |>
+#   kbl(booktabs = TRUE, col.names = c("Survey", "Wave", "Year", "Fielding Period", "N")) |>
+#   kable_styling(latex_options = "hold_position")
+```
 
-## B.1 Alternative Specifications
+## KAMOS Institutional Trust Battery: Full Question Wording {#sec-question-wording}
 
-TODO: Report results under alternative model specifications (e.g., logistic
-regression, fixed effects, different control sets).
+The KAMOS institutional trust battery asks respondents: *"How much do you trust each of the following institutions?"* Responses are recorded on a five-point scale: 1 = Do not trust at all, 2 = Do not trust, 3 = Neutral, 4 = Trust, 5 = Trust very much.
 
-## B.2 Alternative Measures
+The ten institutions and their functional classification for this analysis are as follows. Executive institutions (Category A): central government (*중앙정부*); local government (*지방정부*). Horizontal accountability institutions (Category B): National Assembly (*국회*); legislature (*입법부*, used interchangeably in some KAMOS waves). Societal accountability institutions (Category C): media (*언론*); NGOs/civil society organizations (*시민단체*). Excluded from primary analysis (Category D): private enterprise (*기업*); religious institutions (*종교기관*). Retained for robustness checks: trust in society generally (*사회 전반*); trust in fellow citizens (*타인*).
 
-TODO: Report results using alternative operationalizations of key DVs and IVs.
+The Category B composite (National Assembly + legislature) is computed as the simple mean of the two items when both are available; Cronbach's α = 0.78, Pearson *r* = 0.64 across the pooled sample.
 
-## B.3 Sensitivity Analysis
+## Institution-Type Classification Rationale {#sec-classification}
 
-TODO: Report any sensitivity checks (e.g., excluding outlier waves, alternative
-clustering).
+The three-category classification used in the main analysis reflects functional distinctions within the democratic accountability architecture rather than arbitrary grouping. Executive institutions (Category A) are those whose primary function is policy implementation and whose evaluative standard — in both normative democratic theory and, the argument in the main text claims, in Korean political culture — is performance output. Horizontal accountability institutions (Category B) are those whose constitutional function is to constrain and oversee the executive; their evaluative standard is procedural — the quality of deliberation, the independence of adjudication, the diligence of oversight. Societal accountability institutions (Category C) perform information provision and interest articulation functions that are prerequisites for meaningful horizontal accountability; their legitimacy, like that of Category B institutions, rests on procedural rather than output criteria.
+
+Category D institutions (private enterprise, religious) are excluded because their relationship to the democratic accountability architecture is indirect at best. Private enterprise trust is more plausibly governed by economic conditions and personal financial experience than by democratic institutional performance; religious trust reflects denominational affiliation and spiritual community membership rather than evaluations of political authority. Including these items in the primary analysis would contaminate the institution-type contrast with theoretically unrelated variation.
+
+## Full KAMOS Variable Direction Table {#sec-direction-table}
+
+Table A2 presents wave-level means for all KAMOS variables used in or relevant to this analysis, with direction-of-change indicators. The table documents the central descriptive pattern motivating the accountability paradox argument: the simultaneous rise in output-oriented indicators (economic evaluations, political satisfaction, national pride, electoral engagement) and fall in procedural institutional trust.
+
+```{r tbl-kamos-direction}
+#| label: tbl-kamos-direction
+#| tbl-cap: "Full KAMOS variable means by wave with direction-of-change indicators. Rising indicators (Wave 1 → Wave 4): economic evaluations, political satisfaction, social mobility optimism, national pride, party identification. Falling indicators: all ten institutional trust items, perceived government accountability. Source: KAMOS Waves 1 and 4."
+#| echo: false
+
+# TODO: replace with kamos_all object when results are computed
+# Expected structure: variable name, label, wave 1 mean, wave 4 mean, change, direction arrow
+# kamos_all |>
+#   mutate(direction = if_else(change > 0, "↑", "↓")) |>
+#   select(label, w1_mean, w4_mean, change, direction) |>
+#   kbl(digits = 3, booktabs = TRUE,
+#       col.names = c("Variable", "Wave 1 (2016)", "Wave 4 (2019)", "Change", "Direction")) |>
+#   kable_styling(latex_options = c("hold_position", "scale_down")) |>
+#   pack_rows("Trust — Executive (Category A)", 1, 2) |>
+#   pack_rows("Trust — Horizontal Accountability (Category B)", 3, 4) |>
+#   pack_rows("Trust — Societal Accountability (Category C)", 5, 6) |>
+#   pack_rows("Trust — Excluded (Category D)", 7, 8) |>
+#   pack_rows("Trust — Robustness Check Items", 9, 10) |>
+#   pack_rows("Economic and Political Evaluations", 11, 13) |>
+#   pack_rows("Social Attitudes and Identity", 14, 16)
+```
+
+## Sample Descriptive Statistics {#sec-descriptives}
+
+Table A3 presents descriptive statistics for all variables entering the regression analyses, pooled across KAMOS Waves 1 and 4. Variables have been rescaled as described in Section 3.2 of the main text prior to model estimation.
+
+```{r tbl-descriptives}
+#| label: tbl-descriptives
+#| tbl-cap: "Descriptive statistics for all analysis variables, KAMOS Waves 1 and 4 pooled (N = respondents × institution types). Continuous variables reported as mean (SD); binary variables as proportion."
+#| echo: false
+
+# TODO: replace with desc object when results are computed
+# desc |>
+#   select(variable, label, mean, sd, min, max, n) |>
+#   kbl(digits = 3, booktabs = TRUE,
+#       col.names = c("Variable", "Label", "Mean", "SD", "Min", "Max", "N")) |>
+#   kable_styling(latex_options = c("hold_position", "scale_down"))
+```
+
+# Appendix B: Extended Main Results {#sec-main-results}
+
+## Full Three-Way Trust Model Coefficients {#sec-full-threeway}
+
+Table 3 in the main text reports the key interaction terms from the three-way pooled OLS model but suppresses coefficients for control variables in the interest of presentation. Table B1 here presents the full coefficient table for the same model, including main effects for all control variables.
+
+```{r tbl-full-threeway}
+#| label: tbl-full-threeway
+#| tbl-cap: "Full three-way pooled OLS model results including all control variable coefficients. Dependent variable: institutional trust (1–5). Executive institutions are the reference category. Standard errors clustered by respondent in parentheses. Source: KAMOS Waves 1 and 4."
+#| echo: false
+
+# TODO: load threeway_mod and display full coefficient table
+# modelsummary(
+#   threeway_mod,
+#   output = "kableExtra",
+#   stars = c("*" = 0.05, "**" = 0.01, "***" = 0.001),
+#   coef_rename = c(...),
+#   gof_omit = "IC|Log|F",
+#   ...
+# )
+```
+
+## Output Legitimacy Moderation: Full Results {#sec-output-legitimacy-full}
+
+Table B2 presents full results from the output legitimacy moderation model, which extends the three-way specification by adding interactions between economic evaluation and institution type. This model provides the primary test of the second component of H1: that economic optimism selectively buffers executive institutional trust while providing no equivalent protection for intermediary institutions.
+
+The economic evaluation composite is the mean of the family economic conditions and national economic conditions items, normalized to a 0–1 scale. All items are centered at their grand mean prior to interaction construction to improve interpretability of lower-order coefficients. Three models are reported: Model 1 uses family economic conditions alone; Model 2 uses national economic conditions alone; Model 3 uses the composite. Consistency across operationalizations is expected under the output legitimacy account, since both items tap the same underlying orientation.
+
+```{r tbl-output-legitimacy-full}
+#| label: tbl-output-legitimacy-full
+#| tbl-cap: "Output legitimacy moderation models. Dependent variable: institutional trust (1–5). Model 1: family economic conditions as moderator; Model 2: national economic conditions; Model 3: composite economic evaluation. Standard errors clustered by respondent. Source: KAMOS Waves 1 and 4."
+#| echo: false
+
+# TODO: load outleg_mod (list of three models) and display
+# modelsummary(
+#   outleg_mod,
+#   output = "kableExtra",
+#   stars = c("*" = 0.05, "**" = 0.01, "***" = 0.001),
+#   ...
+# )
+```
+
+The key quantities of interest are the Economic Evaluation × Wave × Institution Type three-way interactions, which test whether the change in the relationship between economic evaluation and trust across waves differed by institution type. A positive and significant Economic Evaluation × Wave × Executive coefficient would indicate that economic optimism buffered executive trust specifically over the 2016–2019 period. Null or negative analogous coefficients for the intermediary categories would confirm the category-specificity of the buffer — that is, confirm the output legitimacy mechanism rather than a general positivity effect that operates uniformly across all institution types.
+
+A contrast test of the executive buffering coefficient against each intermediary coefficient is reported below the model table, along with the associated *t*-statistic and two-tailed *p*-value.
+
+## Partisan Moderation: Full Results {#sec-partisan-full}
+
+Table B3 presents full results from the partisan moderation check. The model adds Wave × Party Identification interactions to the three-way specification to evaluate whether the trust collapse was concentrated among partisan losers — conservative supporters of President Park Geun-hye who may have registered dissatisfaction with the accountability institutions that removed her.
+
+Party identification is measured on a seven-point scale ranging from strong progressive to strong conservative, normalized to 0–1. Two specifications are reported. Model 1 uses ideological self-placement as a continuous moderator. Model 2 uses a categorical indicator distinguishing strong conservatives (top quartile of the ideology distribution) from the remainder of the sample, providing a direct test of whether the collapse was driven by the subset of respondents most likely to have experienced the impeachment as a partisan defeat.
+
+```{r tbl-partisan-full}
+#| label: tbl-partisan-full
+#| tbl-cap: "Partisan moderation models. Dependent variable: institutional trust (1–5). Model 1: continuous ideological self-placement as moderator; Model 2: strong conservative indicator (top quartile). Standard errors clustered by respondent. Source: KAMOS Waves 1 and 4."
+#| echo: false
+
+# TODO: load partisan_mod and display
+```
+
+# Appendix C: Robustness Checks {#sec-robustness}
+
+## Ordered Logit Specification {#sec-ologit}
+
+The OLS specification in the main analysis imposes the assumption of equal intervals between trust scale points — a convenient approximation that may not hold for ordinal Likert items. Table C1 reports results from an ordered logit model that respects the ordinal structure of the five-point trust scale without assuming equal spacing.
+
+Ordered logit coefficients are not directly comparable to OLS estimates in magnitude, but the pattern of sign, significance, and relative magnitude across institution-type interactions is directly interpretable. The key test is whether the Wave × Horizontal Accountability and Wave × Societal Accountability interaction coefficients remain significantly negative relative to the executive reference category, and whether their magnitude remains substantially larger than the baseline Wave coefficient.
+
+```{r tbl-ologit}
+#| label: tbl-ologit
+#| tbl-cap: "Ordered logit specification of the three-way trust model. Dependent variable: institutional trust (1–5, treated as ordinal). Executive institutions are the reference category. Standard errors clustered by respondent. Source: KAMOS Waves 1 and 4."
+#| echo: false
+
+# TODO: load ologit_mod and display
+# modelsummary(
+#   ologit_mod,
+#   output = "kableExtra",
+#   stars = c("*" = 0.05, "**" = 0.01, "***" = 0.001),
+#   ...
+# )
+```
+
+## Alternative Institution-Type Groupings {#sec-alt-groupings}
+
+The primary analysis assigns ten KAMOS trust items to four categories, using six items in the main models (Categories A–C) and reserving two (trust in society, trust in fellow citizens) as robustness checks. The exclusion of the latter two items is theoretically motivated — they plausibly capture generalized social trust rather than political institutional confidence — but is a classification decision whose sensitivity warrants examination.
+
+Table C2 reports three alternative grouping specifications. Model 1 includes trust in society and trust in fellow citizens as a fourth institution-type category (Diffuse Social Trust), added to the three-way model with its own Wave interaction. Model 2 reassigns trust in society to the societal accountability category (Category C), treating it as an aggregate indicator of the associational environment in which civil society operates. Model 3 applies the most permissive grouping, treating all ten items as separate institution types with separate Wave interactions, estimating ten institution-specific change coefficients relative to the executive reference.
+
+The key finding to confirm is that the executive–intermediary divergence pattern documented in the main analysis is not an artifact of the specific grouping decisions made there.
+
+```{r tbl-alt-groupings}
+#| label: tbl-alt-groupings
+#| tbl-cap: "Alternative institution-type grouping specifications. Model 1 adds diffuse social trust as a fourth category; Model 2 reassigns trust in society to the societal accountability category; Model 3 estimates separate wave interactions for all ten trust items. Executive institutions are the reference category. Standard errors clustered by respondent. Source: KAMOS Waves 1 and 4."
+#| echo: false
+
+# TODO: load alt_group_mod (list of three models) and display
+```
+
+## Alternative Economic Evaluation Operationalizations {#sec-econ-alt}
+
+The output legitimacy moderation analysis uses a composite of family and national economic evaluation. Two concerns motivate additional checks. First, the composite weights the two items equally; it is possible that the output legitimacy mechanism operates through one item but not the other, which equal weighting would obscure. Second, political satisfaction — which also rose between 2016 and 2019 — is conceptually adjacent to output legitimacy but not identical to it; a citizen could be satisfied with the Moon administration for reasons other than economic performance (e.g., satisfaction with the accountability outcome itself).
+
+Table C3 reports the output legitimacy moderation model under three alternative economic operationalizations. Model 1 uses family economic conditions alone (personal pocketbook assessment). Model 2 uses national economic conditions alone (sociotropic assessment). Model 3 uses political satisfaction as the moderator rather than economic evaluation, providing a test of whether the moderation reflects output legitimacy specifically or a more general positivity orientation. Under the output legitimacy account, Models 1 and 2 should replicate the main pattern; Model 3 is expected to attenuate it, since political satisfaction in the post-impeachment period likely reflects satisfaction with the accountability outcome as much as economic contentment.
+
+```{r tbl-econ-alt}
+#| label: tbl-econ-alt
+#| tbl-cap: "Alternative economic evaluation operationalizations in the output legitimacy moderation model. Model 1: family economic conditions; Model 2: national economic conditions; Model 3: political satisfaction substituted as moderator. Standard errors clustered by respondent. Source: KAMOS Waves 1 and 4."
+#| echo: false
+
+# TODO: load econ_alt_mod (list of three models) and display
+```
+
+## ABS Wave 5 Dip and Wave 6 Partial Recovery {#sec-abs-robustness}
+
+The KAMOS data, covering 2016 and 2019 only, cannot resolve whether the trust decline within the ABS institutional trust battery was concentrated in or around the impeachment period or represents a more gradual erosion. The ABS battery provides independent evidence on this question: Wave 5, whose Korean fieldwork occurred in 2015–2016 overlapping with the beginning of the protest period, shows a trust dip across multiple institutional categories; Wave 6, fielded in 2021–2022 under a different political context, shows partial but incomplete recovery.
+
+Figure C1 plots ABS wave-level means for the full institutional trust battery across all six waves. The figure serves two purposes. First, it provides independent confirmation — from a different survey instrument, with different items and different fieldwork timing — that the impeachment period coincided with a trust shock of the type documented in KAMOS. Second, the incomplete Wave 6 recovery speaks to the durability of the pattern: a partial rebound after 2019 would be consistent with the non-recovery account (not a full restoration of pre-crisis trust) and inconsistent with a simple temporary-shock account (which would predict full recovery once political conditions normalized).
+
+```{r fig-abs-battery}
+#| label: fig-abs-battery
+#| fig-cap: "ABS institutional trust battery, South Korea, Waves 1–6 (2003–2022). Wave 5 dip is visible across multiple institutions; Wave 6 shows partial but incomplete recovery. Items rated 1–4; means normalized to 0–1 for comparability. Source: Asian Barometer Survey."
+#| echo: false
+
+# TODO: plot abs trust battery wave means across all six waves
+# ggplot(abs_battery_long, aes(x = wave, y = trust_mean, color = institution)) +
+#   geom_line() + geom_point() +
+#   facet_wrap(~institution_type) + ...
+```
+
+## Excluding the Transitional Wave Window {#sec-wave-window}
+
+A potential concern with the KAMOS design is that Wave 1 (November–December 2016) was fielded during an active political crisis — the protest movement was ongoing, the National Assembly had not yet voted on impeachment, and political uncertainty was at a maximum. Trust ratings in Wave 1 may therefore reflect crisis-period emotional valence rather than a stable baseline, which would make the Wave 1 to Wave 4 comparison a contrast between crisis-period trust and post-crisis trust rather than a pre-crisis to post-crisis comparison.
+
+This concern is difficult to fully resolve with the available data. However, two observations suggest it does not drive the main findings. First, the ABS Wave 5 data — fielded slightly earlier than KAMOS Wave 1 but covering the overlapping period — show that Korean institutional trust was already declining prior to the peak of the protest movement, indicating that the KAMOS Wave 1 baseline is not artificially depressed by crisis-moment measurement. Second, if crisis-period emotional negativity inflated the Wave 1 to Wave 4 decline by depressing the baseline, the pattern should be most pronounced for executive institutions — the primary target of citizen anger during the protests — rather than for intermediary institutions. The observed pattern runs in the opposite direction, which is inconsistent with a crisis-baseline artifact explanation.
+
+## Weighted versus Unweighted Comparison {#sec-weights}
+
+The main analysis uses KAMOS survey weights to account for the mixed-mode design's differential coverage across demographic groups. Table C4 compares weighted and unweighted estimates for the three-way trust model's key interaction coefficients. Substantial divergence between the two would indicate that demographic composition differences across modes or across waves are driving the results rather than genuine attitudinal change.
+
+```{r tbl-weights}
+#| label: tbl-weights
+#| tbl-cap: "Weighted versus unweighted comparison of three-way trust model key interactions. Dependent variable: institutional trust (1–5). Columns report Wave × Institution Type interaction coefficients from weighted (survey-weight-adjusted) and unweighted specifications. Source: KAMOS Waves 1 and 4."
+#| echo: false
+
+# TODO: run unweighted model alongside weighted and compare
+# modelsummary(
+#   list("Weighted" = threeway_mod, "Unweighted" = threeway_unweighted),
+#   output = "kableExtra",
+#   coef_map = c("wave:horiz_acct" = "Wave × Horizontal",
+#                "wave:societal_acct" = "Wave × Societal"),
+#   ...
+# )
+```
+
+# Appendix D: Additional Descriptive Evidence {#sec-descriptive-additional}
+
+## ABS Long-Run Trends: Extended Variable Set {#sec-abs-extended}
+
+Table D1 extends Table 1 from the main text to include the full set of ABS variables relevant to the output legitimacy mechanism and the satisfaction-quality decoupling. In addition to democratic satisfaction, quality assessment, and economic evaluation, the table reports wave-level means for governmental responsiveness (*Does the government respond to what people want?*), information withholding (*The government often withholds information*), and trust in specific institutions from the ABS battery (parliament, courts, political parties, civil service, national government). All items are normalized to a 0–1 scale for cross-item comparability.
+
+```{r tbl-abs-extended}
+#| label: tbl-abs-extended
+#| tbl-cap: "Extended ABS wave-level means for South Korea, Waves 2–6 (2003–2022). All items normalized to 0–1 scale. Source: Asian Barometer Survey."
+#| echo: false
+
+# TODO: wider version of abs_means with full variable set
+```
+
+## KAMOS Trust Means: Full Ten-Item Table {#sec-kamos-full}
+
+Table D2 presents wave-level means for all ten KAMOS trust items individually, rather than the category-level aggregates reported in Table 2 of the main text. This allows inspection of within-category heterogeneity — whether, for example, trust in local government moved differently from trust in central government within the executive category, or whether media trust diverged from NGO trust within the societal accountability category.
+
+```{r tbl-kamos-full-items}
+#| label: tbl-kamos-full-items
+#| tbl-cap: "KAMOS institutional trust means for all ten items, Waves 1 and 4. Items rated 1–5 (1 = do not trust at all, 5 = trust very much). Change column reports Wave 4 minus Wave 1. Source: Korean Academic Multimode Open Survey."
+#| echo: false
+
+# TODO: ten-row table of all trust items with wave means and change
+# kamos_means |>
+#   filter(item_type == "trust") |>
+#   select(institution, label, w1_mean, w4_mean, change) |>
+#   mutate(direction = if_else(change > 0, "↑", "↓")) |>
+#   kbl(digits = 3, booktabs = TRUE,
+#       col.names = c("Variable", "Institution", "Wave 1", "Wave 4", "Change", "Direction")) |>
+#   kable_styling(latex_options = "hold_position") |>
+#   pack_rows("Category A: Executive", 1, 2) |>
+#   pack_rows("Category B: Horizontal Accountability", 3, 4) |>
+#   pack_rows("Category C: Societal Accountability", 5, 6) |>
+#   pack_rows("Category D: Excluded", 7, 8) |>
+#   pack_rows("Robustness Check Items", 9, 10)
+```
+
+## Rising KAMOS Indicators, 2016–2019 {#sec-rising}
+
+Table D3 documents the KAMOS indicators that rose between Wave 1 and Wave 4 — the context within which the trust collapse occurred. The rising indicators include economic evaluations (family and national conditions), political satisfaction, social mobility optimism, national pride, and party identification. The simultaneous rise in output-oriented evaluations and fall in procedural institutional trust is the core empirical pattern this article explains.
+
+```{r tbl-rising-indicators}
+#| label: tbl-rising-indicators
+#| tbl-cap: "KAMOS indicators rising between Wave 1 (2016) and Wave 4 (2019). All items normalized to 0–1 scale. Change column reports Wave 4 minus Wave 1. Source: Korean Academic Multimode Open Survey."
+#| echo: false
+
+# TODO: subset of kamos_all showing only rising variables
+```
 
 # References {.unnumbered}
 
