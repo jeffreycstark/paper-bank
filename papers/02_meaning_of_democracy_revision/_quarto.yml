@@ -1,6 +1,11 @@
 project:
   type: default
   output-dir: output
+  render:
+    - "manuscript/md-manuscript.qmd"
+    - "manuscript/md-online-appendix.qmd"
+    - "manuscript/title_page.qmd"
+    - "analysis/*.qmd"
 
 # Default format settings for all documents
 format:
@@ -37,6 +42,11 @@ format:
     number-sections: true
     theme: cosmo
     code-fold: true
+
+# Paths
+resources:
+  - analysis/figures/
+  - analysis/tables/
 
 # Bibliography settings
 bibliography: manuscript/references.bib

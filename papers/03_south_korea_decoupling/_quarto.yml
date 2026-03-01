@@ -1,6 +1,11 @@
 project:
   type: default
   output-dir: output
+  render:
+    - "manuscript/skd_manuscript.qmd"
+    - "manuscript/skd_online_appendix.qmd"
+    - "!manuscript/skd_online_appendix_blind.qmd"
+    - "analysis/*.qmd"
 
 # Global execute options
 execute:

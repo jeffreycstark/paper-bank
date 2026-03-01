@@ -1,0 +1,6 @@
+# Directory-level metadata for analysis QMDs
+# Hard-freezes all analysis documents so that project-level _quarto.yml changes
+# do not invalidate their freeze caches. Individual files can be re-rendered
+# directly (quarto render analysis/XX.qmd) to update results.
+execute:
+  freeze: true

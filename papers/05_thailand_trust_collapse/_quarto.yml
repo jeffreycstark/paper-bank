@@ -1,6 +1,15 @@
 project:
   type: default
   output-dir: output
+  render:
+    - "manuscript/tt-manuscript.qmd"
+    - "manuscript/tt-online-appendix.qmd"
+    - "!manuscript/01_introduction.qmd"
+    - "!manuscript/02_literature_review.qmd"
+    - "!manuscript/03_methods.qmd"
+    - "!manuscript/05_discussion.qmd"
+    - "!manuscript/06_conclusion.qmd"
+    - "!manuscript/new_figure_chunks.qmd"
 
 # Global execute options
 execute:
