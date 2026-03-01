@@ -34,7 +34,7 @@ format:
     theme: cosmo
 bibliography: references.bib
 nocite: |
-  @Central_Election_Commission2004-et, @Central_Election_Commission2008-kd, @Central_Election_Commission2016-tc, @National_Election_Commission2008-ao, @National_Election_Commission2012-er, @National_Election_Commission2020-rs, @Election_Commission_of_Thailand2007-co, @Election_Commission_of_Thailand2019-ya, @IFES2026-nw
+  @Central_Election_Commission2004-et, @Central_Election_Commission2008-kd, @Central_Election_Commission2016-tc, @National_Election_Commission2008-ao, @National_Election_Commission2012-er, @National_Election_Commission2020-rs, @Election_Commission_of_Thailand2007-co, @Election-Commission-of-Thailand2019-mr, @IFES2026-nw
 csl: chicago-author-date.csl
 execute:
   echo: false
@@ -260,7 +260,7 @@ Two features of the party coding warrant elaboration:
 
 **Thailand Wave 4 (fieldwork August--October 2014).** Thailand's February 2, 2014 general election was annulled by the Constitutional Court on March 21, 2014, and the military seized power in a coup on May 22, 2014---before ABS fieldwork began. Despite the absence of a valid recent election, the ABS nevertheless coded winner/loser status for 382 of 1,200 respondents (31.8%) based on prior electoral behavior. A cross-tabulation of the vote-choice variable against q34a confirms that ABS used the July 2011 parliamentary election as the reference: all 186 Pheu Thai voters are coded as winners (Pheu Thai formed the government under Yingluck Shinawatra), while all Democrat Party and minor-party voters are coded as losers. The relatively high rate of missing data on q34a (51.1%) likely reflects respondent reluctance to disclose vote choice under military rule rather than a failure of the survey instrument. This country-wave is retained in the main analysis; Appendix Table K1 verifies that excluding it changes no pooled coefficient by more than 0.28 percentage points.
 
-**Thailand Wave 6 --- government formation.** In the March 2019 election, Pheu Thai won the most seats (136) but Palang Pracharath (PPRP, 116 seats) formed the governing coalition with allied parties and the support of the military-appointed Senate. Respondents are coded as winners or losers based on government formation rather than seat plurality, consistent with the standard practice of defining winners by who governs [@Election_Commission_of_Thailand2019-ya].
+**Thailand Wave 6 --- government formation.** In the March 2019 election, Pheu Thai won the most seats (136) but Palang Pracharath (PPRP, 116 seats) formed the governing coalition with allied parties and the support of the military-appointed Senate. Respondents are coded as winners or losers based on government formation rather than seat plurality, consistent with the standard practice of defining winners by who governs [@Election-Commission-of-Thailand2019-mr].
 
 **Cambodia Wave 6.** The Cambodia National Rescue Party (CNRP) was dissolved by court order in November 2017, before the July 2018 election. The CPP ran effectively unopposed. Respondents who reported voting for minor parties are coded as losers, though the meaningful opposition had been eliminated.
 
@@ -985,6 +985,35 @@ thai_rob %>%
     threeparttable = TRUE
   )
 ```
+
+# V-Dem Moderator: Democratic Erosion and the Loser Effect {#sec-vdem}
+
+To probe whether the loser effect systematically amplifies in contexts of democratic erosion, I use country-wave V-Dem Liberal Democracy Index scores to construct a continuous moderator. For each country-wave cell in the main sample, I compute the change in the V-Dem Liberal Democracy Index between the election reference year and the prior wave's reference year ($\Delta$LDI). Positive values indicate democratization; negative values indicate erosion. I then correlate this change score with the country-wave-level procedural-substantive gap (the difference in mean procedural and substantive AMEs), treating each country-wave as a single observation ($N = 27$).
+
+```{r fig-vdem-moderator}
+#| fig-cap: "V-Dem Liberal Democracy Index Change and the Loser Effect (Country-Wave Cells)"
+#| fig-alt: "Scatter plot with country-wave cells as points. X-axis shows change in V-Dem Liberal Democracy Index score; y-axis shows the procedural-substantive gap in percentage points. A regression line with shaded 95% confidence interval is overlaid. Thailand Wave 6 is the most prominent outlier with a large positive gap and a large negative LDI change. The overall slope is negative (r = -0.23) but the confidence interval is wide, reflecting limited statistical power with N = 27."
+#| fig-width: 5.5
+#| fig-height: 4
+#| out-width: "85%"
+#| fig-pos: "H"
+
+vdem_fig <- here("papers", "02_meaning_of_democracy_revision",
+                 "analysis", "revised", "results", "fig_vdem_moderator.png")
+if (file.exists(vdem_fig)) {
+  knitr::include_graphics(vdem_fig)
+} else {
+  cat("**Note:** Run analysis/revised/10_vdem_moderator.R to generate this figure.")
+}
+```
+
+```{r load-vdem-stats}
+#| include: false
+vdem_s <- readRDS(here("papers", "02_meaning_of_democracy_revision",
+                       "analysis", "revised", "results", "vdem_moderator_stats.rds"))
+```
+
+Figure L1 plots the country-wave procedural-substantive gap against V-Dem LDI change. The correlation is negative ($r = `r sprintf("%.3f", vdem_s$scatter_cor)`$, $p = `r sprintf("%.3f", vdem_s$scatter_p)`$, $N = `r vdem_s$scatter_n`$): country-waves that experienced more democratic erosion tend to show larger loser-winner gaps in procedural orientations. The direction is consistent with the case comparison in the main text—Thailand's dramatic erosion coincides with its large and growing gap, while South Korea's institutionally mediated crisis leaves the gap largely intact. However, the confidence interval is wide and the effect does not reach conventional significance thresholds. With only 27 country-wave observations and a single continuous moderator, the analysis is substantially underpowered to detect anything short of a very large moderating relationship. The scatter provides descriptive corroboration of the qualitative cross-national pattern but should not be read as a formal test.
 
 # References {-}
 
