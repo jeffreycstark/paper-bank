@@ -157,14 +157,24 @@ ggsave(file.path(results_path, "fig_vdem_moderator.png"), p_scatter,
 cat("Figure saved.\n")
 
 # --- 6. Save summary stats for inline text -----------------------------
+# OLS slope: gap_pp ~ vdem_change (for magnitude interpretation)
+lm_fit   <- lm(I(proc_sub_gap * 100) ~ vdem_change, data = scatter_data)
+lm_slope <- coef(lm_fit)["vdem_change"]
+# Gap change per -0.10 LDI decline (erosion direction)
+gap_per_10pct_erosion <- lm_slope * (-0.10)
+cat(sprintf("OLS slope (gap_pp per unit LDI change): %.2f\n", lm_slope))
+cat(sprintf("Gap per -0.10 LDI decline: %.1f pp\n", gap_per_10pct_erosion))
+
 vdem_stats <- list(
-  r_all      = r_all,
-  p_all      = r_test$p.value,
-  n_cw       = nrow(scatter_data),
-  r_nothai   = r_nothai,
-  int_coef   = int_coef,
-  int_se     = int_se,
-  int_z      = int_coef / int_se
+  r_all                 = r_all,
+  p_all                 = r_test$p.value,
+  n_cw                  = nrow(scatter_data),
+  r_nothai              = r_nothai,
+  lm_slope              = lm_slope,
+  gap_per_10pct_erosion = gap_per_10pct_erosion,
+  int_coef              = int_coef,
+  int_se                = int_se,
+  int_z                 = int_coef / int_se
 )
 saveRDS(vdem_stats, file.path(results_path, "vdem_moderator_stats.rds"))
 cat("Stats saved.\n")
