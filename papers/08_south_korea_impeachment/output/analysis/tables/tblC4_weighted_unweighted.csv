@@ -1,0 +1,5 @@
+model,term,estimate,std.error,p.value,stars
+Weighted (survey weights),Wave × Horizontal,-0.0424,0.0055,0,***
+Weighted (survey weights),Wave × Societal,-0.0516,0.0049,0,***
+Unweighted,Wave × Horizontal,-0.0453,0.0053,0,***
+Unweighted,Wave × Societal,-0.0548,0.0048,0,***

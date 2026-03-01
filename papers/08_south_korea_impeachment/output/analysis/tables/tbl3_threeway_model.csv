@@ -1,0 +1,6 @@
+term,estimate,std.error,statistic,p.value,stars
+Wave (W4 = 1),-0.0206,0.006,-3.4216,6e-4,***
+Horizontal (ref: Executive),-0.1151,0.0035,-33.1763,0,***
+Societal (ref: Executive),0.0277,0.0032,8.5867,0,***
+Wave × Horizontal,-0.0424,0.0055,-7.7394,0,***
+Wave × Societal,-0.0516,0.0049,-10.5579,0,***

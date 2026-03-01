@@ -1,0 +1,11 @@
+term,estimate,std.error,p.value,stars
+Wave:Party:Progressive,-0.0051,0.0144,0.7255,
+Wave:Party:Conservative,-0.0481,0.0163,0.0031,**
+Inst.type:Horizontal:Party:Progressive,-0.0304,0.0088,6e-4,***
+Inst.type:Societal:Party:Progressive,-0.0371,0.0081,0,***
+Inst.type:Horizontal:Party:Conservative,0.0181,0.0096,0.0591,
+Inst.type:Societal:Party:Conservative,0.0102,0.0085,0.2291,
+Wave:Inst.type:Horizontal:Party:Progressive,0.0065,0.0145,0.6533,
+Wave:Inst.type:Societal:Party:Progressive,0.0171,0.013,0.1901,
+Wave:Inst.type:Horizontal:Party:Conservative,-0.0333,0.0147,0.0237,*
+Wave:Inst.type:Societal:Party:Conservative,-0.0409,0.0125,0.0011,**

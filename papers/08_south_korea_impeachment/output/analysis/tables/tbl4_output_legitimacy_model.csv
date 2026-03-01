@@ -1,0 +1,12 @@
+term,estimate,std.error,p.value,stars
+Wave,-0.0228,0.022,0.2989,
+Inst.type:Horizontal,-0.1051,0.0127,0,***
+Inst.type:Societal,-0.0293,0.0118,0.0135,*
+Econ.eval,-0.1702,0.0208,0,***
+Wave:Inst.type:Horizontal,-0.0652,0.0203,0.0013,**
+Wave:Inst.type:Societal,-0.015,0.0191,0.4346,
+Wave:Econ.eval,0.0219,0.0309,0.4782,
+Inst.type:Horizontal:Econ.eval,-0.0154,0.0181,0.3928,
+Inst.type:Societal:Econ.eval,0.0877,0.0174,0,***
+Wave:Inst.type:Horizontal:Econ.eval,0.033,0.0272,0.225,
+Wave:Inst.type:Societal:Econ.eval,-0.0599,0.0261,0.0214,*

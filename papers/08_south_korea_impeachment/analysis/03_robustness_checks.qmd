@@ -39,12 +39,16 @@ economic evaluation is operationalized.
 
 ```{r setup}
 library(tidyverse)
-library(MASS)            # polr() for ordered logit
+# MASS loaded via MASS::polr() to avoid masking dplyr::select
 library(sandwich)
 library(lmtest)
 library(broom)
 library(marginaleffects)
 library(knitr)
+
+# Explicitly restore dplyr functions that may be masked by loaded dependencies
+select <- dplyr::select
+filter <- dplyr::filter
 library(kableExtra)
 
 project_root <- "/Users/jeffreystark/Development/Research/paper-bank"
@@ -92,12 +96,20 @@ f_olog <- as.formula(
   paste("trust_ordinal ~ wave_num * inst_type +", controls_f)
 )
 
-# polr() does not accept weights directly for survey weights; use frequency weights
-# as an approximation. For a clean comparison, run both weighted and unweighted.
-ologit_unweighted <- polr(f_olog, data = kamos_long, Hess = TRUE)
-ologit_weighted   <- polr(f_olog, data = kamos_long,
-                          weights = round(weight * 100),  # integer frequency weights
-                          Hess = TRUE)
+# Filter to complete cases on all model variables to avoid polr starting-value failures
+olog_vars <- c("trust_ordinal", "wave_num", "inst_type", controls)
+keep_cols  <- c(olog_vars, "weight", "resp_id")
+kamos_olog <- kamos_long[!is.na(kamos_long$trust_ordinal), keep_cols]
+kamos_olog <- kamos_olog[complete.cases(kamos_olog), ]
+cat("Ordered logit complete cases:", nrow(kamos_olog), "\n")
+
+# Unweighted — polr() with Hess=TRUE for SE extraction
+ologit_unweighted <- MASS::polr(f_olog, data = kamos_olog, Hess = TRUE, method = "logistic")
+
+# Weighted — use integer frequency weights scaled to avoid extreme values
+wt_scaled <- pmax(round(kamos_olog$weight * 10), 1L)
+ologit_weighted   <- MASS::polr(f_olog, data = kamos_olog,
+                                weights = wt_scaled, Hess = TRUE, method = "logistic")
 
 # Tidy coefficients (proportional-odds log-odds)
 olog_ct_uw <- coeftest(ologit_unweighted)

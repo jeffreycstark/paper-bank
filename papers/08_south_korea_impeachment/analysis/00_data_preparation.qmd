@@ -80,32 +80,26 @@ korea_abs <- korea_abs |>
     dem_sat = democracy_satisfaction,
 
     # --- Democratic quality/extent assessment ---
-    # ABS W3-W6: "To what extent is Korea governed democratically?" (1-4)
-    dem_quality = if_else(!is.na(democracy_quality), democracy_quality,
-                  if_else(!is.na(democracy_extent), democracy_extent, NA_real_)),
+    # ABS: "To what extent is Korea governed democratically?" (1-4)
+    dem_quality = dem_extent_current,
 
     # --- Government responsiveness ---
-    # Whether the government is responsive to what citizens want (1-4)
-    govt_resp = if_else(!is.na(govt_responsiveness), govt_responsiveness,
-                if_else(!is.na(govt_responsive), govt_responsive, NA_real_)),
+    # ABS: "The government responds to what people want" (1-4)
+    govt_resp = govt_responds_people,
 
-    # --- Economic evaluation (current conditions) ---
-    # 1=Very bad, 4=Very good  (or 1-5 scale normalized below)
-    econ_eval_raw = if_else(!is.na(econ_present), econ_present,
-                    if_else(!is.na(econ_situation), econ_situation, NA_real_)),
+    # --- Economic evaluation (current national conditions) ---
+    econ_eval_raw = econ_national_now,
 
     # --- Institutional trust (1-4 scale, higher = more trust) ---
     # Executive
-    trust_exec = trust_central_govt,
+    trust_exec = trust_national_government,
 
-    # Horizontal accountability (legislative/judicial)
-    trust_legis = if_else(!is.na(trust_national_assembly), trust_national_assembly,
-                  if_else(!is.na(trust_legislature), trust_legislature, NA_real_)),
-    trust_courts_abs = if_else(!is.na(trust_courts), trust_courts,
-                       if_else(!is.na(trust_judiciary), trust_judiciary, NA_real_)),
+    # Horizontal accountability
+    trust_legis      = trust_parliament,
+    trust_courts_abs = trust_courts,
 
-    # Societal
-    trust_media_abs = trust_media,
+    # Societal: average newspaper and television trust
+    trust_media_abs = rowMeans(cbind(trust_newspapers, trust_television), na.rm = TRUE),
 
     # --- Normalize all to 0-1 ---
     dem_sat_n      = normalize_01(dem_sat),
@@ -251,18 +245,14 @@ kamos_raw <- kamos_raw |>
 ```{r kamos-controls}
 kamos_raw <- kamos_raw |>
   mutate(
-    # --- Economic evaluation (1-5, higher = better) ---
-    econ_present_raw = if_else(!is.na(econ_present), econ_present,
-                       if_else(!is.na(economy_rating), economy_rating,
-                       if_else(!is.na(econ_eval), econ_eval, NA_real_))),
-    econ_present_n = normalize_01(econ_present_raw),
+    # --- Economic evaluation (KAMOS: econ_national, econ_family; likely 1-5) ---
+    econ_present_raw = econ_national,
+    econ_present_n   = normalize_01(econ_national),
 
-    # Economic composite (present + national economy if both available)
-    econ_composite_n = if_else(
-      !is.na(econ_national) & !is.na(econ_present_raw),
-      rowMeans(cbind(normalize_01(econ_present_raw),
-                     normalize_01(econ_national)), na.rm = TRUE),
-      normalize_01(econ_present_raw)
+    # Economic composite: average national + family economic evaluations
+    econ_composite_n = rowMeans(
+      cbind(normalize_01(econ_national), normalize_01(econ_family)),
+      na.rm = TRUE
     ),
 
     # --- Demographic controls ---
@@ -350,13 +340,13 @@ kamos_long <- kamos_wide |>
       ),
       levels = c("Executive", "Horizontal", "Societal")
     ),
-    # Keep raw trust score for ordered logit robustness check
-    trust_score_raw = recode(institution,
-      trust_cg_n = trust_cg_raw,
-      trust_lg_n = trust_lg_raw,
-      trust_na_n = trust_na_raw,
-      trust_md_n = trust_md_raw,
-      trust_ng_n = trust_ng_raw
+    # Keep raw trust score (1-5 scale) for ordered logit robustness check
+    trust_score_raw = case_when(
+      institution == "trust_cg_n" ~ trust_cg_raw,
+      institution == "trust_lg_n" ~ trust_lg_raw,
+      institution == "trust_na_n" ~ trust_na_raw,
+      institution == "trust_md_n" ~ trust_md_raw,
+      institution == "trust_ng_n" ~ trust_ng_raw
     )
   )
 
@@ -381,7 +371,7 @@ kamos_all_vars <- all_trust_vars |>
   summarise(
     n = n(),
     across(
-      where(is.numeric),
+      matches("^trust_|^confidence_"),
       list(
         mean = ~weighted.mean(.x, weight, na.rm = TRUE),
         sd   = ~sd(.x, na.rm = TRUE)
