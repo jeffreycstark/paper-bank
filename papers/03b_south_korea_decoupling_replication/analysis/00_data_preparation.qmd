@@ -1,0 +1,144 @@
+---
+title: "00 — Data Preparation: PAPER TITLE"
+subtitle: "ABS harmonized data — country filter, variable construction, index building"
+format:
+  html:
+    toc: true
+    toc-depth: 3
+    number-sections: true
+    theme: cosmo
+    code-fold: true
+    self-contained: true
+execute:
+  echo: true
+  warning: false
+  message: false
+  cache: true
+---
+
+**Purpose**: Load harmonized ABS data, filter to paper countries, construct
+analysis variables and indices, and save the analysis-ready dataset.
+
+- **Input**: `abs_harmonized_path` (via `_data_config.R`)
+- **Output**: `analysis/results/analysis_data.rds`
+
+```{r setup}
+library(tidyverse)
+
+project_root <- "/Users/jeffreystark/Development/Research/paper-bank"
+source(file.path(project_root, "_data_config.R"))
+
+paper_dir    <- file.path(project_root, "papers/00-model")
+analysis_dir <- file.path(paper_dir, "analysis")
+results_dir  <- file.path(analysis_dir, "results")
+fig_dir      <- file.path(analysis_dir, "figures")
+tables_dir   <- file.path(analysis_dir, "tables")
+
+dir.create(results_dir, showWarnings = FALSE, recursive = TRUE)
+dir.create(fig_dir,     showWarnings = FALSE, recursive = TRUE)
+dir.create(tables_dir,  showWarnings = FALSE, recursive = TRUE)
+
+source(file.path(paper_dir, "R", "helpers.R"))
+```
+
+## Load ABS harmonized data
+
+```{r load-data}
+abs_all <- readRDS(abs_harmonized_path)
+cat("ABS harmonized:", nrow(abs_all), "obs,",
+    n_distinct(abs_all$country), "countries\n")
+
+# TODO: update country codes for this paper
+# Common ABS country codes: 1=Taiwan, 2=Philippines, 3=Korea, 4=Mongolia,
+# 5=Thailand, 6=Japan, 7=Vietnam, 8=Cambodia, 9=Singapore, 10=Malaysia,
+# 11=Indonesia, 12=Hong Kong
+
+PAPER_COUNTRIES <- c()  # TODO: set country codes, e.g. c(3, 7)
+PAPER_LABELS    <- c()  # TODO: set labels, e.g. c("Korea", "Taiwan")
+
+dat <- abs_all |>
+  filter(country %in% PAPER_COUNTRIES) |>
+  mutate(
+    country_label = factor(
+      case_when(!!!setNames(
+        lapply(seq_along(PAPER_COUNTRIES),
+               function(i) PAPER_LABELS[i]),
+        paste0("country == ", PAPER_COUNTRIES)
+      )),
+      levels = PAPER_LABELS
+    )
+  )
+
+cat("Filtered dataset: n =", nrow(dat), "\n")
+for (lbl in PAPER_LABELS) {
+  cat(" ", lbl, ": n =", sum(dat$country_label == lbl), "\n")
+}
+cat("  Waves:", sort(unique(dat$wave)), "\n")
+```
+
+## Construct analysis variables
+
+```{r construct-vars}
+# TODO: adapt variable names to this paper's DVs, IVs, and controls
+# Reference the ABS codebook for available items
+
+dat <- dat |>
+  group_by(country_label) |>
+  mutate(
+    # --- Dependent variables (normalize 0-1) ---
+    # dv1_n = normalize_01(VARIABLE_NAME),
+
+    # --- Independent variables ---
+    # iv1_n = normalize_01(VARIABLE_NAME),
+
+    # --- Controls ---
+    age_n    = normalize_01(age),
+    edu_n    = normalize_01(education_level),
+    polint_n = normalize_01(political_interest)
+  ) |>
+  ungroup()
+```
+
+## Construct indices
+
+```{r construct-indices}
+# TODO: build composite indices appropriate for this paper using rowwise() means
+
+dat <- dat |>
+  rowwise() |>
+  mutate(
+    # index_name = mean(c_across(c(var1_n, var2_n, var3_n)), na.rm = TRUE)
+  ) |>
+  ungroup()
+```
+
+## Diagnostics
+
+```{r diagnostics}
+cat("=== Variable coverage by country ===\n")
+dat |>
+  group_by(country_label) |>
+  summarise(
+    n      = n(),
+    waves  = paste(sort(unique(wave)), collapse = ", "),
+    .groups = "drop"
+  ) |>
+  print()
+
+cat("\n=== Missing data summary ===\n")
+dat |>
+  select(country_label, wave, where(is.numeric)) |>
+  group_by(country_label) |>
+  summarise(across(where(is.numeric), ~sum(is.na(.x))), .groups = "drop") |>
+  print()
+```
+
+## Save
+
+```{r save}
+saveRDS(dat, file.path(results_dir, "analysis_data.rds"))
+cat("\n✓ Saved analysis_data.rds:", nrow(dat), "obs\n")
+for (lbl in PAPER_LABELS) {
+  cat(" ", lbl, ":", sum(dat$country_label == lbl), "\n")
+}
+```

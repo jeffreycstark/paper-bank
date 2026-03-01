@@ -1,0 +1,148 @@
+---
+title: "South Korea Decoupling Replication"
+author:
+  - name: Jeffrey Stark
+    affiliations:
+      - name: Yonsei University
+        department: Department of Sociology
+    email: jeffrey.stark@yonsei.ac.kr
+    corresponding: true
+date: now
+date-format: "MMMM D, YYYY"
+abstract: |
+  TODO: Abstract (150–250 words). Summarise motivation, data, methods, and
+  main findings. End with the substantive implication.
+keywords:
+  - keyword one
+  - keyword two
+  - keyword three
+format:
+  pdf:
+    documentclass: article
+    classoption: [12pt, letterpaper]
+    geometry:
+      - margin=1in
+    linestretch: 2
+    number-sections: true
+    colorlinks: true
+    keep-tex: true
+    include-in-header:
+      - text: |
+          \usepackage{setspace}
+          \usepackage{booktabs}
+          \usepackage{caption}
+          \usepackage{longtable}
+          \usepackage{array}
+          \usepackage{multirow}
+          \usepackage{float}
+          \usepackage{graphicx}
+          \usepackage{threeparttable}
+          \usepackage{threeparttablex}
+          \usepackage{colortbl}
+          \usepackage{xcolor}
+          \captionsetup{width=\textwidth}
+          \setlength\LTcapwidth{\textwidth}
+          \floatplacement{figure}{H}
+          \floatplacement{table}{H}
+          \raggedright
+  html:
+    toc: true
+    toc-depth: 3
+    number-sections: true
+    theme: cosmo
+    code-fold: true
+    embed-resources: true
+  docx:
+    toc: true
+    number-sections: true
+    reference-doc: reference.docx
+bibliography: references.bib
+csl: apa.csl
+execute:
+  warning: false
+  message: false
+  echo: false
+  cache: true
+---
+
+```{r setup}
+#| include: false
+library(tidyverse)
+library(knitr)
+library(kableExtra)
+library(modelsummary)
+
+project_root <- "/Users/jeffreystark/Development/Research/paper-bank"
+paper_dir    <- file.path(project_root, "papers/00-model")
+analysis_dir <- file.path(paper_dir, "analysis")
+results_dir  <- file.path(analysis_dir, "results")
+fig_dir      <- file.path(analysis_dir, "figures")
+
+# Load pre-computed results
+# TODO: replace with actual results objects for this paper
+if (file.exists(file.path(results_dir, "analysis_data.rds"))) {
+  dat <- readRDS(file.path(results_dir, "analysis_data.rds"))
+}
+if (file.exists(file.path(results_dir, "model_results.rds"))) {
+  mr <- readRDS(file.path(results_dir, "model_results.rds"))
+}
+```
+
+# Introduction
+
+TODO: Motivate the paper. State the puzzle or gap. Preview the argument and
+contribution. End with a roadmap sentence.
+
+# Theory
+
+TODO: Lay out the theoretical framework. Derive testable hypotheses. Make clear
+what the existing literature predicts and where this paper departs from it.
+
+**H1**: TODO
+
+**H2**: TODO
+
+# Data and Methods
+
+## Data
+
+TODO: Describe the data source (survey, country coverage, wave years, N).
+Note any exclusions or weighting decisions.
+
+## Measures
+
+### Dependent Variables
+
+TODO: Define DVs and cite the survey items.
+
+### Independent Variables
+
+TODO: Define IVs, operationalization, and normalization decisions.
+
+### Controls
+
+TODO: List controls and justification.
+
+## Analytic Strategy
+
+TODO: Describe model specification (OLS/logit/FE/etc.), clustering, and any
+robustness checks.
+
+# Results
+
+TODO: Present findings. Lead with the main result, then unpack it.
+Reference pre-loaded figure and table objects from `analysis/results/`.
+
+# Discussion
+
+TODO: Interpret the results. Address alternative explanations.
+Connect back to the theoretical framework.
+
+# Conclusion
+
+TODO: Summarise the contribution. State limitations. Suggest future research.
+
+# References {.unnumbered}
+
+::: {#refs}
+:::
