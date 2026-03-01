@@ -271,10 +271,12 @@ preds |>
 ```
 
 ```{r tbl-app-divergence}
-contrast_out <- hypotheses(
+contrast_out <- avg_comparisons(
   m_factor,
-  hypothesis = "(wave_fw5:typeexperiential - wave_fw4:typeexperiential) - (wave_fw5 - wave_fw4) = 0"
+  variables = "type",
+  by = "wave_f"
 ) |>
+  hypotheses(hypothesis = "b5 - b4 = 0") |>
   as_tibble() |>
   transmute(
     Contrast        = "W4\\textrightarrow{}W5: experiential $-$ institutional",
