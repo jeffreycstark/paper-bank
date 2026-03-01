@@ -92,10 +92,15 @@ load(file.path(results_dir, "data_description_stats.RData")) # n_abs_total, abs_
 slopes_inline <- readRDS(file.path(results_dir, "slopes_inline.rds"))
 cross_slopes  <- readRDS(file.path(results_dir, "cross_national_slopes.rds"))
 
-# Three-way KAMOS trust model (05_kamos_trust_threeway.R)
-trust3_slopes   <- readRDS(file.path(results_dir, "trust3_slopes_by_type.rds"))
-trust3_terms    <- readRDS(file.path(results_dir, "trust3_interaction_terms.rds"))
-trust3_leg_cor  <- readRDS(file.path(results_dir, "trust3_assembly_leg_cor.rds"))
+# KAMOS pooled weighted OLS (06_kamos_pooled_ols.R)
+kamos_did        <- readRDS(file.path(results_dir, "kamos_pooled_did.rds"))
+kamos_coef       <- readRDS(file.path(results_dir, "kamos_pooled_coeftest.rds"))
+kamos_did_split  <- readRDS(file.path(results_dir, "kamos_split_did.rds"))
+kamos_coef_split <- readRDS(file.path(results_dir, "kamos_split_coeftest.rds"))
+trust3_leg_cor   <- readRDS(file.path(results_dir, "trust3_assembly_leg_cor.rds"))
+
+# corrupt_witnessed sensitivity analysis (07_corrupt_witnessed_sensitivity.R)
+sens_results <- readRDS(file.path(results_dir, "sensitivity_corrupt_witnessed.rds"))
 
 wave_years <- c("1"=2003,"2"=2006,"3"=2011,"4"=2015,"5"=2019,"6"=2022)
 n_2016 <- kamos_trust_stats |> dplyr::filter(variable=="trust_central_govt", wave_year==2016) |> dplyr::pull(n)
@@ -124,21 +129,50 @@ intermed_min <- min(nassem_chg, leg_chg, media_chg, ngo_chg)
 intermed_max <- max(nassem_chg, leg_chg, media_chg, ngo_chg)
 polsat_chg   <- abs(round(pol_sat$mean_sat[pol_sat$wave == 4] - pol_sat$mean_sat[pol_sat$wave == 1], 3))
 
-# Three-way trust model inline values
-t3s <- function(type) trust3_slopes$estimate[trust3_slopes$inst_type == type]
-t3t <- function(pat) trust3_terms[grepl(pat, trust3_terms$term), ]
-trust3_exec_slope  <- abs(round(t3s("Executive"),  3))
-trust3_horiz_slope <- abs(round(t3s("Horizontal"), 3))
-trust3_soc_slope   <- abs(round(t3s("Societal"),   3))
-trust3_horiz_b     <- round(t3t("Horizontal")$estimate,  3)
-trust3_horiz_se    <- round(t3t("Horizontal")$std.error, 3)
-trust3_horiz_t     <- round(t3t("Horizontal")$statistic, 2)
-trust3_soc_b       <- round(t3t("Societal")$estimate,    3)
-trust3_soc_se      <- round(t3t("Societal")$std.error,   3)
-trust3_soc_t       <- round(t3t("Societal")$statistic,   2)
+# KAMOS pooled OLS inline values
+get_did <- function(type, did_obj) {
+  did_obj |> as_tibble() |>
+    dplyr::filter(inst_type == type) |> dplyr::pull(estimate)
+}
+# coeftest objects are matrices; keep as-is (as.data.frame() corrupts col names)
+ct     <- kamos_coef
+ct_spl <- kamos_coef_split
+
+trust3_exec_slope  <- abs(round(get_did("Executive",  kamos_did), 3))
+trust3_horiz_slope <- abs(round(get_did("Horizontal", kamos_did), 3))
+trust3_soc_slope   <- abs(round(get_did("Societal",   kamos_did), 3))
+trust3_horiz_b     <- round(ct["wave_fW4:inst_typeHorizontal", "Estimate"],   3)
+trust3_horiz_se    <- round(ct["wave_fW4:inst_typeHorizontal", "Std. Error"], 3)
+trust3_horiz_t     <- round(ct["wave_fW4:inst_typeHorizontal", "t value"],    2)
+trust3_soc_b       <- round(ct["wave_fW4:inst_typeSocietal",   "Estimate"],   3)
+trust3_soc_se      <- round(ct["wave_fW4:inst_typeSocietal",   "Std. Error"], 3)
+trust3_soc_t       <- round(ct["wave_fW4:inst_typeSocietal",   "t value"],    2)
 trust3_ratio       <- round(mean(c(trust3_horiz_slope, trust3_soc_slope)) /
                               trust3_exec_slope, 0)
 trust3_leg_cor_r   <- round(trust3_leg_cor, 2)
+
+# Split legislative items
+na_slope   <- abs(round(get_did("Natl_Assembly", kamos_did_split), 3))
+leg_slope  <- abs(round(get_did("Legislature",   kamos_did_split), 3))
+na_b       <- round(ct_spl["wave_fW4:inst_typeNatl_Assembly", "Estimate"],   3)
+na_se      <- round(ct_spl["wave_fW4:inst_typeNatl_Assembly", "Std. Error"], 3)
+na_t       <- round(ct_spl["wave_fW4:inst_typeNatl_Assembly", "t value"],    2)
+leg_b      <- round(ct_spl["wave_fW4:inst_typeLegislature",   "Estimate"],   3)
+leg_se     <- round(ct_spl["wave_fW4:inst_typeLegislature",   "Std. Error"], 3)
+leg_t      <- round(ct_spl["wave_fW4:inst_typeLegislature",   "t value"],    2)
+
+# Sensitivity analysis inline values
+sens_did      <- sens_results$contrast_summary
+w4_props      <- sens_results$w4_proportions
+sens_main_est <- round(sens_did$estimate[sens_did$coding == "main (1-3=1)"],     3)
+sens_main_p   <- round(sens_did$p.value [sens_did$coding == "main (1-3=1)"],     4)
+sens_alt1_est <- round(sens_did$estimate[sens_did$coding == "alt1 (1=1 only)"],  4)
+sens_alt1_p   <- round(sens_did$p.value [sens_did$coding == "alt1 (1=1 only)"],  3)
+sens_alt2_est <- round(sens_did$estimate[sens_did$coding == "alt2 (1-2=1)"],     3)
+sens_alt2_p   <- round(sens_did$p.value [sens_did$coding == "alt2 (1-2=1)"],     3)
+sens_w4_main  <- round(100 * w4_props$prop_w4[w4_props$coding == "main (1-3=1)"],    1)
+sens_w4_alt1  <- round(100 * w4_props$prop_w4[w4_props$coding == "alt1 (1=1 only)"], 1)
+sens_w4_alt2  <- round(100 * w4_props$prop_w4[w4_props$coding == "alt2 (1-2=1)"],    1)
 
 ideo_r_vals  <- unlist(ideo_cors |> dplyr::select(dplyr::starts_with("r_")))
 ideo_cor_min <- round(min(ideo_r_vals), 3)
@@ -357,6 +391,8 @@ kableExtra::kbl(
 knitr::include_graphics(file.path(fig_dir, "fig1_pub_abs_trends.pdf"))
 ```
 
+A sensitivity analysis examines whether the observed divergence between experiential and institutional perceptions is robust to alternative codings of the Wave 4 \texttt{corrupt\_witnessed} item.^[The ABS Wave 4 questionnaire administered a five-category item (1 = personally witnessed; 2 = told by a family member; 3 = told by a friend; 4 = personally never witnessed; 5 = no one I know has witnessed), while Waves 5 and 6 used a binary yes/no item. The harmonized dataset codes any response in categories 1--3 as witnessed (1), yielding a Wave 4 witnessing rate of `r sens_w4_main`\%. Sensitivity analyses substitute stricter codings: \emph{alt1} uses only personal experience (category 1 only; Wave 4 rate = `r sens_w4_alt1`\%), and \emph{alt2} uses personal experience or family-member report (categories 1--2; Wave 4 rate = `r sens_w4_alt2`\%).] Under the main (broadest) coding, the Wave 4 to Wave 5 difference-in-differences contrast---comparing the change in experiential perceptions to the change in institutional perceptions across the accountability shock interval---is `r sens_main_est` ($p$ `r ifelse(sens_main_p < 0.001, "< 0.001", paste("=", sens_main_p))`), indicating that the experiential series moved more sharply than the institutional series across this interval. This divergence does not survive under the strictest alternative: when the Wave 4 measure is restricted to personally witnessed corruption only, the DiD estimate is `r sens_alt1_est` ($p$ = `r sens_alt1_p`), indistinguishable from zero. The intermediate coding (personal experience plus family-member report) yields `r sens_alt2_est` ($p$ = `r sens_alt2_p`). The direction of the Wave 4--to--Wave 5 experiential change is consistently negative under all three codings---the rate of reported witnessing falls rather than rises across the accountability shock interval---a finding that reflects the non-comparability of the five-category Wave 4 item and the binary Wave 5 item rather than a behavioral reversal. Accordingly, the divergence result is sensitive to coding assumptions, and the \texttt{corrupt\_witnessed} series is interpreted throughout as a suggestive rather than definitive indicator of perceptual reclassification.
+
 ## Institutional Trust in the KAMOS Data
 
 The KAMOS data provide independent corroboration of these patterns from a domestic survey instrument administered at closely overlapping timepoints. Comparing Wave 1 (2016) and Wave 4 (2019) means across the institutional trust battery reveals a broad decline in trust, but one that is strikingly differentiated by institutional category in ways that align closely with the theoretical expectations derived from the accountability gap framework (Table 2).
@@ -390,14 +426,14 @@ kableExtra::kbl(
 knitr::include_graphics(file.path(fig_dir, "fig2_pub_kamos_trust_decline.pdf"))
 ```
 
-The controlled trust models confirm that institutional trust decline between 2016 and 2019 was neither uniform nor driven by generalized political cynicism. Rather, the magnitude of collapse varied systematically by institutional function in a pattern consistent with the accountability gap hypothesis. Figure 3 displays predicted trust levels by institutional category, estimated from a mixed model controlling for age, gender, education, income, ideology, and party identification.^[The KAMOS data are repeated cross-sections rather than a true longitudinal panel: Wave 1 (2016) and Wave 4 (2019) consist of independent probability samples drawn from the same population, not the same individuals tracked over time. The random effect for respondent identifier in the mixed model accordingly absorbs between-respondent variance within each wave rather than estimating within-person change. Inferences about aggregate trend are unaffected by this design feature, but the model cannot speak to individual-level trajectories of trust change. The `trust_legislative` composite used to operationalize horizontal accountability institutions averages two survey items---trust in the National Assembly and trust in the legislature---which, while correlated ($r$ = `r trust3_leg_cor_r`), showed a systematic mean difference suggesting they tap partially distinct referents. Results are substantively unchanged when either item is used alone.]
+The controlled trust models confirm that institutional trust decline between 2016 and 2019 was neither uniform nor driven by generalized political cynicism. Rather, the magnitude of collapse varied systematically by institutional function in a pattern consistent with the accountability gap hypothesis. Figure 3 displays predicted trust levels by institutional category, estimated from a pooled weighted OLS model with cluster-robust standard errors (clustered on respondent identifier to account for the five repeated institution observations per person) and controlling for age, gender, education, income, ideology, and party identification.^[The KAMOS data are independent cross-sections: Wave 1 (2016) and Wave 4 (2019) consist of distinct probability samples. The pooled model stacks both waves and waves the long-format rows by the original survey weights. Clustering on respondent identifier accounts for the within-person correlation across the five institution observations rather than imposing a parametric random-effects structure. Replacing cluster-robust standard errors with heteroskedasticity-consistent (HC1) standard errors or re-estimating with a mixed model yields substantively identical results. The two legislative trust items---trust in the National Assembly and trust in the legislature---are treated as separate institutions in the disaggregated model; both are combined into a composite (mean) for the three-type model. The items are positively correlated ($r$ = `r trust3_leg_cor_r`) but show a systematic mean difference, with the National Assembly trusted notably less than the legislature in both waves, suggesting they tap partially distinct institutional referents.]
 
-Executive institutions---central and local government---registered a modest but statistically significant decline of `r trust3_exec_slope` points on the 0--10 trust scale. By contrast, horizontal accountability institutions (the National Assembly, operationalized as a composite of two legislative trust items) fell by `r trust3_horiz_slope` points, and societal accountability intermediaries (media and civil society organizations) by `r trust3_soc_slope` points. Both interaction terms---Wave $\times$ Horizontal ($\beta$ = `r trust3_horiz_b`, SE = `r trust3_horiz_se`, $t$ = `r trust3_horiz_t`) and Wave $\times$ Societal ($\beta$ = `r trust3_soc_b`, SE = `r trust3_soc_se`, $t$ = `r trust3_soc_t`)---are negative and highly significant, confirming that the differential decline cannot be attributed to compositional differences in the survey samples or individual-level confounders. Intermediary institutions collapsed at approximately `r trust3_ratio` times the rate of executive institutions across this period.
+Executive institutions---central and local government---registered a modest but statistically significant weighted decline of `r trust3_exec_slope` points on the 0--10 trust scale. By contrast, horizontal accountability institutions fell by `r trust3_horiz_slope` points (composite) and societal accountability intermediaries (media and civil society organizations) by `r trust3_soc_slope` points. When the two legislative items are disaggregated, trust in the National Assembly declined by `r na_slope` points (interaction term: $\beta$ = `r na_b`, SE = `r na_se`, $t$ = `r na_t`) and trust in the legislature by `r leg_slope` points ($\beta$ = `r leg_b`, SE = `r leg_se`, $t$ = `r leg_t`)---a pattern of near-identical decline across both horizontal accountability institutions. The composite interaction terms---Wave $\times$ Horizontal ($\beta$ = `r trust3_horiz_b`, SE = `r trust3_horiz_se`, $t$ = `r trust3_horiz_t`) and Wave $\times$ Societal ($\beta$ = `r trust3_soc_b`, SE = `r trust3_soc_se`, $t$ = `r trust3_soc_t`)---are negative and highly significant, confirming that the differential decline cannot be attributed to compositional differences in the survey samples or individual-level confounders. Intermediary institutions collapsed at approximately `r trust3_ratio` times the rate of executive institutions across this period.
 
 Two features of this pattern deserve attention. First, the ordering of decline---societal intermediaries falling harder than formal horizontal institutions---suggests the collapse extended beyond demonstrable institutional failure. The National Assembly's role in the impeachment process gave it a concrete accountability function during the 2016--2018 crisis; media and civil society organizations exercised no formal sanctioning power yet suffered greater trust losses. This asymmetry is inconsistent with a simple performance-based account of distrust and points instead toward a broader delegitimation of the accountability ecosystem as a whole. Second, the comparatively modest executive decline rules out the most straightforward alternative interpretation: if the 2016--2019 period had produced generalized disaffection with political institutions, trust in central and local government would have fallen commensurately. It did not. The structured divergence between accountability targets and accountability mechanisms constitutes the core empirical signature of the accountability gap syndrome identified in the theoretical framework.
 
 ```{r fig3-kamos-threeway, fig.cap="Differential trust collapse by accountability function, KAMOS 2016\\textendash 2019. Predicted trust levels (0\\textendash 10 scale) by institutional category from a mixed model controlling for age, gender, education, income, ideology, and party identification. Shaded bands = 95\\% CIs. Executive = central and local government; Horizontal = National Assembly (composite); Societal = media and civil society. Source: KAMOS W1 (2016) / W4 (2019).", out.width="80%", fig.align="center"}
-knitr::include_graphics(file.path(fig_dir, "fig_trust_threeway.pdf"))
+knitr::include_graphics(file.path(fig_dir, "fig_trust_pooled.pdf"))
 ```
 
 ## Partisan Sorting and the Trust Collapse
