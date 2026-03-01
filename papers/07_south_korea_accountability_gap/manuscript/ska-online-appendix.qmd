@@ -286,7 +286,7 @@ contrast_out <- hypotheses(
 
 kableExtra::kbl(
   contrast_out,
-  caption  = "Formal test of W4\\textendash{}W5 divergence: difference-in-differences contrast from OLS wave $\\times$ type interaction model. Estimate = change in experiential minus change in institutional perceptions, W4 to W5.",
+  caption  = "Formal test of W4--W5 divergence: difference-in-differences contrast from OLS wave $\\times$ type interaction model. Estimate = change in experiential minus change in institutional perceptions, W4 to W5.",
   booktabs = TRUE, escape = FALSE,
   align    = c("l", "r", "r", "r", "r")
 ) |>
