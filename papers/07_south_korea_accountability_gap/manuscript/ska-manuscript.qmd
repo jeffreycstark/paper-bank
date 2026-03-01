@@ -39,6 +39,8 @@ format:
           \usepackage{threeparttablex}
           \usepackage{colortbl}
           \usepackage{xcolor}
+          \usepackage{tikz}
+          \usetikzlibrary{arrows.meta,positioning,shapes.geometric,calc}
           \captionsetup{width=\textwidth}
           \setlength\LTcapwidth{\textwidth}
           \floatplacement{figure}{H}
@@ -168,6 +170,77 @@ This reclassification mechanism generates a prediction that distinguishes it fro
 Taken together, these two mechanisms yield the accountability gap syndrome: a configuration in which citizens perceive governing institutions as increasingly opaque while perceiving corruption as increasingly present in their immediate social world, yet without a corresponding rise in abstract institutional corruption assessments. The syndrome is not merely additive; rather, the combination of rising transparency concerns and rising experiential corruption perceptions constitutes a theoretically coherent mass-level response to a backsliding episode that both revealed elite misconduct and reorganized popular categories of civic evaluation.
 
 From this framework, two hypotheses follow. First, perceptions that government withholds information should increase monotonically across the period of study, consistent with the secular legitimacy erosion mechanism (H1). Second, perceptions of corruption in everyday social experience should increase discontinuously, with the sharpest rise concentrated in the interval spanning the 2016–2018 accountability shock, while institutional corruption assessments remain comparatively stable (H2). The divergence predicted by H2—rising experiential perceptions alongside stable institutional assessments—constitutes the central empirical test of the reclassification argument.
+
+```{=latex}
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[
+    >=Latex,
+    block/.style={
+        rectangle, rounded corners=5pt,
+        draw=black!45, fill=gray!6,
+        text width=6em, minimum height=3.6em,
+        text centered, font=\small
+    },
+    mech/.style={
+        rectangle, rounded corners=5pt,
+        draw=red!55, fill=red!4,
+        text width=8em, minimum height=5.2em,
+        text centered, font=\small\bfseries,
+        dashed, line width=1.2pt
+    },
+    target/.style={
+        rectangle, rounded corners=5pt,
+        draw=black!45, fill=gray!6,
+        text width=8em, minimum height=5.2em,
+        text centered, font=\small\bfseries
+    },
+    arrow/.style={->, thick, black!45},
+    gaparrow/.style={->, thick, dashed, red!65!black, line width=1.3pt}
+]
+
+%% Triangular layout: public left, mechanisms upper-right, targets lower-right
+\node[block]  (public) {Mass Public\\(Citizens)};
+\node[mech,   above right=1.0cm and 3.5cm of public] (mech)
+    {Accountability\\Mechanisms\\[3pt]
+     \normalfont\scriptsize Media \textbullet\ Assembly \textbullet\ NGOs};
+\node[target, below right=1.0cm and 3.5cm of public] (target)
+    {Accountability\\Targets\\[3pt]
+     \normalfont\scriptsize Executive Branch};
+
+%% Public → Mechanisms: pressure & trust channel
+\draw[arrow] (public.north east) --
+    node[above, sloped, font=\scriptsize\itshape, text=black!55]
+    {pressure \& trust} (mech.west);
+
+%% Public → Targets: direct evaluation channel
+\draw[arrow] (public.south east) --
+    node[below, sloped, font=\scriptsize\itshape, text=black!55]
+    {direct evaluation} (target.west);
+
+%% Mechanisms → Targets: the accountability gap (broken link)
+\draw[gaparrow] (mech.south) --
+    node[right=4pt, font=\scriptsize\bfseries, text=red!70!black,
+         align=left] {accountability\\gap}
+    (target.north);
+
+%% Broken-link × at midpoint of gap arrow
+\node[font=\large\bfseries, text=red!70!black]
+    at ($(mech.south)!0.48!(target.north)$) {$\times$};
+
+\end{tikzpicture}
+\caption{\textbf{The Accountability Gap: Structural Decoupling.}
+In a functioning democracy, citizens channel pressure and trust through
+accountability mechanisms---media, the National Assembly, civil
+society---which in turn constrain the executive.
+The accountability gap ($\times$, dashed red) emerges when a high-salience
+accountability shock erodes citizen trust in intermediary institutions
+while direct evaluations of the executive remain comparatively stable,
+severing the delegated oversight chain even as constitutional mechanisms
+continue to operate.}
+\label{fig:accountability-gap}
+\end{figure}
+```
 
 # Literature Review
 
