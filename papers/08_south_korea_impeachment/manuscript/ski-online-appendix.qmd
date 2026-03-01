@@ -1,0 +1,116 @@
+---
+title: "Online Appendix — PAPER TITLE"
+author:
+  - name: Jeffrey Stark
+    affiliations:
+      - name: Yonsei University
+        department: Department of Sociology
+    email: jeffrey.stark@yonsei.ac.kr
+    corresponding: true
+date: now
+date-format: "MMMM D, YYYY"
+format:
+  pdf:
+    documentclass: article
+    classoption: [12pt, letterpaper]
+    geometry:
+      - margin=1in
+    linestretch: 2
+    number-sections: true
+    colorlinks: true
+    keep-tex: true
+    include-in-header:
+      - text: |
+          \usepackage{setspace}
+          \usepackage{booktabs}
+          \usepackage{caption}
+          \usepackage{longtable}
+          \usepackage{array}
+          \usepackage{multirow}
+          \usepackage{float}
+          \usepackage{graphicx}
+          \usepackage{threeparttable}
+          \usepackage{threeparttablex}
+          \captionsetup{width=\textwidth}
+          \setlength\LTcapwidth{\textwidth}
+          \floatplacement{figure}{H}
+          \floatplacement{table}{H}
+          \raggedright
+  html:
+    toc: true
+    toc-depth: 3
+    number-sections: true
+    theme: cosmo
+    code-fold: true
+    embed-resources: true
+  docx:
+    toc: true
+    number-sections: true
+bibliography: references.bib
+csl: apa.csl
+execute:
+  warning: false
+  message: false
+  echo: false
+  cache: true
+---
+
+```{r setup}
+#| include: false
+library(tidyverse)
+library(knitr)
+library(kableExtra)
+library(modelsummary)
+
+project_root <- "/Users/jeffreystark/Development/Research/paper-bank"
+paper_dir    <- file.path(project_root, "papers/00-model")
+analysis_dir <- file.path(paper_dir, "analysis")
+results_dir  <- file.path(analysis_dir, "results")
+fig_dir      <- file.path(analysis_dir, "figures")
+
+# Load pre-computed results
+if (file.exists(file.path(results_dir, "analysis_data.rds"))) {
+  dat <- readRDS(file.path(results_dir, "analysis_data.rds"))
+}
+if (file.exists(file.path(results_dir, "model_results.rds"))) {
+  mr <- readRDS(file.path(results_dir, "model_results.rds"))
+}
+```
+
+# Appendix A: Data
+
+## A.1 Data Source and Coverage
+
+TODO: Describe the survey instrument, fielding dates, country coverage, and
+sampling strategy. Include a wave-by-wave N table.
+
+## A.2 Variable Construction
+
+TODO: Provide full question wording for all survey items used. Document any
+recoding, normalization, or index construction.
+
+## A.3 Sample Descriptives
+
+TODO: Full descriptive statistics table (mean, SD, min, max, N) for all
+variables.
+
+# Appendix B: Robustness Checks
+
+## B.1 Alternative Specifications
+
+TODO: Report results under alternative model specifications (e.g., logistic
+regression, fixed effects, different control sets).
+
+## B.2 Alternative Measures
+
+TODO: Report results using alternative operationalizations of key DVs and IVs.
+
+## B.3 Sensitivity Analysis
+
+TODO: Report any sensitivity checks (e.g., excluding outlier waves, alternative
+clustering).
+
+# References {.unnumbered}
+
+::: {#refs}
+:::
