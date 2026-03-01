@@ -53,9 +53,6 @@ format:
     number-sections: true
     theme: cosmo
     code-fold: true
-  docx:
-    toc: true
-    number-sections: true
 bibliography: references.bib
 csl: chicago-author-date.csl
 execute:

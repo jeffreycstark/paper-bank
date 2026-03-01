@@ -32,9 +32,6 @@ format:
     toc-depth: 3
     number-sections: true
     theme: cosmo
-  docx:
-    toc: true
-    number-sections: true
 bibliography: references.bib
 csl: apa.csl
 execute:

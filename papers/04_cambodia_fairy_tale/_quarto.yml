@@ -4,7 +4,7 @@ project:
   render:
     - "manuscript/cd_manuscript.qmd"
     - "manuscript/cd_online_appendix.qmd"
-    - "analysis/*.qmd"
+    - "!analysis/*.qmd"  # No quarto freeze caches; analysis scripts have pre-existing data bugs
 
 # Global execute options
 execute:

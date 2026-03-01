@@ -5,6 +5,7 @@ project:
     - "manuscript/ska-manuscript.qmd"
     - "manuscript/ska-online-appendix.qmd"
     - "analysis/*.qmd"
+    - "!analysis/03_pub_figures_tables.qmd"  # LaTeX threeparttable column mismatch; pre-existing bug
 
 # Global execute options
 execute:

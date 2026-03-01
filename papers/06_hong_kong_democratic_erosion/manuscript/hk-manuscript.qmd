@@ -92,7 +92,7 @@ knitr::opts_chunk$set(
 )
 
 # Load results from the HK analysis pipeline
-results_path <- "../../hong-kong-democratic-erosion/analysis/results"
+results_path <- "../analysis/results"
 
 load(file.path(results_path, "prepared_data.RData"))
 load(file.path(results_path, "descriptive_results.RData"))
