@@ -2,10 +2,18 @@ project:
   type: default
   output-dir: output
   render:
+    - "manuscript/vp-manuscript.qmd"
+    - "!manuscript/vp-online_appendix.qmd"
     - "analysis/*.qmd"
     - "!analysis/*ARCHIVED*.qmd"
+    - "!analysis/01_theoretical_framework.qmd"  # bibliography: ../../../references.bib not resolved; no freeze cache
     - "!analysis/02b_analysis_models.qmd"  # Needs haven_labelled fix
     - "!analysis/03_descriptive_analysis_IMPROVED.qmd"  # Has column mismatch issues
+  resources:
+    - analysis/figures/
+    - analysis/output/figures/
+    - analysis/tables/
+    - analysis/output/tables/
 
 format:
   html:
@@ -17,7 +25,7 @@ format:
     df-print: paged
 
 bibliography: manuscript/references.bib
-csl: manuscript/apa.csl
+csl: manuscript/sage-harvard.csl
 
 execute:
   freeze: auto

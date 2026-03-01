@@ -6,7 +6,7 @@ author:
     email: jeffrey.stark@yonsei.ac.kr
 date: today
 abstract: |
-  Vietnam's COVID-19 experience defies performance legitimacy theory. In Asian Barometer Wave 6 data (2021--2022, N = 3,685), 65.9% of Vietnamese respondents reported personal or family COVID-19 infection---more than seven times Cambodia's rate and the highest in Southeast Asia. Yet 97.5% rated the government's pandemic response favourably, also the region's highest. The worst outcomes coincided with the best evaluations. Trust in government COVID-19 information, not personal experience, is the dominant predictor of these assessments. Moving from lowest to highest information trust corresponds to roughly 1.5 points on a 4-point approval scale; contracting the virus corresponds to less than 0.08 points. The pattern holds across Cambodia, Thailand, and Vietnam, survives controls for institutional trust, democratic attitudes, and demographics, and remains stable across alternative specifications; sensitivity analysis indicates that unmeasured confounders would need to be implausibly strong to account for the findings (see Online Appendix). Thailand provides a critical mechanism test: among citizens who distrust official information, infection is negatively associated with approval as performance theories predict. Among those who trust it, infection is irrelevant. Information credibility appears to function as a cognitive filter---when official narratives are deemed trustworthy, citizens may attribute suffering to forces beyond government control rather than to governmental shortcomings.
+  Vietnam's COVID-19 experience defies performance legitimacy theory. In Asian Barometer Wave 6 data (2021--2022, N = 3,685), 65.9% of Vietnamese respondents reported personal or family COVID-19 infection---more than seven times Cambodia's rate and the highest in Southeast Asia. Yet 97.5% rated the government's pandemic response favourably, also the region's highest. The highest infection burden coincided with the most favourable evaluations. Trust in government COVID-19 information, not personal experience, is the dominant predictor of these assessments. Moving from lowest to highest information trust corresponds to roughly 1.5 points on a 4-point approval scale; contracting the virus corresponds to less than 0.08 points. The pattern holds across Cambodia, Thailand, and Vietnam, survives controls for institutional trust, democratic attitudes, and demographics, and remains stable across alternative specifications; sensitivity analysis indicates that unmeasured confounders would need to be implausibly strong to account for the findings (see Online Appendix). Thailand provides a critical mechanism test: among citizens who distrust official information, infection is negatively associated with approval as performance theories predict. Among those who trust it, infection is irrelevant. Information credibility appears to function as a cognitive filter---when official narratives are deemed trustworthy, citizens may attribute suffering to forces beyond government control rather than to governmental shortcomings.
 keywords:
   - COVID-19
   - government approval
@@ -51,6 +51,9 @@ execute:
   echo: false
   warning: false
   message: false
+knitr:
+  opts_knit:
+    root.dir: "."
 ---
 
 ```{r setup, include=FALSE}
@@ -310,8 +313,8 @@ create_placeholder <- function(table_name, script_to_run) {
 }
 
 # CALCULATE DESCRIPTIVE STATISTICS FOR VARIABLES
-if (file.exists(here("papers", "vietnam_covid_paradox", "analysis", "data", "analysis_data.rds"))) {
-  ab_anal_data <- readRDS(here("papers", "vietnam_covid_paradox", "analysis", "data", "analysis_data.rds"))
+if (file.exists(here("papers", "01_vietnam_covid_paradox", "analysis", "data", "analysis_data.rds"))) {
+  ab_anal_data <- readRDS(here("papers", "01_vietnam_covid_paradox", "analysis", "data", "analysis_data.rds"))
   
   var_stats <- list(
     # DV: Government approval
@@ -554,7 +557,7 @@ cat("✓ Setup complete\n")
 
 In August 2022, as the Omicron wave swept through Vietnam's cities, survey enumerators from the Asian Barometer project fanned out across the country carrying a standard battery of questions about governance and public life. One question was straightforward: how well or badly had the government handled the pandemic? The responses ought to trouble anyone who believes citizens punish governments for poor outcomes.
 
-Almost two-thirds (`r round(vietnam$infection_pct, 1)`%) of Vietnamese respondents reported that they or a family member had contracted COVID-19---more than seven times Cambodia's `r round(cambodia$infection_pct, 1)`%, and substantially above Thailand's `r round(thailand$infection_pct, 1)`%. By any epidemiological standard, Vietnam experienced the worst pandemic outcomes in the region. Yet `r round(vietnam$approval_pct, 1)`% of those respondents rated the government's response as "well" or "very well." Highest infection rate, highest approval. The correlation runs backwards.
+Almost two-thirds (`r round(vietnam$infection_pct, 1)`%) of Vietnamese respondents reported that they or a family member had contracted COVID-19---more than seven times Cambodia's `r round(cambodia$infection_pct, 1)`%, and substantially above Thailand's `r round(thailand$infection_pct, 1)`%. By any epidemiological standard, Vietnam bore the heaviest pandemic burden in the region. Yet `r round(vietnam$approval_pct, 1)`% of those respondents rated the government's response as "well" or "very well." Highest infection rate, highest approval. The correlation runs backwards.
 
 This is not merely a Vietnamese peculiarity. It speaks to a broader puzzle that has occupied scholars of institutional trust across Asia, where lower-performing countries routinely report higher government trust than objectively better-governed democracies [@Baniamin2025-rx; @Wong2011-zv; @Zhao2017-yw]. Baniamin [-@Baniamin2025-rx], working with Asian Barometer data across fourteen countries, attributes this pattern primarily to authoritarian cultural orientation---citizens socialized into hierarchical deference evaluate authorities less critically. This article proposes a complementary but analytically distinct mechanism. Trust in *crisis-specific* government information may function as a cognitive filter that shapes how citizens interpret their own experiences, independently of whatever diffuse cultural values they hold.
 
@@ -574,13 +577,13 @@ The foundational claim of performance legitimacy theory is disarmingly simple: c
 
 Evidence from Asia complicates this picture. Vietnam routinely reports the highest trust in government despite middling performance on most governance indices, while Japan and South Korea---by objective measures far better governed---report substantially lower trust [@Baniamin2025-rx; @Wong2011-zv]. Baniamin [-@Baniamin2025-rx] attributes the pattern to authoritarian cultural orientation: citizens socialized into hierarchical deference approach authority less critically, inflating trust measures independently of performance. A latent profile analysis across six Southeast Asian countries corroborates this, identifying a dominant high-trust profile in Vietnam that encompasses government, science, and vaccine confidence and cuts across demographic subgroups [@Genova2025-gr].
 
-These findings sit uneasily with performance theory. But Vietnam's COVID-19 experience presents a starker challenge still, because the performance failure is not a matter of abstract governance indicators---it is concrete, personal, epidemiological. The country recorded the region's highest self-reported infection rate yet maintained its highest approval for pandemic handling. If performance legitimacy operates as theorized, Vietnam should show *lower* approval than Cambodia, which successfully controlled the virus. Cambodia's `r round(cambodia$infection_pct, 1)`% infection rate and `r round(cambodia$approval_pct, 1)`% approval are entirely consistent with performance theory. Vietnam's `r round(vietnam$infection_pct, 1)`% and `r round(vietnam$approval_pct, 1)`% are not.
+These findings sit uneasily with performance theory. But Vietnam's COVID-19 experience presents a starker challenge still, because the performance shortfall is not a matter of abstract governance indicators---it is concrete, personal, epidemiological. The country recorded the region's highest self-reported infection rate yet maintained its highest approval for pandemic handling. If performance legitimacy operates as theorized, Vietnam should show *lower* approval than Cambodia, which successfully controlled the virus. Cambodia's `r round(cambodia$infection_pct, 1)`% infection rate and `r round(cambodia$approval_pct, 1)`% approval are entirely consistent with performance theory. Vietnam's `r round(vietnam$infection_pct, 1)`% and `r round(vietnam$approval_pct, 1)`% are not.
 
 ## An Information-Credibility Heuristic
 
 The mechanism proposed here is analytically distinct from diffuse cultural orientations, though it may operate alongside them. Citizens rarely have direct knowledge of government competence across policy domains. They rely on informational signals and cognitive shortcuts [@Lupia1994-jp; @Sniderman1991-uj; @Popkin1994-yv], and during crises---when uncertainty peaks and personal stakes are acute---these shortcuts matter disproportionately.
 
-The specific shortcut I identify is an *information-credibility heuristic*: citizens use their trust in official crisis information as a proxy for evaluating government performance. This is not merely a restatement of the propaganda-works thesis. It is a claim about attribution. Negative pandemic experiences are inherently ambiguous---if I contract COVID-19, that event is open to multiple interpretations. Personal misfortune. The inevitable cost of a global catastrophe. Evidence that my government failed to protect me. Which frame dominates depends substantially on whether I find the government's account of the crisis convincing.
+The specific shortcut I identify is an *information-credibility heuristic*: citizens use their trust in official crisis information as a proxy for evaluating government performance. This is not merely a restatement of the propaganda-works thesis. It is a claim about attribution. Negative pandemic experiences are inherently ambiguous---if I contract COVID-19, that event is open to multiple interpretations. Personal misfortune. The inevitable cost of a global catastrophe. Evidence that my government did not adequately protect me. Which frame dominates depends substantially on whether I find the government's account of the crisis convincing.
 
 The theoretical resonance is with Guriev and Treisman's [-@Guriev2019-xj; -@Guriev2020-cu] work on informational autocracy. Modern authoritarian regimes, they argue, sustain power less through overt coercion than through information management and narrative dominance. Egorov and Sonin [-@Egorov2024-gq] locate information flows at the centre of authoritarian survival in their comprehensive review of non-democratic political economics---dictators restrict media, run propaganda, and organize censorship not as incidental features of repression but as the primary mechanisms through which regimes endure. Morgenbesser [-@Morgenbesser2020-ya] situates such informational strategies within a broader "menu of autocratic innovation," a repertoire of tools through which regimes cultivate the pretence of accountability without its practice.
 
@@ -622,7 +625,7 @@ The analytic sample comprises `r format(total_n, big.mark=",")` respondents: Cam
 
 Case selection follows the logic of structured comparison. All three countries are Southeast Asian, share broad cultural affinities, and faced the same pandemic---but they vary on the dimensions the theory requires: regime type (Cambodia and Vietnam are authoritarian; Thailand is a hybrid regime with greater information pluralism), pandemic outcomes (infection rates diverged dramatically), and information environments [@Freedom-House2025-gx; @Reporters-Without-Borders2023-ks]. This combination of shared background characteristics and theoretically relevant variation is what makes the comparison productive.
 
-One feature of the data that might appear a liability actually strengthens the design. Data collection occurred at different times: Cambodia primarily in December 2021, Thailand in April--May 2022, Vietnam in August--September 2022. Vietnam was surveyed during the Omicron wave, when infections peaked. Respondents were evaluating a government *while actively experiencing* the pandemic's worst phase---not recalling distant events from the safety of hindsight. That they evaluated the government so favourably under those conditions deepens the paradox.
+One feature of the data that might appear a liability actually strengthens the design. Data collection occurred at different times: Cambodia primarily in December 2021, Thailand in April--May 2022, Vietnam in August--September 2022. Vietnam was surveyed during the Omicron wave, when infections peaked. Respondents were evaluating a government *while actively experiencing* the pandemic's most acute phase---not recalling distant events from the safety of hindsight. That they evaluated the government so favourably under those conditions deepens the paradox.
 
 ## Pandemic Trajectories
 
@@ -660,7 +663,7 @@ A note on inferential scope is warranted. All regression models are estimated wi
 
 Table 1 lays out the basic facts. Vietnam's infection rate (`r round(vietnam$infection_pct, 1)`%) exceeds Cambodia's (`r round(cambodia$infection_pct, 1)`%) by a factor of more than seven and substantially exceeds Thailand's (`r round(thailand$infection_pct, 1)`%). Vietnam's approval (`r round(vietnam$approval_pct, 1)`%) exceeds Cambodia's (`r round(cambodia$approval_pct, 1)`%) and dwarfs Thailand's (`r round(thailand$approval_pct, 1)`%). The correlation between infection and approval runs in the wrong direction.
 
-\[INSERT TABLE 1 ABOUT HERE\]
+<!-- Table 1 rendered below -->
 
 ## Infection and Economic Hardship: Null Effects
 
@@ -672,7 +675,7 @@ Economic hardship tells a somewhat more differentiated story, though it too is d
 
 Information trust, by contrast, is enormous. Cambodia: `r format_coef(cors$cambodia_trust, h2a_results$Cambodia$p)`. Vietnam: `r format_coef(cors$vietnam_trust, h2a_results$Vietnam$p)`. Thailand: `r format_coef(cors$thailand_trust, h2a_results$Thailand$p)`. Trust alone explains 26--45% of the variance in approval across the three countries (Figure 1). These are bivariate results that could in principle reflect confounding with generalized regime support. The multivariate models address that possibility.
 
-\[INSERT FIGURE 1 ABOUT HERE\]
+<!-- Figure 1 rendered below -->
 
 ## The Trust Coefficient Survives Controls
 
@@ -682,7 +685,7 @@ The trust coefficient does not merely survive---it dominates every model. Across
 
 In concrete terms: a respondent moving from the lowest to the highest level of information trust gains approximately 1.5 points on the four-point approval scale---nearly half the entire range. Infection status corresponds to less than 0.1 points. H1 is strongly supported.
 
-\[INSERT TABLE 2 ABOUT HERE\]
+<!-- Table 2 rendered below -->
 
 ## Conditional Accountability: The Thailand Test
 
@@ -710,7 +713,7 @@ A fair objection is that not all sensitive topics carry equal risk: criticising 
 
 ## How Information Trust Works
 
-The evidence establishes that information trust dominates personal experience as a predictor of pandemic approval across three countries, all specifications, and extensive robustness testing. H1 is strongly supported. In Thailand---the one country with sufficient variation in trust---infection reduces approval only among citizens who distrust official information (H2). And controlling for institutional trust barely attenuates the information trust coefficient, indicating the mechanism is not generalized deference wearing a domain-specific mask.
+The evidence establishes that information trust dominates personal experience as a predictor of pandemic approval across three countries, all specifications, and extensive robustness testing. H1 is strongly supported. In Thailand---the one country with sufficient variation in trust---infection is negatively associated with approval only among citizens who distrust official information (H2). And controlling for institutional trust barely attenuates the information trust coefficient, indicating the mechanism is not generalized deference wearing a domain-specific mask.
 
 Cross-sectional data cannot prove the causal pathway, but the pattern is consistent with a specific account: trusted official information shapes how citizens *interpret* negative experiences, directing attributions away from government responsibility and toward external forces. In Vietnam and Cambodia, where official narratives face little competition and command near-universal trust, this interpretive filter appears to have decoupled personal experience from political evaluation entirely. Not because Vietnamese citizens are irrational or uninformed---many freely reported high infection rates and restricted speech freedoms---but because they appear to have accepted a framing in which mass infection was something that happened *despite* government effort rather than *because of* inadequate government response.
 
@@ -742,7 +745,7 @@ For theories of authoritarian resilience, these findings provide individual-leve
 
 For rally-around-the-flag theory, health crises do not automatically generate support [@Hegewald2024-ii; @Kritzinger2021-im; @Zoch2024-kf]. The rally mechanism appears conditional on information environment---where citizens trust official narratives, support emerges regardless of outcomes; where they distrust them, the expected accountability pattern operates. Rally effects, if they contribute at all in these cases, are sustained by information trust rather than by the existence of an external threat alone.
 
-The patterns documented here are troubling for theories of democratic accountability, but they do not demonstrate an "authoritarian advantage" in crisis management. Thailand's low approval could indicate democratic accountability functioning exactly as intended---citizens punishing a government they perceive as having failed. The troubling finding is not that authoritarianism works better but that information trust can substitute for actual performance as a basis for political support, and that the conditions enabling this substitution are unevenly distributed across regime types.
+The patterns documented here are troubling for theories of democratic accountability, but they do not demonstrate an "authoritarian advantage" in crisis management. Thailand's low approval could indicate democratic accountability functioning exactly as intended---citizens holding a government accountable for perceived shortcomings. The troubling finding is not that authoritarianism works better but that information trust can substitute for actual performance as a basis for political support, and that the conditions enabling this substitution are unevenly distributed across regime types.
 
 # Conclusion
 
