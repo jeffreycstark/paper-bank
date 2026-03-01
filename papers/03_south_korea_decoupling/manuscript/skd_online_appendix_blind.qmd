@@ -1,0 +1,988 @@
+---
+title: "Online Appendix: The Satisfaction Paradox: Economic Performance and the Decoupling of Democratic Support in South Korea and Taiwan"
+date: now
+date-format: "MMMM D, YYYY"
+format:
+  pdf:
+    documentclass: article
+    classoption: [12pt, letterpaper]
+    geometry:
+      - margin=1in
+    linestretch: 1.5
+    number-sections: true
+    colorlinks: true
+    linkcolor: blue
+    urlcolor: blue
+    citecolor: blue
+    keep-tex: true
+    include-in-header:
+      - text: |
+          \usepackage{setspace}
+          \usepackage{booktabs}
+          \usepackage{caption}
+          \usepackage{longtable}
+          \usepackage{array}
+          \usepackage{multirow}
+          \usepackage{float}
+          \usepackage{graphicx}
+          \captionsetup{width=\textwidth}
+          \setlength\LTcapwidth{\textwidth}
+          \floatplacement{figure}{H}
+          \floatplacement{table}{H}
+          \raggedright
+  html:
+    toc: true
+    toc-depth: 3
+    number-sections: true
+    theme: cosmo
+bibliography: references.bib
+csl: apa.csl
+execute:
+  echo: false
+  warning: false
+  message: false
+---
+
+```{r setup}
+library(tidyverse)
+library(kableExtra)
+library(broom)
+library(MASS)
+
+results_dir <- file.path(here::here(), "analysis/results")
+fig_dir     <- file.path(here::here(), "analysis/figures")
+
+dat      <- readRDS(file.path(results_dir, "analysis_data.rds"))
+mods     <- readRDS(file.path(results_dir, "model_results.rds"))
+alt_norm <- readRDS(file.path(results_dir, "alt_normative_dvs.rds"))
+
+# Helpers
+fmt_b     <- function(x) sprintf("%.3f", x)
+fmt_se    <- function(x) sprintf("(%.3f)", x)
+fmt_p     <- function(x) sprintf("%.3f", x)
+stars     <- function(p) case_when(p < 0.001 ~ "***", p < 0.01 ~ "**",
+                                    p < 0.05 ~ "*", p < 0.1 ~ "†", TRUE ~ "")
+fmt_bstar <- function(b, p) paste0(fmt_b(b), stars(p))
+
+survey_years_kr <- c(2003, 2006, 2011, 2015, 2019, 2022)
+survey_years_tw <- c(2001, 2006, 2010, 2014, 2019, 2022)
+
+controls <- "age_n + gender + edu_n + urban_rural + polint_n"
+
+extract_econ_coef <- function(model) {
+  tidy(model, conf.int = TRUE) |>
+    filter(term == "econ_index") |>
+    dplyr::select(estimate, std.error, statistic, p.value, conf.low, conf.high)
+}
+
+.p_str <- function(p) if (p < 0.001) "< 0.001" else sprintf("= %.3f", p)
+
+.alt_b <- function(country, dv_var, d = 3) {
+  row <- dplyr::filter(alt_norm$pooled, country == !!country, dv_var == !!dv_var)
+  round(row$estimate, d)
+}
+.alt_p <- function(country, dv_var) {
+  p <- dplyr::filter(alt_norm$pooled, country == !!country, dv_var == !!dv_var) |> pull(p.value)
+  .p_str(p)
+}
+.alt_xc_b <- function(dv_var, d = 3) {
+  row <- dplyr::filter(alt_norm$cross_country, dv_var == !!dv_var, term == "econ_index:is_korea")
+  round(row$estimate, d)
+}
+.alt_xc_p <- function(dv_var) {
+  p <- dplyr::filter(alt_norm$cross_country, dv_var == !!dv_var, term == "econ_index:is_korea") |> pull(p.value)
+  .p_str(p)
+}
+```
+
+
+# Appendix A: Survey Instruments {#sec-app-instruments}
+
+@tbl-instruments lists all variables drawn from the Asian Barometer Survey (ABS) used in the analysis, including item wording, scale coding, and wave availability.
+
+```{r tbl-instruments}
+#| tbl-cap: "ABS survey items used in the analysis"
+
+instruments <- tribble(
+  ~Cluster, ~Variable, ~`Item wording`, ~Scale, ~Waves,
+  "Satisfaction", "Satisfaction with democracy",
+    "On the whole, how satisfied or dissatisfied are you with the way democracy works in [country]?",
+    "1 = Not at all satisfied … 4 = Very satisfied", "1–6",
+  "Satisfaction", "Satisfaction with government",
+    "How satisfied or dissatisfied are you with the [name] government?",
+    "1 = Very dissatisfied … 4 = Very satisfied", "1–6",
+  "Normative preference", "Democracy always preferable",
+    "Which comes closest to your opinion? (1) Democracy is always preferable; (2) Under some circumstances, an authoritarian government can be preferable; (3) For people like me, it does not matter.",
+    "Recoded: 1 = democracy preferable, 0 otherwise (0–1)", "1–6",
+  "Normative preference", "Extent democratic",
+    "In your opinion, how much of a democracy is [country] today?",
+    "1 = Not a democracy … 4 = A full democracy", "1–6",
+  "System legitimacy", "System proud",
+    "I am proud of our system of government.",
+    "1 = Strongly disagree … 4 = Strongly agree", "3–6",
+  "System legitimacy", "System prefer",
+    "I would rather live under our system of government than any other that I can think of.",
+    "1 = Strongly disagree … 4 = Strongly agree", "3–6",
+  "System legitimacy", "System capable",
+    "Over the long run, our system of government is capable of solving the problems our country faces.",
+    "1 = Strongly disagree … 4 = Strongly agree", "3–6",
+  "System legitimacy", "System deserves support",
+    "A system like ours, even if it runs into problems, deserves the people's support.",
+    "1 = Strongly disagree … 4 = Strongly agree", "3–6",
+  "System legitimacy", "No major change needed",
+    "Generally speaking, do you think that [country]'s current system of government needs to be completely overhauled, needs major changes, needs minor changes, or works well?",
+    "Recoded: 1 = works well/minor change, 0 = major change/overhaul (0–1)", "3–6",
+  "Economic evaluation", "National economy (current)",
+    "How would you rate the overall economic condition of our country today?",
+    "1 = Very bad … 5 = Very good", "1–6",
+  "Economic evaluation", "Family economy (current)",
+    "How would you rate the overall economic condition of your family today?",
+    "1 = Very bad … 5 = Very good", "1–6",
+  "Economic evaluation", "National economy (change)",
+    "Compared to a few years ago, the overall economic condition of our country today is...",
+    "1 = Much worse … 5 = Much better", "1–6",
+  "Economic evaluation", "Family economy (change)",
+    "Compared to a few years ago, the overall economic condition of your family today is...",
+    "1 = Much worse … 5 = Much better", "1–6",
+  "Economic evaluation", "National economy (outlook)",
+    "What do you think the economic condition of our country will be in a few years?",
+    "1 = Much worse … 5 = Much better", "1–6",
+  "Economic evaluation", "Family economy (outlook)",
+    "What do you think the economic condition of your family will be in a few years?",
+    "1 = Much worse … 5 = Much better", "1–6",
+  "Control", "Age", "Respondent's age in years.", "Continuous, normalized 0–1", "1–6",
+  "Control", "Gender", "Respondent's gender.", "0 = Female, 1 = Male", "1–6",
+  "Control", "Education", "Highest level of education completed.", "Ordinal, normalized 0–1", "1–6",
+  "Control", "Urban/rural", "Respondent's residential location.", "0 = Rural, 1 = Urban", "1–6",
+  "Control", "Political interest",
+    "How interested would you say you are in politics?",
+    "1 = Not at all … 4 = Very interested, normalized 0–1", "1–6",
+  "Mechanism probe", "National pride",
+    "How proud are you to be a citizen of [country]?",
+    "1 = Not at all proud … 4 = Very proud", "2–6",
+  "Mechanism probe", "China threat perception",
+    "On the whole, do you think that the influence of China is mostly good or mostly bad for [country/region]?",
+    "1 = Very good … 4 = Very bad (recoded: higher = more harmful)", "3–6 (Taiwan)"
+)
+
+instruments |>
+  kbl(col.names = c("Cluster", "Variable", "Item wording", "Scale", "Waves"),
+      booktabs = TRUE, longtable = TRUE, escape = TRUE) |>
+  kable_styling(latex_options = c("hold_position", "repeat_header"),
+                font_size = 9) |>
+  column_spec(3, width = "6.5cm") |>
+  column_spec(4, width = "3.5cm") |>
+  column_spec(5, width = "1cm") |>
+  collapse_rows(columns = 1, valign = "top")
+```
+
+All items are normalized to a 0–1 scale for analysis. Indices are the mean of normalized component items. Item wording is consistent across all six ABS waves in both countries unless otherwise noted in the Waves column.
+
+
+# Appendix B: Disaggregated Dependent Variable Models {#sec-app-disaggregated}
+
+The main text reports results using the primary conceptual distinction between satisfaction with democracy and normative democratic preference. This appendix presents models for each individual dependent variable, organized into three conceptual families.
+
+## B.1 Performance satisfaction {#sec-app-b1}
+
+Items in this cluster capture evaluations of how well the current democratic system is performing. Both items are available across all six waves.
+
+```{r tbl-b1}
+#| tbl-cap: "Wave-by-wave OLS: economic evaluations predicting individual satisfaction items (Korea and Taiwan)"
+
+sat_items <- c("sat_democracy_n" = "Sat. with democracy",
+               "sat_govt_n"      = "Sat. with government")
+
+app_b1 <- list()
+for (cntry in c("Korea", "Taiwan")) {
+  for (dv_var in names(sat_items)) {
+    for (w in 1:6) {
+      sub <- dat |> filter(country_label == cntry, wave == w)
+      if (nrow(sub) < 100) next
+      f <- as.formula(paste(dv_var, "~ econ_index +", controls))
+      m <- tryCatch(lm(f, data = sub), error = function(e) NULL)
+      if (is.null(m)) next
+      app_b1[[paste(cntry, dv_var, w)]] <-
+        extract_econ_coef(m) |>
+        mutate(dv = sat_items[dv_var], country = cntry, wave = w,
+               r_sq = summary(m)$r.squared, n = nobs(m))
+    }
+  }
+}
+
+bind_rows(app_b1) |>
+  mutate(
+    year = if_else(country == "Korea", survey_years_kr[wave], survey_years_tw[wave]),
+    Beta = fmt_bstar(estimate, p.value),
+    SE   = fmt_se(std.error),
+    R2   = fmt_b(r_sq)
+  ) |>
+  dplyr::select(Country = country, Wave = wave, Year = year, DV = dv,
+                Beta, SE, R2, N = n) |>
+  arrange(Country, DV, Wave) |>
+  kbl(booktabs = TRUE, longtable = TRUE) |>
+  kable_styling(latex_options = c("hold_position", "repeat_header"), font_size = 9) |>
+  collapse_rows(columns = 1:2, valign = "top")
+```
+
+Government satisfaction consistently shows larger economic coefficients than satisfaction with democracy, confirming that the government satisfaction item is more directly output-driven. Satisfaction with democracy is the conceptually cleaner performance satisfaction measure and serves as the primary dependent variable in the main text.
+
+
+## B.2 Normative democratic preference {#sec-app-b2}
+
+Items in this cluster capture principled commitment to democracy as a form of government. Both items are available across all six waves.
+
+```{r tbl-b2}
+#| tbl-cap: "Wave-by-wave OLS: economic evaluations predicting normative preference items (Korea and Taiwan)"
+
+norm_items <- c("qual_pref_dem_n" = "Dem. always preferable",
+                "qual_extent_n"   = "Extent democratic")
+
+app_b2 <- list()
+for (cntry in c("Korea", "Taiwan")) {
+  for (dv_var in names(norm_items)) {
+    for (w in 1:6) {
+      sub <- dat |> filter(country_label == cntry, wave == w)
+      if (nrow(sub) < 100) next
+      f <- as.formula(paste(dv_var, "~ econ_index +", controls))
+      m <- tryCatch(lm(f, data = sub), error = function(e) NULL)
+      if (is.null(m)) next
+      app_b2[[paste(cntry, dv_var, w)]] <-
+        extract_econ_coef(m) |>
+        mutate(dv = norm_items[dv_var], country = cntry, wave = w,
+               r_sq = summary(m)$r.squared, n = nobs(m))
+    }
+  }
+}
+
+bind_rows(app_b2) |>
+  mutate(
+    year = if_else(country == "Korea", survey_years_kr[wave], survey_years_tw[wave]),
+    Beta = fmt_bstar(estimate, p.value),
+    SE   = fmt_se(std.error),
+    R2   = fmt_b(r_sq)
+  ) |>
+  dplyr::select(Country = country, Wave = wave, Year = year, DV = dv,
+                Beta, SE, R2, N = n) |>
+  arrange(Country, DV, Wave) |>
+  kbl(booktabs = TRUE, longtable = TRUE) |>
+  kable_styling(latex_options = c("hold_position", "repeat_header"), font_size = 9) |>
+  collapse_rows(columns = 1:2, valign = "top")
+```
+
+The theoretically decisive contrast is between these two items: "democracy always preferable" shows a consistent null in Korea and a strong negative effect in Taiwan, while "extent democratic" shows negative effects in *both* countries. This disaggregation validates treating them as conceptually distinct outcomes: the former captures principled normative preference (diffuse support), while the latter captures evaluative quality perception.
+
+
+## B.3 System legitimacy items (Waves 3–6) {#sec-app-b3}
+
+Items in this cluster capture diffuse affect toward the existing system of government---pride, preference, confidence in its problem-solving capacity, and belief that it deserves support. All items are available Waves 3–6 only.
+
+```{r tbl-b3}
+#| tbl-cap: "Wave-by-wave OLS: economic evaluations predicting system legitimacy items (Waves 3–6)"
+
+sys_items <- c(
+  "sys_proud_n"        = "System proud",
+  "sys_prefer_n"       = "System prefer",
+  "sys_capable_n"      = "System capable",
+  "qual_sys_support_n" = "System deserves support",
+  "qual_sys_change_n"  = "No major change needed"
+)
+
+app_b3 <- list()
+for (cntry in c("Korea", "Taiwan")) {
+  for (dv_var in names(sys_items)) {
+    for (w in 3:6) {
+      sub <- dat |> filter(country_label == cntry, wave == w)
+      if (nrow(sub) < 100) next
+      f <- as.formula(paste(dv_var, "~ econ_index +", controls))
+      m <- tryCatch(lm(f, data = sub), error = function(e) NULL)
+      if (is.null(m)) next
+      app_b3[[paste(cntry, dv_var, w)]] <-
+        extract_econ_coef(m) |>
+        mutate(dv = sys_items[dv_var], country = cntry, wave = w,
+               r_sq = summary(m)$r.squared, n = nobs(m))
+    }
+  }
+}
+
+bind_rows(app_b3) |>
+  mutate(
+    year = if_else(country == "Korea", survey_years_kr[wave], survey_years_tw[wave]),
+    Beta = fmt_bstar(estimate, p.value),
+    SE   = fmt_se(std.error),
+    R2   = fmt_b(r_sq)
+  ) |>
+  dplyr::select(Country = country, Wave = wave, Year = year, DV = dv,
+                Beta, SE, R2, N = n) |>
+  arrange(Country, DV, Wave) |>
+  kbl(booktabs = TRUE, longtable = TRUE) |>
+  kable_styling(latex_options = c("hold_position", "repeat_header"), font_size = 9) |>
+  collapse_rows(columns = 1:2, valign = "top")
+```
+
+System legitimacy items show mixed patterns. Some items (system capable, system deserves support, no major change) tend to show *negative* economic associations in Korea, echoing the "extent democratic" pattern: economically comfortable Koreans are more critical of the system's quality and less accepting of the status quo. This parallels the performance-critical evaluation documented in the main text and is consistent with the performance-derived legitimation framework---citizens who are economically comfortable hold the system to a higher bar. The contrast with the null economic–normative preference relationship in Korea confirms that decoupling is specific to the principled normative dimension.
+
+
+# Appendix C: Measurement Comparability {#sec-app-comparability}
+
+## C.1 Item wording stability across waves {#sec-app-c1}
+
+The core dependent variable items use consistent wording across all six ABS waves in both Korea and Taiwan. @tbl-c1 documents availability and any notable variation.
+
+```{r tbl-c1}
+#| tbl-cap: "Item wording stability and availability across ABS waves"
+
+wording_stability <- tribble(
+  ~Item, ~`KR W1`, ~`KR W2`, ~`KR W3`, ~`KR W4`, ~`KR W5`, ~`KR W6`,
+         ~`TW W1`, ~`TW W2`, ~`TW W3`, ~`TW W4`, ~`TW W5`, ~`TW W6`,
+  "Sat. with democracy",    "✓","✓","✓","✓","✓","✓","✓","✓","✓","✓","✓","✓",
+  "Sat. with government",   "✓","✓","✓","✓","✓","✓","✓","✓","✓","✓","✓","✓",
+  "Dem. always preferable", "✓","✓","✓","✓","✓","✓","✓","✓","✓","✓","✓","✓",
+  "Extent democratic",      "✓","✓","✓","✓","✓","✓","✓","✓","✓","✓","✓","✓",
+  "Econ. index (6 items)",  "✓","✓","✓","✓","✓","✓","✓","✓","✓","✓","✓","✓",
+  "System proud",           "–","–","✓","✓","✓","✓","–","–","✓","✓","✓","✓",
+  "System prefer",          "–","–","✓","✓","✓","✓","–","–","✓","✓","✓","✓",
+  "System capable",         "–","–","✓","✓","✓","✓","–","–","✓","✓","✓","✓",
+  "System deserves support","–","–","✓","✓","✓","✓","–","–","✓","✓","✓","✓",
+  "National pride",         "–","✓","✓","✓","✓","✓","–","✓","✓","✓","✓","✓",
+  "China threat perception","–","–","✓","✓","✓","✓","–","–","✓","✓","✓","✓"
+)
+
+wording_stability |>
+  kbl(booktabs = TRUE, align = c("l", rep("c", 12))) |>
+  kable_styling(latex_options = "hold_position", font_size = 9) |>
+  add_header_above(c(" " = 1, "South Korea" = 6, "Taiwan" = 6))
+```
+
+No wording changes were detected across waves for the core satisfaction, normative preference, or economic evaluation items. System legitimacy and mechanism probe items are unavailable in Waves 1–2 (noted as "–").
+
+
+## C.2 Within-wave standardization {#sec-app-c2}
+
+To address the possibility that 0–1 normalization obscures distribution shifts across waves, the core models are re-estimated using within-wave z-scored outcomes. Within each country-wave cell, dependent variables are standardized to mean = 0 and SD = 1, so that coefficients represent within-wave standard deviation units.
+
+```{r tbl-c2}
+#| tbl-cap: "Core models re-estimated with within-wave z-scored outcomes (pooled waves 1–6 with wave FE)"
+
+zscore_results <- list()
+for (cntry in c("Korea", "Taiwan")) {
+  for (dv_pair in list(
+    c("sat_democracy_z", "Satisfaction (z)"),
+    c("qual_pref_dem_z", "Dem. preference (z)"),
+    c("qual_extent_z",   "Dem. extent (z)")
+  )) {
+    sub <- dat |> filter(country_label == cntry)
+    f <- as.formula(paste(dv_pair[1], "~ econ_index_z + factor(wave) +",
+                          "age_z + gender + edu_z + urban_rural + polint_z"))
+    m <- tryCatch(lm(f, data = sub), error = function(e) NULL)
+    if (is.null(m)) next
+    zscore_results[[paste(cntry, dv_pair[1])]] <-
+      tidy(m, conf.int = TRUE) |>
+      filter(term == "econ_index_z") |>
+      mutate(dv = dv_pair[2], country = cntry, n = nobs(m),
+             r_sq = summary(m)$r.squared)
+  }
+}
+
+bind_rows(zscore_results) |>
+  mutate(
+    Beta = fmt_bstar(estimate, p.value),
+    SE   = fmt_se(std.error),
+    R2   = fmt_b(r_sq)
+  ) |>
+  dplyr::select(Country = country, DV = dv, Beta, SE, R2, N = n) |>
+  kbl(booktabs = TRUE) |>
+  kable_styling(latex_options = "hold_position", font_size = 10)
+```
+
+Within-wave standardization produces substantively identical results: economic evaluations strongly predict satisfaction in both countries, predict democratic preference negatively in Taiwan and not at all in Korea.
+
+
+## C.3 Ordered logit models {#sec-app-c3}
+
+Because the original ABS items use ordinal response scales, the OLS specification treats ordinal data as continuous. Ordered logit models on the original scales confirm that the linear approximation is adequate.
+
+```{r tbl-c3}
+#| tbl-cap: "Ordered logit models on original ordinal response scales (pooled waves with wave FE)"
+
+ologit_results <- list()
+for (cntry in c("Korea", "Taiwan")) {
+  for (dv_pair in list(
+    c("democracy_satisfaction", "Satisfaction with democracy"),
+    c("dem_always_preferable",  "Dem. always preferable"),
+    c("dem_extent_current",     "Extent democratic")
+  )) {
+    sub <- dat |>
+      filter(country_label == cntry) |>
+      mutate(dv_ord = factor(.data[[dv_pair[1]]]))
+    if (length(unique(na.omit(sub$dv_ord))) < 2) next
+
+    f <- as.formula(paste("dv_ord ~ econ_index + factor(wave) +", controls))
+    m <- tryCatch(MASS::polr(f, data = sub, Hess = TRUE), error = function(e) NULL)
+    if (is.null(m)) next
+
+    ctable <- coef(summary(m))
+    if (!"econ_index" %in% rownames(ctable)) next
+
+    ologit_results[[paste(cntry, dv_pair[1])]] <- tibble(
+      country   = cntry,
+      dv        = dv_pair[2],
+      estimate  = ctable["econ_index", "Value"],
+      std.error = ctable["econ_index", "Std. Error"],
+      t_value   = ctable["econ_index", "t value"],
+      p.value   = 2 * pnorm(abs(ctable["econ_index", "t value"]), lower.tail = FALSE),
+      n         = nobs(m)
+    )
+  }
+}
+
+bind_rows(ologit_results) |>
+  mutate(
+    Beta = fmt_bstar(estimate, p.value),
+    SE   = fmt_se(std.error)
+  ) |>
+  dplyr::select(Country = country, DV = dv, Beta, SE, N = n) |>
+  kbl(booktabs = TRUE) |>
+  kable_styling(latex_options = "hold_position", font_size = 10)
+```
+
+Ordered logit results confirm the OLS findings. The Korea–Taiwan contrast on "democracy always preferable" is especially clear: near-zero in Korea, strongly negative in Taiwan. OLS estimates closely approximate the ordered logit coefficients, validating the linear specification.
+
+
+# Appendix D: Survey Weights {#sec-app-weights}
+
+The main analysis follows the convention in the ABS comparative literature of presenting unweighted estimates. This appendix confirms that the core findings are not sensitive to the weighting decision.
+
+```{r tbl-d}
+#| tbl-cap: "Core models re-estimated with ABS survey weights (pooled waves with wave FE)"
+
+weighted_results <- list()
+for (cntry in c("Korea", "Taiwan")) {
+  for (dv_pair in list(
+    c("sat_democracy_n", "Sat. democracy"),
+    c("qual_pref_dem_n", "Dem. preference"),
+    c("qual_extent_n",   "Dem. extent")
+  )) {
+    sub <- dat |> filter(country_label == cntry, !is.na(weight))
+    f <- as.formula(paste(dv_pair[1], "~ econ_index + factor(wave) +", controls))
+    m_uw <- tryCatch(lm(f, data = sub), error = function(e) NULL)
+    m_w  <- tryCatch(lm(f, data = sub, weights = weight), error = function(e) NULL)
+
+    if (!is.null(m_uw))
+      weighted_results[[paste(cntry, dv_pair[1], "uw")]] <-
+        extract_econ_coef(m_uw) |>
+        mutate(dv = dv_pair[2], country = cntry, model = "Unweighted", n = nobs(m_uw))
+    if (!is.null(m_w))
+      weighted_results[[paste(cntry, dv_pair[1], "w")]] <-
+        extract_econ_coef(m_w) |>
+        mutate(dv = dv_pair[2], country = cntry, model = "Weighted", n = nobs(m_w))
+  }
+}
+
+bind_rows(weighted_results) |>
+  mutate(Beta = fmt_bstar(estimate, p.value), SE = fmt_se(std.error)) |>
+  dplyr::select(Country = country, DV = dv, Model = model, Beta, SE, N = n) |>
+  arrange(Country, DV, Model) |>
+  kbl(booktabs = TRUE) |>
+  kable_styling(latex_options = "hold_position", font_size = 10) |>
+  collapse_rows(columns = 1:2, valign = "top")
+```
+
+Weighted and unweighted estimates are substantively identical across all dependent variables and both countries, consistent with the nationally representative probability sampling design of the ABS.
+
+
+# Appendix E: Additional Robustness Checks {#sec-app-robustness}
+
+## E.1 Institutional trust control {#sec-app-e1}
+
+Adding an institutional trust index (mean of normalized trust in national government, parliament, courts, and political parties) tests whether the economic channel operates through or independently of institutional trust.
+
+```{r tbl-e1}
+#| tbl-cap: "Core models with institutional trust index as additional control (pooled waves with wave FE)"
+
+trust_results <- list()
+for (cntry in c("Korea", "Taiwan")) {
+  for (dv_pair in list(
+    c("sat_democracy_n", "Sat. democracy"),
+    c("qual_pref_dem_n", "Dem. preference"),
+    c("qual_extent_n",   "Dem. extent")
+  )) {
+    sub <- dat |> filter(country_label == cntry)
+    f_base  <- as.formula(paste(dv_pair[1], "~ econ_index + factor(wave) +", controls))
+    f_trust <- as.formula(paste(dv_pair[1],
+                                "~ econ_index + trust_index + factor(wave) +", controls))
+
+    m_base  <- tryCatch(lm(f_base, data = sub), error = function(e) NULL)
+    m_trust <- tryCatch(lm(f_trust, data = sub), error = function(e) NULL)
+
+    if (!is.null(m_base))
+      trust_results[[paste(cntry, dv_pair[1], "base")]] <-
+        extract_econ_coef(m_base) |>
+        mutate(dv = dv_pair[2], country = cntry, model = "Base",
+               r_sq = summary(m_base)$r.squared, n = nobs(m_base))
+    if (!is.null(m_trust))
+      trust_results[[paste(cntry, dv_pair[1], "trust")]] <-
+        extract_econ_coef(m_trust) |>
+        mutate(dv = dv_pair[2], country = cntry, model = "+ Trust",
+               r_sq = summary(m_trust)$r.squared, n = nobs(m_trust))
+  }
+}
+
+bind_rows(trust_results) |>
+  mutate(Beta = fmt_bstar(estimate, p.value), SE = fmt_se(std.error),
+         R2 = fmt_b(r_sq)) |>
+  dplyr::select(Country = country, DV = dv, Model = model, Beta, SE, R2, N = n) |>
+  arrange(Country, DV, Model) |>
+  kbl(booktabs = TRUE) |>
+  kable_styling(latex_options = "hold_position", font_size = 10) |>
+  collapse_rows(columns = 1:2, valign = "top")
+```
+
+Adding institutional trust attenuates the economic–satisfaction coefficient modestly but leaves it highly significant, indicating that the economic channel operates partly through and partly independently of institutional trust. The economic–preference coefficient in Korea remains near zero with or without trust controls, confirming that the decoupling is not an artifact of omitted trust mediators.
+
+
+## E.2 Individual economic indicators {#sec-app-e2}
+
+The composite economic evaluation index aggregates six items. This appendix tests whether the core pattern holds for each component indicator entered individually.
+
+```{r tbl-e2}
+#| tbl-cap: "Individual economic indicators predicting satisfaction and democratic preference (Korea, pooled waves)"
+
+econ_vars <- c(
+  "econ_national_n"    = "National econ. (current)",
+  "econ_family_n"      = "Family econ. (current)",
+  "econ_change_n"      = "National econ. (change)",
+  "econ_fam_change_n"  = "Family econ. (change)",
+  "econ_outlook_n"     = "National econ. (outlook)",
+  "econ_fam_outlook_n" = "Family econ. (outlook)"
+)
+
+indiv_econ <- list()
+for (ev in names(econ_vars)) {
+  for (dv_pair in list(
+    c("sat_democracy_n", "Satisfaction"),
+    c("qual_pref_dem_n", "Dem. preference")
+  )) {
+    f <- as.formula(paste(dv_pair[1], "~", ev, "+ factor(wave) +", controls))
+    m <- tryCatch(lm(f, data = dat |> filter(country_label == "Korea")),
+                  error = function(e) NULL)
+    if (is.null(m)) next
+    indiv_econ[[paste(ev, dv_pair[1])]] <-
+      tidy(m) |> filter(term == ev) |>
+      mutate(dv = dv_pair[2], econ_var = econ_vars[ev], n = nobs(m))
+  }
+}
+
+bind_rows(indiv_econ) |>
+  mutate(Beta = fmt_bstar(estimate, p.value), SE = fmt_se(std.error)) |>
+  dplyr::select(`Econ. indicator` = econ_var, DV = dv, Beta, SE) |>
+  pivot_wider(names_from = DV, values_from = c(Beta, SE),
+              names_glue = "{DV}_{.value}") |>
+  dplyr::select(`Econ. indicator`,
+                `$\\beta$ Sat.` = `Satisfaction_Beta`,
+                `SE Sat.`       = `Satisfaction_SE`,
+                `$\\beta$ Pref.` = `Dem. preference_Beta`,
+                `SE Pref.`       = `Dem. preference_SE`) |>
+  kbl(booktabs = TRUE, escape = FALSE) |>
+  kable_styling(latex_options = "hold_position", font_size = 10)
+```
+
+All six economic evaluation components significantly predict satisfaction in Korea. None significantly predict democratic preference. Sociotropic evaluations (national economy) tend to be somewhat stronger predictors of satisfaction than pocketbook evaluations (family economy), consistent with the broader economic voting literature, but the decoupling pattern holds for all components.
+
+
+## E.3 Additional controls {#sec-app-e3}
+
+The baseline models control for age, gender, education, urban–rural residence, and political interest. This appendix tests robustness to the inclusion of household income.
+
+```{r tbl-e3}
+#| tbl-cap: "Core models with household income control (Korea)"
+
+extra_ctrl <- list()
+for (dv_pair in list(
+  c("sat_democracy_n", "Sat. democracy"),
+  c("qual_pref_dem_n", "Dem. preference")
+)) {
+  sub <- dat |> filter(country_label == "Korea", !is.na(income_quintile))
+  f_base  <- as.formula(paste(dv_pair[1], "~ econ_index + factor(wave) +", controls))
+  f_extra <- as.formula(paste(dv_pair[1],
+                              "~ econ_index + factor(wave) + factor(income_quintile) +",
+                              controls))
+
+  m_base  <- tryCatch(lm(f_base, data = sub), error = function(e) NULL)
+  m_extra <- tryCatch(lm(f_extra, data = sub), error = function(e) NULL)
+
+  if (!is.null(m_base))
+    extra_ctrl[[paste(dv_pair[1], "base")]] <-
+      extract_econ_coef(m_base) |>
+      mutate(dv = dv_pair[2], model = "Base", n = nobs(m_base))
+  if (!is.null(m_extra))
+    extra_ctrl[[paste(dv_pair[1], "income")]] <-
+      extract_econ_coef(m_extra) |>
+      mutate(dv = dv_pair[2], model = "+ Income quintile", n = nobs(m_extra))
+}
+
+bind_rows(extra_ctrl) |>
+  mutate(Beta = fmt_bstar(estimate, p.value), SE = fmt_se(std.error)) |>
+  dplyr::select(DV = dv, Model = model, Beta, SE, N = n) |>
+  arrange(DV, Model) |>
+  kbl(booktabs = TRUE) |>
+  kable_styling(latex_options = "hold_position", font_size = 10) |>
+  collapse_rows(columns = 1, valign = "top")
+```
+
+Adding income quintile controls does not alter the core pattern: economic evaluations continue to predict satisfaction strongly while showing no relationship with democratic preference in Korea.
+
+
+## E.4 Placebo outcomes {#sec-app-e4}
+
+If economic evaluations operate through a diffuse halo effect rather than through the specific performance–satisfaction channel, they should predict a range of political and social attitudes indiscriminately. This appendix tests two theoretically unrelated outcomes to establish discriminant validity.
+
+```{r tbl-e4}
+#| tbl-cap: "Placebo tests: economic evaluations predicting theoretically unrelated outcomes (Korea, pooled waves)"
+
+placebo_dvs <- c(
+  "trust_generalized_ordinal" = "Generalized trust",
+  "nat_proud_n"               = "National pride"
+)
+
+placebo_results <- list()
+for (dv_var in names(placebo_dvs)) {
+  sub <- dat |> filter(country_label == "Korea", !is.na(.data[[dv_var]]))
+  if (nrow(sub) < 500) next
+
+  if (max(sub[[dv_var]], na.rm = TRUE) > 1) {
+    sub <- sub |> mutate(
+      dv_norm = (.data[[dv_var]] - min(.data[[dv_var]], na.rm = TRUE)) /
+                (max(.data[[dv_var]], na.rm = TRUE) - min(.data[[dv_var]], na.rm = TRUE))
+    )
+  } else {
+    sub <- sub |> mutate(dv_norm = .data[[dv_var]])
+  }
+
+  f <- as.formula(paste("dv_norm ~ econ_index + factor(wave) +", controls))
+  m <- tryCatch(lm(f, data = sub), error = function(e) NULL)
+  if (is.null(m)) next
+
+  placebo_results[[dv_var]] <-
+    extract_econ_coef(m) |>
+    mutate(dv = placebo_dvs[dv_var], n = nobs(m),
+           r_sq = summary(m)$r.squared)
+}
+
+bind_rows(placebo_results) |>
+  mutate(Beta = fmt_bstar(estimate, p.value), SE = fmt_se(std.error),
+         R2 = fmt_b(r_sq)) |>
+  dplyr::select(DV = dv, Beta, SE, R2, N = n) |>
+  kbl(booktabs = TRUE) |>
+  kable_styling(latex_options = "hold_position", font_size = 10)
+```
+
+Economic evaluations do not significantly predict generalized trust or national pride, establishing discriminant validity: the economic channel is specific to satisfaction with democratic performance, not a diffuse halo effect on all attitudinal domains.
+
+
+# Appendix F: Identity Mechanism Probes {#sec-app-identity}
+
+## F.1 National pride as moderator {#sec-app-f1}
+
+The theoretical framework attributes Taiwan's critical citizens pattern to the fusion of democratic and national identity. If this mechanism operates at the individual level, the negative econ → democratic preference relationship should be amplified among Taiwanese citizens with strong national pride. The same amplification should not appear in Korea, where national pride is tied to economic achievement rather than democratic governance.
+
+```{r tbl-f1}
+#| tbl-cap: "National pride moderation of the econ → democratic preference relationship (Waves 2–6)"
+
+pride_results <- list()
+for (cntry in c("Korea", "Taiwan")) {
+  # Median-split subgroups
+  for (grp in c("High pride", "Low pride")) {
+    sub <- dat |> filter(country_label == cntry, nat_proud_high == grp)
+    if (nrow(sub) < 200) next
+
+    f <- as.formula(paste("qual_pref_dem_n ~ econ_index + factor(wave) +", controls))
+    m <- tryCatch(lm(f, data = sub), error = function(e) NULL)
+    if (is.null(m)) next
+    pride_results[[paste(cntry, grp)]] <-
+      extract_econ_coef(m) |>
+      mutate(dv = "Dem. preference", country = cntry, group = grp, n = nobs(m))
+  }
+
+  # Continuous interaction
+  sub <- dat |> filter(country_label == cntry, !is.na(nat_proud_n))
+  sub <- sub |> mutate(pride_c = nat_proud_n - mean(nat_proud_n, na.rm = TRUE))
+  f_int <- as.formula(paste("qual_pref_dem_n ~ econ_index * pride_c + factor(wave) +",
+                             controls))
+  m_int <- tryCatch(lm(f_int, data = sub), error = function(e) NULL)
+  if (!is.null(m_int))
+    pride_results[[paste(cntry, "interaction")]] <-
+      tidy(m_int, conf.int = TRUE) |>
+      filter(term == "econ_index:pride_c") |>
+      mutate(dv = "Dem. preference", country = cntry,
+             group = "Interaction (econ × pride)", n = nobs(m_int))
+}
+
+bind_rows(pride_results) |>
+  mutate(Beta = fmt_bstar(estimate, p.value), SE = fmt_se(std.error)) |>
+  dplyr::select(Country = country, Group = group, Beta, SE, N = n) |>
+  kbl(booktabs = TRUE) |>
+  kable_styling(latex_options = "hold_position", font_size = 10) |>
+  collapse_rows(columns = 1, valign = "top")
+```
+
+National pride does not significantly moderate the economic–preference relationship in either country. The critical citizens pattern in Taiwan is pervasive across pride levels, not concentrated among the most nationally identified. The interaction term is nonsignificant in both countries. As discussed in the main text, this suggests the identity-fusion mechanism operates at the macro-political level rather than varying with individual-level national pride, which captures a broader and more diffuse patriotic sentiment.
+
+
+## F.1b System legitimacy as moderator {#sec-app-f1b}
+
+National pride may be too diffuse a proxy for democratic-national identity fusion. The system legitimacy items---"I am proud of our system of government," "I would rather live under our system"---are more targeted indicators of attachment to the specific democratic political system. In Taiwan, where "our system" constitutes national distinctiveness from China, high system identification should amplify critical citizenship. In Korea, system attachment is expected to reflect performance satisfaction rather than identity-fused democratic commitment.
+
+```{r tbl-f1b}
+#| tbl-cap: "System legitimacy moderation of the econ → democratic preference relationship (Waves 3–6)"
+
+dat_sys <- dat |> filter(wave >= 3)
+dat_sys <- dat_sys |>
+  group_by(country_label) |>
+  mutate(
+    sys_legit_high = case_when(
+      sys_legit_index  > median(sys_legit_index, na.rm = TRUE) ~ "High system ID",
+      sys_legit_index <= median(sys_legit_index, na.rm = TRUE) ~ "Low system ID"
+    )
+  ) |>
+  ungroup()
+
+syslegit_results <- list()
+for (cntry in c("Korea", "Taiwan")) {
+  for (grp in c("High system ID", "Low system ID")) {
+    sub <- dat_sys |> filter(country_label == cntry, sys_legit_high == grp)
+    if (nrow(sub) < 200) next
+
+    f <- as.formula(paste("qual_pref_dem_n ~ econ_index + factor(wave) +", controls))
+    m <- tryCatch(lm(f, data = sub), error = function(e) NULL)
+    if (is.null(m)) next
+    syslegit_results[[paste(cntry, grp)]] <-
+      extract_econ_coef(m) |>
+      mutate(country = cntry, group = grp, n = nobs(m))
+  }
+
+  sub <- dat_sys |> filter(country_label == cntry, !is.na(sys_legit_index))
+  sub <- sub |> mutate(sys_c = sys_legit_index - mean(sys_legit_index, na.rm = TRUE))
+  f_int <- as.formula(paste("qual_pref_dem_n ~ econ_index * sys_c + factor(wave) +",
+                             controls))
+  m_int <- tryCatch(lm(f_int, data = sub), error = function(e) NULL)
+  if (!is.null(m_int))
+    syslegit_results[[paste(cntry, "interaction")]] <-
+      tidy(m_int, conf.int = TRUE) |>
+      filter(term == "econ_index:sys_c") |>
+      mutate(country = cntry, group = "Interaction (econ × sys. legit.)", n = nobs(m_int))
+}
+
+bind_rows(syslegit_results) |>
+  mutate(Beta = fmt_bstar(estimate, p.value), SE = fmt_se(std.error)) |>
+  dplyr::select(Country = country, Group = group, Beta, SE, N = n) |>
+  kbl(booktabs = TRUE) |>
+  kable_styling(latex_options = "hold_position", font_size = 10) |>
+  collapse_rows(columns = 1, valign = "top")
+```
+
+```{r tbl-f1b-items}
+#| tbl-cap: "Individual system legitimacy items as moderators of econ → democratic preference (Waves 3–6)"
+
+sys_items_mod <- c(
+  "sys_proud_n"        = "System proud",
+  "sys_prefer_n"       = "System prefer",
+  "sys_capable_n"      = "System capable",
+  "qual_sys_support_n" = "System deserves support"
+)
+
+item_int_results <- list()
+for (cntry in c("Korea", "Taiwan")) {
+  sub <- dat_sys |> filter(country_label == cntry)
+
+  for (sv in names(sys_items_mod)) {
+    sub_m <- sub |>
+      mutate(mod_c = .data[[sv]] - mean(.data[[sv]], na.rm = TRUE))
+    f <- as.formula(paste("qual_pref_dem_n ~ econ_index * mod_c + factor(wave) +",
+                           controls))
+    m <- tryCatch(lm(f, data = sub_m), error = function(e) NULL)
+    if (is.null(m)) next
+    item_int_results[[paste(cntry, sv)]] <-
+      tidy(m, conf.int = TRUE) |>
+      filter(term == "econ_index:mod_c") |>
+      mutate(country = cntry, moderator = sys_items_mod[sv], n = nobs(m))
+  }
+}
+
+bind_rows(item_int_results) |>
+  mutate(Beta = fmt_bstar(estimate, p.value), SE = fmt_se(std.error)) |>
+  dplyr::select(Country = country, Moderator = moderator, Beta, SE, N = n) |>
+  kbl(booktabs = TRUE) |>
+  kable_styling(latex_options = "hold_position", font_size = 10) |>
+  collapse_rows(columns = 1, valign = "top")
+```
+
+
+## F.2 China threat perception as moderator (Taiwan) {#sec-app-f2}
+
+If the identity-fusion mechanism is driven by cross-strait threat activating the link between Taiwanese national identity and democratic commitment, the critical citizens pattern should be stronger among Taiwanese citizens who perceive China as threatening. China threat perception is available Waves 3–6 for Taiwan.
+
+```{r tbl-f2}
+#| tbl-cap: "China threat moderation of the econ → democratic preference relationship (Taiwan, Waves 3–6)"
+
+tw_china <- dat |> filter(country_label == "Taiwan", !is.na(china_threat))
+
+china_results <- list()
+for (grp in c("China harmful", "China beneficial")) {
+  sub <- tw_china |> filter(china_threat == grp)
+  if (nrow(sub) < 100) next
+
+  f <- as.formula(paste("qual_pref_dem_n ~ econ_index + factor(wave) +", controls))
+  m <- tryCatch(lm(f, data = sub), error = function(e) NULL)
+  if (is.null(m)) next
+  china_results[[grp]] <-
+    extract_econ_coef(m) |>
+    mutate(dv = "Dem. preference", group = grp, n = nobs(m))
+}
+
+# Continuous interaction
+tw_china <- tw_china |>
+  mutate(china_harm_bin = as.numeric(china_threat == "China harmful"))
+f_int <- as.formula(paste("qual_pref_dem_n ~ econ_index * china_harm_bin + factor(wave) +",
+                           controls))
+m_int <- tryCatch(lm(f_int, data = tw_china), error = function(e) NULL)
+
+if (!is.null(m_int))
+  china_results[["interaction"]] <-
+    tidy(m_int, conf.int = TRUE) |>
+    filter(term == "econ_index:china_harm_bin") |>
+    mutate(dv = "Dem. preference",
+           group = "Interaction (econ × China harm)", n = nobs(m_int))
+
+bind_rows(china_results) |>
+  mutate(Beta = fmt_bstar(estimate, p.value), SE = fmt_se(std.error)) |>
+  dplyr::select(Group = group, Beta, SE, N = n) |>
+  kbl(booktabs = TRUE) |>
+  kable_styling(latex_options = "hold_position", font_size = 10)
+```
+
+
+## F.3 Korea comparison: national pride moderation {#sec-app-f3}
+
+The Korean counterpart to @tbl-f1 tests whether national pride moderates the economic–preference relationship in Korea. The theoretical framework predicts no moderation in Korea, because Korean national pride is tied to economic achievement and cultural prestige rather than to democratic governance per se.
+
+```{r tbl-f3}
+#| tbl-cap: "National pride moderation in Korea vs. Taiwan: subgroup and interaction results (Waves 2–6)"
+
+kr_tw_pride <- list()
+for (cntry in c("Korea", "Taiwan")) {
+  sub_all <- dat |> filter(country_label == cntry, !is.na(nat_proud_n))
+  sub_all <- sub_all |>
+    mutate(pride_c = nat_proud_n - mean(nat_proud_n, na.rm = TRUE))
+
+  # Interaction model
+  f_int <- as.formula(paste("qual_pref_dem_n ~ econ_index * pride_c + factor(wave) +",
+                             controls))
+  m_int <- tryCatch(lm(f_int, data = sub_all), error = function(e) NULL)
+
+  if (!is.null(m_int)) {
+    kr_tw_pride[[paste(cntry, "main")]] <-
+      tidy(m_int, conf.int = TRUE) |>
+      filter(term == "econ_index") |>
+      mutate(country = cntry, row_label = "Econ. (main effect)", n = nobs(m_int))
+    kr_tw_pride[[paste(cntry, "int")]] <-
+      tidy(m_int, conf.int = TRUE) |>
+      filter(term == "econ_index:pride_c") |>
+      mutate(country = cntry, row_label = "Econ. × Pride (interaction)", n = nobs(m_int))
+    kr_tw_pride[[paste(cntry, "pride")]] <-
+      tidy(m_int, conf.int = TRUE) |>
+      filter(term == "pride_c") |>
+      mutate(country = cntry, row_label = "Pride (main effect)", n = nobs(m_int))
+  }
+}
+
+bind_rows(kr_tw_pride) |>
+  mutate(Beta = fmt_bstar(estimate, p.value), SE = fmt_se(std.error)) |>
+  dplyr::select(Country = country, Term = row_label, Beta, SE, N = n) |>
+  arrange(Country, Term) |>
+  kbl(booktabs = TRUE) |>
+  kable_styling(latex_options = "hold_position", font_size = 10) |>
+  collapse_rows(columns = 1, valign = "top")
+```
+
+As predicted, national pride does not significantly moderate the economic–preference relationship in Korea (the interaction term is nonsignificant), paralleling the null interaction in Taiwan. The country-level pattern of pervasive critical citizenship in Taiwan versus pervasive decoupling in Korea is a structural difference that does not vary with individual pride levels in either country.
+
+
+# Appendix G: Subgroup Analyses {#sec-app-subgroups}
+
+The main text reports the politically interested subgroup finding. This appendix provides full tables for all demographic subgroup splits.
+
+## G.1–G.3 Age, education, and political interest {#sec-app-g}
+
+```{r tbl-g}
+#| tbl-cap: "Subgroup heterogeneity: economic evaluations predicting satisfaction and democratic preference (pooled waves with wave FE)"
+
+subgroup_full <- list()
+for (cntry in c("Korea", "Taiwan")) {
+  cdat <- dat |> filter(country_label == cntry)
+
+  for (split_var in c("age_group", "edu_group", "polint_group")) {
+    groups <- cdat |> pull(!!sym(split_var)) |> unique() |> na.omit()
+
+    for (grp in groups) {
+      sub <- cdat |> filter(!!sym(split_var) == grp)
+      if (nrow(sub) < 200) next
+
+      for (dv_pair in list(
+        c("sat_democracy_n", "Satisfaction"),
+        c("qual_pref_dem_n", "Dem. preference")
+      )) {
+        f <- as.formula(paste(dv_pair[1], "~ econ_index + factor(wave) +", controls))
+        m <- tryCatch(lm(f, data = sub), error = function(e) NULL)
+        if (is.null(m)) next
+
+        subgroup_full[[paste(cntry, split_var, grp, dv_pair[1])]] <-
+          extract_econ_coef(m) |>
+          mutate(dv = dv_pair[2], country = cntry,
+                 split = case_when(
+                   split_var == "age_group"    ~ "Age",
+                   split_var == "edu_group"    ~ "Education",
+                   split_var == "polint_group" ~ "Political interest"
+                 ),
+                 group = grp, n = nobs(m))
+      }
+    }
+  }
+}
+
+bind_rows(subgroup_full) |>
+  mutate(Beta = fmt_bstar(estimate, p.value), SE = fmt_se(std.error)) |>
+  dplyr::select(Country = country, Split = split, Group = group,
+                DV = dv, Beta, SE, N = n) |>
+  arrange(Country, Split, Group, DV) |>
+  kbl(booktabs = TRUE, longtable = TRUE) |>
+  kable_styling(latex_options = c("hold_position", "repeat_header"), font_size = 9) |>
+  collapse_rows(columns = 1:3, valign = "top")
+```
+
+The decoupling pattern in Korea holds across all demographic subgroups: economic evaluations consistently predict satisfaction while showing no significant positive relationship with democratic preference in any subgroup. In Taiwan, the negative economic–preference relationship is similarly consistent across subgroups. The most analytically informative finding concerns political interest in Korea: among politically engaged Korean citizens, economic evaluations show a marginally negative association with democratic preference, partially mirroring the Taiwanese critical citizens pattern. This engaged-minority finding is discussed in the main text.
+
+
+# Appendix H: Alternative Normative Commitment Measures {#sec-app-alt-norm .unnumbered}
+
+The main analysis identifies a decoupling between economic evaluations and normative democratic commitment in Korea, measured by the "democracy is always preferable" item, alongside a critical citizens pattern in Taiwan on the same item. A natural concern is whether this finding is robust to alternative operationalizations of normative commitment or whether it is an artifact of one particular survey item.
+
+Four alternative measures from the ABS are tested. Each captures a different facet of pro-democratic attitudes, and each is available across multiple waves in both countries:
+
+(1) *Democracy is the best form of government* (Waves 3--6). This item asks respondents whether they agree that "democracy may have its problems, but it is still the best form of government." Despite its surface similarity to "democracy is always preferable," the two items differ in an analytically important way: the "best form" framing invites a comparative evaluation (best relative to available alternatives), while the "always preferable" framing demands an unconditional commitment (preferable regardless of circumstances). The pooled economic evaluation coefficient is positive and significant in both Korea ($\beta$ = `r .alt_b("Korea", "norm_best_form")`, *p* `r .alt_p("Korea", "norm_best_form")`) and Taiwan ($\beta$ = `r .alt_b("Taiwan", "norm_best_form")`, *p* `r .alt_p("Taiwan", "norm_best_form")`). Economically comfortable citizens in both countries are more likely to agree that democracy is the best available system---but in Korea this comparative endorsement does not extend to unconditional commitment.
+
+(2) *Democracy versus economic development* (Waves 1--6). Respondents are asked to choose between democracy and economic development as the more important priority. After excluding the "both equally important" category (which does not lie on the democracy--economy continuum), the remaining four-point scale runs from economic development definitely more important to democracy definitely more important. The pooled coefficient is positive and significant in both countries (Korea $\beta$ = `r .alt_b("Korea", "norm_dem_vs_econ")`, *p* `r .alt_p("Korea", "norm_dem_vs_econ")`; Taiwan $\beta$ = `r .alt_b("Taiwan", "norm_dem_vs_econ")`, *p* `r .alt_p("Taiwan", "norm_dem_vs_econ")`), with no meaningful cross-country difference. When asked to prioritize democracy against economic development specifically, economically comfortable citizens in both countries favor democracy---consistent with the logic that material security frees citizens from prioritizing economic concerns.
+
+(3) *Democracy is suitable for our country* (Waves 1--6). This 10-point item captures perceived fit between democracy and the respondent's national context. The pooled coefficient is positive and significant in both countries (Korea $\beta$ = `r .alt_b("Korea", "norm_suitability")`, *p* `r .alt_p("Korea", "norm_suitability")`; Taiwan $\beta$ = `r .alt_b("Taiwan", "norm_suitability")`, *p* `r .alt_p("Taiwan", "norm_suitability")`). The cross-country interaction is significant ($\beta$ = `r .alt_xc_b("norm_suitability")`, *p* `r .alt_xc_p("norm_suitability")`), indicating a weaker positive effect in Korea than Taiwan---consistent with the broader pattern that economic evaluations are less tightly linked to democratic assessment in Korea---but notably the Korean coefficient is still positive and significant, not null. Economically comfortable Koreans do consider democracy more suitable; they simply do not translate this judgment into unconditional normative commitment.
+
+(4) *Democracy is capable of solving society's problems* (Waves 1--6). This binary item captures perceived democratic efficacy. The pooled coefficient is positive and significant in both countries (Korea $\beta$ = `r .alt_b("Korea", "norm_efficacy")`, *p* `r .alt_p("Korea", "norm_efficacy")`; Taiwan $\beta$ = `r .alt_b("Taiwan", "norm_efficacy")`, *p* `r .alt_p("Taiwan", "norm_efficacy")`). As with suitability, the effect is substantially larger in Taiwan, but it is clearly present in Korea.
+
+The pattern across all four measures is consistent. Economic evaluations are positively associated with conditional democratic endorsement in both countries. The Korea--Taiwan divergence appears exclusively on the "democracy is always preferable" item---the one measure that demands unconditional normative commitment rather than contingent assessment of democracy's merits, fit, or capacity. This result validates the theoretical distinction between diffuse and specific support that structures the paper's argument. Performance-derived legitimation, as theorized here, does not produce citizens who are hostile to democracy or who fail to recognize its merits; it produces citizens who endorse democracy instrumentally without developing the principled attachment that Easton's [-@Easton1979-rc] framework identified as the foundation of long-term regime stability.
+
+<!-- @tbl-alt-norm: Insert Table (alternative normative DVs, pooled results) -->
+
+# References {.unnumbered}
+
+::: {#refs}
+:::
+

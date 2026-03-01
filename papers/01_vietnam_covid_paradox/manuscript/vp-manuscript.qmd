@@ -54,6 +54,7 @@ execute:
 knitr:
   opts_knit:
     root.dir: "."
+repo-actions: false
 ---
 
 ```{r setup, include=FALSE}
@@ -611,7 +612,7 @@ Several plausible alternatives cannot be cleanly eliminated with cross-sectional
 
 *Prior regime legitimacy* from Vietnam's post-*Đổi Mới* economic transformation may account for baseline support levels [@Malesky2014-wz]. This is plausible as a contributor to generalized trust, but it cannot explain why COVID-*specific* infection and economic hardship show such feeble associations with COVID-*specific* approval within Vietnam. If legacy effects operate, they should manifest primarily through the institutional trust variable, which the models control for.
 
-*Social desirability bias* is the most serious concern. Respondents in authoritarian settings may report approval they do not feel. Section 5 addresses this at length, but two observations bear noting here: the Asian Barometer employs standardized anonymity protocols across all three countries, and Vietnamese respondents openly reported the region's highest infection rates alongside substantial disagreement that people are free to speak without fear---responses difficult to reconcile with uniform social desirability driving all pro-government answers.
+*Social desirability bias* is the most serious concern. Respondents in authoritarian settings may report approval they do not feel. Section 5 addresses this at length, but two observations bear noting here: the Asian Barometer employs standardised anonymity protocols across all three countries, and Vietnamese respondents openly reported the region's highest infection rates alongside substantial disagreement that people are free to speak without fear---responses difficult to reconcile with uniform social desirability driving all pro-government answers.
 
 Thailand provides the crucial comparative leverage. If something common to Southeast Asian culture explains the pattern---hierarchical values, Confucian deference, Buddhist equanimity---then Thailand, sharing the regional context, should show similar approval dynamics. It does not. Thailand's more pluralistic information environment and lower baseline trust create the conditions under which H2 can be tested most cleanly: does infection reduce approval among citizens who distrust official information? The answer is yes.
 
@@ -695,7 +696,7 @@ In Thailand, where baseline approval (`r round(thailand$approval_pct, 1)`%) and 
 
 Thailand's deeply polarized political climate during this period---the 2020--2021 anti-government protests explicitly linked pandemic governance to broader critiques of military-backed rule---raises the question of whether this interaction merely captures partisanship by another name. The ABS does not include a direct measure of party identification or protest participation, but the models control for democracy satisfaction and authoritarian acceptance, which serve as proxies for the political orientations that structured Thailand's protest cleavage. The infection--trust interaction survives these controls. Whatever partisan dynamics are at work in Thai politics, the information-credibility mechanism is not reducible to them.
 
-Vietnam and Cambodia show null interactions---which, far from undermining H2, reflects ceiling effects. With `r round(vietnam$trust_pct, 1)`% of Vietnamese respondents and `r round(cambodia$trust_pct, 1)`% of Cambodian respondents trusting official COVID-19 information, there is simply insufficient variation in trust to observe the low-trust accountability mechanism that Thailand reveals. The information-credibility heuristic has already done its work---not as a conditional moderator but as the population-wide baseline. Even within Vietnam's compressed trust distribution, the standardized trust coefficient (β = 0.31--0.41 across specifications) remains among the model's largest effects (Online Appendix F).
+Vietnam and Cambodia show null interactions---which, far from undermining H2, reflects ceiling effects. With `r round(vietnam$trust_pct, 1)`% of Vietnamese respondents and `r round(cambodia$trust_pct, 1)`% of Cambodian respondents trusting official COVID-19 information, there is simply insufficient variation in trust to observe the low-trust accountability mechanism that Thailand reveals. The information-credibility heuristic has already done its work---not as a conditional moderator but as the population-wide baseline. Even within Vietnam's compressed trust distribution, the standardised trust coefficient (β = 0.31--0.41 across specifications) remains among the model's largest effects (Online Appendix F).
 
 Taken together, the three-country pattern strongly supports H2. Where trust varies, infection affects approval in the direction performance theory predicts, but only among low-trust citizens. Where trust is near-universal, infection and approval are decoupled entirely.
 

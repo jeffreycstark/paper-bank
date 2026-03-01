@@ -453,10 +453,11 @@ if (!is.null(scale_reliability)) {
       flextable() %>%
       set_table_properties(layout = "autofit", width = 1) %>%
       theme_booktabs() %>%
+      set_header_labels(Cronbach_alpha = "\u03b1") %>%
       align(align = "left", part = "all") %>%
       align(j = c("Items", "N", "Cronbach_alpha"), align = "right", part = "all") %>%
       colformat_double(j = "Cronbach_alpha", digits = 3) %>%
-      add_footer_lines("Note: All scales exceed the conventional α ≥ 0.70 threshold for acceptable internal consistency.")
+      add_footer_lines("Note: All scales exceed the conventional \u03b1 \u2265 0.70 threshold for acceptable internal consistency.")
   } else if (knitr::is_latex_output()) {
     # Use kable for PDF - rename alpha column for proper rendering
     tbl_data_pdf <- tbl_data %>%
@@ -792,7 +793,7 @@ if (!is.null(ab_data)) {
       width(j = 1, width = 1.5) %>%
       width(j = 2:7, width = 0.7) %>%
       fontsize(size = 9, part = "all") %>%
-      add_footer_lines("Note: *** p < 0.001, ** p < 0.01, * p < 0.05, † p < 0.10. HC3 robust standard errors.") %>%
+      add_footer_lines("Note: *** p < 0.001, ** p < 0.01, * p < 0.05, † p < 0.10. Standard errors from OLS.") %>%
       autofit()
   } else {
     tbl_wide %>%
@@ -805,7 +806,7 @@ if (!is.null(ab_data)) {
       tab_spanner(label = "Vietnam", columns = starts_with("Vietnam")) %>%
       tab_spanner(label = "Cambodia", columns = starts_with("Cambodia")) %>%
       tab_spanner(label = "Thailand", columns = starts_with("Thailand")) %>%
-      tab_footnote("Note: *** p < 0.001, ** p < 0.01, * p < 0.05, † p < 0.10. HC3 robust standard errors.") %>%
+      tab_footnote("Note: *** p < 0.001, ** p < 0.01, * p < 0.05, † p < 0.10. Standard errors from OLS.") %>%
       tab_options(table.font.size = px(9))
   }
 } else if (!is.null(rev_thailand_interaction)) {
@@ -973,7 +974,7 @@ Personal infection shows negligible associations with approval in all three coun
 ```{r table-a2}
 #| label: tbl-economic-approval
 #| tbl-pos: H
-#| tbl-cap: "Bivariate OLS: Economic Hardship and Government Approval"
+#| tbl-cap: "OLS Regression: Economic Hardship and Government Approval (Controlling for Trust)"
 
 if (!is.null(h4b_results)) {
   tibble(
@@ -986,12 +987,12 @@ if (!is.null(h4b_results)) {
     gt() %>%
     tab_header(
       title = "Effect of Economic Hardship on Government Approval",
-      subtitle = "Bivariate OLS Regression by Country"
+      subtitle = "OLS Regression Controlling for Trust, by Country"
     ) %>%
     fmt_number(columns = c(β, SE), decimals = 3) %>%
     fmt_number(columns = `p-value`, decimals = 4) %>%
     fmt_number(columns = N, decimals = 0) %>%
-    tab_footnote("Note: DV = Government pandemic handling (1-4 scale). Economic hardship = 1-4 severity scale. N varies due to listwise deletion on dependent variable.")
+    tab_footnote("Note: DV = Government pandemic handling (1-4 scale). Economic hardship = 1-4 severity scale. Model includes trust in COVID information as a control. N varies due to listwise deletion.")
 } else {
   cat("Economic results not available.\n")
 }
