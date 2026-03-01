@@ -46,7 +46,7 @@ format:
           \floatplacement{figure}{H}
           \floatplacement{table}{H}
           \raggedright
-          \newfontfamily\koreanfont{Noto Sans KR}[Script=Hangul]
+          \newfontfamily\koreanfont{Noto Sans KR}[Script=Hangul, Renderer=Harfbuzz]
           \DeclareTextFontCommand{\textkorean}{\koreanfont}
   html:
     toc: true
