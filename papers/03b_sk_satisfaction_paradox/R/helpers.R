@@ -1,5 +1,5 @@
-# R/helpers.R — Shared utilities for 03b_south_korea_decoupling_replication
-# Source after library(tidyverse) is loaded.
+# R/helpers.R — Shared utilities for 03b_sk_satisfaction_paradox
+# Source after library(tidyverse) and library(broom) are loaded.
 
 # ── Normalization ──────────────────────────────────────────────────────────────
 normalize_01 <- function(x) {
@@ -8,19 +8,15 @@ normalize_01 <- function(x) {
   (x - rng[1]) / (rng[2] - rng[1])
 }
 
-# ── Country filter helper ──────────────────────────────────────────────────────
-# Usage: filter_countries(dat, c(3, 7), c("Korea", "Taiwan"))
-filter_countries <- function(data, codes, labels) {
-  stopifnot(length(codes) == length(labels))
-  lkp <- setNames(labels, as.character(codes))
-  data |>
-    dplyr::filter(country %in% codes) |>
-    dplyr::mutate(
-      country_label = factor(lkp[as.character(country)], levels = labels)
-    )
+# ── Model helpers ──────────────────────────────────────────────────────────────
+controls <- "age_n + gender + edu_n + urban_rural + polint_n"
+
+extract_econ_coef <- function(model) {
+  broom::tidy(model, conf.int = TRUE) |>
+    dplyr::filter(term == "econ_index") |>
+    dplyr::select(estimate, std.error, statistic, p.value, conf.low, conf.high)
 }
 
-# ── Model helpers ──────────────────────────────────────────────────────────────
 sig_stars <- function(p) {
   dplyr::case_when(
     p < 0.001 ~ "***",
@@ -37,16 +33,29 @@ extract_coef <- function(model, term_name) {
     dplyr::select(estimate, std.error, statistic, p.value, conf.low, conf.high)
 }
 
-# ── Wave-year labeling ─────────────────────────────────────────────────────────
-# TODO: update with the correct survey years for this paper's countries
-# survey_years_lookup <- tibble::tibble(
-#   wave    = rep(1:6, 2),
-#   country = rep(c("Country A", "Country B"), each = 6),
-#   year    = c(YEAR_A1, YEAR_A2, ..., YEAR_B1, YEAR_B2, ...)
-# )
+# ── Survey year lookups ────────────────────────────────────────────────────────
+survey_years_kr <- c(2003, 2006, 2011, 2015, 2019, 2022)
+survey_years_tw <- c(2001, 2006, 2010, 2014, 2019, 2022)
+
+survey_years_lookup <- tibble::tibble(
+  wave    = rep(1:6, 2),
+  country = rep(c("Korea", "Taiwan"), each = 6),
+  year    = c(survey_years_kr, survey_years_tw)
+)
+
+# ── Country filter helper ──────────────────────────────────────────────────────
+filter_countries <- function(data, codes, labels) {
+  stopifnot(length(codes) == length(labels))
+  lkp <- setNames(labels, as.character(codes))
+  data |>
+    dplyr::filter(country %in% codes) |>
+    dplyr::mutate(
+      country_label = factor(lkp[as.character(country)], levels = labels)
+    )
+}
 
 # ── Trend slope helper ─────────────────────────────────────────────────────────
-# Returns tidy tibble: term, estimate, std.error, p.value, per_decade
+# Returns a tidy tibble with columns: term, estimate, std.error, p.value, per_decade
 calc_slope <- function(data, yvar, year_var = "year") {
   d <- data[!is.na(data[[yvar]]) & !is.na(data[[year_var]]), ]
   if (nrow(d) < 3) {
@@ -60,7 +69,7 @@ calc_slope <- function(data, yvar, year_var = "year") {
     dplyr::mutate(per_decade = estimate * 10)
 }
 
-# ── Publication ggplot theme ───────────────────────────────────────────────────
+# ── Publication theme ──────────────────────────────────────────────────────────
 theme_pub <- ggplot2::theme_minimal(base_size = 11) +
   ggplot2::theme(
     plot.title         = ggplot2::element_text(size = 11, face = "bold",
@@ -81,6 +90,10 @@ theme_pub <- ggplot2::theme_minimal(base_size = 11) +
   )
 
 # ── Colour palettes ────────────────────────────────────────────────────────────
-# TODO: update with country/variable names for this paper
-# pal_country <- c("Country A" = "#2166AC", "Country B" = "#D55E00")
-# pal_dv      <- c("DV1" = "#2166AC", "DV2" = "#B2182B")
+pal2        <- c("Satisfaction" = "#2166AC", "Democratic quality" = "#B2182B")
+pal3        <- c("Satisfaction" = "#2166AC", "Democratic quality" = "#B2182B",
+                 "Economic evaluations" = "#4DAF4A")
+pal_country <- c("Korea" = "#2166AC", "Taiwan" = "#D55E00")
+pal_dv3     <- c("Satisfaction"       = "#2166AC",
+                 "Abstract preference" = "#B2182B",
+                 "Auth rejection"      = "#4DAF4A")

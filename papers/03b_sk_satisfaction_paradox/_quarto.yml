@@ -4,7 +4,11 @@ project:
   render:
     - "manuscript/skdr-manuscript.qmd"
     - "manuscript/skdr-online-appendix.qmd"
-    - "!analysis/*.qmd"  # placeholder scripts; exclude until real data is wired up
+    - "analysis/00_data_preparation.qmd"
+    - "analysis/01_descriptive_analysis.qmd"
+    - "analysis/02_models.qmd"
+    - "analysis/03_auth_rejection.qmd"
+    - "analysis/04_item_specificity.qmd"
 
 # Global execute options
 execute:

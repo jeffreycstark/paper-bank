@@ -1,6 +1,6 @@
 ---
-title: "00 — Data Preparation: PAPER TITLE"
-subtitle: "ABS harmonized data — country filter, variable construction, index building"
+title: "00 — Data Preparation: The Satisfaction Paradox"
+subtitle: "ABS Korea + Taiwan, Waves 1–6 (2003–2022)"
 format:
   html:
     toc: true
@@ -16,8 +16,8 @@ execute:
   cache: true
 ---
 
-**Purpose**: Load harmonized ABS data, filter to paper countries, construct
-analysis variables and indices, and save the analysis-ready dataset.
+**Purpose**: Load harmonized ABS data for Korea and Taiwan, construct analysis
+variables (indices, normalized scales), and save analysis-ready datasets.
 
 - **Input**: `abs_harmonized_path` (via `_data_config.R`)
 - **Output**: `analysis/results/analysis_data.rds`
@@ -28,15 +28,13 @@ library(tidyverse)
 project_root <- "/Users/jeffreystark/Development/Research/paper-bank"
 source(file.path(project_root, "_data_config.R"))
 
-paper_dir    <- file.path(project_root, "papers/00-model")
+paper_dir    <- file.path(project_root, "papers/03b_sk_satisfaction_paradox")
 analysis_dir <- file.path(paper_dir, "analysis")
 results_dir  <- file.path(analysis_dir, "results")
 fig_dir      <- file.path(analysis_dir, "figures")
-tables_dir   <- file.path(analysis_dir, "tables")
 
 dir.create(results_dir, showWarnings = FALSE, recursive = TRUE)
-dir.create(fig_dir,     showWarnings = FALSE, recursive = TRUE)
-dir.create(tables_dir,  showWarnings = FALSE, recursive = TRUE)
+dir.create(fig_dir, showWarnings = FALSE, recursive = TRUE)
 
 source(file.path(paper_dir, "R", "helpers.R"))
 ```
@@ -48,66 +46,217 @@ abs_all <- readRDS(abs_harmonized_path)
 cat("ABS harmonized:", nrow(abs_all), "obs,",
     n_distinct(abs_all$country), "countries\n")
 
-# TODO: update country codes for this paper
-# Common ABS country codes: 1=Taiwan, 2=Philippines, 3=Korea, 4=Mongolia,
-# 5=Thailand, 6=Japan, 7=Vietnam, 8=Cambodia, 9=Singapore, 10=Malaysia,
-# 11=Indonesia, 12=Hong Kong
-
-PAPER_COUNTRIES <- c()  # TODO: set country codes, e.g. c(3, 7)
-PAPER_LABELS    <- c()  # TODO: set labels, e.g. c("Korea", "Taiwan")
-
+# Subset to Korea and Taiwan
 dat <- abs_all |>
-  filter(country %in% PAPER_COUNTRIES) |>
+  filter(country %in% c(3, 7)) |>
   mutate(
-    country_label = factor(
-      case_when(!!!setNames(
-        lapply(seq_along(PAPER_COUNTRIES),
-               function(i) PAPER_LABELS[i]),
-        paste0("country == ", PAPER_COUNTRIES)
-      )),
-      levels = PAPER_LABELS
-    )
+    country_label = case_when(
+      country == 3 ~ "Korea",
+      country == 7 ~ "Taiwan"
+    ),
+    country_label = factor(country_label, levels = c("Korea", "Taiwan"))
   )
 
-cat("Filtered dataset: n =", nrow(dat), "\n")
-for (lbl in PAPER_LABELS) {
-  cat(" ", lbl, ": n =", sum(dat$country_label == lbl), "\n")
-}
-cat("  Waves:", sort(unique(dat$wave)), "\n")
+cat("Korea + Taiwan: n =", nrow(dat), "\n")
+cat("  Korea:  n =", sum(dat$country == 3), "\n")
+cat("  Taiwan: n =", sum(dat$country == 7), "\n")
+cat("  Waves:", sort(unique(dat$wave)), "\n\n")
+
+# Survey year lookup
+wave_years <- dat |>
+  distinct(country_label, wave) |>
+  arrange(country_label, wave)
+print(wave_years)
 ```
 
 ## Construct analysis variables
 
-```{r construct-vars}
-# TODO: adapt variable names to this paper's DVs, IVs, and controls
-# Reference the ABS codebook for available items
+Normalize within each country (preserves cross-wave variation).
 
+```{r construct-vars}
 dat <- dat |>
   group_by(country_label) |>
   mutate(
-    # --- Dependent variables (normalize 0-1) ---
-    # dv1_n = normalize_01(VARIABLE_NAME),
+    # --- Satisfaction DVs ---
+    sat_democracy_n    = normalize_01(democracy_satisfaction),
+    sat_govt_n         = normalize_01(gov_sat_national),
 
-    # --- Independent variables ---
-    # iv1_n = normalize_01(VARIABLE_NAME),
+    # --- Democratic quality DVs ---
+    qual_pref_dem_n    = normalize_01(dem_always_preferable),
+    qual_extent_n      = normalize_01(dem_extent_current),
+    qual_sys_support_n = normalize_01(system_deserves_support),
+    qual_sys_change_n  = normalize_01(system_needs_change),
+
+    # --- Economic evaluation IVs ---
+    econ_national_n    = normalize_01(econ_national_now),
+    econ_family_n      = normalize_01(econ_family_now),
+    econ_outlook_n     = normalize_01(econ_outlook_1yr),
+    econ_fam_outlook_n = normalize_01(econ_family_outlook),
+    econ_change_n      = normalize_01(econ_change_1yr),
+    econ_fam_change_n  = normalize_01(econ_family_change),
 
     # --- Controls ---
-    age_n    = normalize_01(age),
-    edu_n    = normalize_01(education_level),
-    polint_n = normalize_01(political_interest)
+    age_n              = normalize_01(age),
+    edu_n              = normalize_01(education_level),
+    polint_n           = normalize_01(political_interest),
+
+    # --- Trust (for robustness) ---
+    trust_govt_n       = normalize_01(trust_national_government),
+    trust_parl_n       = normalize_01(trust_parliament),
+    trust_courts_n     = normalize_01(trust_courts),
+    trust_parties_n    = normalize_01(trust_political_parties),
+
+    # --- System legitimacy DVs (Bucket 3, waves 3-6) ---
+    sys_proud_n        = normalize_01(system_proud),
+    sys_prefer_n       = normalize_01(system_prefer),
+    sys_capable_n      = normalize_01(system_capable),
+    # system_deserves_support and system_needs_change already normalized above
+    # as qual_sys_support_n and qual_sys_change_n — keep those names for
+    # backward compatibility but note they belong to system legitimacy bucket
+
+    # --- Identity / mechanism probes ---
+    nat_proud_n        = normalize_01(nat_proud_citizen),
+    china_harm_n       = normalize_01(5L - intl_china_asia_goodharm),  # reverse: 1=harmful→4, 4=good→1; higher = more harm
+
+    # --- Authoritarian rule items (raw, for orientation check) ---
+    # IMPORTANT: Verify orientation before using auth_reject_* vars.
+    # If scale is 1=very bad, 4=very good (for the authoritarian alternative),
+    # then higher = MORE authoritarian support → we reverse to get rejection.
+    # If scale is 1=very good, 4=very bad, higher already = rejection → no reverse needed.
+    # Run the diagnostic below and check against the ABS codebook.
+    strongman_raw   = strongman_rule,
+    military_raw    = military_rule,
+    expert_raw      = expert_rule,
+    singleparty_raw = single_party_rule,
+
+    # Normalized without reversal (for nostalgia analysis — higher = more support)
+    strongman_n    = normalize_01(strongman_rule),
+    military_n     = normalize_01(military_rule),
+    expert_n       = normalize_01(expert_rule),
+    singleparty_n  = normalize_01(single_party_rule),
+
+    # Authoritarian REJECTION (reverse so higher = more rejection of auth rule)
+    # Formula: max_val + 1 - x reverses a 1-to-max scale
+    # If auth vars are 1=very bad...4=very good, max=4:  4+1-4=1 (very good→1), 4+1-1=4 (very bad→4)
+    # That gives higher = more bad evaluation = more rejection. Correct.
+    # CHECK: If auth vars already have higher = rejection, set these equal to strongman_n etc.
+    strongman_reject_n   = normalize_01(max(strongman_rule, na.rm = TRUE) + 1 - strongman_rule),
+    military_reject_n    = normalize_01(max(military_rule,  na.rm = TRUE) + 1 - military_rule),
+    expert_reject_n      = normalize_01(max(expert_rule,    na.rm = TRUE) + 1 - expert_rule),
+    singleparty_reject_n = normalize_01(max(single_party_rule, na.rm = TRUE) + 1 - single_party_rule),
   ) |>
   ungroup()
+
+# Binary splits for identity mechanism probes
+dat <- dat |>
+  mutate(
+    # National pride: high vs low (median split within country)
+    nat_proud_high = case_when(
+      nat_proud_citizen > median(nat_proud_citizen, na.rm = TRUE) ~ "High pride",
+      nat_proud_citizen <= median(nat_proud_citizen, na.rm = TRUE) ~ "Low pride"
+    ),
+    # China threat: 1-2 = harmful, 3-4 = beneficial (intl_china_asia_goodharm scale)
+    china_threat = case_when(
+      intl_china_asia_goodharm <= 2 ~ "China harmful",
+      intl_china_asia_goodharm >= 3 ~ "China beneficial"
+    )
+  )
 ```
 
 ## Construct indices
 
 ```{r construct-indices}
-# TODO: build composite indices appropriate for this paper using rowwise() means
-
 dat <- dat |>
   rowwise() |>
   mutate(
-    # index_name = mean(c_across(c(var1_n, var2_n, var3_n)), na.rm = TRUE)
+    # Economic evaluation index (6 items)
+    econ_index = mean(c_across(c(econ_national_n, econ_family_n,
+                                  econ_outlook_n, econ_fam_outlook_n,
+                                  econ_change_n, econ_fam_change_n)),
+                      na.rm = TRUE),
+
+    # Satisfaction index (2 items)
+    sat_index  = mean(c_across(c(sat_democracy_n, sat_govt_n)),
+                      na.rm = TRUE),
+
+    # Democratic quality index — core (2 items, available all waves)
+    qual_index = mean(c_across(c(qual_pref_dem_n, qual_extent_n)),
+                      na.rm = TRUE),
+
+    # Democratic quality index — extended (4 items, waves 3–6 only)
+    qual_index_ext = mean(c_across(c(qual_pref_dem_n, qual_extent_n,
+                                      qual_sys_support_n, qual_sys_change_n)),
+                          na.rm = TRUE),
+
+    # Institutional trust index (4 items)
+    trust_index = mean(c_across(c(trust_govt_n, trust_parl_n,
+                                   trust_courts_n, trust_parties_n)),
+                       na.rm = TRUE),
+
+    # System legitimacy index (5 items, waves 3-6 only)
+    sys_legit_index = mean(c_across(c(sys_proud_n, sys_prefer_n, sys_capable_n,
+                                       qual_sys_support_n, qual_sys_change_n)),
+                           na.rm = TRUE),
+
+    # Authoritarian rejection index (4 items, higher = more rejection)
+    auth_reject_index = mean(c_across(c(strongman_reject_n, military_reject_n,
+                                         expert_reject_n, singleparty_reject_n)),
+                             na.rm = TRUE),
+
+    # Auth nostalgia index (4 items, higher = more support for authoritarianism)
+    auth_index = mean(c_across(c(strongman_n, military_n,
+                                  expert_n, singleparty_n)),
+                      na.rm = TRUE),
+  ) |>
+  ungroup()
+```
+
+## Within-wave z-scores (for measurement comparability robustness)
+
+```{r within-wave-zscores}
+# Alternative normalization: z-scores computed within each country-wave
+dat <- dat |>
+  group_by(country_label, wave) |>
+  mutate(
+    sat_democracy_z  = as.numeric(scale(democracy_satisfaction)),
+    sat_govt_z       = as.numeric(scale(gov_sat_national)),
+    qual_pref_dem_z  = as.numeric(scale(dem_always_preferable)),
+    qual_extent_z    = as.numeric(scale(dem_extent_current)),
+    econ_index_z     = as.numeric(scale(econ_index)),
+    age_z            = as.numeric(scale(age)),
+    edu_z            = as.numeric(scale(education_level)),
+    polint_z         = as.numeric(scale(political_interest))
+  ) |>
+  ungroup()
+
+# Z-score indices
+dat <- dat |>
+  rowwise() |>
+  mutate(
+    sat_index_z  = mean(c_across(c(sat_democracy_z, sat_govt_z)), na.rm = TRUE),
+    qual_index_z = mean(c_across(c(qual_pref_dem_z, qual_extent_z)), na.rm = TRUE)
+  ) |>
+  ungroup()
+```
+
+## Subgroup variables
+
+```{r subgroup-vars}
+dat <- dat |>
+  group_by(country_label) |>
+  mutate(
+    age_group = case_when(
+      age <= median(age, na.rm = TRUE) ~ "Younger",
+      age >  median(age, na.rm = TRUE) ~ "Older"
+    ),
+    edu_group = case_when(
+      education_level <= median(education_level, na.rm = TRUE) ~ "Lower education",
+      education_level >  median(education_level, na.rm = TRUE) ~ "Higher education"
+    ),
+    polint_group = case_when(
+      political_interest <= median(political_interest, na.rm = TRUE) ~ "Low interest",
+      political_interest >  median(political_interest, na.rm = TRUE) ~ "High interest"
+    )
   ) |>
   ungroup()
 ```
@@ -115,22 +264,73 @@ dat <- dat |>
 ## Diagnostics
 
 ```{r diagnostics}
-cat("=== Variable coverage by country ===\n")
+cat("=== Index summary (Korea) ===\n")
+dat |>
+  filter(country_label == "Korea") |>
+  select(sat_index, qual_index, econ_index, trust_index) |>
+  summary() |>
+  print()
+
+cat("\n=== Index summary (Taiwan) ===\n")
+dat |>
+  filter(country_label == "Taiwan") |>
+  select(sat_index, qual_index, econ_index, trust_index) |>
+  summary() |>
+  print()
+
+cat("\n=== Key variable coverage by wave (Korea) ===\n")
+dat |>
+  filter(country_label == "Korea") |>
+  group_by(wave) |>
+  summarise(
+    n         = n(),
+    sat_ok    = sum(!is.na(sat_index)),
+    qual_ok   = sum(!is.na(qual_index)),
+    econ_ok   = sum(!is.na(econ_index)),
+    trust_ok  = sum(!is.na(trust_index)),
+    .groups   = "drop"
+  ) |>
+  print()
+```
+
+## Auth variable orientation check
+
+```{r auth-orientation}
+cat("=== AUTHORITARIAN VARIABLE ORIENTATION CHECK ===\n")
+cat("Check: do higher values = more support for authoritarianism (need reversal)?\n")
+cat("Or do higher values = more rejection (no reversal needed)?\n\n")
+
+cat("Korea Wave 1 — strongman_rule value frequencies:\n")
+dat |> filter(country_label == "Korea", wave == 1) |>
+  count(strongman_raw) |> print()
+
+cat("\nIf 1='very good way to govern' and 4='very bad way' → higher = rejection → NO reversal needed.\n")
+cat("If 1='very bad way' and 4='very good way' → higher = support → reversal needed (current code).\n\n")
+
+cat("Auth rejection index summary:\n")
 dat |>
   group_by(country_label) |>
   summarise(
-    n      = n(),
-    waves  = paste(sort(unique(wave)), collapse = ", "),
+    mean_reject = mean(auth_reject_index, na.rm = TRUE),
+    mean_support = mean(auth_index, na.rm = TRUE),
+    .groups = "drop"
+  ) |> print()
+
+cat("\nIf mean_reject + mean_support ≈ 1.0, the variables are properly mirror images.\n")
+
+cat("\n=== Authoritarian rejection coverage ===\n")
+dat |>
+  group_by(country_label, wave) |>
+  summarise(
+    n = n(),
+    strongman_ok    = sum(!is.na(strongman_rule)),
+    military_ok     = sum(!is.na(military_rule)),
+    expert_ok       = sum(!is.na(expert_rule)),
+    singleparty_ok  = sum(!is.na(single_party_rule)),
+    auth_reject_ok  = sum(!is.na(auth_reject_index)),
     .groups = "drop"
   ) |>
-  print()
-
-cat("\n=== Missing data summary ===\n")
-dat |>
-  select(country_label, wave, where(is.numeric)) |>
-  group_by(country_label) |>
-  summarise(across(where(is.numeric), ~sum(is.na(.x))), .groups = "drop") |>
-  print()
+  print(n = 20)
 ```
 
 ## Save
@@ -138,7 +338,6 @@ dat |>
 ```{r save}
 saveRDS(dat, file.path(results_dir, "analysis_data.rds"))
 cat("\n✓ Saved analysis_data.rds:", nrow(dat), "obs\n")
-for (lbl in PAPER_LABELS) {
-  cat(" ", lbl, ":", sum(dat$country_label == lbl), "\n")
-}
+cat("  Korea:", sum(dat$country_label == "Korea"), "\n")
+cat("  Taiwan:", sum(dat$country_label == "Taiwan"), "\n")
 ```

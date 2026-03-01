@@ -1,0 +1,431 @@
+---
+title: "04 — Item Specificity: The Coefficient Map"
+subtitle: "How the econ → DV relationship varies by item type and country"
+format:
+  html:
+    toc: true
+    toc-depth: 3
+    number-sections: true
+    theme: cosmo
+    code-fold: true
+    self-contained: true
+execute:
+  echo: true
+  warning: false
+  message: false
+  cache: true
+---
+
+**Purpose**: The paper's central diagnostic — compare the economic evaluation
+coefficient across *all* democratic attitude items and both countries. The
+coefficient map (Figure 4) visualises how econ → DV relationships differ
+by item type (satisfaction, abstract normative, authoritarian rejection, evaluative)
+and by country. The 4.5× ratio calculation quantifies the key cross-item contrast.
+
+- **Input**: `analysis/results/analysis_data.rds`
+- **Output**: `analysis/results/item_specificity_results.rds`,
+  figures → `analysis/figures/fig04_coefficient_map.{pdf,png}`
+
+```{r setup}
+library(tidyverse)
+library(broom)
+library(knitr)
+library(kableExtra)
+
+project_root <- "/Users/jeffreystark/Development/Research/paper-bank"
+paper_dir    <- file.path(project_root, "papers/03b_sk_satisfaction_paradox")
+analysis_dir <- file.path(paper_dir, "analysis")
+results_dir  <- file.path(analysis_dir, "results")
+fig_dir      <- file.path(analysis_dir, "figures")
+
+dir.create(results_dir, showWarnings = FALSE, recursive = TRUE)
+dir.create(fig_dir,     showWarnings = FALSE, recursive = TRUE)
+
+source(file.path(paper_dir, "R", "helpers.R"))
+
+dat <- readRDS(file.path(results_dir, "analysis_data.rds"))
+
+# Standard controls string
+controls_str <- "age_n + gender + edu_n + urban_rural + polint_n"
+
+# is_korea indicator for cross-country interaction models
+dat <- dat |>
+  mutate(is_korea = as.integer(country_label == "Korea"))
+
+cat("Loaded analysis_data.rds:", nrow(dat), "obs\n")
+cat("Countries:", paste(levels(dat$country_label), collapse = ", "), "\n")
+cat("Waves:", paste(sort(unique(dat$wave)), collapse = ", "), "\n")
+```
+
+## The big regression table — all DVs, both countries {#sec-big-table}
+
+Every democratic attitude DV in the dataset is regressed on `econ_index` with
+wave fixed effects and the standard controls. This produces the full matrix of
+econ → DV coefficients that structures the paper's item-specificity argument.
+
+```{r dv-list}
+# DV list: name, display label, category
+all_dvs <- list(
+  c("sat_democracy_n",     "Satisfaction: democracy",     "Satisfaction"),
+  c("sat_govt_n",          "Satisfaction: government",    "Satisfaction"),
+  c("qual_pref_dem_n",     "Dem always preferable",       "Abstract normative"),
+  c("auth_reject_index",   "Auth rejection (index)",      "Auth rejection"),
+  c("strongman_reject_n",  "Reject: strongman",           "Auth rejection"),
+  c("military_reject_n",   "Reject: military rule",       "Auth rejection"),
+  c("expert_reject_n",     "Reject: expert rule",         "Auth rejection"),
+  c("singleparty_reject_n","Reject: single-party",        "Auth rejection"),
+  c("qual_extent_n",       "Dem extent (current)",        "Evaluative"),
+  c("qual_sys_support_n",  "System deserves support",     "Evaluative"),
+  c("qual_sys_change_n",   "No major change needed",      "Evaluative")
+)
+
+# Preserve display order
+dv_order <- map_chr(all_dvs, 1)
+dv_labels <- setNames(map_chr(all_dvs, 2), map_chr(all_dvs, 1))
+dv_cats   <- setNames(map_chr(all_dvs, 3), map_chr(all_dvs, 1))
+
+countries <- c("Korea", "Taiwan")
+```
+
+```{r estimate-all}
+item_spec_rows <- map_dfr(countries, function(cntry) {
+  df_c <- dat |> filter(country_label == cntry)
+
+  map_dfr(all_dvs, function(dv_entry) {
+    dv       <- dv_entry[1]
+    dv_label <- dv_entry[2]
+    category <- dv_entry[3]
+
+    # Skip if DV is entirely missing for this country
+    if (all(is.na(df_c[[dv]]))) {
+      return(tibble(
+        country   = cntry,
+        dv        = dv,
+        dv_label  = dv_label,
+        category  = category,
+        estimate  = NA_real_, std.error = NA_real_,
+        p.value   = NA_real_,
+        conf.low  = NA_real_, conf.high = NA_real_,
+        n         = 0L,
+        stars     = ""
+      ))
+    }
+
+    formula_str <- paste(dv, "~ econ_index + factor(wave) +", controls_str)
+    m <- lm(as.formula(formula_str), data = df_c)
+    n_obs <- sum(!is.na(df_c[[dv]]) & !is.na(df_c$econ_index))
+
+    extract_coef(m, "econ_index") |>
+      mutate(
+        country  = cntry,
+        dv       = dv,
+        dv_label = dv_label,
+        category = category,
+        n        = n_obs,
+        stars    = sig_stars(p.value)
+      )
+  })
+})
+
+item_spec_df <- item_spec_rows |>
+  mutate(
+    dv       = factor(dv,       levels = dv_order),
+    dv_label = factor(dv_label, levels = dv_labels[dv_order]),
+    category = factor(category, levels = c("Satisfaction", "Abstract normative",
+                                           "Auth rejection", "Evaluative"))
+  )
+```
+
+```{r big-table-display}
+item_spec_df |>
+  arrange(category, dv, country) |>
+  select(country, category, dv_label, estimate, std.error,
+         conf.low, conf.high, p.value, stars, n) |>
+  mutate(across(c(estimate, std.error, conf.low, conf.high, p.value),
+                \(x) round(x, 4))) |>
+  kbl(
+    caption = paste(
+      "Economic evaluation → democratic attitude DVs, pooled OLS with wave FE.",
+      "Both countries, all items. β on econ_index (0–1 scale)."
+    ),
+    col.names = c("Country", "Category", "DV", "β", "SE",
+                  "CI low", "CI high", "p", "Sig", "N")
+  ) |>
+  kable_styling(bootstrap_options = c("striped", "hover"), full_width = FALSE) |>
+  collapse_rows(columns = c(1, 2), valign = "top")
+```
+
+## The 4.5× ratio calculation {#sec-ratio}
+
+The core claim: the econ → abstract normative gap between Korea and Taiwan is
+approximately 4.5× larger than the mean econ → authoritarian rejection gap.
+This ratio is the quantitative anchor for the item-specificity argument.
+
+```{r ratio}
+# Abstract item gap (Taiwan β - Korea β on qual_pref_dem_n)
+# Expected direction: Taiwan = strong negative (econ good → prefer dem less?),
+# Korea ≈ 0 (no relationship). Gap = Taiwan - Korea.
+tw_pref <- item_spec_df |>
+  filter(country == "Taiwan", dv == "qual_pref_dem_n") |>
+  pull(estimate)
+
+kr_pref <- item_spec_df |>
+  filter(country == "Korea", dv == "qual_pref_dem_n") |>
+  pull(estimate)
+
+pref_gap <- tw_pref - kr_pref
+
+# Auth rejection gaps (Korea - Taiwan for each item)
+# Korea is expected to be more positive (econ good → more anti-auth) relative to Taiwan
+auth_items <- c("auth_reject_index", "strongman_reject_n", "military_reject_n",
+                "expert_reject_n", "singleparty_reject_n")
+
+auth_betas <- item_spec_df |>
+  filter(dv %in% auth_items) |>
+  select(country, dv, estimate) |>
+  pivot_wider(names_from = country, values_from = estimate)
+
+# Gap = Korea - Taiwan for each item
+auth_gaps <- auth_betas$Korea - auth_betas$Taiwan
+mean_auth_gap <- mean(auth_gaps, na.rm = TRUE)
+
+ratio <- abs(pref_gap) / abs(mean_auth_gap)
+
+cat("── Item-specificity ratio ──────────────────────────────────\n")
+cat(sprintf("Abstract item (qual_pref_dem_n):\n"))
+cat(sprintf("  Taiwan β: %.4f\n", tw_pref))
+cat(sprintf("  Korea  β: %.4f\n", kr_pref))
+cat(sprintf("  Gap (Taiwan - Korea): %.4f\n\n", pref_gap))
+
+cat("Auth rejection gaps (Korea - Taiwan) by item:\n")
+walk2(auth_betas$dv, auth_gaps, \(dv, gap)
+  cat(sprintf("  %-25s: %.4f\n", dv, gap))
+)
+cat(sprintf("  Mean auth rejection gap: %.4f\n\n", mean_auth_gap))
+
+cat(sprintf("Ratio |pref_gap| / |mean_auth_gap| = %.1fx\n", ratio))
+```
+
+```{r ratio-table}
+# Formatted table of the ratio inputs
+ratio_tbl <- bind_rows(
+  tibble(
+    item      = "qual_pref_dem_n (abstract normative)",
+    korea_b   = kr_pref,
+    taiwan_b  = tw_pref,
+    gap       = pref_gap,
+    note      = "Korea – Taiwan gap used in ratio numerator"
+  ),
+  auth_betas |>
+    mutate(
+      gap  = Korea - Taiwan,
+      note = "Korea – Taiwan gap, auth rejection items"
+    ) |>
+    rename(item = dv, korea_b = Korea, taiwan_b = Taiwan)
+) |>
+  add_row(
+    item     = "Mean auth rejection gap",
+    korea_b  = NA, taiwan_b = NA,
+    gap      = mean_auth_gap,
+    note     = sprintf("Ratio = %.1fx", ratio)
+  )
+
+ratio_tbl |>
+  mutate(across(c(korea_b, taiwan_b, gap), \(x) round(x, 4))) |>
+  kbl(
+    caption = sprintf(
+      "Ratio calculation: |pref_gap| / |mean_auth_gap| = %.1fx", ratio
+    ),
+    col.names = c("Item", "Korea β", "Taiwan β", "Gap", "Note")
+  ) |>
+  kable_styling(bootstrap_options = c("striped", "hover"), full_width = FALSE) |>
+  row_spec(nrow(ratio_tbl), bold = TRUE, background = "#f0f4ff")
+```
+
+## Cross-country interaction by item type {#sec-cross-country}
+
+For each DV, the model `dv ~ econ_index * is_korea + factor(wave) + controls`
+is estimated on the pooled both-country dataset. The interaction term
+`econ_index:is_korea` captures the *differential* Korea vs. Taiwan effect.
+The item-specificity argument predicts a large, positive interaction for
+`qual_pref_dem_n` and a small or sign-reversed interaction for auth rejection items.
+
+```{r cross-country-by-item}
+xc_item_rows <- map_dfr(all_dvs, function(dv_entry) {
+  dv       <- dv_entry[1]
+  dv_label <- dv_entry[2]
+  category <- dv_entry[3]
+
+  if (all(is.na(dat[[dv]]))) {
+    return(tibble(
+      dv = dv, dv_label = dv_label, category = category,
+      term = "econ_index:is_korea",
+      estimate = NA_real_, std.error = NA_real_,
+      statistic = NA_real_, p.value = NA_real_,
+      conf.low = NA_real_, conf.high = NA_real_,
+      stars = ""
+    ))
+  }
+
+  formula_str <- paste(
+    dv, "~ econ_index * is_korea + factor(wave) +", controls_str
+  )
+  m <- lm(as.formula(formula_str), data = dat)
+  broom::tidy(m, conf.int = TRUE) |>
+    filter(term == "econ_index:is_korea") |>
+    mutate(
+      dv       = dv,
+      dv_label = dv_label,
+      category = category,
+      stars    = sig_stars(p.value)
+    ) |>
+    select(dv, dv_label, category, term,
+           estimate, std.error, statistic, p.value, conf.low, conf.high, stars)
+})
+
+xc_item_df <- xc_item_rows |>
+  mutate(
+    dv       = factor(dv,       levels = dv_order),
+    dv_label = factor(dv_label, levels = dv_labels[dv_order]),
+    category = factor(category, levels = levels(item_spec_df$category))
+  )
+
+xc_item_df |>
+  arrange(category, dv) |>
+  select(category, dv_label, estimate, std.error, conf.low, conf.high, p.value, stars) |>
+  mutate(across(c(estimate, std.error, conf.low, conf.high, p.value),
+                \(x) round(x, 4))) |>
+  kbl(
+    caption = paste(
+      "Cross-country interaction: econ_index:is_korea coefficient by DV.",
+      "Positive = Korea effect stronger than Taiwan."
+    ),
+    col.names = c("Category", "DV", "β (interaction)", "SE",
+                  "CI low", "CI high", "p", "Sig")
+  ) |>
+  kable_styling(bootstrap_options = c("striped", "hover"), full_width = FALSE) |>
+  collapse_rows(columns = 1, valign = "top")
+```
+
+## Coefficient map figure (Figure 4) {#sec-figure}
+
+Figure 4 is the paper's visual centrepiece. It shows the `econ_index` pooled-OLS
+coefficient (with 95% CI) for every DV, side by side for Korea and Taiwan, grouped
+by item category.
+
+```{r coef-map-figure}
+# Build display-ready data frame with factor ordering preserved
+fig_data <- item_spec_df |>
+  filter(!is.na(estimate)) |>
+  mutate(
+    # Reverse label order so the first item in each category appears at the top
+    dv_label = fct_rev(dv_label)
+  )
+
+fig_coef_map <- fig_data |>
+  ggplot(aes(x = estimate, y = dv_label, colour = country)) +
+  geom_vline(xintercept = 0, linetype = "dashed", colour = "grey50", linewidth = 0.4) +
+  geom_pointrange(
+    aes(xmin = conf.low, xmax = conf.high),
+    position = position_dodge(width = 0.6),
+    size     = 0.4,
+    linewidth = 0.7
+  ) +
+  facet_grid(category ~ ., scales = "free_y", space = "free_y") +
+  scale_colour_manual(values = c("Korea" = "#2166AC", "Taiwan" = "#D55E00")) +
+  labs(
+    title    = "Economic evaluations and democratic attitudes: Korea vs. Taiwan",
+    subtitle = "Pooled OLS with wave FE and controls. 95% CIs.",
+    x        = "\u03b2 (economic evaluation index \u2192 DV, 0\u20131 scales)",
+    y        = NULL,
+    colour   = NULL,
+    caption  = paste(
+      "Controls: age, gender, education, urban/rural, political interest.",
+      "\nSource: Asian Barometer Survey, waves 1\u20136."
+    )
+  ) +
+  theme_pub +
+  theme(
+    strip.text.y  = element_text(angle = 0, hjust = 0),
+    panel.spacing = unit(0.8, "lines")
+  )
+
+ggsave(file.path(fig_dir, "fig04_coefficient_map.pdf"), fig_coef_map,
+       width = 8, height = 7)
+ggsave(file.path(fig_dir, "fig04_coefficient_map.png"), fig_coef_map,
+       width = 8, height = 7, dpi = 300)
+
+fig_coef_map
+```
+
+```{r coef-map-notes}
+cat("Figure 4 saved:\n")
+cat("  ", file.path(fig_dir, "fig04_coefficient_map.pdf"), "\n")
+cat("  ", file.path(fig_dir, "fig04_coefficient_map.png"), "\n")
+```
+
+## Coefficient map — interaction version {#sec-figure-interaction}
+
+Supplementary version of Figure 4 showing the `econ_index:is_korea` interaction
+coefficient (Korea differential effect) for each DV. Items where Korea differs
+most strongly from Taiwan are immediately visible.
+
+```{r coef-map-interaction}
+fig_xc <- xc_item_df |>
+  filter(!is.na(estimate)) |>
+  mutate(dv_label = fct_rev(dv_label)) |>
+  ggplot(aes(x = estimate, y = dv_label)) +
+  geom_vline(xintercept = 0, linetype = "dashed", colour = "grey50", linewidth = 0.4) +
+  geom_pointrange(
+    aes(xmin = conf.low, xmax = conf.high),
+    colour    = "#2166AC",
+    size      = 0.4,
+    linewidth = 0.7
+  ) +
+  facet_grid(category ~ ., scales = "free_y", space = "free_y") +
+  labs(
+    title    = "Korea – Taiwan differential: econ_index:is_korea interaction",
+    subtitle = "Positive = Korea effect on DV stronger than Taiwan. Pooled OLS, wave FE.",
+    x        = "\u03b2 (econ_index:is_korea interaction coefficient)",
+    y        = NULL,
+    caption  = paste(
+      "Controls: age, gender, education, urban/rural, political interest.",
+      "\nSource: Asian Barometer Survey, waves 1\u20136."
+    )
+  ) +
+  theme_pub +
+  theme(
+    strip.text.y  = element_text(angle = 0, hjust = 0),
+    panel.spacing = unit(0.8, "lines")
+  )
+
+ggsave(file.path(fig_dir, "fig04b_coef_map_interaction.pdf"), fig_xc,
+       width = 7, height = 7)
+ggsave(file.path(fig_dir, "fig04b_coef_map_interaction.png"), fig_xc,
+       width = 7, height = 7, dpi = 300)
+
+fig_xc
+```
+
+## Save {#sec-save}
+
+```{r save}
+item_specificity_results <- list(
+  all_dvs       = item_spec_df,
+  ratio         = ratio,
+  pref_gap      = pref_gap,
+  mean_auth_gap = mean_auth_gap,
+  cross_country = xc_item_df
+)
+
+saveRDS(item_specificity_results,
+        file.path(results_dir, "item_specificity_results.rds"))
+
+cat("✓ Saved item_specificity_results.rds\n")
+cat(sprintf("  all_dvs:       %d rows (%d DVs × %d countries)\n",
+            nrow(item_spec_df), length(all_dvs), length(countries)))
+cat(sprintf("  cross_country: %d rows\n", nrow(xc_item_df)))
+cat(sprintf("  Ratio:         %.1fx\n", ratio))
+cat(sprintf("  pref_gap:      %.4f\n",  pref_gap))
+cat(sprintf("  mean_auth_gap: %.4f\n",  mean_auth_gap))
+```

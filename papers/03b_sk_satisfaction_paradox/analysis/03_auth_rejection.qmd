@@ -1,0 +1,432 @@
+---
+title: "03 — Authoritarian Rejection Analysis: The Satisfaction Paradox"
+subtitle: "Testing H3 and H4: substantive authoritarian rejection and item specificity"
+format:
+  html:
+    toc: true
+    toc-depth: 3
+    number-sections: true
+    theme: cosmo
+    code-fold: true
+    self-contained: true
+execute:
+  echo: true
+  warning: false
+  message: false
+  cache: true
+---
+
+**Purpose**: Test H3 (economic evaluations → authoritarian rejection in Korea) and
+diagnostic analyses. This file shows that the satisfaction paradox does not reflect
+democratic erosion: when the economy performs well, Koreans *reject* authoritarian
+alternatives more strongly, not less.
+
+- **Input**: `analysis/results/analysis_data.rds`
+- **Output**: `analysis/results/auth_rejection_results.rds`,
+  figures → `analysis/figures/`
+
+```{r setup}
+library(tidyverse)
+library(broom)
+library(knitr)
+library(kableExtra)
+
+project_root <- "/Users/jeffreystark/Development/Research/paper-bank"
+paper_dir    <- file.path(project_root, "papers/03b_sk_satisfaction_paradox")
+analysis_dir <- file.path(paper_dir, "analysis")
+results_dir  <- file.path(analysis_dir, "results")
+fig_dir      <- file.path(analysis_dir, "figures")
+
+dir.create(results_dir, showWarnings = FALSE, recursive = TRUE)
+dir.create(fig_dir,     showWarnings = FALSE, recursive = TRUE)
+
+source(file.path(paper_dir, "R", "helpers.R"))
+
+dat <- readRDS(file.path(results_dir, "analysis_data.rds"))
+
+# Standard controls
+controls_str <- "age_n + gender + edu_n + urban_rural + polint_n"
+
+# is_korea indicator for cross-country specs
+dat <- dat |>
+  mutate(is_korea = as.integer(country_label == "Korea"))
+
+cat("Loaded analysis_data.rds:", nrow(dat), "obs\n")
+cat("Countries:", paste(levels(dat$country_label), collapse = ", "), "\n")
+cat("Waves:", paste(sort(unique(dat$wave)), collapse = ", "), "\n")
+```
+
+## Auth rejection index — pooled models, each country (H3) {#sec-pooled-index}
+
+H3: Among Koreans, more positive economic evaluations predict *stronger* rejection
+of authoritarian alternatives (positive coefficient on `econ_index`). This separates
+the satisfaction paradox — which is about *regime satisfaction* decoupling — from
+changes in underlying democratic commitment.
+
+```{r pooled-index}
+countries <- c("Korea", "Taiwan")
+
+pooled_index_rows <- map_dfr(countries, function(cntry) {
+  df <- dat |> filter(country_label == cntry)
+  formula_str <- paste(
+    "auth_reject_index ~ econ_index + factor(wave) +", controls_str
+  )
+  m <- lm(as.formula(formula_str), data = df)
+  extract_coef(m, "econ_index") |>
+    mutate(
+      country = cntry,
+      n       = sum(!is.na(df$auth_reject_index) & !is.na(df$econ_index)),
+      stars   = sig_stars(p.value)
+    )
+})
+
+pooled_index_df <- pooled_index_rows
+
+pooled_index_df |>
+  select(country, estimate, std.error, conf.low, conf.high, p.value, stars, n) |>
+  mutate(across(where(is.double), \(x) round(x, 4))) |>
+  kbl(
+    caption = "H3: Economic evaluation → Auth rejection index (pooled, wave FE)",
+    col.names = c("Country", "β", "SE", "CI low", "CI high", "p", "Sig", "N")
+  ) |>
+  kable_styling(bootstrap_options = c("striped", "hover"), full_width = FALSE)
+```
+
+**Interpretation note**: A positive β for Korea means economic optimism increases
+rejection of authoritarian governance — the expected H3 direction.
+
+## Individual auth rejection items — pooled models {#sec-pooled-items}
+
+Each of the four authoritarian governance forms is tested separately. This reveals
+whether the pattern is consistent across items (strongman, military, expert, and
+single-party rule) or driven by a single indicator.
+
+```{r pooled-items}
+auth_items <- c(
+  "strongman_reject_n",
+  "military_reject_n",
+  "expert_reject_n",
+  "singleparty_reject_n"
+)
+
+auth_item_labels <- c(
+  strongman_reject_n   = "Reject: strongman rule",
+  military_reject_n    = "Reject: military rule",
+  expert_reject_n      = "Reject: expert/technocratic rule",
+  singleparty_reject_n = "Reject: single-party rule"
+)
+
+pooled_items_rows <- map_dfr(countries, function(cntry) {
+  df <- dat |> filter(country_label == cntry)
+  map_dfr(auth_items, function(dv) {
+    formula_str <- paste(dv, "~ econ_index + factor(wave) +", controls_str)
+    m <- lm(as.formula(formula_str), data = df)
+    n_obs <- sum(!is.na(df[[dv]]) & !is.na(df$econ_index))
+    extract_coef(m, "econ_index") |>
+      mutate(
+        country   = cntry,
+        dv        = dv,
+        dv_label  = auth_item_labels[dv],
+        n         = n_obs,
+        stars     = sig_stars(p.value)
+      )
+  })
+})
+
+pooled_items_df <- pooled_items_rows
+
+pooled_items_df |>
+  select(country, dv_label, estimate, std.error, conf.low, conf.high, p.value, stars, n) |>
+  mutate(across(c(estimate, std.error, conf.low, conf.high, p.value), \(x) round(x, 4))) |>
+  arrange(country, dv_label) |>
+  kbl(
+    caption = "Economic evaluation → Individual auth rejection items (pooled, wave FE)",
+    col.names = c("Country", "Item", "β", "SE", "CI low", "CI high", "p", "Sig", "N")
+  ) |>
+  kable_styling(bootstrap_options = c("striped", "hover"), full_width = FALSE) |>
+  pack_rows("Korea",  1, length(auth_items)) |>
+  pack_rows("Taiwan", length(auth_items) + 1, length(auth_items) * 2)
+```
+
+## Wave-by-wave auth rejection (mirrors main Table 1) {#sec-wave-by-wave}
+
+Replicating the wave-by-wave structure of the main models but with `auth_reject_index`
+as the dependent variable. This shows the temporal stability of H3.
+
+```{r wave-by-wave}
+waves <- sort(unique(dat$wave))
+
+auth_wave_rows <- map_dfr(countries, function(cntry) {
+  map_dfr(waves, function(w) {
+    df <- dat |> filter(country_label == cntry, wave == w)
+    # Skip waves with insufficient observations
+    n_obs <- sum(!is.na(df$auth_reject_index) & !is.na(df$econ_index))
+    if (n_obs < 30) {
+      return(tibble(
+        country  = cntry,
+        wave     = w,
+        estimate = NA_real_, std.error = NA_real_,
+        statistic = NA_real_, p.value = NA_real_,
+        conf.low = NA_real_, conf.high = NA_real_,
+        n = n_obs, stars = ""
+      ))
+    }
+    # Wave-specific models use wave dummies only if multiple waves present;
+    # here each model is a single wave so we drop the wave FE
+    formula_str <- paste("auth_reject_index ~ econ_index +", controls_str)
+    m <- lm(as.formula(formula_str), data = df)
+    extract_coef(m, "econ_index") |>
+      mutate(country = cntry, wave = w, n = n_obs, stars = sig_stars(p.value))
+  })
+})
+
+auth_wave_df <- auth_wave_rows
+
+auth_wave_df |>
+  filter(!is.na(estimate)) |>
+  select(country, wave, estimate, std.error, conf.low, conf.high, p.value, stars, n) |>
+  mutate(across(c(estimate, std.error, conf.low, conf.high, p.value), \(x) round(x, 4))) |>
+  arrange(country, wave) |>
+  kbl(
+    caption = "Wave-by-wave: economic evaluation → auth rejection index",
+    col.names = c("Country", "Wave", "β", "SE", "CI low", "CI high", "p", "Sig", "N")
+  ) |>
+  kable_styling(bootstrap_options = c("striped", "hover"), full_width = FALSE) |>
+  collapse_rows(columns = 1, valign = "top")
+```
+
+```{r wave-by-wave-plot}
+fig_auth_wave <- auth_wave_df |>
+  filter(!is.na(estimate)) |>
+  ggplot(aes(x = wave, y = estimate, ymin = conf.low, ymax = conf.high,
+             colour = country, shape = country)) +
+  geom_hline(yintercept = 0, linetype = "dashed", colour = "grey50") +
+  geom_errorbar(width = 0.2, position = position_dodge(width = 0.3)) +
+  geom_point(size = 2.5, position = position_dodge(width = 0.3)) +
+  scale_colour_manual(values = c("Korea" = "#2166AC", "Taiwan" = "#D55E00")) +
+  scale_x_continuous(breaks = waves) +
+  labs(
+    title    = "Economic evaluation → Authoritarian rejection by wave",
+    subtitle = "OLS with controls. 95% CIs. Positive = economy → more anti-auth.",
+    x        = "ABS Wave",
+    y        = "β (econ_index → auth_reject_index)",
+    colour   = NULL,
+    shape    = NULL,
+    caption  = "Controls: age, gender, education, urban/rural, political interest."
+  ) +
+  theme_pub
+
+ggsave(file.path(fig_dir, "fig_auth_rejection_wave.pdf"), fig_auth_wave,
+       width = 6.5, height = 4)
+ggsave(file.path(fig_dir, "fig_auth_rejection_wave.png"), fig_auth_wave,
+       width = 6.5, height = 4, dpi = 300)
+fig_auth_wave
+```
+
+## Cross-country interaction on auth rejection {#sec-cross-country}
+
+The interaction `econ_index:is_korea` tests whether the econ → auth-rejection
+relationship is *stronger* in Korea than Taiwan. Under H4, the Korea coefficient
+should be more positive (or less negative) than Taiwan's.
+
+```{r cross-country-interaction}
+formula_xc <- as.formula(paste(
+  "auth_reject_index ~ econ_index * is_korea + factor(wave) +", controls_str
+))
+
+m_xc <- lm(formula_xc, data = dat)
+
+auth_xc_tidy <- broom::tidy(m_xc, conf.int = TRUE) |>
+  mutate(stars = sig_stars(p.value))
+
+auth_xc_df <- auth_xc_tidy
+
+# Key terms
+key_terms <- c("econ_index", "is_korea", "econ_index:is_korea")
+
+auth_xc_df |>
+  filter(term %in% key_terms | grepl("econ_index|is_korea", term)) |>
+  select(term, estimate, std.error, conf.low, conf.high, p.value, stars) |>
+  mutate(across(c(estimate, std.error, conf.low, conf.high, p.value), \(x) round(x, 4))) |>
+  kbl(
+    caption = "Cross-country interaction: econ_index × is_korea → auth_reject_index",
+    col.names = c("Term", "β", "SE", "CI low", "CI high", "p", "Sig")
+  ) |>
+  kable_styling(bootstrap_options = c("striped", "hover"), full_width = FALSE)
+```
+
+```{r marginal-effects}
+# Extract key coefficients for marginal effect calculation
+coef_vec <- coef(m_xc)
+
+# Taiwan marginal effect: econ_index alone (is_korea = 0)
+me_taiwan <- coef_vec["econ_index"]
+
+# Korea marginal effect: econ_index + interaction
+me_korea  <- coef_vec["econ_index"] + coef_vec["econ_index:is_korea"]
+
+cat("Marginal effect of econ_index:\n")
+cat(sprintf("  Taiwan (is_korea = 0): %.4f\n", me_taiwan))
+cat(sprintf("  Korea  (is_korea = 1): %.4f\n", me_korea))
+cat(sprintf("  Korea – Taiwan gap:    %.4f\n", me_korea - me_taiwan))
+
+# Interaction p-value
+int_pval <- auth_xc_df |>
+  filter(term == "econ_index:is_korea") |>
+  pull(p.value)
+cat(sprintf("  Interaction p-value:   %.4f\n", int_pval))
+```
+
+## Mean-level comparisons {#sec-mean-levels}
+
+Descriptive check: are Koreans overall more or less rejecting of authoritarianism
+than Taiwanese? And how do country-wave means trend over time?
+
+```{r mean-levels}
+mean_levels_df <- dat |>
+  group_by(country_label, wave) |>
+  summarise(
+    auth_reject_index    = mean(auth_reject_index,    na.rm = TRUE),
+    strongman_reject_n   = mean(strongman_reject_n,   na.rm = TRUE),
+    military_reject_n    = mean(military_reject_n,    na.rm = TRUE),
+    expert_reject_n      = mean(expert_reject_n,      na.rm = TRUE),
+    singleparty_reject_n = mean(singleparty_reject_n, na.rm = TRUE),
+    n                    = sum(!is.na(auth_reject_index)),
+    .groups              = "drop"
+  )
+
+mean_levels_df |>
+  mutate(across(where(is.double) & !n, \(x) round(x, 3))) |>
+  kbl(
+    caption = "Country-wave means: auth rejection index and component items",
+    col.names = c("Country", "Wave", "Auth reject (index)",
+                  "Strongman", "Military", "Expert", "Single-party", "N")
+  ) |>
+  kable_styling(bootstrap_options = c("striped", "hover"), full_width = FALSE) |>
+  collapse_rows(columns = 1, valign = "top")
+```
+
+```{r ttest}
+# Pooled t-test: Korea vs Taiwan on auth_reject_index
+korea_vals  <- dat |> filter(country_label == "Korea")  |> pull(auth_reject_index)
+taiwan_vals <- dat |> filter(country_label == "Taiwan") |> pull(auth_reject_index)
+
+tt <- t.test(korea_vals, taiwan_vals, var.equal = FALSE)
+
+cat("Welch two-sample t-test: Korea vs. Taiwan on auth_reject_index\n")
+cat(sprintf("  Korea  mean: %.4f (n = %d)\n",
+            mean(korea_vals,  na.rm = TRUE), sum(!is.na(korea_vals))))
+cat(sprintf("  Taiwan mean: %.4f (n = %d)\n",
+            mean(taiwan_vals, na.rm = TRUE), sum(!is.na(taiwan_vals))))
+cat(sprintf("  Difference:  %.4f\n",
+            mean(korea_vals, na.rm = TRUE) - mean(taiwan_vals, na.rm = TRUE)))
+cat(sprintf("  t = %.3f, df = %.1f, p = %.4f\n", tt$statistic, tt$parameter, tt$p.value))
+```
+
+```{r mean-levels-plot}
+fig_mean_auth <- mean_levels_df |>
+  ggplot(aes(x = wave, y = auth_reject_index,
+             colour = country_label, group = country_label)) +
+  geom_line(linewidth = 0.8) +
+  geom_point(size = 2.5) +
+  scale_colour_manual(values = c("Korea" = "#2166AC", "Taiwan" = "#D55E00")) +
+  scale_x_continuous(breaks = waves) +
+  scale_y_continuous(limits = c(0, 1), labels = scales::percent_format(accuracy = 1)) +
+  labs(
+    title    = "Authoritarian rejection index: mean levels by country and wave",
+    subtitle = "Higher = stronger rejection of authoritarian governance alternatives",
+    x        = "ABS Wave",
+    y        = "Auth rejection index (0–1)",
+    colour   = NULL,
+    caption  = "Source: Asian Barometer Survey, waves 1–6."
+  ) +
+  theme_pub
+
+ggsave(file.path(fig_dir, "fig_auth_mean_levels.pdf"), fig_mean_auth,
+       width = 6.5, height = 4)
+ggsave(file.path(fig_dir, "fig_auth_mean_levels.png"), fig_mean_auth,
+       width = 6.5, height = 4, dpi = 300)
+fig_mean_auth
+```
+
+## Auth nostalgia as moderator of econ → dem preference {#sec-auth-moderation}
+
+This section tests whether the decoupling on the abstract normative item
+(`qual_pref_dem_n`) holds across levels of authoritarian sympathy (`auth_index`).
+The interaction `econ_index × auth_index` reveals whether respondents with higher
+authoritarian sympathy drive or dampen the satisfaction paradox on normative support.
+
+```{r auth-moderation}
+auth_mod_rows <- map_dfr(countries, function(cntry) {
+  df <- dat |> filter(country_label == cntry)
+  formula_str <- paste(
+    "qual_pref_dem_n ~ econ_index * auth_index + factor(wave) +", controls_str
+  )
+  m <- lm(as.formula(formula_str), data = df)
+  broom::tidy(m, conf.int = TRUE) |>
+    mutate(
+      country = cntry,
+      stars   = sig_stars(p.value),
+      n       = sum(!is.na(df$qual_pref_dem_n) & !is.na(df$econ_index) &
+                    !is.na(df$auth_index))
+    )
+})
+
+auth_mod_df <- auth_mod_rows
+
+# Focus on the interaction and main effects of interest
+auth_mod_df |>
+  filter(grepl("econ_index|auth_index", term)) |>
+  select(country, term, estimate, std.error, conf.low, conf.high, p.value, stars) |>
+  mutate(across(c(estimate, std.error, conf.low, conf.high, p.value), \(x) round(x, 4))) |>
+  arrange(country, term) |>
+  kbl(
+    caption = paste(
+      "Auth nostalgia × economy → dem preference: econ_index × auth_index interaction.",
+      "DV: qual_pref_dem_n (0–1). Pooled with wave FE."
+    ),
+    col.names = c("Country", "Term", "β", "SE", "CI low", "CI high", "p", "Sig")
+  ) |>
+  kable_styling(bootstrap_options = c("striped", "hover"), full_width = FALSE) |>
+  collapse_rows(columns = 1, valign = "top")
+```
+
+```{r auth-moderation-summary}
+# Pull interaction term for inline reporting
+int_korea <- auth_mod_df |>
+  filter(country == "Korea",  term == "econ_index:auth_index") |>
+  select(estimate, p.value, stars)
+int_taiwan <- auth_mod_df |>
+  filter(country == "Taiwan", term == "econ_index:auth_index") |>
+  select(estimate, p.value, stars)
+
+cat("Interaction (econ_index × auth_index → qual_pref_dem_n):\n")
+cat(sprintf("  Korea:  β = %.4f, p = %.4f %s\n",
+            int_korea$estimate,  int_korea$p.value,  int_korea$stars))
+cat(sprintf("  Taiwan: β = %.4f, p = %.4f %s\n",
+            int_taiwan$estimate, int_taiwan$p.value, int_taiwan$stars))
+```
+
+## Save {#sec-save}
+
+```{r save}
+auth_rejection_results <- list(
+  pooled_index    = pooled_index_df,
+  pooled_items    = pooled_items_df,
+  wave_by_wave    = auth_wave_df,
+  cross_country   = auth_xc_df,
+  mean_levels     = mean_levels_df,
+  auth_moderation = auth_mod_df
+)
+
+saveRDS(auth_rejection_results,
+        file.path(results_dir, "auth_rejection_results.rds"))
+cat("✓ Saved auth_rejection_results.rds\n")
+cat("  Objects:\n")
+cat("    pooled_index   —", nrow(pooled_index_df),    "rows\n")
+cat("    pooled_items   —", nrow(pooled_items_df),    "rows\n")
+cat("    wave_by_wave   —", nrow(auth_wave_df),       "rows\n")
+cat("    cross_country  —", nrow(auth_xc_df),         "rows\n")
+cat("    mean_levels    —", nrow(mean_levels_df),     "rows\n")
+cat("    auth_moderation—", nrow(auth_mod_df),        "rows\n")
+```
