@@ -1,0 +1,13 @@
+"domain","variable","W1_mean","W1_sd","W4_mean","W4_sd","change","W1_n","W4_n"
+"Institutional trust","trust_central_govt",4.849,1.96,4.729,2.007,-0.12,2000,1500
+"Institutional trust","trust_legislature",5.106,1.874,4.439,2.05,-0.667,2000,1500
+"Institutional trust","trust_local_govt",5.087,1.706,4.844,1.799,-0.243,2000,1500
+"Institutional trust","trust_media",5.046,1.809,4.363,1.919,-0.684,2000,1500
+"Institutional trust","trust_national_assembly",3.816,2.025,3.213,1.916,-0.603,2000,1500
+"Institutional trust","trust_ngo",5.442,1.812,4.729,1.927,-0.713,2000,1500
+"Output legitimacy","econ_family",2.524,0.582,2.631,0.603,0.107,2000,1500
+"Output legitimacy","econ_national",2.947,0.593,3.185,0.646,0.238,2000,1500
+"Output legitimacy","national_pride",2.05,0.627,2.112,0.636,0.062,2000,1500
+"Output legitimacy","pol_satisfaction",3.095,0.677,3.166,0.658,0.071,2000,1500
+"Output legitimacy","social_mobility",2.502,0.596,2.638,0.609,0.136,2000,1500
+"Output legitimacy","social_mobility_next_gen",2.475,0.631,2.599,0.6,0.124,2000,1500
