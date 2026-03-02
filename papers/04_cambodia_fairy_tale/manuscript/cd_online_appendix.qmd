@@ -683,6 +683,59 @@ A9 |>
 
 \newpage
 
+## Appendix D: 2017 Cambodia Socio-Economic Survey — Governance Module {.unnumbered}
+
+```{r tbl-appendixD}
+#| echo: false
+#| tbl-cap: "Perceived Civic Freedoms and Corruption Exposure, 2017 (SAIE)"
+saie_raw <- readRDS(file.path(tbl_dir, "tableD_saie_governance.rds"))
+
+saie <- saie_raw |>
+  dplyr::mutate(
+    Pct = sprintf("%.1f", pct_agree),
+    CI  = sprintf("[%.1f, %.1f]", ci_lo, ci_hi)
+  ) |>
+  dplyr::select(Item = wording, Pct, CI)
+
+saie |>
+  kbl(
+    col.names = c("Item", "\\% Agree", "95\\% CI"),
+    align     = "lcc",
+    booktabs  = TRUE,
+    linesep   = "",
+    escape    = FALSE
+  ) |>
+  kable_styling(
+    latex_options = c("hold_position"),
+    font_size     = 10,
+    full_width    = FALSE
+  ) |>
+  column_spec(1, width = "9.0cm") |>
+  column_spec(2, width = "1.8cm") |>
+  column_spec(3, width = "2.5cm") |>
+  row_spec(5, hline_after = TRUE) |>
+  footnote(
+    general = paste0(
+      "Source: Cambodia Socio-Economic Survey (KHM 2018 SAIE v01; N = 3,363). ",
+      "Fieldwork inferred early-to-mid 2017 based on internal temporal references ",
+      "(2016--17 school year as current; 2016 commune budget as most recently completed; ",
+      "tea money question references 2016 as preceding year). ",
+      "Binary response (Agree/Disagree); valid N ranges 3,285--3,339. ",
+      "95\\\\% CI: Wilson interval. ",
+      "The first five items measure perceived civic freedoms and local government responsiveness; ",
+      "the sixth (below the line) measures self-reported corruption exposure. ",
+      "These items are not comparable to ABS instruments and are used triangulatively ",
+      "to establish baseline civic conditions in the immediate pre-dissolution period."
+    ),
+    general_title     = "Note:",
+    footnote_as_chunk = TRUE,
+    escape            = FALSE,
+    threeparttable    = TRUE
+  )
+```
+
+\newpage
+
 # References {.unnumbered}
 
 ::: {#refs}
