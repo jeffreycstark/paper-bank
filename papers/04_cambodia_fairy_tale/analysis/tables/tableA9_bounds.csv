@@ -1,0 +1,6 @@
+"Scenario","Wave","N","Respondents","Mean","Delta_from_W3"
+"Observed (W3, 2012)","W3",1200,910,9.58,"—"
+"Observed (W6, respondents only)","W6",1242,458,6.67,"-2.91"
+"Bound: nonrespondents imputed at max (10)","W6",1242,1242,8.77,"-0.80"
+"Bound: nonrespondents imputed at min (0)","W6",1242,1242,2.46,"-7.12"
+"Conservative: nonrespondents imputed at W3 mean","W6",1242,1242,8.51,"-1.07"

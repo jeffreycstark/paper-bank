@@ -1,0 +1,25 @@
+"variable","label","group","n_w3","n_w4","w3_fmt","w4_fmt","delta_fmt","int_est","int_p"
+"gate_contact_influential","Contacted influential person (\%)","CPP voter",722,610,"53.7\% (50.0, 57.4)","59.7\% (55.6, 63.6)","+5.9 pp",-0.0869700593418857,0.11312313140673
+"gate_contact_influential","Contacted influential person (\%)","CNRP/SRP voter",171,297,"57.3\% (49.5, 64.8)","54.5\% (48.7, 60.3)","-2.8 pp",-0.0869700593418857,0.11312313140673
+"gate_contact_influential","Contacted influential person (\%)","Nonvoter",253,201,"45.1\% (38.9, 51.4)","50.7\% (43.6, 57.8)","+5.7 pp",-0.0869700593418857,0.11312313140673
+"gate_contact_influential","Contacted influential person (\%)","DK/Refuse",50,92,"58.0\% (43.3, 71.5)","46.7\% (36.4, 57.4)","-11.3 pp",-0.0869700593418857,0.11312313140673
+"dem_country_future","Democratic future (0--10 mean)","CPP voter",576,295,"9.56 (9.43, 9.69)","8.48 (8.19, 8.77)","-1.08",-2.31907327668367,1.47417478868599e-13
+"dem_country_future","Democratic future (0--10 mean)","CNRP/SRP voter",114,130,"9.44 (9.09, 9.79)","6.04 (5.52, 6.55)","-3.40***",-2.31907327668367,1.47417478868599e-13
+"dem_country_future","Democratic future (0--10 mean)","Nonvoter",187,96,"9.69 (9.52, 9.86)","7.80 (7.27, 8.33)","-1.89",-2.31907327668367,1.47417478868599e-13
+"dem_country_future","Democratic future (0--10 mean)","DK/Refuse",33,31,"9.73 (9.34, 10.12)","7.26 (6.15, 8.36)","-2.47",-2.31907327668367,1.47417478868599e-13
+"single_party_rule","Single-party rule acceptance (1--4)","CPP voter",714,607,"2.00 (1.92, 2.08)","1.89 (1.82, 1.96)","-0.11",-0.200469395538787,0.063868203993791
+"single_party_rule","Single-party rule acceptance (1--4)","CNRP/SRP voter",171,297,"1.87 (1.71, 2.03)","1.56 (1.47, 1.64)","-0.31",-0.200469395538787,0.063868203993791
+"single_party_rule","Single-party rule acceptance (1--4)","Nonvoter",253,200,"1.99 (1.86, 2.12)","1.81 (1.70, 1.93)","-0.17",-0.200469395538787,0.063868203993791
+"single_party_rule","Single-party rule acceptance (1--4)","DK/Refuse",51,89,"1.78 (1.52, 2.04)","1.70 (1.53, 1.87)","-0.09",-0.200469395538787,0.063868203993791
+"political_interest","Political interest (1--4)","CPP voter",722,609,"2.57 (2.51, 2.63)","2.25 (2.17, 2.32)","-0.32",0.180968241241429,0.070291016545086
+"political_interest","Political interest (1--4)","CNRP/SRP voter",171,297,"2.74 (2.61, 2.88)","2.60 (2.49, 2.71)","-0.14",0.180968241241429,0.070291016545086
+"political_interest","Political interest (1--4)","Nonvoter",254,201,"2.53 (2.42, 2.64)","2.04 (1.91, 2.17)","-0.49",0.180968241241429,0.070291016545086
+"political_interest","Political interest (1--4)","DK/Refuse",51,91,"2.18 (1.91, 2.44)","2.14 (1.96, 2.33)","-0.03",0.180968241241429,0.070291016545086
+"corrupt_witnessed","Witnessed corruption (\%)","CPP voter",718,567,"44.8\% (41.2, 48.6)","56.8\% (52.6, 60.9)","+11.9 pp",0.0445032453313259,0.414950897868821
+"corrupt_witnessed","Witnessed corruption (\%)","CNRP/SRP voter",172,274,"59.9\% (52.1, 67.2)","76.3\% (70.7, 81.1)","+16.4 pp",0.0445032453313259,0.414950897868821
+"corrupt_witnessed","Witnessed corruption (\%)","Nonvoter",254,190,"55.1\% (48.8, 61.3)","61.1\% (53.7, 68.0)","+5.9 pp",0.0445032453313259,0.414950897868821
+"corrupt_witnessed","Witnessed corruption (\%)","DK/Refuse",50,83,"50.0\% (36.6, 63.4)","63.9\% (52.5, 73.9)","+13.9 pp",0.0445032453313259,0.414950897868821
+"democracy_satisfaction","Democracy satisfaction (1--4)","CPP voter",721,607,"3.12 (3.07, 3.16)","3.00 (2.95, 3.05)","-0.12",-0.206105302200156,0.0063117820220033
+"democracy_satisfaction","Democracy satisfaction (1--4)","CNRP/SRP voter",171,295,"2.53 (2.41, 2.66)","2.21 (2.11, 2.30)","-0.33**",-0.206105302200156,0.0063117820220033
+"democracy_satisfaction","Democracy satisfaction (1--4)","Nonvoter",254,201,"2.89 (2.82, 2.97)","2.64 (2.53, 2.75)","-0.26",-0.206105302200156,0.0063117820220033
+"democracy_satisfaction","Democracy satisfaction (1--4)","DK/Refuse",50,87,"2.94 (2.77, 3.11)","2.55 (2.38, 2.72)","-0.39",-0.206105302200156,0.0063117820220033
