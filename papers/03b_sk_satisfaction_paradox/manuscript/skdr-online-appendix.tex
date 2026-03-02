@@ -169,6 +169,22 @@
 \floatplacement{figure}{H}
 \floatplacement{table}{H}
 \raggedright
+\usepackage{setspace}
+\usepackage{booktabs}
+\usepackage{caption}
+\usepackage{longtable}
+\usepackage{array}
+\usepackage{multirow}
+\usepackage{float}
+\usepackage{graphicx}
+\usepackage{threeparttable}
+\usepackage{threeparttablex}
+\captionsetup{width=\textwidth}
+\setlength\LTcapwidth{\textwidth}
+\floatplacement{figure}{H}
+\floatplacement{table}{H}
+\raggedright
+\AtBeginDocument{\author{Jeffrey Stark \\[0.3em] \normalsize Department of Sociology, Yonsei University}}
 \makeatletter
 \@ifpackageloaded{caption}{}{\usepackage{caption}}
 \AtBeginDocument{%

@@ -37,6 +37,7 @@ format:
           \floatplacement{figure}{H}
           \floatplacement{table}{H}
           \raggedright
+          \AtBeginDocument{\author{Jeffrey Stark \\[0.3em] \normalsize Department of Sociology, Yonsei University}}
   html:
     toc: true
     toc-depth: 3
