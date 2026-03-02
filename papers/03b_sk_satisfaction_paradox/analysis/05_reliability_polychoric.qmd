@@ -1,0 +1,385 @@
+---
+title: "Appendix I & Appendix A Supplement: Reliability and Polychoric Correlations"
+subtitle: "03b_sk_satisfaction_paradox"
+date: today
+format:
+  html:
+    toc: true
+    toc-depth: 3
+    number-sections: true
+    theme: cosmo
+    code-fold: true
+execute:
+  echo: false
+  warning: false
+  message: false
+  cache: false
+---
+
+```{r setup}
+library(tidyverse)
+library(psych)
+library(kableExtra)
+
+# Paths — hardcoded for standalone rendering outside the Quarto project
+project_root <- "/Users/jeffreystark/Development/Research/paper-bank"
+paper_dir    <- file.path(project_root, "papers/03b_sk_satisfaction_paradox")
+results_dir  <- file.path(paper_dir, "analysis/results")
+
+source(file.path(paper_dir, "R/helpers.R"))
+
+# Load analysis data
+dat <- readRDS(file.path(results_dir, "analysis_data.rds"))
+```
+
+```{r item-definitions}
+# Item sets
+econ_items <- c(
+  "econ_national_n",
+  "econ_family_n",
+  "econ_outlook_n",
+  "econ_fam_outlook_n",
+  "econ_change_n",
+  "econ_fam_change_n"
+)
+
+auth_items <- c(
+  "strongman_reject_n",
+  "military_reject_n",
+  "expert_reject_n",
+  "singleparty_reject_n"
+)
+
+dem_var <- "dem_always_preferable"
+
+# Confirm all variables exist
+stopifnot(all(econ_items %in% names(dat)))
+stopifnot(all(auth_items %in% names(dat)))
+stopifnot(dem_var %in% names(dat))
+
+# Attach survey year
+dat <- dat |>
+  left_join(survey_years_lookup, by = c("wave", "country_label" = "country"))
+```
+
+## 1  Polychoric / Pearson Correlations: Democratic Preference and Auth Rejection Items
+
+The normalized (`_n`) variables are continuous [0, 1], so we use Pearson correlations
+throughout. The raw ordinal versions could support polychoric estimation, but the
+normalized variables are used in all main analyses.
+
+```{r polychoric-by-country}
+# ── Pooled by country ──────────────────────────────────────────────────────────
+poly_by_country <- dat |>
+  filter(!is.na(country_label)) |>
+  group_by(country_label) |>
+  group_map(function(df, grp) {
+    vars_to_use <- c(dem_var, auth_items)
+    mat <- df |> select(all_of(vars_to_use)) |> drop_na()
+    r   <- cor(mat, use = "pairwise.complete.obs")
+    n   <- nrow(mat)
+    list(
+      country = grp$country_label,
+      n       = n,
+      cor_mat = r
+    )
+  })
+
+names(poly_by_country) <- sapply(poly_by_country, `[[`, "country")
+```
+
+```{r polychoric-by-country-wave}
+# ── By country × wave ──────────────────────────────────────────────────────────
+poly_by_cw <- dat |>
+  filter(!is.na(country_label), !is.na(wave)) |>
+  group_by(country_label, wave) |>
+  group_map(function(df, grp) {
+    vars_to_use <- c(dem_var, auth_items)
+    mat <- df |> select(all_of(vars_to_use)) |> drop_na()
+    n   <- nrow(mat)
+    yr  <- unique(df$year)
+    yr  <- if (length(yr) == 1) yr else NA_integer_
+    # Return NULL-safe placeholder if too few complete cases
+    if (n < 3) {
+      return(list(
+        country = grp$country_label,
+        wave    = grp$wave,
+        year    = yr,
+        n       = n,
+        cor_mat = NULL
+      ))
+    }
+    r <- cor(mat, use = "pairwise.complete.obs")
+    list(
+      country = grp$country_label,
+      wave    = grp$wave,
+      year    = yr,
+      n       = n,
+      cor_mat = r
+    )
+  })
+
+names(poly_by_cw) <- paste0(
+  sapply(poly_by_cw, `[[`, "country"), "_W",
+  sapply(poly_by_cw, `[[`, "wave")
+)
+```
+
+```{r display-country-cors}
+# Build a tidy summary table: one row per country × auth_item
+cor_summary <- map_dfr(poly_by_country, function(lst) {
+  tibble(
+    country     = lst$country,
+    n           = lst$n,
+    item        = auth_items,
+    r_with_dem  = lst$cor_mat[dem_var, auth_items]
+  )
+})
+
+cor_summary |>
+  mutate(
+    item = recode(item,
+      strongman_reject_n = "Strongman rejection",
+      military_reject_n  = "Military rejection",
+      expert_reject_n    = "Expert-rule rejection",
+      singleparty_reject_n = "Single-party rejection"
+    )
+  ) |>
+  kable(
+    caption = "Pearson correlations: dem_always_preferable × auth rejection items (pooled across waves)",
+    col.names = c("Country", "N", "Item", "r"),
+    digits = 3
+  ) |>
+  kable_styling(bootstrap_options = c("striped", "condensed"), full_width = FALSE)
+```
+
+```{r display-cw-cors}
+# Build tidy summary: one row per country × wave × auth_item
+# Skip entries with NULL cor_mat (e.g. wave 2 where auth items were not asked)
+cor_cw_summary <- map_dfr(poly_by_cw, function(lst) {
+  if (is.null(lst$cor_mat)) {
+    return(tibble(
+      country    = lst$country,
+      wave       = lst$wave,
+      year       = lst$year,
+      n          = lst$n,
+      item       = auth_items,
+      r_with_dem = NA_real_
+    ))
+  }
+  tibble(
+    country    = lst$country,
+    wave       = lst$wave,
+    year       = lst$year,
+    n          = lst$n,
+    item       = auth_items,
+    r_with_dem = lst$cor_mat[dem_var, auth_items]
+  )
+})
+
+cor_cw_summary |>
+  mutate(
+    item = recode(item,
+      strongman_reject_n   = "Strongman",
+      military_reject_n    = "Military",
+      expert_reject_n      = "Expert",
+      singleparty_reject_n = "Single-party"
+    )
+  ) |>
+  pivot_wider(
+    id_cols     = c(country, wave, year, n),
+    names_from  = item,
+    values_from = r_with_dem
+  ) |>
+  arrange(country, wave) |>
+  kable(
+    caption = "Pearson correlations: dem_always_preferable × auth rejection items, by country × wave",
+    digits = 3
+  ) |>
+  kable_styling(bootstrap_options = c("striped", "condensed"), full_width = FALSE) |>
+  pack_rows("Korea", 1, 6) |>
+  pack_rows("Taiwan", 7, 12)
+```
+
+## 2  Cronbach's Alpha — Economic Index (R3)
+
+6-item economic evaluation index: `econ_national_n`, `econ_family_n`,
+`econ_outlook_n`, `econ_fam_outlook_n`, `econ_change_n`, `econ_fam_change_n`.
+
+```{r alpha-econ}
+alpha_econ <- dat |>
+  filter(!is.na(country_label), !is.na(wave)) |>
+  group_by(country_label, wave) |>
+  group_map(function(df, grp) {
+    mat <- df |> select(all_of(econ_items)) |> drop_na()
+    n   <- nrow(mat)
+    yr  <- unique(df$year)
+    yr  <- if (length(yr) == 1) yr else NA_integer_
+    if (n < 10) {
+      return(tibble(
+        country = grp$country_label, wave = grp$wave,
+        year = yr, n = n, alpha = NA_real_
+      ))
+    }
+    a <- psych::alpha(mat, check.keys = TRUE, warnings = FALSE)
+    tibble(
+      country = grp$country_label,
+      wave    = grp$wave,
+      year    = yr,
+      n       = n,
+      alpha   = a$total$raw_alpha
+    )
+  }) |>
+  bind_rows()
+
+alpha_econ |>
+  arrange(country, wave) |>
+  kable(
+    caption = "Cronbach's alpha: Economic index (6 items), by country × wave",
+    col.names = c("Country", "Wave", "Year", "N", "Alpha"),
+    digits = 3
+  ) |>
+  kable_styling(bootstrap_options = c("striped", "condensed"), full_width = FALSE)
+```
+
+## 3  Cronbach's Alpha — Authoritarian Rejection Index (R3)
+
+4-item auth rejection index: `strongman_reject_n`, `military_reject_n`,
+`expert_reject_n`, `singleparty_reject_n`.
+
+```{r alpha-auth}
+alpha_auth <- dat |>
+  filter(!is.na(country_label), !is.na(wave)) |>
+  group_by(country_label, wave) |>
+  group_map(function(df, grp) {
+    mat <- df |> select(all_of(auth_items)) |> drop_na()
+    n   <- nrow(mat)
+    yr  <- unique(df$year)
+    yr  <- if (length(yr) == 1) yr else NA_integer_
+    if (n < 10) {
+      return(tibble(
+        country = grp$country_label, wave = grp$wave,
+        year = yr, n = n, alpha = NA_real_
+      ))
+    }
+    a <- psych::alpha(mat, check.keys = TRUE, warnings = FALSE)
+    tibble(
+      country = grp$country_label,
+      wave    = grp$wave,
+      year    = yr,
+      n       = n,
+      alpha   = a$total$raw_alpha
+    )
+  }) |>
+  bind_rows()
+
+alpha_auth |>
+  arrange(country, wave) |>
+  kable(
+    caption = "Cronbach's alpha: Auth rejection index (4 items), by country × wave",
+    col.names = c("Country", "Wave", "Year", "N", "Alpha"),
+    digits = 3
+  ) |>
+  kable_styling(bootstrap_options = c("striped", "condensed"), full_width = FALSE)
+```
+
+## 4  McDonald's Omega — Econ and Auth Indices
+
+Omega total is a better reliability estimate than alpha when item loadings are
+unequal. Computed here via `psych::omega()` (minres factor model, 1 factor).
+
+```{r omega-econ}
+omega_econ <- dat |>
+  filter(!is.na(country_label), !is.na(wave)) |>
+  group_by(country_label, wave) |>
+  group_map(function(df, grp) {
+    mat <- df |> select(all_of(econ_items)) |> drop_na()
+    n   <- nrow(mat)
+    yr  <- unique(df$year)
+    yr  <- if (length(yr) == 1) yr else NA_integer_
+    if (n < 20) {
+      return(tibble(
+        country = grp$country_label, wave = grp$wave,
+        year = yr, n = n, omega_t = NA_real_
+      ))
+    }
+    om <- tryCatch(
+      psych::omega(mat, nfactors = 1, plot = FALSE, warnings = FALSE),
+      error = function(e) NULL
+    )
+    tibble(
+      country = grp$country_label,
+      wave    = grp$wave,
+      year    = yr,
+      n       = n,
+      omega_t = if (!is.null(om)) om$omega.tot else NA_real_
+    )
+  }) |>
+  bind_rows()
+
+omega_econ |>
+  arrange(country, wave) |>
+  kable(
+    caption = "McDonald's omega (total): Economic index (6 items), by country × wave",
+    col.names = c("Country", "Wave", "Year", "N", "Omega"),
+    digits = 3
+  ) |>
+  kable_styling(bootstrap_options = c("striped", "condensed"), full_width = FALSE)
+```
+
+```{r omega-auth}
+omega_auth <- dat |>
+  filter(!is.na(country_label), !is.na(wave)) |>
+  group_by(country_label, wave) |>
+  group_map(function(df, grp) {
+    mat <- df |> select(all_of(auth_items)) |> drop_na()
+    n   <- nrow(mat)
+    yr  <- unique(df$year)
+    yr  <- if (length(yr) == 1) yr else NA_integer_
+    if (n < 20) {
+      return(tibble(
+        country = grp$country_label, wave = grp$wave,
+        year = yr, n = n, omega_t = NA_real_
+      ))
+    }
+    om <- tryCatch(
+      psych::omega(mat, nfactors = 1, plot = FALSE, warnings = FALSE),
+      error = function(e) NULL
+    )
+    tibble(
+      country = grp$country_label,
+      wave    = grp$wave,
+      year    = yr,
+      n       = n,
+      omega_t = if (!is.null(om)) om$omega.tot else NA_real_
+    )
+  }) |>
+  bind_rows()
+
+omega_auth |>
+  arrange(country, wave) |>
+  kable(
+    caption = "McDonald's omega (total): Auth rejection index (4 items), by country × wave",
+    col.names = c("Country", "Wave", "Year", "N", "Omega"),
+    digits = 3
+  ) |>
+  kable_styling(bootstrap_options = c("striped", "condensed"), full_width = FALSE)
+```
+
+## 5  Save Results
+
+```{r save-results}
+reliability_results <- list(
+  polychoric_by_country      = poly_by_country,
+  polychoric_by_country_wave = poly_by_cw,
+  alpha_econ                 = alpha_econ,
+  omega_econ                 = omega_econ,
+  alpha_auth                 = alpha_auth,
+  omega_auth                 = omega_auth
+)
+
+saveRDS(reliability_results, file.path(results_dir, "reliability_results.rds"))
+
+cat("Saved reliability_results.rds to:", file.path(results_dir, "reliability_results.rds"), "\n")
+cat("Components:", paste(names(reliability_results), collapse = ", "), "\n")
+```

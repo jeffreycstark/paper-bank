@@ -185,18 +185,33 @@ desc$wave_means_kr |>
 #| label: tbl-desc-tw
 #| tbl-cap: "Taiwan: wave-level index means (normalized 0–1, SE in parentheses)"
 
-desc$wave_means_tw |>
+yr_tw_vec <- c(`1`=2001L, `2`=2006L, `3`=2010L, `4`=2014L, `5`=2019L, `6`=2022L)
+
+dat |>
+  filter(country_label == "Taiwan") |>
+  group_by(wave) |>
+  summarise(
+    n        = n(),
+    sat_mean = mean(sat_index,  na.rm = TRUE),
+    sat_se   = sd(sat_index,    na.rm = TRUE) / sqrt(sum(!is.na(sat_index))),
+    qual_mean= mean(qual_index, na.rm = TRUE),
+    qual_se  = sd(qual_index,   na.rm = TRUE) / sqrt(sum(!is.na(qual_index))),
+    econ_mean= mean(econ_index, na.rm = TRUE),
+    econ_se  = sd(econ_index,   na.rm = TRUE) / sqrt(sum(!is.na(econ_index))),
+    .groups  = "drop"
+  ) |>
   mutate(
+    year = yr_tw_vec[as.character(wave)],
     sat  = sprintf("%.3f (%.3f)", sat_mean,  sat_se),
-    qual = sprintf("%.3f (%.3f)", qual_mean, qual_se)
+    qual = sprintf("%.3f (%.3f)", qual_mean, qual_se),
+    econ = sprintf("%.3f (%.3f)", econ_mean, econ_se)
   ) |>
-  select(wave, year, n, sat, qual) |>
+  select(wave, year, n, sat, qual, econ) |>
   kbl(
-    col.names = c("Wave", "Year", "N", "Satisfaction", "Dem. quality"),
-    booktabs = TRUE, align = "lrrrr", format.args = list(big.mark = ",")
+    col.names = c("Wave", "Year", "N", "Satisfaction", "Dem. quality", "Econ. eval."),
+    booktabs = TRUE, align = "lrrlll", format.args = list(big.mark = ",")
   ) |>
-  add_footnote("Econ. eval. index not shown for Taiwan as it is not the focus of the paper.",
-               notation = "none") |>
+  add_footnote("SE = standard error of the mean.", notation = "none") |>
   kable_styling(latex_options = "hold_position")
 ```
 
@@ -408,13 +423,18 @@ performance-satisfaction response, they should strengthen rejection.
 #| label: tbl-auth-pooled
 #| tbl-cap: "Pooled econ$\\to$authoritarian rejection: index and component items"
 
-ar$pooled |>
+auth_pooled_all <- bind_rows(
+  ar$pooled_index |> mutate(dv_label = "Auth. rejection index"),
+  ar$pooled_items
+) |>
   mutate(
     sig  = sfn(p.value),
     cell = sprintf("%.3f%s (%.3f)", estimate, sig, std.error)
   ) |>
   select(country, dv_label, cell, n) |>
-  pivot_wider(names_from = country, values_from = c(cell, n), names_sep = "_") |>
+  pivot_wider(names_from = country, values_from = c(cell, n), names_sep = "_")
+
+auth_pooled_all |>
   select(dv_label, cell_Korea, n_Korea, cell_Taiwan, n_Taiwan) |>
   kbl(
     col.names = c("Dependent variable", "$\\beta$ (SE)", "N", "$\\beta$ (SE)", "N"),
@@ -423,7 +443,7 @@ ar$pooled |>
   ) |>
   add_header_above(c(" " = 1, "Korea" = 2, "Taiwan" = 2)) |>
   add_footnote(
-    "OLS b (econ_index) with wave FE and standard controls. *p < .05, **p < .01, ***p < .001.",
+    "Pooled OLS b (econ_index) with wave FE and standard controls. *p < .05, **p < .01, ***p < .001.",
     notation = "none"
   ) |>
   kable_styling(latex_options = "hold_position")
@@ -436,32 +456,30 @@ index and its four component items in both countries.
 
 ```{r tbl-auth-wave}
 #| label: tbl-auth-wave
-#| tbl-cap: "Wave-by-wave econ to authoritarian rejection"
+#| tbl-cap: "Wave-by-wave econ to authoritarian rejection index"
 
-auth_wave_wide <- ar$wave_by_wave |>
+ar$wave_by_wave |>
   mutate(
     sig  = sfn(p.value),
-    cell = sprintf("%.3f%s", estimate, sig),
+    cell = sprintf("%.3f%s (%.3f)", estimate, sig, std.error),
     year = case_when(
       country == "Korea"  ~ yr_kr[as.character(wave)],
       country == "Taiwan" ~ yr_tw[as.character(wave)]
-    )
+    ),
+    n_fmt = formatC(n, format = "d", big.mark = ",")
   ) |>
-  select(country, year, dv_label, cell) |>
-  pivot_wider(names_from = dv_label, values_from = cell) |>
-  arrange(country, year)
-
-auth_wave_wide |>
+  select(country, year, cell, n_fmt) |>
   kbl(
-    col.names = c("Country", "Year", names(auth_wave_wide)[-(1:2)]),
-    booktabs = TRUE, align = paste0("ll", strrep("r", ncol(auth_wave_wide) - 2))
+    col.names = c("Country", "Year", "$\\beta$ (SE)", "N"),
+    booktabs = TRUE, align = "llrr", escape = FALSE,
+    format.args = list(big.mark = ",")
   ) |>
   collapse_rows(columns = 1, latex_hline = "major") |>
   add_footnote(
-    "OLS coefficient on econ_index. *p < .05, **p < .01, ***p < .001.",
+    "OLS coefficient on econ_index, auth. rejection index as DV. Controls: age, gender, education, urban/rural, political interest. *p < .05, **p < .01, ***p < .001.",
     notation = "none"
   ) |>
-  kable_styling(latex_options = c("hold_position", "scale_down"), font_size = 9)
+  kable_styling(latex_options = "hold_position", font_size = 9)
 ```
 
 ## F.3 Cross-Country Interaction
@@ -472,34 +490,32 @@ framework as Appendix D.
 
 ```{r tbl-auth-xc}
 #| label: tbl-auth-xc
-#| tbl-cap: "Cross-country interaction: econ x Korea on authoritarian rejection outcomes"
+#| tbl-cap: "Cross-country interaction: econ $\\times$ Korea on authoritarian rejection index"
 
 auth_term_labels <- c(
   "econ_index"          = "Econ. eval.",
-  "is_korea"            = "Korea",
-  "econ_index:is_korea" = "Econ. x Korea"
+  "is_korea"            = "Korea (1 = Korea)",
+  "econ_index:is_korea" = "Econ. $\\times$ Korea"
 )
 
-auth_xc_wide <- ar$cross_country |>
+ar$cross_country |>
   filter(term %in% names(auth_term_labels)) |>
   mutate(
     term_label = recode(term, !!!auth_term_labels),
     sig  = sfn(p.value),
-    cell = sprintf("%.3f%s (%.3f)", estimate, sig, std.error)
+    cell = sprintf("%.3f%s", estimate, sig),
+    se   = sprintf("(%.3f)", std.error)
   ) |>
-  select(dv_label, term_label, cell) |>
-  pivot_wider(names_from = dv_label, values_from = cell)
-
-auth_xc_wide |>
+  select(term_label, cell, se) |>
   kbl(
-    col.names = c("Term", names(auth_xc_wide)[-1]),
-    booktabs = TRUE, align = paste0("l", strrep("r", ncol(auth_xc_wide) - 1))
+    col.names = c("Term", "$\\beta$", "SE"),
+    booktabs = TRUE, align = "lrr", escape = FALSE
   ) |>
   add_footnote(
-    "OLS. Taiwan = reference. Pooled with wave FE and controls. SE in parentheses. *p < .05, **p < .01, ***p < .001.",
+    "OLS pooled with wave FE and standard controls. Auth. rejection index as DV. Taiwan = reference category. *p < .05, **p < .01, ***p < .001.",
     notation = "none"
   ) |>
-  kable_styling(latex_options = c("hold_position", "scale_down"), font_size = 9)
+  kable_styling(latex_options = "hold_position", font_size = 9)
 ```
 
 # Appendix G: Item Specificity
@@ -518,7 +534,7 @@ commitment.
 #| label: tbl-item-spec
 #| tbl-cap: "Item specificity: econ$\\to$all DVs, Korea and Taiwan"
 
-ir$pooled |>
+ir$all_dvs |>
   mutate(
     sig  = sfn(p.value),
     cell = sprintf("%.3f%s (%.3f)", estimate, sig, std.error)
@@ -541,6 +557,202 @@ ir$pooled |>
   ) |>
   kable_styling(latex_options = "hold_position")
 ```
+
+# Appendix H: Identity-Signaling Moderation Tests
+
+The identity-signaling interpretation predicts that the economic → abstract preference
+relationship should be stronger among Taiwanese respondents who perceive greater
+threat from China, and among those with stronger national pride. Two moderation
+tests address this. Both use pooled OLS with wave fixed effects and standard controls,
+restricted to the Taiwan sample.
+
+## H.1 China threat moderation
+
+`china_harm_bin` is a binary indicator (1 = respondent views China's influence
+as harmful; 0 = beneficial or neutral), derived from the ABS item asking whether
+China's growing influence is beneficial or harmful for the country. The interaction
+term `econ_index × china_harm_bin` tests whether the critical citizens pattern is
+stronger among respondents who perceive China as a threat (Taiwan only, pooled
+across waves).
+
+```{r tbl-china-mod}
+#| label: tbl-china-mod
+#| tbl-cap: "China threat moderation: econ$\\times$China-harm on democratic support (Taiwan)"
+
+cm <- mr$china_moderation |>
+  filter(is.na(group), !is.na(term)) |>   # interaction model rows
+  mutate(
+    term_label = recode(term,
+      "econ_index"              = "Econ. eval.",
+      "china_harm_bin"          = "China harmful (0/1)",
+      "econ_index:china_harm_bin" = "Econ. \\times China harmful"
+    ),
+    sig  = sfn(p.value),
+    cell = sprintf("%.3f%s (%.3f)", estimate, sig, std.error),
+    n_fmt = formatC(n, format = "d", big.mark = ",")
+  )
+
+dv_order <- c("Quality", "Democracy always preferable", "Extent democratic")
+
+n_per_dv <- cm |>
+  group_by(dv) |>
+  slice(1) |>
+  select(dv, n)
+
+cm |>
+  select(dv, term_label, cell) |>
+  pivot_wider(names_from = dv, values_from = cell) |>
+  select(term_label, all_of(dv_order)) |>
+  kbl(
+    col.names = c("Term", "Quality", "Dem. always pref.", "Extent dem."),
+    booktabs = TRUE, align = "lrrr", escape = FALSE
+  ) |>
+  add_footnote(
+    paste0(
+      "OLS pooled with wave FE and standard controls. Taiwan only. ",
+      "N = ", paste(formatC(n_per_dv$n, format="d", big.mark=","), collapse=" / "), " by DV. ",
+      "SE in parentheses. *p < .05, **p < .01, ***p < .001."
+    ),
+    notation = "none"
+  ) |>
+  kable_styling(latex_options = c("hold_position", "scale_down"), font_size = 9)
+```
+
+## H.2 National pride moderation
+
+`nat_proud_n` is the normalized national pride item (0–1; higher = more proud).
+The moderation is estimated separately for Korea and Taiwan.
+
+```{r tbl-pride-mod}
+#| label: tbl-pride-mod
+#| tbl-cap: "National pride moderation: econ$\\times$national pride on democratic support"
+
+pi <- mr$pride_interaction |>
+  filter(term == "econ_index:nat_proud_n") |>
+  mutate(
+    sig  = sfn(p.value),
+    cell = sprintf("%.3f%s (%.3f)", estimate, sig, std.error)
+  )
+
+dv_order2 <- c("Quality", "Democracy always preferable", "Extent democratic")
+
+pi |>
+  select(country, dv, cell, n) |>
+  pivot_wider(names_from = dv, values_from = cell) |>
+  select(country, all_of(dv_order2), n) |>
+  mutate(n = formatC(n, format = "d", big.mark = ",")) |>
+  kbl(
+    col.names = c("Country", "Quality", "Dem. always pref.", "Extent dem.", "N"),
+    booktabs = TRUE, align = "lrrrr", escape = FALSE
+  ) |>
+  footnote(
+    general = "OLS pooled with wave FE and standard controls. Interaction term only (econ_index × nat_proud_n). SE in parentheses. *p < .05, **p < .01, ***p < .001.",
+    general_title = "",
+    threeparttable = TRUE
+  ) |>
+  kable_styling(latex_options = c("hold_position", "scale_down"), font_size = 9)
+```
+
+
+# Appendix I: Index Reliability and Construct Diagnostics
+
+```{r setup-reliability}
+#| include: false
+rel <- readRDS(file.path(results_dir, "reliability_results.rds"))
+```
+
+## I.1 Cronbach's Alpha and McDonald's Omega
+
+@tbl-reliability reports internal consistency for the economic evaluation index
+(6 items) and the authoritarian rejection index (4 items) by country and wave.
+Wave 2 authoritarian rejection results are missing because those items were not
+administered in the 2006 wave of the ABS.
+
+```{r tbl-reliability}
+#| label: tbl-reliability
+#| tbl-cap: "Index reliability: Cronbach's $\\alpha$ and McDonald's $\\omega$ by country and wave"
+
+rel_econ <- rel$alpha_econ |>
+  left_join(rel$omega_econ |> select(country, wave, omega = omega_t),
+            by = c("country", "wave")) |>
+  mutate(index = "Econ. eval. (6 items)")
+
+rel_auth <- rel$alpha_auth |>
+  left_join(rel$omega_auth |> select(country, wave, omega = omega_t),
+            by = c("country", "wave")) |>
+  mutate(index = "Auth. rejection (4 items)")
+
+bind_rows(rel_econ, rel_auth) |>
+  mutate(
+    alpha_fmt = ifelse(is.na(alpha) | n == 0, "—", sprintf("%.3f", alpha)),
+    omega_fmt = ifelse(is.na(omega) | n == 0, "—", sprintf("%.3f", omega)),
+    n_fmt     = ifelse(n == 0, "—", formatC(n, format = "d", big.mark = ","))
+  ) |>
+  select(index, country, wave, year, n_fmt, alpha_fmt, omega_fmt) |>
+  kbl(
+    col.names = c("Index", "Country", "Wave", "Year", "N", "$\\alpha$", "$\\omega$"),
+    booktabs = TRUE, align = "llrrrrr", escape = FALSE
+  ) |>
+  collapse_rows(columns = c(1, 2), latex_hline = "major") |>
+  footnote(
+    general = "$\\\\alpha$ = Cronbach's alpha; $\\\\omega$ = McDonald's omega (total). Wave 2 auth. rejection is NA: items not administered in ABS 2006.",
+    general_title = "",
+    threeparttable = TRUE,
+    escape = FALSE
+  ) |>
+  kable_styling(latex_options = c("hold_position", "scale_down"), font_size = 9)
+```
+
+## I.2 Abstract vs. Substantive Item Correlations
+
+@tbl-polychoric reports the Pearson correlation between the abstract preference
+item ("democracy is always preferable") and each of the four authoritarian rejection
+items, pooled across waves by country. Negative correlations are expected: higher
+abstract endorsement correlates with stronger rejection of authoritarian alternatives,
+but the modest magnitudes (|r| ≈ 0.17–0.20) confirm the two constructs are
+related but empirically distinct.
+
+```{r tbl-polychoric}
+#| label: tbl-polychoric
+#| tbl-cap: "Pearson r: abstract preference vs. authoritarian rejection items, by country"
+
+item_labels <- c(
+  strongman_reject_n   = "Reject: strongman rule",
+  military_reject_n    = "Reject: military rule",
+  expert_reject_n      = "Reject: expert/technocratic rule",
+  singleparty_reject_n = "Reject: single-party rule"
+)
+auth_items <- names(item_labels)
+
+# Extract first row (dem_always_preferable) vs auth columns from each country's cor_mat
+poly_tbl <- purrr::map_dfr(rel$polychoric_by_country, function(x) {
+  row_vals <- x$cor_mat["dem_always_preferable", auth_items]
+  tibble::tibble(
+    country = x$country,
+    auth_item = auth_items,
+    r = as.numeric(row_vals)
+  )
+})
+
+poly_tbl |>
+  mutate(
+    item_label = item_labels[auth_item],
+    r_fmt = sprintf("%.3f", r)
+  ) |>
+  select(item_label, country, r_fmt) |>
+  pivot_wider(names_from = country, values_from = r_fmt) |>
+  kbl(
+    col.names = c("Authoritarian rejection item", "Korea", "Taiwan"),
+    booktabs = TRUE, align = "lrr"
+  ) |>
+  footnote(
+    general = "Pearson r between dem_always_preferable and each auth rejection item (both normalized 0–1). Pooled across all waves within country, complete cases only.",
+    general_title = "",
+    threeparttable = TRUE
+  ) |>
+  kable_styling(latex_options = "hold_position")
+```
+
 
 # References {.unnumbered}
 
