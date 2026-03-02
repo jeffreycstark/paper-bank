@@ -107,6 +107,20 @@
  
 
 
+\usepackage{booktabs}
+\usepackage{longtable}
+\usepackage{array}
+\usepackage{multirow}
+\usepackage{wrapfig}
+\usepackage{float}
+\usepackage{colortbl}
+\usepackage{pdflscape}
+\usepackage{tabu}
+\usepackage{threeparttable}
+\usepackage{threeparttablex}
+\usepackage[normalem]{ulem}
+\usepackage{makecell}
+\usepackage{xcolor}
 \usepackage{setspace}
 \usepackage{booktabs}
 \usepackage{caption}
@@ -181,30 +195,606 @@
 
 \title{Online Appendix: {[}TITLE TBD{]}}
 \author{Jeffrey Stark}
-\date{March 2, 2026 at 4:15 PM}
+\date{March 2, 2026 at 7:00 PM}
 \begin{document}
 \maketitle
 
 
 \setstretch{2}
-\section*{Appendix A --- Variable Descriptions and
-Coding}\label{appendix-a-variable-descriptions-and-coding}
-\addcontentsline{toc}{section}{Appendix A --- Variable Descriptions and
-Coding}
+\subsection*{Table A1: Cross-Wave Comparability of Survey
+Items}\label{table-a1-cross-wave-comparability-of-survey-items}
+\addcontentsline{toc}{subsection}{Table A1: Cross-Wave Comparability of
+Survey Items}
 
-{[}Variable descriptions TBD{]}
+\begingroup\fontsize{7}{9}\selectfont
 
-\section*{Appendix B --- Robustness
-Checks}\label{appendix-b-robustness-checks}
-\addcontentsline{toc}{section}{Appendix B --- Robustness Checks}
+\begin{ThreePartTable}
+\begin{TableNotes}[para]
+\item \textit{Note:} 
+\item Status: Full = identical or functionally equivalent wording across all waves used; Partial = minor wording shift or item not fielded in all waves (cross-wave comparison valid with caveats noted in text). No items are classified as Excluded from all comparisons; wave-pair restrictions are noted in the main text.
+\end{TableNotes}
 
-{[}Robustness checks TBD{]}
+\begin{longtable}[t]{>{\raggedright\arraybackslash}p{2.0cm}>{\raggedright\arraybackslash}p{2.3cm}>{\raggedright\arraybackslash}p{2.3cm}>{\raggedright\arraybackslash}p{2.3cm}>{\raggedright\arraybackslash}p{2.3cm}>{\raggedright\arraybackslash}p{1.5cm}}
 
-\section*{Appendix C --- Full Regression
-Tables}\label{appendix-c-full-regression-tables}
-\addcontentsline{toc}{section}{Appendix C --- Full Regression Tables}
+\caption{\label{tbl-tableA1}}
 
-{[}Full tables TBD{]}
+\tabularnewline
+
+\toprule
+Variable & W2 (2008) & W3 (2012) & W4 (2015) & W6 (2021) & Status\\
+\midrule
+\endfirsthead
+\multicolumn{6}{@{}l}{\textit{(continued)}}\\
+\toprule
+Variable & W2 (2008) & W3 (2012) & W4 (2015) & W6 (2021) & Status\\
+\midrule
+\endhead
+
+\endfoot
+\bottomrule
+\insertTableNotes
+\endlastfoot
+Contacted elected official & Have you ever contacted an elected official to express your views? (broad) & Have you ever contacted an elected official to complain about or seek help with a problem? (narrow) & Have you ever contacted an elected official to express your views? (broad) & Have you ever contacted an elected official to express your views? (broad) & Partial\\
+Contacted civil servant & Have you ever contacted a civil servant to express your views? (broad) & Have you ever contacted a government official to complain about or seek help with a problem? (narrow) & Have you ever contacted a civil servant to express your views? (broad) & Have you ever contacted a civil servant to express your views? (broad) & Partial\\
+Contacted influential person & Have you ever contacted a person of influence? (broad) & Have you ever contacted a person of influence? (broad) & Have you ever contacted a person of influence? (broad) & Have you ever contacted a person of influence? (broad) & Full\\
+Signed petition & Not collected in W2 & Have you ever signed a petition? (consistent) & Have you ever signed a petition? (consistent) & Have you ever signed a petition? (consistent) & Partial\\
+Attended demonstration & Have you ever attended a demonstration or protest march? (consistent) & Have you ever attended a demonstration or protest march? (consistent) & Have you ever attended a demonstration or protest march? (consistent) & Have you ever attended a demonstration or protest march? (consistent) & Full\\
+Contacted media & Have you ever contacted the media to express your views? (consistent) & Have you ever contacted the media to express your views? (consistent) & Have you ever contacted the media to express your views? (consistent) & Have you ever contacted the media to express your views? (consistent) & Full\\
+Community leader contact & How often do you contact community leaders? (1–5 frequency) & How often do you contact community leaders? (1–5 frequency) & How often do you contact community leaders? (1–5 frequency) & How often do you contact community leaders? (1–5 frequency) & Full\\
+Voted in last election & Did you vote in the last national election? (binary) & Did you vote in the last national election? (binary) & Did you vote in the last national election? (binary) & Did you vote in the last national election? (binary) & Full\\
+Expert rule & Not collected in W2 & Should experts rather than government make decisions? (1–4) & Should experts rather than government make decisions? (1–4) & Should experts rather than government make decisions? (1–4) & Partial\\
+Single-party rule & Should only one political party be allowed to contest elections? (1–4) & Should only one political party be allowed to contest elections? (1–4) & Should only one political party be allowed to contest elections? (1–4) & Should only one political party be allowed to contest elections? (1–4) & Full\\
+Strongman rule & Should we get rid of parliament and elections for a strong leader? (1–4) & Should we get rid of parliament and elections for a strong leader? (1–4) & Should we get rid of parliament and elections for a strong leader? (1–4) & Should we get rid of parliament and elections for a strong leader? (1–4) & Full\\
+Military rule & Should the military rule the country? (1–4) & Should the military rule the country? (1–4) & Should the military rule the country? (1–4) & Should the military rule the country? (1–4) & Full\\
+Democratic future (0-10) & Not collected in W2 & How democratic will this country be in 10 years? (0–10) & How democratic will this country be in 10 years? (0–10) & How democratic will this country be in 10 years? (0–10) & Partial\\
+Democratic past (0-10) & Not collected in W2 & How democratic was this country 10 years ago? (0–10) & How democratic was this country 10 years ago? (0–10) & How democratic was this country 10 years ago? (0–10) & Partial\\
+Democratic present (0-10) & How democratic is this country today? (partial coverage, W2) & How democratic is this country today? (0–10 scale, government performance framing) & How democratic is this country today? (0–10 scale, government performance framing) & How democratic is this country today? (0–10 scale, government performance framing) & Partial\\
+Witnessed corruption (binary) & Has any government official asked you for a bribe? (binary W2) & Have you or anyone in your family personally experienced or witnessed government corruption? (broader) & Have you or anyone in your family personally experienced or witnessed government corruption? & Have you or anyone in your family personally experienced or witnessed government corruption? & Partial\\
+National govt corruption & How widespread is corruption in national government? (1–4) & How widespread is corruption in national government? (1–4) & How widespread is corruption in national government? (1–4) & How widespread is corruption in national government? (1–4) & Full\\
+Local govt corruption & How widespread is corruption in local government? (1–4) & How widespread is corruption in local government? (1–4) & How widespread is corruption in local government? (1–4) & How widespread is corruption in local government? (1–4) & Full\\
+Follows political news & How often do you follow political news? (1–5) & How often do you follow political news? (1–5) & How often do you follow political news? (1–5) & How often do you follow political news? (1–5) & Full\\
+Internet news (harmonized) & How often do you get news from internet? (6-point scale) & How often do you get news from internet? (6-point scale) & How often do you get news from internet? (8-point scale — harmonized to 6pt) & How often do you get news from internet? (9-point scale — harmonized to 6pt) & Partial\\
+Political interest & How interested are you in politics? (1–4) & How interested are you in politics? (1–4) & How interested are you in politics? (1–4) & How interested are you in politics? (1–4) & Full\\
+Discusses politics & How often do you discuss politics with friends or family? (1–3) & How often do you discuss politics with friends or family? (1–3) & How often do you discuss politics with friends or family? (1–3) & How often do you discuss politics with friends or family? (1–3) & Full\\*
+
+\end{longtable}
+
+\end{ThreePartTable}
+\endgroup{}
+
+\newpage
+
+\subsection*{Table A2: Subgroup Analysis of Key
+Variables}\label{table-a2-subgroup-analysis-of-key-variables}
+\addcontentsline{toc}{subsection}{Table A2: Subgroup Analysis of Key
+Variables}
+
+\begin{table}
+
+\caption{\label{tbl-tableA2}Subgroup Analysis by Urban/Rural Residence}
+
+\centering{
+
+\centering\begingroup\setstretch{1}\fontsize{9}{11}\selectfont
+
+\begin{threeparttable}
+\begin{tabular}[t]{>{\raggedright\arraybackslash}p{2.5cm}>{\raggedright\arraybackslash}p{5.8cm}>{\raggedright\arraybackslash}p{5.8cm}}
+\toprule
+Wave & Urban & Rural\\
+\midrule
+\addlinespace[0.3em]
+\multicolumn{3}{l}{\textbf{Gate: contacted influential person}}\\
+\hspace{1em}Wave 2 (2008) & 38.6\% (32.2--45.3) & 44.3\% (40.8--47.9)\\
+\hspace{1em}Wave 3 (2012) & 58.3\% (51.2--65.0) & 51.4\% (48.3--54.6)\\
+\hspace{1em}Wave 4 (2015) & 65.5\% (58.4--72.0) & 54.0\% (50.9--57.1)\\
+\hspace{1em}Wave 6 (2021) & 29.2\% (24.1--34.8) & 21.3\% (18.6--24.2)\\
+\addlinespace[0.3em]
+\multicolumn{3}{l}{\textbf{Democratic future (0-10 mean)}}\\
+\hspace{1em}Wave 3 (2012) & 9.48 (9.22--9.74) & 9.60 (9.49--9.71)\\
+\hspace{1em}Wave 4 (2015) & 7.32 (6.74--7.89) & 7.79 (7.53--8.05)\\
+\hspace{1em}Wave 6 (2021) & 6.94 (6.53--7.36) & 6.57 (6.30--6.83)\\
+\addlinespace[0.3em]
+\multicolumn{3}{l}{\textbf{Witnessed corruption (\textbackslash{}\%)}}\\
+\hspace{1em}Wave 2 (2008) & 34.7\% (28.5--41.5) & 25.7\% (22.6--28.9)\\
+\hspace{1em}Wave 3 (2012) & 56.0\% (49.0--62.9) & 48.0\% (44.9--51.2)\\
+\hspace{1em}Wave 4 (2015) & 65.6\% (58.3--72.3) & 62.3\% (59.0--65.4)\\
+\hspace{1em}Wave 6 (2021) & 17.6\% (13.6--22.6) & 14.0\% (11.8--16.5)\\
+\addlinespace[0.3em]
+\multicolumn{3}{l}{\textbf{Single-party rule (1-4 mean)}}\\
+\hspace{1em}Wave 2 (2008) & 1.53 (1.40--1.67) & 1.87 (1.78--1.95)\\
+\hspace{1em}Wave 3 (2012) & 1.77 (1.64--1.91) & 2.01 (1.94--2.07)\\
+\hspace{1em}Wave 4 (2015) & 1.64 (1.53--1.75) & 1.81 (1.75--1.86)\\
+\hspace{1em}Wave 6 (2021) & 2.09 (1.98--2.21) & 2.24 (2.18--2.31)\\
+\addlinespace[0.3em]
+\multicolumn{3}{l}{\textbf{Voted in last election (\textbackslash{}\%)}}\\
+\hspace{1em}Wave 3 (2012) & 70.9\% (64.1--76.9) & 80.3\% (77.7--82.7)\\
+\hspace{1em}Wave 4 (2015) & 80.9\% (74.6--86.0) & 83.6\% (81.2--85.8)\\
+\hspace{1em}Wave 6 (2021) & 92.1\% (88.4--94.8) & 86.8\% (84.3--88.9)\\
+\addlinespace[0.3em]
+\multicolumn{3}{l}{\textbf{Political interest (1-4 mean)}}\\
+\hspace{1em}Wave 2 (2008) & 2.35 (2.21--2.48) & 2.62 (2.55--2.68)\\
+\hspace{1em}Wave 3 (2012) & 2.44 (2.32--2.56) & 2.60 (2.54--2.65)\\
+\hspace{1em}Wave 4 (2015) & 2.31 (2.17--2.45) & 2.29 (2.23--2.35)\\
+\hspace{1em}Wave 6 (2021) & 1.94 (1.83--2.04) & 2.10 (2.04--2.16)\\
+\bottomrule
+\end{tabular}
+\begin{tablenotes}[para]
+\item \textit{Note:} 
+\item Estimates shown with 95\% CI in parentheses (Wilson interval for proportions; t-based for means). Gate proportions and voted/corruption displayed as percentages. '---' = item not fielded in wave. Wave 2 (2008), Wave 3 (2012), Wave 4 (2015), Wave 6 (2021).
+\end{tablenotes}
+\end{threeparttable}
+\endgroup{}
+
+}
+
+\end{table}%
+
+\begin{table}
+
+\caption{\label{tbl-tableA2b}Subgroup Analysis by Age Group}
+
+\centering{
+
+\centering\begingroup\setstretch{1}\fontsize{9}{11}\selectfont
+
+\begin{threeparttable}
+\begin{tabular}[t]{>{\raggedright\arraybackslash}p{2.5cm}>{\raggedright\arraybackslash}p{3.8cm}>{\raggedright\arraybackslash}p{3.8cm}>{\raggedright\arraybackslash}p{3.8cm}}
+\toprule
+Wave & Under 30 & 30-49 & 50+\\
+\midrule
+\addlinespace[0.3em]
+\multicolumn{4}{l}{\textbf{Gate: contacted influential person}}\\
+\hspace{1em}Wave 2 (2008) & 43.5\% (38.0--49.2) & 40.9\% (36.4--45.5) & 47.1\% (40.3--54.1)\\
+\hspace{1em}Wave 3 (2012) & 50.6\% (45.6--55.7) & 53.6\% (49.2--57.9) & 53.5\% (47.5--59.4)\\
+\hspace{1em}Wave 4 (2015) & 51.5\% (45.7--57.2) & 55.8\% (51.5--60.1) & 59.9\% (54.6--65.0)\\
+\hspace{1em}Wave 6 (2021) & 22.5\% (17.7--28.2) & 24.8\% (21.3--28.7) & 21.5\% (17.4--26.4)\\
+\addlinespace[0.3em]
+\multicolumn{4}{l}{\textbf{Democratic future (0-10 mean)}}\\
+\hspace{1em}Wave 3 (2012) & 9.60 (9.43--9.77) & 9.53 (9.37--9.70) & 9.62 (9.43--9.82)\\
+\hspace{1em}Wave 4 (2015) & 7.84 (7.38--8.30) & 7.42 (7.05--7.79) & 8.06 (7.63--8.49)\\
+\hspace{1em}Wave 6 (2021) & 6.52 (6.07--6.97) & 6.93 (6.61--7.26) & 6.35 (5.94--6.77)\\
+\addlinespace[0.3em]
+\multicolumn{4}{l}{\textbf{Witnessed corruption (\textbackslash{}\%)}}\\
+\hspace{1em}Wave 2 (2008) & 29.7\% (24.7--35.2) & 28.2\% (24.3--32.6) & 23.3\% (17.8--29.8)\\
+\hspace{1em}Wave 3 (2012) & 52.4\% (47.4--57.5) & 49.1\% (44.8--53.5) & 45.8\% (39.9--51.8)\\
+\hspace{1em}Wave 4 (2015) & 59.9\% (53.9--65.6) & 67.1\% (62.7--71.1) & 58.9\% (53.3--64.3)\\
+\hspace{1em}Wave 6 (2021) & 16.4\% (12.3--21.5) & 15.0\% (12.1--18.3) & 13.6\% (10.3--17.8)\\
+\addlinespace[0.3em]
+\multicolumn{4}{l}{\textbf{Single-party rule (1-4 mean)}}\\
+\hspace{1em}Wave 2 (2008) & 1.73 (1.61--1.86) & 1.85 (1.74--1.97) & 1.73 (1.56--1.90)\\
+\hspace{1em}Wave 3 (2012) & 2.02 (1.92--2.13) & 1.95 (1.85--2.04) & 1.93 (1.80--2.06)\\
+\hspace{1em}Wave 4 (2015) & 1.82 (1.72--1.92) & 1.69 (1.62--1.77) & 1.87 (1.77--1.96)\\
+\hspace{1em}Wave 6 (2021) & 2.30 (2.18--2.42) & 2.19 (2.12--2.27) & 2.16 (2.06--2.26)\\
+\addlinespace[0.3em]
+\multicolumn{4}{l}{\textbf{Voted in last election (\textbackslash{}\%)}}\\
+\hspace{1em}Wave 3 (2012) & 52.4\% (47.4--57.5) & 88.9\% (85.8--91.4) & 95.8\% (92.6--97.7)\\
+\hspace{1em}Wave 4 (2015) & 60.1\% (54.3--65.6) & 90.2\% (87.3--92.6) & 92.2\% (88.8--94.7)\\
+\hspace{1em}Wave 6 (2021) & 80.3\% (74.9--84.8) & 90.2\% (87.4--92.5) & 90.7\% (87.1--93.4)\\
+\addlinespace[0.3em]
+\multicolumn{4}{l}{\textbf{Political interest (1-4 mean)}}\\
+\hspace{1em}Wave 2 (2008) & 2.54 (2.44--2.65) & 2.52 (2.44--2.61) & 2.65 (2.52--2.79)\\
+\hspace{1em}Wave 3 (2012) & 2.55 (2.46--2.63) & 2.55 (2.47--2.62) & 2.65 (2.54--2.76)\\
+\hspace{1em}Wave 4 (2015) & 2.14 (2.04--2.24) & 2.31 (2.23--2.39) & 2.40 (2.29--2.50)\\
+\hspace{1em}Wave 6 (2021) & 2.08 (1.97--2.19) & 2.04 (1.96--2.11) & 2.08 (1.99--2.17)\\
+\bottomrule
+\end{tabular}
+\begin{tablenotes}[para]
+\item \textit{Note:} 
+\item Estimates shown with 95\% CI in parentheses (Wilson interval for proportions; t-based for means). Gate proportions and voted/corruption displayed as percentages. '---' = item not fielded in wave.
+\end{tablenotes}
+\end{threeparttable}
+\endgroup{}
+
+}
+
+\end{table}%
+
+\begin{table}
+
+\caption{\label{tbl-tableA2c}Subgroup Analysis by Education Level}
+
+\centering{
+
+\centering\begingroup\setstretch{1}\fontsize{9}{11}\selectfont
+
+\begin{threeparttable}
+\begin{tabular}[t]{>{\raggedright\arraybackslash}p{2.5cm}>{\raggedright\arraybackslash}p{3.8cm}>{\raggedright\arraybackslash}p{3.8cm}>{\raggedright\arraybackslash}p{3.8cm}}
+\toprule
+Wave & Primary or below & Secondary & Tertiary\\
+\midrule
+\addlinespace[0.3em]
+\multicolumn{4}{l}{\textbf{Gate: contacted influential person}}\\
+\hspace{1em}Wave 2 (2008) & 43.1\% (39.3--46.9) & 44.2\% (38.5--50.1) & 46.2\% (27.1--66.3)\\
+\hspace{1em}Wave 3 (2012) & 51.6\% (48.0--55.1) & 54.2\% (49.1--59.3) & 57.1\% (41.1--71.9)\\
+\hspace{1em}Wave 4 (2015) & 55.0\% (51.3--58.5) & 57.9\% (52.9--62.8) & 54.5\% (39.0--69.3)\\
+\hspace{1em}Wave 6 (2021) & 19.9\% (16.9--23.3) & 27.2\% (23.1--31.7) & 30.3\% (20.5--42.0)\\
+\addlinespace[0.3em]
+\multicolumn{4}{l}{\textbf{Democratic future (0-10 mean)}}\\
+\hspace{1em}Wave 3 (2012) & 9.51 (9.38--9.65) & 9.73 (9.59--9.87) & 9.38 (8.66--10.11)\\
+\hspace{1em}Wave 4 (2015) & 7.93 (7.65--8.22) & 7.29 (6.83--7.74) & 7.47 (6.05--8.88)\\
+\hspace{1em}Wave 6 (2021) & 6.77 (6.47--7.07) & 6.39 (6.04--6.74) & 7.34 (6.38--8.30)\\
+\addlinespace[0.3em]
+\multicolumn{4}{l}{\textbf{Witnessed corruption (\textbackslash{}\%)}}\\
+\hspace{1em}Wave 2 (2008) & 25.2\% (22.0--28.8) & 33.2\% (27.9--39.0) & 26.9\% (12.4--48.1)\\
+\hspace{1em}Wave 3 (2012) & 46.5\% (42.9--50.1) & 51.8\% (46.7--57.0) & 81.0\% (65.4--90.9)\\
+\hspace{1em}Wave 4 (2015) & 59.1\% (55.3--62.7) & 69.1\% (64.1--73.7) & 70.7\% (54.3--83.4)\\
+\hspace{1em}Wave 6 (2021) & 13.9\% (11.5--16.9) & 16.3\% (13.0--20.2) & 15.6\% (8.7--26.0)\\
+\addlinespace[0.3em]
+\multicolumn{4}{l}{\textbf{Single-party rule (1-4 mean)}}\\
+\hspace{1em}Wave 2 (2008) & 1.94 (1.84--2.04) & 1.53 (1.42--1.65) & 1.19 (0.94--1.45)\\
+\hspace{1em}Wave 3 (2012) & 2.12 (2.04--2.20) & 1.73 (1.62--1.83) & 1.36 (1.16--1.55)\\
+\hspace{1em}Wave 4 (2015) & 1.91 (1.85--1.97) & 1.56 (1.48--1.64) & 1.53 (1.30--1.77)\\
+\hspace{1em}Wave 6 (2021) & 2.22 (2.15--2.29) & 2.17 (2.08--2.25) & 2.34 (2.09--2.58)\\
+\addlinespace[0.3em]
+\multicolumn{4}{l}{\textbf{Voted in last election (\textbackslash{}\%)}}\\
+\hspace{1em}Wave 3 (2012) & 84.9\% (82.1--87.3) & 67.7\% (62.7--72.3) & 62.5\% (45.8--76.8)\\
+\hspace{1em}Wave 4 (2015) & 84.8\% (82.0--87.3) & 81.0\% (76.7--84.7) & 74.4\% (58.5--86.0)\\
+\hspace{1em}Wave 6 (2021) & 87.9\% (85.2--90.2) & 87.7\% (84.1--90.5) & 92.3\% (83.4--96.8)\\
+\addlinespace[0.3em]
+\multicolumn{4}{l}{\textbf{Political interest (1-4 mean)}}\\
+\hspace{1em}Wave 2 (2008) & 2.49 (2.42--2.57) & 2.72 (2.61--2.82) & 2.62 (2.22--3.01)\\
+\hspace{1em}Wave 3 (2012) & 2.52 (2.46--2.59) & 2.65 (2.56--2.73) & 2.71 (2.44--2.99)\\
+\hspace{1em}Wave 4 (2015) & 2.24 (2.18--2.31) & 2.37 (2.28--2.46) & 2.41 (2.07--2.75)\\
+\hspace{1em}Wave 6 (2021) & 2.06 (1.99--2.13) & 2.07 (1.98--2.15) & 2.01 (1.79--2.23)\\
+\bottomrule
+\end{tabular}
+\begin{tablenotes}[para]
+\item \textit{Note:} 
+\item Estimates shown with 95\% CI in parentheses (Wilson interval for proportions; t-based for means). Gate proportions and voted/corruption displayed as percentages. '---' = item not fielded in wave.
+\end{tablenotes}
+\end{threeparttable}
+\endgroup{}
+
+}
+
+\end{table}%
+
+\newpage
+
+\subsection*{Table A3: Placebo Battery---Non-Political
+Variables}\label{table-a3-placebo-batterynon-political-variables}
+\addcontentsline{toc}{subsection}{Table A3: Placebo
+Battery---Non-Political Variables}
+
+\begin{table}
+
+\caption{\label{tbl-tableA3}Placebo Battery: Non-Political Variables by
+Wave}
+
+\centering{
+
+\centering\begingroup\fontsize{10}{12}\selectfont
+
+\begin{threeparttable}
+\begin{tabular}[t]{>{\raggedright\arraybackslash}p{4.0cm}>{\raggedright\arraybackslash}p{2.5cm}>{\raggedright\arraybackslash}p{2.5cm}>{\raggedright\arraybackslash}p{2.5cm}>{\raggedright\arraybackslash}p{2.5cm}}
+\toprule
+label & W2 (2008) & W3 (2012) & W4 (2015) & W6 (2021)\\
+\midrule
+Interpersonal trust (binary) & 7.4\% (0.83) & 11.6\% (0.92) & 14.1\% (1.01) & 5.0\% (0.62)\\
+Interpersonal trust (ordinal) & --- & 2.30 (0.026) & 2.44 (0.027) & 2.23 (0.022)\\
+National pride & 3.60 (0.020) & 3.66 (0.017) & 3.63 (0.017) & 3.79 (0.015)\\
+Pride in political system & --- & 3.03 (0.022) & 2.75 (0.024) & 2.95 (0.021)\\
+HH income satisfaction & --- & 2.67 (0.029) & 1.91 (0.024) & 2.96 (0.028)\\
+Family econ situation (now) & 2.92 (0.019) & 3.03 (0.020) & 3.05 (0.020) & 2.86 (0.020)\\
+Family econ change (1yr) & 3.30 (0.026) & 3.10 (0.027) & 3.04 (0.024) & 3.27 (0.026)\\
+National econ situation & 3.18 (0.026) & 3.33 (0.024) & 3.12 (0.023) & 3.05 (0.024)\\
+Democracy satisfaction & 2.97 (0.024) & 2.98 (0.020) & 2.71 (0.023) & 3.10 (0.019)\\
+\bottomrule
+\end{tabular}
+\begin{tablenotes}[para]
+\item \textit{Note:} 
+\item Cell format: estimate (SE). Proportions (interpersonal trust) shown as percentage (SE in percentage points). Means shown as raw scale values (SE). '---' = item not fielded in wave. Items are non-political and should not be affected by opposition elimination; stable values support the domain-specificity of observed political attitude shifts.
+\end{tablenotes}
+\end{threeparttable}
+\endgroup{}
+
+}
+
+\end{table}%
+
+\newpage
+
+\subsection*{Table A4: W3→W4 Partisan
+Decomposition}\label{table-a4-w3w4-partisan-decomposition}
+\addcontentsline{toc}{subsection}{Table A4: W3→W4 Partisan
+Decomposition}
+
+\begin{table}
+
+\caption{\label{tbl-tableA4}W3→W4 Partisan Decomposition of Key Outcomes
+by Wave 3 Vote Choice}
+
+\centering{
+
+\centering\begingroup\setstretch{1}\fontsize{9}{11}\selectfont
+
+\begin{threeparttable}
+\begin{tabular}[t]{>{\raggedright\arraybackslash}p{3.5cm}>{\centering\arraybackslash}p{3.0cm}>{\centering\arraybackslash}p{3.0cm}>{\centering\arraybackslash}p{3.0cm}}
+\toprule
+Group & W3 (2012) & W4 (2015) & $\Delta$ W4$-$W3\\
+\midrule
+\addlinespace[0.3em]
+\multicolumn{4}{l}{\textbf{Contacted influential person (\textbackslash{}\%)}}\\
+\hspace{1em}CPP voter & 53.7\% (50.0, 57.4) & 59.7\% (55.6, 63.6) & +5.9 pp\\
+\hspace{1em}CNRP/SRP voter$^{\dagger}$ & 57.3\% (49.5, 64.8) & 54.5\% (48.7, 60.3) & -2.8 pp\\
+\hspace{1em}Nonvoter & 45.1\% (38.9, 51.4) & 50.7\% (43.6, 57.8) & +5.7 pp\\
+\hspace{1em}DK/Refuse & 58.0\% (43.3, 71.5) & 46.7\% (36.4, 57.4) & -11.3 pp\\
+\addlinespace[0.3em]
+\multicolumn{4}{l}{\textbf{Democratic future (0--10 mean)}}\\
+\hspace{1em}CPP voter & 9.56 (9.43, 9.69) & 8.48 (8.19, 8.77) & -1.08\\
+\hspace{1em}CNRP/SRP voter$^{\dagger}$ & 9.44 (9.09, 9.79) & 6.04 (5.52, 6.55) & -3.40***\\
+\hspace{1em}Nonvoter & 9.69 (9.52, 9.86) & 7.80 (7.27, 8.33) & -1.89\\
+\hspace{1em}DK/Refuse & 9.73 (9.34, 10.12) & 7.26 (6.15, 8.36) & -2.47\\
+\addlinespace[0.3em]
+\multicolumn{4}{l}{\textbf{Single-party rule acceptance (1--4)}}\\
+\hspace{1em}CPP voter & 2.00 (1.92, 2.08) & 1.89 (1.82, 1.96) & -0.11\\
+\hspace{1em}CNRP/SRP voter$^{\dagger}$ & 1.87 (1.71, 2.03) & 1.56 (1.47, 1.64) & -0.31\\
+\hspace{1em}Nonvoter & 1.99 (1.86, 2.12) & 1.81 (1.70, 1.93) & -0.17\\
+\hspace{1em}DK/Refuse & 1.78 (1.52, 2.04) & 1.70 (1.53, 1.87) & -0.09\\
+\addlinespace[0.3em]
+\multicolumn{4}{l}{\textbf{Political interest (1--4)}}\\
+\hspace{1em}CPP voter & 2.57 (2.51, 2.63) & 2.25 (2.17, 2.32) & -0.32\\
+\hspace{1em}CNRP/SRP voter$^{\dagger}$ & 2.74 (2.61, 2.88) & 2.60 (2.49, 2.71) & -0.14\\
+\hspace{1em}Nonvoter & 2.53 (2.42, 2.64) & 2.04 (1.91, 2.17) & -0.49\\
+\hspace{1em}DK/Refuse & 2.18 (1.91, 2.44) & 2.14 (1.96, 2.33) & -0.03\\
+\addlinespace[0.3em]
+\multicolumn{4}{l}{\textbf{Witnessed corruption (\textbackslash{}\%)}}\\
+\hspace{1em}CPP voter & 44.8\% (41.2, 48.6) & 56.8\% (52.6, 60.9) & +11.9 pp\\
+\hspace{1em}CNRP/SRP voter$^{\dagger}$ & 59.9\% (52.1, 67.2) & 76.3\% (70.7, 81.1) & +16.4 pp\\
+\hspace{1em}Nonvoter & 55.1\% (48.8, 61.3) & 61.1\% (53.7, 68.0) & +5.9 pp\\
+\hspace{1em}DK/Refuse & 50.0\% (36.6, 63.4) & 63.9\% (52.5, 73.9) & +13.9 pp\\
+\addlinespace[0.3em]
+\multicolumn{4}{l}{\textbf{Democracy satisfaction (1--4)}}\\
+\hspace{1em}CPP voter & 3.12 (3.07, 3.16) & 3.00 (2.95, 3.05) & -0.12\\
+\hspace{1em}CNRP/SRP voter$^{\dagger}$ & 2.53 (2.41, 2.66) & 2.21 (2.11, 2.30) & -0.33**\\
+\hspace{1em}Nonvoter & 2.89 (2.82, 2.97) & 2.64 (2.53, 2.75) & -0.26\\
+\hspace{1em}DK/Refuse & 2.94 (2.77, 3.11) & 2.55 (2.38, 2.72) & -0.39\\
+\bottomrule
+\end{tabular}
+\begin{tablenotes}[para]
+\item \textit{Note:} 
+\item Estimates with 95\% CI in parentheses (Wilson interval for proportions; t-based for means). Proportions shown as percentages. $\Delta$ = W4 value minus W3 value. Groups defined by W3 reported vote choice: CPP = voted for winning party (Cambodia People's Party); CNRP/SRP = voted for losing party (Cambodia National Rescue Party / Sam Rainsy Party); Nonvoter = did not vote in the 2012 election; DK/Refuse = voted but declined to identify party or missing. $^{\dagger}$Stars in the $\Delta$ column for CNRP/SRP rows reflect significance of the Wave 4 $\times$ CNRP/SRP interaction term from pooled OLS on W3--W4 data (CPP as reference group): * $p < .05$, ** $p < .01$, *** $p < .001$. N per wave: W3 = 1,200; W4 = 1,200. Group Ns at W3: CPP = 722, CNRP/SRP = 172, Nonvoter = 255, DK/Refuse = 51.
+\end{tablenotes}
+\end{threeparttable}
+\endgroup{}
+
+}
+
+\end{table}%
+
+\newpage
+
+\subsection*{Table A5: W6 DK/Refuse Group Attitudinal
+Profile}\label{table-a5-w6-dkrefuse-group-attitudinal-profile}
+\addcontentsline{toc}{subsection}{Table A5: W6 DK/Refuse Group
+Attitudinal Profile}
+
+\begin{table}
+
+\caption{\label{tbl-tableA5}Wave 6 Attitudinal Profile: DK/Refuse
+vs.~CPP and CNRP/SRP Voters}
+
+\centering{
+
+\centering\begingroup\setstretch{1}\fontsize{9}{11}\selectfont
+
+\begin{threeparttable}
+\begin{tabular}[t]{>{\raggedright\arraybackslash}p{5.0cm}>{\centering\arraybackslash}p{2.8cm}>{\centering\arraybackslash}p{2.8cm}>{\centering\arraybackslash}p{2.8cm}}
+\toprule
+Variable & CPP Voter & CNRP/SRP Voter & DK/Refuse\\
+\midrule
+\addlinespace[0.3em]
+\multicolumn{4}{l}{\textbf{Democratic Orientation}}\\
+\hspace{1em}Democracy always preferable (\% = 1) & 68.2\% (64.6, 71.6) & 72.0\% (57.3, 83.3) & 59.3\% (52.1, 66.1)\\
+\hspace{1em}Democracy is best form (1--4 mean) & 3.26 (3.22, 3.30) & 2.91 (2.73, 3.09) & 3.14 (3.05, 3.23)\\
+\hspace{1em}Democracy vs. equality (1--5 mean) & 2.26 (2.15, 2.36) & 2.61 (2.23, 2.99) & 2.46 (2.28, 2.64)\\
+\hspace{1em}Democracy satisfaction (1--4 mean) & 3.22 (3.17, 3.26) & 2.44 (2.23, 2.65) & 2.98 (2.91, 3.05)\\
+\addlinespace[0.3em]
+\multicolumn{4}{l}{\textbf{Democratic Expectations}}\\
+\hspace{1em}Democratic future (0--10 mean) & 7.06 (6.78, 7.34) & 4.96 (4.13, 5.79) & 5.86 (5.45, 6.27)\\
+\hspace{1em}Democratic present (0--10 mean) & 6.15 (5.95, 6.35) & 4.04 (3.57, 4.52) & 5.26 (5.00, 5.51)\\
+\hspace{1em}Democratic past (0--10 mean) & 4.92 (4.74, 5.10) & 3.96 (3.43, 4.48) & 4.50 (4.25, 4.75)\\
+\addlinespace[0.3em]
+\multicolumn{4}{l}{\textbf{Authoritarian Preferences}}\\
+\hspace{1em}Expert rule (1--4 mean) & 2.19 (2.12, 2.26) & 1.96 (1.72, 2.20) & 1.95 (1.83, 2.06)\\
+\hspace{1em}Single-party rule (1--4 mean) & 2.27 (2.20, 2.34) & 1.89 (1.66, 2.13) & 2.05 (1.93, 2.17)\\
+\hspace{1em}Strongman rule (1--4 mean) & 2.23 (2.16, 2.30) & 2.07 (1.81, 2.33) & 2.05 (1.93, 2.18)\\
+\hspace{1em}Military rule (1--4 mean) & 2.24 (2.17, 2.31) & 2.28 (1.99, 2.57) & 2.18 (2.04, 2.33)\\
+\addlinespace[0.3em]
+\multicolumn{4}{l}{\textbf{Civic Engagement}}\\
+\hspace{1em}Contacted influential person (\%) & 24.9\% (21.9, 28.3) & 20.8\% (11.3, 34.5) & 20.4\% (15.3, 26.5)\\
+\hspace{1em}Political interest (1--4 mean) & 2.09 (2.02, 2.15) & 2.37 (2.14, 2.60) & 1.93 (1.82, 2.04)\\
+\hspace{1em}Follows political news (mean) & 2.05 (1.96, 2.14) & 2.48 (2.13, 2.84) & 1.96 (1.81, 2.11)\\
+\addlinespace[0.3em]
+\multicolumn{4}{l}{\textbf{Missingness}}\\
+\hspace{1em}Nonresponse: democratic future (\%) & 62.6\% & 59.6\% & 65.1\%\\
+\bottomrule
+\end{tabular}
+\begin{tablenotes}[para]
+\item \textit{Note:} 
+\item Wave 6 (2021) only. Groups defined by W6 reported vote choice. N: CPP voter = 794; CNRP/SRP voter = 57; DK/Refuse = 249. Estimates with 95\% CI in parentheses (Wilson interval for proportions; t-based for means). 'Democracy always preferable' = proportion selecting category 1 of 3-category forced-choice item (1 = always preferable, 2 = sometimes, 3 = sometimes non-dem better). 'Democracy vs. equality' (1--5): higher values = greater prioritization of economic equality over democracy. Nonresponse on democratic future item reported as raw percentage. CNRP/SRP N is small (n = 57); interpret CIs accordingly.
+\end{tablenotes}
+\end{threeparttable}
+\endgroup{}
+
+}
+
+\end{table}%
+
+\newpage
+
+\subsection*{Table A6: OLS Attenuation Tests---Freedom
+Perceptions}\label{table-a6-ols-attenuation-testsfreedom-perceptions}
+\addcontentsline{toc}{subsection}{Table A6: OLS Attenuation
+Tests---Freedom Perceptions}
+
+\begin{table}
+
+\caption{\label{tbl-tableA6}OLS Attenuation Tests: Wave Coefficients
+With and Without Freedom Perceptions}
+
+\centering{
+
+\centering\begingroup\setstretch{1}\fontsize{9}{11}\selectfont
+
+\begin{threeparttable}
+\begin{tabular}[t]{>{\raggedright\arraybackslash}p{2.0cm}>{\centering\arraybackslash}p{3.5cm}>{\centering\arraybackslash}p{3.5cm}>{\centering\arraybackslash}p{2.5cm}}
+\toprule
+Wave & Model A: Baseline & Model B: +Freedom & Attenuation (\%)\\
+\midrule
+\addlinespace[0.3em]
+\multicolumn{4}{l}{\textbf{Democratic future (0--10)}}\\
+\hspace{1em}Wave 4 & -1.858 (0.120)*** & -1.796 (0.118)*** & 3.3\%\\
+\hspace{1em}Wave 6 & -2.887 (0.128)*** & -2.876 (0.129)*** & 0.4\%\\
+\addlinespace[0.3em]
+\multicolumn{4}{l}{\textbf{Dem. satisfaction (1--4)}}\\
+\hspace{1em}Wave 3 & 0.009 (0.031) & 0.023 (0.031) & -169.3\%\\
+\hspace{1em}Wave 4 & -0.264 (0.031)*** & -0.232 (0.031)*** & 11.9\%\\
+\hspace{1em}Wave 6 & 0.137 (0.031)*** & 0.159 (0.032)*** & -16.1\%\\
+\addlinespace[0.3em]
+\multicolumn{4}{l}{\textbf{Dem. preference (binary)}}\\
+\hspace{1em}Wave 3 & -0.043 (0.021)* & -0.049 (0.021)* & -13.9\%\\
+\hspace{1em}Wave 4 & 0.131 (0.021)*** & 0.122 (0.022)*** & 6.7\%\\
+\hspace{1em}Wave 6 & 0.046 (0.022)* & 0.043 (0.022) & 8.1\%\\
+\bottomrule
+\end{tabular}
+\begin{tablenotes}[para]
+\item \textit{Note:} 
+\item OLS regression. DVs: Democratic future (0--10, W3/W4/W6, reference = W3); Democracy satisfaction (1--4, all waves, reference = W2); Democracy preference binary (1 = always preferable, reference = W2). Model A: wave dummies + age, gender, education, urbanicity. Model B adds perceived freedom of speech and freedom to organize. Cell format: coefficient (SE). Attenuation = \% reduction in $|$coefficient$|$ from Model A to Model B. * $p < .05$; ** $p < .01$; *** $p < .001$.
+\end{tablenotes}
+\end{threeparttable}
+\endgroup{}
+
+}
+
+\end{table}%
+
+\newpage
+
+\subsection*{Table A7: Wave × Freedom Interaction
+Models}\label{table-a7-wave-freedom-interaction-models}
+\addcontentsline{toc}{subsection}{Table A7: Wave × Freedom Interaction
+Models}
+
+\begin{table}
+
+\caption{\label{tbl-tableA7}Wave × Freedom of Speech Interaction
+Coefficients}
+
+\centering{
+
+\centering\begingroup\setstretch{1}\fontsize{9}{11}\selectfont
+
+\begin{threeparttable}
+\begin{tabular}[t]{>{\raggedright\arraybackslash}p{2.5cm}>{\centering\arraybackslash}p{5.0cm}}
+\toprule
+Wave & Wave $\times$ Free Speech (high)\\
+\midrule
+\addlinespace[0.3em]
+\multicolumn{2}{l}{\textbf{Democratic future (0--10)}}\\
+\hspace{1em}Wave 4 & -1.878 (0.249)***\\
+\hspace{1em}Wave 6 & -1.181 (0.275)***\\
+\addlinespace[0.3em]
+\multicolumn{2}{l}{\textbf{Dem. satisfaction (1--4)}}\\
+\hspace{1em}Wave 3 & 0.118 (0.065)\\
+\hspace{1em}Wave 4 & -0.072 (0.064)\\
+\hspace{1em}Wave 6 & -0.054 (0.067)\\
+\addlinespace[0.3em]
+\multicolumn{2}{l}{\textbf{Dem. preference (binary)}}\\
+\hspace{1em}Wave 3 & -0.012 (0.045)\\
+\hspace{1em}Wave 4 & 0.033 (0.045)\\
+\hspace{1em}Wave 6 & -0.092 (0.047)\\
+\bottomrule
+\end{tabular}
+\begin{tablenotes}[para]
+\item \textit{Note:} 
+\item OLS regression. DV regressed on wave dummies interacted with a high-freedom-of-speech indicator, plus perceived freedom to organize and controls (age, gender, education, urbanicity). High-freedom-of-speech indicator = 1 if respondent somewhat or strongly agrees that people are free to speak without fear (scale value 3 or 4 out of 4). Only the wave-by-freedom interaction terms are reported here. Reference wave: W3 for democratic future; W2 for satisfaction and preference. Cell format: coefficient (SE). * $p < .05$; ** $p < .01$; *** $p < .001$.
+\end{tablenotes}
+\end{threeparttable}
+\endgroup{}
+
+}
+
+\end{table}%
+
+\newpage
+
+\subsection*{Table A8: Nonresponse Prediction---Logistic Regression
+(Wave
+6)}\label{table-a8-nonresponse-predictionlogistic-regression-wave-6}
+\addcontentsline{toc}{subsection}{Table A8: Nonresponse
+Prediction---Logistic Regression (Wave 6)}
+
+\begin{table}
+
+\caption{\label{tbl-tableA8}Predictors of Nonresponse on Democratic
+Future Item in Wave 6}
+
+\centering{
+
+\centering\begingroup\setstretch{1}\fontsize{9}{11}\selectfont
+
+\begin{threeparttable}
+\begin{tabular}[t]{>{\raggedright\arraybackslash}p{6.0cm}>{\centering\arraybackslash}p{3.0cm}>{\centering\arraybackslash}p{3.0cm}}
+\toprule
+Predictor & OR (95\% CI) & $p$\\
+\midrule
+Perceived freedom of speech (1--4) & 1.01 (0.82, 1.23) & 0.947NA\\
+Perceived freedom to organize (1--4) & 0.90 (0.73, 1.12) & 0.362NA\\
+Education (standardized) & 0.99 (0.88, 1.12) & 0.933NA\\
+Urban residence (1 = urban) & 0.86 (0.65, 1.13) & 0.271NA\\
+\bottomrule
+\end{tabular}
+\begin{tablenotes}[para]
+\item \textit{Note:} 
+\item Wave 6 (2021) only. N = 1,242. Dependent variable: 1 = missing on democratic future expectations item, 0 = responded. Missingness rate in W6: 63.1 percent. ORs above 1 indicate higher odds of nonresponse. * $p < .05$; ** $p < .01$; *** $p < .001$.
+\end{tablenotes}
+\end{threeparttable}
+\endgroup{}
+
+}
+
+\end{table}%
+
+\newpage
+
+\subsection*{Table A9: Bounds Analysis---Democratic Future
+Expectations}\label{table-a9-bounds-analysisdemocratic-future-expectations}
+\addcontentsline{toc}{subsection}{Table A9: Bounds Analysis---Democratic
+Future Expectations}
+
+\begin{table}
+
+\caption{\label{tbl-tableA9}Bounds Analysis: Democratic Future
+Expectations Under Nonresponse Imputation Scenarios}
+
+\centering{
+
+\centering\begingroup\fontsize{9}{11}\selectfont
+
+\begin{threeparttable}
+\begin{tabular}[t]{>{\raggedright\arraybackslash}p{6.5cm}>{\centering\arraybackslash}p{1.4cm}>{\centering\arraybackslash}p{1.4cm}>{\centering\arraybackslash}p{1.4cm}>{\centering\arraybackslash}p{1.4cm}>{\centering\arraybackslash}p{1.4cm}}
+\toprule
+Scenario & Wave & $N$ & Respondents & Mean & $\Delta$ from W3\\
+\midrule
+Observed (W3, 2012) & W3 & 1200 & 910 & 9.58 & —\\
+\midrule
+Observed (W6, respondents only) & W6 & 1242 & 458 & 6.67 & -2.91\\
+Bound: nonrespondents imputed at max (10) & W6 & 1242 & 1242 & 8.77 & -0.80\\
+Bound: nonrespondents imputed at min (0) & W6 & 1242 & 1242 & 2.46 & -7.12\\
+Conservative: nonrespondents imputed at W3 mean & W6 & 1242 & 1242 & 8.51 & -1.07\\
+\bottomrule
+\end{tabular}
+\begin{tablenotes}[para]
+\item \textit{Note:} 
+\item Dependent variable: democratic future expectations (0--10 scale). W3 (2012): N = 910 respondents of 1,200 (nonresponse 24.2 percent). W6 (2021): N = 458 respondents of 1,242 (nonresponse 63.1 percent). Imputation bounds assign W6 nonrespondents to the scale maximum (10), minimum (0), or the W3 population mean (9.58). Under the conservative imputation (nonrespondents at W3 mean), the observed decline of $-$2.91 points narrows to $-$1.07 points but remains in the same direction.
+\end{tablenotes}
+\end{threeparttable}
+\endgroup{}
+
+}
+
+\end{table}%
 
 \newpage
 
