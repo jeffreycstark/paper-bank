@@ -44,9 +44,7 @@ format:
     theme: cosmo
     code-fold: true
     embed-resources: true
-  docx:
-    toc: true
-    number-sections: true
+prefer-html: true
 bibliography: references.bib
 csl: apa.csl
 execute:
@@ -374,19 +372,26 @@ winner_wide <- mr$winner_loser_subgroup |>
   pivot_wider(names_from = dv_label, values_from = cell) |>
   arrange(country, group)
 
-winner_wide |>
+winner_tbl <- winner_wide |>
   kbl(
     col.names = c("Country", "Group", names(winner_wide)[-(1:2)]),
     booktabs = TRUE, align = paste0("ll", strrep("r", ncol(winner_wide) - 2))
-  ) |>
+  )
+
+# column_spec before collapse_rows; guard against HTML column-merge mismatch
+if (knitr::is_latex_output()) {
+  winner_tbl <- winner_tbl |>
+    column_spec(seq(3, ncol(winner_wide)), width = "3.5cm")
+}
+
+winner_tbl |>
   collapse_rows(columns = 1, latex_hline = "major") |>
-  column_spec(3:ncol(winner_wide), width = "3.5cm") |>
   footnote(
     general = "OLS coefficient on econ_index with wave FE and standard controls. SE in parentheses. *p < .05, **p < .01, ***p < .001.",
     general_title = "",
     threeparttable = TRUE
   ) |>
-  kable_styling(latex_options = "hold_position")
+  kable_styling(latex_options = c("hold_position", "scale_down"))
 ```
 
 # Appendix F: Authoritarian Rejection — Full Results

@@ -599,6 +599,7 @@ winner/loser status}
 
 \centering
 \begin{threeparttable}
+\resizebox{\ifdim\width>\linewidth\linewidth\else\width\fi}{!}{
 \begin{tabular}[t]{ll>{\raggedleft\arraybackslash}p{3.5cm}>{\raggedleft\arraybackslash}p{3.5cm}}
 \toprule
 Country & Group & Dem. always pref. & Sat. w/ democracy\\
@@ -611,7 +612,7 @@ Country & Group & Dem. always pref. & Sat. w/ democracy\\
 
 \multirow{-2}{*}{\raggedright\arraybackslash Taiwan} & Winner & -0.246*** (0.047) & 0.311*** (0.025)\\
 \bottomrule
-\end{tabular}
+\end{tabular}}
 \begin{tablenotes}
 \item OLS coefficient on econ\_index with wave FE and standard controls. SE in parentheses. *p < .05, **p < .01, ***p < .001.
 \end{tablenotes}
