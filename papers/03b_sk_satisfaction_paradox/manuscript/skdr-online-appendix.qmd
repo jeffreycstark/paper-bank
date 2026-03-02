@@ -1,5 +1,6 @@
 ---
-title: "Online Appendix — South Korea Decoupling Replication"
+title: "Online Appendix: The Satisfaction Paradox"
+subtitle: "Economic Performance and the Structure of Democratic Support in South Korea"
 author:
   - name: Jeffrey Stark
     affiliations:
@@ -7,7 +8,7 @@ author:
         department: Department of Sociology
     email: jeffrey.stark@yonsei.ac.kr
     corresponding: true
-date: now
+date: today
 date-format: "MMMM D, YYYY"
 format:
   pdf:
@@ -52,7 +53,7 @@ execute:
   warning: false
   message: false
   echo: false
-  cache: true
+  cache: false
 ---
 
 ```{r setup}
@@ -60,55 +61,472 @@ execute:
 library(tidyverse)
 library(knitr)
 library(kableExtra)
-library(modelsummary)
 
 project_root <- "/Users/jeffreystark/Development/Research/paper-bank"
-paper_dir    <- file.path(project_root, "papers/00-model")
-analysis_dir <- file.path(paper_dir, "analysis")
-results_dir  <- file.path(analysis_dir, "results")
-fig_dir      <- file.path(analysis_dir, "figures")
+paper_dir    <- file.path(project_root, "papers/03b_sk_satisfaction_paradox")
+results_dir  <- file.path(paper_dir, "analysis", "results")
 
-# Load pre-computed results
-if (file.exists(file.path(results_dir, "analysis_data.rds"))) {
-  dat <- readRDS(file.path(results_dir, "analysis_data.rds"))
-}
-if (file.exists(file.path(results_dir, "model_results.rds"))) {
-  mr <- readRDS(file.path(results_dir, "model_results.rds"))
-}
+source(file.path(paper_dir, "R", "helpers.R"))
+
+dat  <- readRDS(file.path(results_dir, "analysis_data.rds"))
+mr   <- readRDS(file.path(results_dir, "model_results.rds"))
+ar   <- readRDS(file.path(results_dir, "auth_rejection_results.rds"))
+ir   <- readRDS(file.path(results_dir, "item_specificity_results.rds"))
+desc <- readRDS(file.path(results_dir, "descriptive_stats.rds"))
+
+yr_kr <- c(`1`=2003L, `2`=2006L, `3`=2011L, `4`=2015L, `5`=2019L, `6`=2022L)
+yr_tw <- c(`1`=2001L, `2`=2006L, `3`=2010L, `4`=2014L, `5`=2019L, `6`=2022L)
+
+sfn <- function(p) case_when(p<.001~"***", p<.01~"**", p<.05~"*", TRUE~"")
 ```
 
-# Appendix A: Data
+# Appendix A: Data and Measurement
 
-## A.1 Data Source and Coverage
+## A.1 Survey Coverage
 
-TODO: Describe the survey instrument, fielding dates, country coverage, and
-sampling strategy. Include a wave-by-wave N table.
+The analysis draws on six waves of the Asian Barometer Survey (ABS), a comparative
+survey program administering nationally representative face-to-face interviews across
+East and Southeast Asia [@Asian-Barometer-Survey2023-uh]. @tbl-coverage reports
+wave-level sample sizes for Korea and Taiwan.
 
-## A.2 Variable Construction
+```{r tbl-coverage}
+#| label: tbl-coverage
+#| tbl-cap: "Sample coverage: Korea and Taiwan, ABS waves 1–6"
 
-TODO: Provide full question wording for all survey items used. Document any
-recoding, normalization, or index construction.
+dat |>
+  group_by(country_label, wave) |>
+  summarise(n = n(), .groups = "drop") |>
+  mutate(year = case_when(
+    country_label == "Korea"  ~ yr_kr[as.character(wave)],
+    country_label == "Taiwan" ~ yr_tw[as.character(wave)]
+  )) |>
+  pivot_wider(names_from = country_label, values_from = c(year, n), names_sep = "_") |>
+  select(wave, year_Korea, n_Korea, year_Taiwan, n_Taiwan) |>
+  kbl(
+    col.names = c("Wave", "Year", "N", "Year", "N"),
+    booktabs = TRUE, align = "lrrrr", format.args = list(big.mark = ",")
+  ) |>
+  add_header_above(c(" " = 1, "Korea" = 2, "Taiwan" = 2)) |>
+  kable_styling(latex_options = "hold_position")
+```
 
-## A.3 Sample Descriptives
+## A.2 Variable Construction and Question Wording
 
-TODO: Full descriptive statistics table (mean, SD, min, max, N) for all
-variables.
+All survey items were normalized to a 0–1 scale within country using min–max
+normalization. Indices are row-wise means of their normalized components.
 
-# Appendix B: Robustness Checks
+**Satisfaction index** (2 items, all waves):
 
-## B.1 Alternative Specifications
+- *Democracy satisfaction* (`democracy_satisfaction`): "On the whole, how satisfied
+  or dissatisfied are you with the way democracy works in our country?" (1 = very
+  dissatisfied, 4 = very satisfied)
+- *Government performance* (`gov_sat_national`): "How satisfied are you with the
+  performance of the current national government?" (1 = very dissatisfied, 4 = very
+  satisfied)
 
-TODO: Report results under alternative model specifications (e.g., logistic
-regression, fixed effects, different control sets).
+**Democratic quality index** (2 items, all waves):
 
-## B.2 Alternative Measures
+- *Always preferable* (`dem_always_preferable`): "Which of the following statements
+  comes closest to your own opinion? (a) Democracy is always preferable to any other
+  kind of government; (b) Under some circumstances, an authoritarian government can
+  be preferable; (c) For people like me, it doesn't matter whether we have a
+  democratic or a non-democratic government." (Coded 1 = always preferable,
+  0 otherwise, then normalized.)
+- *Extent democratic* (`dem_extent_current`): "How much of a democracy is [country]
+  today?" (1–10 scale)
 
-TODO: Report results using alternative operationalizations of key DVs and IVs.
+**Authoritarian rejection index** (4 items; higher = more rejection of authoritarianism):
 
-## B.3 Sensitivity Analysis
+"I'm going to describe some political systems. For each, tell me whether you think
+it would be very good, fairly good, fairly bad, or very bad for governing [country]."
 
-TODO: Report any sensitivity checks (e.g., excluding outlier waves, alternative
-clustering).
+- "Having a strong leader who does not have to bother with parliament and elections" (strongman rule)
+- "Having the army rule the country" (military rule)
+- "Having experts, not government, make decisions according to what they think is
+  best for the country" (expert rule)
+- "Having only one political party allowed to stand for election and rule the country"
+  (single-party rule)
+
+Each item scored 1 = very good … 4 = very bad. Items are reverse-coded before
+normalization so that higher values indicate stronger rejection of authoritarianism.
+
+**Economic evaluation index** (6 items, all waves):
+
+Six items spanning sociotropic and pocketbook assessments across current,
+retrospective, and prospective time horizons: national economy now; household economy
+now; national economic outlook; household economic outlook; national economic change;
+household economic change. All scored 1–5 (worse to better) and normalized 0–1.
+
+**Controls** [@Dalton2004-bq]: age (normalized 0–1), gender (1 = male), education
+level (normalized 0–1), urban/rural residence (dummy), political interest
+(normalized 0–1).
+
+## A.3 Wave-Level Descriptive Statistics
+
+```{r tbl-desc-kr}
+#| label: tbl-desc-kr
+#| tbl-cap: "Korea: wave-level index means (normalized 0–1, SE in parentheses)"
+
+desc$wave_means_kr |>
+  mutate(
+    sat  = sprintf("%.3f (%.3f)", sat_mean,  sat_se),
+    qual = sprintf("%.3f (%.3f)", qual_mean, qual_se),
+    econ = sprintf("%.3f (%.3f)", econ_mean, econ_se)
+  ) |>
+  select(wave, year, n, sat, qual, econ) |>
+  kbl(
+    col.names = c("Wave", "Year", "N", "Satisfaction", "Dem. quality", "Econ. eval."),
+    booktabs = TRUE, align = "lrrlll", format.args = list(big.mark = ",")
+  ) |>
+  add_footnote("SE = standard error of the mean.",
+               notation = "none") |>
+  kable_styling(latex_options = c("hold_position", "scale_down"))
+```
+
+```{r tbl-desc-tw}
+#| label: tbl-desc-tw
+#| tbl-cap: "Taiwan: wave-level index means (normalized 0–1, SE in parentheses)"
+
+desc$wave_means_tw |>
+  mutate(
+    sat  = sprintf("%.3f (%.3f)", sat_mean,  sat_se),
+    qual = sprintf("%.3f (%.3f)", qual_mean, qual_se)
+  ) |>
+  select(wave, year, n, sat, qual) |>
+  kbl(
+    col.names = c("Wave", "Year", "N", "Satisfaction", "Dem. quality"),
+    booktabs = TRUE, align = "lrrrr", format.args = list(big.mark = ",")
+  ) |>
+  add_footnote("Econ. eval. index not shown for Taiwan as it is not the focus of the paper.",
+               notation = "none") |>
+  kable_styling(latex_options = "hold_position")
+```
+
+# Appendix B: Full Wave-by-Wave OLS Results
+
+@tbl-wave-all presents OLS coefficients on `econ_index` for all five dependent
+variables across all six waves, for Korea and Taiwan separately. All models include
+controls for age, gender, education, urban/rural residence, and political interest.
+The table underpins Figures 3 and 4 in the main text.
+
+```{r tbl-wave-all}
+#| label: tbl-wave-all
+#| tbl-cap: "Wave-by-wave OLS: econ to DV for all outcomes, Korea and Taiwan"
+
+wave_wide <- mr$wave_by_wave |>
+  mutate(
+    sig  = sfn(p.value),
+    cell = sprintf("%.3f%s", estimate, sig),
+    year = case_when(
+      country == "Korea"  ~ yr_kr[as.character(wave)],
+      country == "Taiwan" ~ yr_tw[as.character(wave)]
+    )
+  ) |>
+  select(country, year, dv_label, cell) |>
+  pivot_wider(names_from = dv_label, values_from = cell) |>
+  arrange(country, year)
+
+wave_wide |>
+  kbl(
+    col.names = c("Country", "Year", names(wave_wide)[-(1:2)]),
+    booktabs = TRUE, align = paste0("ll", strrep("r", ncol(wave_wide) - 2))
+  ) |>
+  collapse_rows(columns = 1, latex_hline = "major") |>
+  add_footnote(
+    "OLS coefficient on econ_index. Controls: age, gender, education, urban/rural, political interest. *p < .05, **p < .01, ***p < .001.",
+    notation = "none"
+  ) |>
+  kable_styling(latex_options = c("hold_position", "scale_down"), font_size = 9)
+```
+
+# Appendix C: Pooled Individual-DV Models
+
+@tbl-pooled reports pooled OLS results (with wave fixed effects) for each individual
+dependent variable in Korea and Taiwan. This complements the wave-by-wave table by
+presenting a single summary estimate for each outcome across the full survey period.
+
+```{r tbl-pooled}
+#| label: tbl-pooled
+#| tbl-cap: "Pooled OLS: econ$\\to$individual DVs, Korea and Taiwan"
+
+mr$pooled_indiv |>
+  mutate(
+    sig  = sfn(p.value),
+    cell = sprintf("%.3f%s (%.3f)", estimate, sig, std.error)
+  ) |>
+  select(country, dv_label, cell, n) |>
+  pivot_wider(names_from = country, values_from = c(cell, n), names_sep = "_") |>
+  select(dv_label, cell_Korea, n_Korea, cell_Taiwan, n_Taiwan) |>
+  kbl(
+    col.names = c("Dependent variable", "$\\beta$ (SE)", "N", "$\\beta$ (SE)", "N"),
+    booktabs = TRUE, align = "lllll", escape = FALSE,
+    format.args = list(big.mark = ",")
+  ) |>
+  add_header_above(c(" " = 1, "Korea" = 2, "Taiwan" = 2)) |>
+  add_footnote(
+    "OLS b (econ_index) with wave FE and standard controls. SE in parentheses. *p < .05, **p < .01, ***p < .001.",
+    notation = "none"
+  ) |>
+  kable_styling(latex_options = "hold_position")
+```
+
+# Appendix D: Cross-Country Interaction Test
+
+@tbl-cross-country tests the H4 prediction that the Korea–Taiwan divergence in the
+economic–quality relationship is statistically significant. Taiwan is the reference
+category; a positive `econ_index:is_korea` interaction indicates that the positive
+economic effect on satisfaction is stronger in Korea than in Taiwan; a negative
+coefficient indicates the reverse (i.e., Taiwan shows a stronger negative effect on
+quality, as expected under the critical-citizens pattern).
+
+```{r tbl-cross-country}
+#| label: tbl-cross-country
+#| tbl-cap: "Cross-country interaction: econ x Korea, all five outcomes"
+
+term_labels <- c(
+  "econ_index"          = "Econ. eval.",
+  "is_korea"            = "Korea (vs. Taiwan)",
+  "econ_index:is_korea" = "Econ. x Korea"
+)
+
+xc_wide <- mr$cross_country |>
+  filter(term %in% names(term_labels)) |>
+  mutate(
+    term_label = recode(term, !!!term_labels),
+    sig  = sfn(p.value),
+    cell = sprintf("%.3f%s (%.3f)", estimate, sig, std.error)
+  ) |>
+  select(dv_label, term_label, cell) |>
+  pivot_wider(names_from = dv_label, values_from = cell)
+
+xc_wide |>
+  kbl(
+    col.names = c("Term", names(xc_wide)[-1]),
+    booktabs = TRUE, align = paste0("l", strrep("r", ncol(xc_wide)-1)),
+    escape = FALSE
+  ) |>
+  add_footnote(
+    "OLS. Taiwan = reference category. Pooled model with wave FE and standard controls. SE in parentheses. *p < .05, **p < .01, ***p < .001.",
+    notation = "none"
+  ) |>
+  kable_styling(latex_options = c("hold_position", "scale_down"), font_size = 9)
+```
+
+# Appendix E: Subgroup Heterogeneity
+
+## E.1 Political Interest Subgroups
+
+H5 predicts the satisfaction–quality decoupling is not concentrated in a single
+demographic group. @tbl-polint presents results by political interest tertile
+(low, medium, high) for Korea. All subgroups should show positive econ → satisfaction
+and near-zero or negative econ → quality.
+
+```{r tbl-polint}
+#| label: tbl-polint
+#| tbl-cap: "Korea: econ to DV by political interest subgroup"
+
+# 3 DVs x 2 groups: pivot to wide, just show cell (estimate + SE + stars)
+polint_wide <- mr$polint_subgroup |>
+  filter(country == "Korea") |>
+  mutate(
+    sig  = sfn(p.value),
+    cell = sprintf("%.3f%s (%.3f)", estimate, sig, std.error)
+  ) |>
+  select(group, dv_label, cell) |>
+  pivot_wider(names_from = dv_label, values_from = cell)
+
+polint_wide |>
+  kbl(
+    col.names = c("Group", names(polint_wide)[-1]),
+    booktabs = TRUE, align = paste0("l", strrep("r", ncol(polint_wide) - 1))
+  ) |>
+  add_footnote(
+    "OLS coefficient on econ_index with wave FE and standard controls. SE in parentheses. *p < .05, **p < .01, ***p < .001.",
+    notation = "none"
+  ) |>
+  kable_styling(latex_options = "hold_position")
+```
+
+## E.2 Winner–Loser Subgroups
+
+Electoral winners and losers often display different patterns of democratic support.
+@tbl-winner tests whether the satisfaction–quality decoupling is symmetric across
+winners (supporters of the governing party) and losers (supporters of the opposition).
+
+```{r tbl-winner}
+#| label: tbl-winner
+#| tbl-cap: "Korea and Taiwan: econ to DV by electoral winner/loser status"
+
+# 2 DVs x 2 groups x 2 countries: country + group + 2 cell cols = 4 cols
+winner_wide <- mr$winner_loser_subgroup |>
+  mutate(
+    sig  = sfn(p.value),
+    cell = sprintf("%.3f%s (%.3f)", estimate, sig, std.error)
+  ) |>
+  select(country, group, dv_label, cell) |>
+  pivot_wider(names_from = dv_label, values_from = cell) |>
+  arrange(country, group)
+
+winner_wide |>
+  kbl(
+    col.names = c("Country", "Group", names(winner_wide)[-(1:2)]),
+    booktabs = TRUE, align = paste0("ll", strrep("r", ncol(winner_wide) - 2))
+  ) |>
+  collapse_rows(columns = 1, latex_hline = "major") |>
+  add_footnote(
+    "OLS coefficient on econ_index with wave FE and standard controls. SE in parentheses. *p < .05, **p < .01, ***p < .001.",
+    notation = "none"
+  ) |>
+  kable_styling(latex_options = "hold_position")
+```
+
+# Appendix F: Authoritarian Rejection — Full Results
+
+## F.1 Pooled Models
+
+@tbl-auth-pooled reports pooled OLS estimates of econ → authoritarian rejection
+(index and four component items) for Korea and Taiwan. The sign test is: if
+the Korean decoupling reflects democratic erosion, better economic evaluations should
+weaken rejection of authoritarian alternatives. If it reflects only a
+performance-satisfaction response, they should strengthen rejection.
+
+```{r tbl-auth-pooled}
+#| label: tbl-auth-pooled
+#| tbl-cap: "Pooled econ$\\to$authoritarian rejection: index and component items"
+
+ar$pooled |>
+  mutate(
+    sig  = sfn(p.value),
+    cell = sprintf("%.3f%s (%.3f)", estimate, sig, std.error)
+  ) |>
+  select(country, dv_label, cell, n) |>
+  pivot_wider(names_from = country, values_from = c(cell, n), names_sep = "_") |>
+  select(dv_label, cell_Korea, n_Korea, cell_Taiwan, n_Taiwan) |>
+  kbl(
+    col.names = c("Dependent variable", "$\\beta$ (SE)", "N", "$\\beta$ (SE)", "N"),
+    booktabs = TRUE, align = "lllll", escape = FALSE,
+    format.args = list(big.mark = ",")
+  ) |>
+  add_header_above(c(" " = 1, "Korea" = 2, "Taiwan" = 2)) |>
+  add_footnote(
+    "OLS b (econ_index) with wave FE and standard controls. *p < .05, **p < .01, ***p < .001.",
+    notation = "none"
+  ) |>
+  kable_styling(latex_options = "hold_position")
+```
+
+## F.2 Wave-by-Wave Authoritarian Rejection
+
+@tbl-auth-wave presents the wave-by-wave results for the authoritarian rejection
+index and its four component items in both countries.
+
+```{r tbl-auth-wave}
+#| label: tbl-auth-wave
+#| tbl-cap: "Wave-by-wave econ to authoritarian rejection"
+
+auth_wave_wide <- ar$wave_by_wave |>
+  mutate(
+    sig  = sfn(p.value),
+    cell = sprintf("%.3f%s", estimate, sig),
+    year = case_when(
+      country == "Korea"  ~ yr_kr[as.character(wave)],
+      country == "Taiwan" ~ yr_tw[as.character(wave)]
+    )
+  ) |>
+  select(country, year, dv_label, cell) |>
+  pivot_wider(names_from = dv_label, values_from = cell) |>
+  arrange(country, year)
+
+auth_wave_wide |>
+  kbl(
+    col.names = c("Country", "Year", names(auth_wave_wide)[-(1:2)]),
+    booktabs = TRUE, align = paste0("ll", strrep("r", ncol(auth_wave_wide) - 2))
+  ) |>
+  collapse_rows(columns = 1, latex_hline = "major") |>
+  add_footnote(
+    "OLS coefficient on econ_index. *p < .05, **p < .01, ***p < .001.",
+    notation = "none"
+  ) |>
+  kable_styling(latex_options = c("hold_position", "scale_down"), font_size = 9)
+```
+
+## F.3 Cross-Country Interaction
+
+@tbl-auth-xc tests whether Korea's positive econ → auth rejection relationship is
+significantly different from Taiwan's, using the same cross-country interaction
+framework as Appendix D.
+
+```{r tbl-auth-xc}
+#| label: tbl-auth-xc
+#| tbl-cap: "Cross-country interaction: econ x Korea on authoritarian rejection outcomes"
+
+auth_term_labels <- c(
+  "econ_index"          = "Econ. eval.",
+  "is_korea"            = "Korea",
+  "econ_index:is_korea" = "Econ. x Korea"
+)
+
+auth_xc_wide <- ar$cross_country |>
+  filter(term %in% names(auth_term_labels)) |>
+  mutate(
+    term_label = recode(term, !!!auth_term_labels),
+    sig  = sfn(p.value),
+    cell = sprintf("%.3f%s (%.3f)", estimate, sig, std.error)
+  ) |>
+  select(dv_label, term_label, cell) |>
+  pivot_wider(names_from = dv_label, values_from = cell)
+
+auth_xc_wide |>
+  kbl(
+    col.names = c("Term", names(auth_xc_wide)[-1]),
+    booktabs = TRUE, align = paste0("l", strrep("r", ncol(auth_xc_wide) - 1))
+  ) |>
+  add_footnote(
+    "OLS. Taiwan = reference. Pooled with wave FE and controls. SE in parentheses. *p < .05, **p < .01, ***p < .001.",
+    notation = "none"
+  ) |>
+  kable_styling(latex_options = c("hold_position", "scale_down"), font_size = 9)
+```
+
+# Appendix G: Item Specificity
+
+## G.1 All Outcomes Side-by-Side
+
+@tbl-item-spec presents OLS coefficients for `econ_index` on all nine individual
+dependent variables for Korea and Taiwan, plus the Korea–Taiwan gap. The key
+result is that the gap between Korea's positive economic effect on the abstract
+normative item ("dem always preferable") and its effect on the authoritarian
+rejection items is much larger than the corresponding gap in Taiwan—confirming
+that the abstract item is capturing something distinct from substantive democratic
+commitment.
+
+```{r tbl-item-spec}
+#| label: tbl-item-spec
+#| tbl-cap: "Item specificity: econ$\\to$all DVs, Korea and Taiwan"
+
+ir$pooled |>
+  mutate(
+    sig  = sfn(p.value),
+    cell = sprintf("%.3f%s (%.3f)", estimate, sig, std.error)
+  ) |>
+  select(country, dv_label, cell, n) |>
+  pivot_wider(names_from = country, values_from = c(cell, n), names_sep = "_") |>
+  select(dv_label, cell_Korea, n_Korea, cell_Taiwan, n_Taiwan) |>
+  kbl(
+    col.names = c("Dependent variable", "$\\beta$ (SE)", "N", "$\\beta$ (SE)", "N"),
+    booktabs = TRUE, align = "lllll", escape = FALSE,
+    format.args = list(big.mark = ",")
+  ) |>
+  add_header_above(c(" " = 1, "Korea" = 2, "Taiwan" = 2)) |>
+  add_footnote(
+    paste0(
+      "Pooled OLS b (econ_index) with wave FE and standard controls. ",
+      "SE in parentheses. *p < .05, **p < .01, ***p < .001."
+    ),
+    notation = "none"
+  ) |>
+  kable_styling(latex_options = "hold_position")
+```
 
 # References {.unnumbered}
 
