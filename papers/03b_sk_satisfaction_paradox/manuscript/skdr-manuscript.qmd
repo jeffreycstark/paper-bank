@@ -35,14 +35,21 @@ fig_dir      <- file.path(paper_dir, "analysis", "figures")
 
 # Abstract {.unnumbered}
 
+```{=latex}
+\setstretch{1}
+```
+
 Democratic consolidation theory predicts that satisfaction with democratic performance and normative commitment to democracy reinforce each other as democracies mature. Six waves of Asian Barometer Survey data from South Korea (2003--2022, *n* = 7,603) upend this expectation. Democratic satisfaction has risen steadily. The belief that democracy is always preferable has declined. Wave-by-wave OLS regressions confirm the divergence at the individual level: economic evaluations powerfully predict satisfaction with democracy ($\beta$ = 0.26--0.46, *p* < 0.001 in every wave) yet bear no significant relationship to normative democratic preference from 2006 onward. The decoupling is robust across demographic subgroups and model specifications. But it is also narrower than it first appears. On substantive measures of democratic commitment---rejection of strongman rule, military governance, single-party systems---economically comfortable Koreans are *more* rejecting of authoritarian alternatives, not less. The gap between satisfaction and normative commitment concentrates on the abstract "always preferable" item that the consolidation literature treats as its gold standard. A parallel analysis of Taiwan (*n* = 9,042) sharpens the point: the abstract item shows its strongest economic sensitivity where democracy is most fused with national identity, while substantive authoritarian rejection is actually weaker than in Korea. South Korea's December 2024 martial law crisis---resolved by institutional mechanisms rather than abstract normative mobilization---is consistent with a democratic citizenry whose commitments run deeper on substance than on principle.
 
 **Keywords:** democratic consolidation, democratic satisfaction, performance legitimacy, authoritarian rejection, South Korea, Taiwan, Asian Barometer Survey
 
+```{=latex}
+\setstretch{2}
+```
 
 # Introduction
 
-On the evening of December 3, 2024, President Yoon Suk Yeol appeared on national television to declare emergency martial law in South Korea, citing the need to protect the country from "anti-state forces" and "North Korean communist sympathizers" allegedly operating through the opposition-controlled National Assembly. Troops were dispatched to the parliament building. Political activity was banned. The press was placed under the authority of the Martial Law Command. It was the first declaration of martial law since Chun Doo-hwan's 1980 coup---and it lasted barely six hours. Lawmakers pushed past soldiers, convened an emergency session, and voted unanimously to overturn the decree. Yoon was impeached within days. In February 2026, a Seoul court sentenced him to life in prison for insurrection [@Eun-jung2024-zo; @Hankyoreh2026-aa].
+On the evening of December 3, 2024, President Yoon Suk Yeol appeared on national television to declare emergency martial law in South Korea, citing the need to protect the country from "anti-state forces" and "North Korean communist sympathizers" allegedly operating through the opposition-controlled National Assembly. Troops were dispatched to the parliament building. Political activity was banned. The press was placed under the authority of the Martial Law Command. It was the first declaration of martial law since Chun Doo-hwan's 1980 coup---and it lasted barely six hours. Lawmakers pushed past soldiers, convened an emergency session, and voted unanimously to overturn the decree. Yoon was impeached within days. In February 2026, a Seoul court sentenced him to life in prison for insurrection [@Kim2024-ud; @Hankyoreh2026-aa].
 
 South Korean democracy, by any institutional measure, held. The question is what held it.
 
