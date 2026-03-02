@@ -161,6 +161,9 @@ Standard errors are HC2 heteroscedasticity-robust throughout [@MacKinnon1985-rb]
 
 The repeated cross-sectional design cannot establish within-person causality. But the analytic strategy exploits an asymmetric prediction to discipline causal interpretation. If reverse causality were the primary driver---respondents' normative orientation coloring their economic perceptions---the bias should inflate $\beta_1$ in both the satisfaction and quality equations, since the confound operates equivalently on both. A finding that $\beta_1$ is large for satisfaction, null for abstract preference, and significant (in the opposite direction) for authoritarian rejection across multiple waves is inconsistent with symmetric confounding and substantially narrows the plausible reverse-causality accounts.
 
+## AI assistance disclosure. 
+
+The author used Claude (Anthropic, version 4.5) to assist with R programming, including data cleaning scripts, model specification, and debugging of analysis code. All analytical decisions, theoretical framing, and interpretation of results are the author's own. AI-generated code was reviewed, tested, and modified by the author before inclusion in the analysis pipeline.
 
 # Results
 
