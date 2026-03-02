@@ -117,14 +117,20 @@ item_spec_rows <- map_dfr(countries, function(cntry) {
     m <- lm(as.formula(formula_str), data = df_c)
     n_obs <- sum(!is.na(df_c[[dv]]) & !is.na(df_c$econ_index))
 
+    sd_x  <- sd(df_c$econ_index, na.rm = TRUE)
+    sd_y  <- sd(df_c[[dv]],     na.rm = TRUE)
+    r_sq  <- summary(m)$r.squared
+
     extract_coef(m, "econ_index") |>
       mutate(
-        country  = cntry,
-        dv       = dv,
-        dv_label = dv_label,
-        category = category,
-        n        = n_obs,
-        stars    = sig_stars(p.value)
+        country   = cntry,
+        dv        = dv,
+        dv_label  = dv_label,
+        category  = category,
+        n         = n_obs,
+        stars     = sig_stars(p.value),
+        beta_std  = estimate * (sd_x / sd_y),
+        r_squared = r_sq
       )
   })
 })

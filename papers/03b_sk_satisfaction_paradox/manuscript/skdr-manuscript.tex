@@ -141,6 +141,20 @@
  
 
 
+\usepackage{booktabs}
+\usepackage{longtable}
+\usepackage{array}
+\usepackage{multirow}
+\usepackage{wrapfig}
+\usepackage{float}
+\usepackage{colortbl}
+\usepackage{pdflscape}
+\usepackage{tabu}
+\usepackage{threeparttable}
+\usepackage{threeparttablex}
+\usepackage[normalem]{ulem}
+\usepackage{makecell}
+\usepackage{xcolor}
 \usepackage{setspace}
 \usepackage{booktabs}
 \usepackage{caption}
@@ -214,7 +228,7 @@
 \title{The Satisfaction Paradox: Economic Performance and the Structure
 of Democratic Support in South Korea}
 \author{Jeffrey Stark}
-\date{March 2, 2026 at 8:33 AM}
+\date{March 2, 2026 at 8:49 AM}
 \begin{document}
 \maketitle
 
@@ -668,14 +682,13 @@ evaluations in Korea relative to Taiwan. H5 predicts a significant
 substantially larger for the abstract item than for the substantive
 authoritarian rejection items.
 
-Standard errors are HC2 heteroscedasticity-robust throughout
-(\textbf{MacKinnon1985-rb?}). The Asian Barometer Survey does not
-release primary sampling unit or stratum identifiers in its harmonized
-public release, precluding cluster-robust inference; HC2 provides a
-conservative alternative that does not require distributional
-assumptions about within-cluster correlation. Effective sample sizes
-vary across outcomes due to item nonresponse; exact \emph{N} is reported
-in each table.
+Standard errors are HC2 heteroscedasticity-robust throughout (MacKinnon
+\& White, 1985). The Asian Barometer Survey does not release primary
+sampling unit or stratum identifiers in its harmonized public release,
+precluding cluster-robust inference; HC2 provides a conservative
+alternative that does not require distributional assumptions about
+within-cluster correlation. Effective sample sizes vary across outcomes
+due to item nonresponse; exact \emph{N} is reported in each table.
 
 The repeated cross-sectional design cannot establish within-person
 causality. But the analytic strategy exploits an asymmetric prediction
@@ -780,13 +793,14 @@ H3 is confirmed.
 
 \subsubsection{Item specificity}\label{item-specificity}
 
-The divergence between abstract and substantive measures is substantial.
-The Korea--Taiwan gap on ``democracy always preferable'' (a gap of
---0.207 in raw \(\beta\)) is 4.5 times larger than the mean gap across
-the four authoritarian rejection items (+0.046). On the substantive
-measures, Korea's economic sensitivity is actually \emph{stronger} than
-Taiwan's---the direction reverses. Almost all of the headline divergence
-between the two countries runs through the single abstract item.
+The divergence between abstract and substantive measures is substantial
+(Figure~\ref{fig-coefmap}). The Korea--Taiwan gap on ``democracy always
+preferable'' (a gap of --0.207 in raw \(\beta\)) is 4.5 times larger
+than the mean gap across the four authoritarian rejection items
+(+0.046). On the substantive measures, Korea's economic sensitivity is
+actually \emph{stronger} than Taiwan's---the direction reverses. Almost
+all of the headline divergence between the two countries runs through
+the single abstract item.
 
 This finding has a direct implication for how we interpret the
 satisfaction paradox. If the Korean decoupling reflected genuinely
@@ -795,6 +809,34 @@ substantive measures. It does not. The decoupling is specific to the
 abstract endorsement item---the measure the consolidation literature
 treats as the primary indicator of normative democratic depth. H4 is
 confirmed.
+
+\begin{figure}[H]
+
+\centering{
+
+\includegraphics[width=1\linewidth,height=\textheight,keepaspectratio]{../analysis/figures/fig04_coefficient_map.pdf}
+
+}
+
+\caption{\label{fig-coefmap}\textbf{Economic evaluation coefficients
+across democratic attitude outcomes: Korea and Taiwan.} Each row is a
+pooled OLS coefficient on the economic evaluation index (0--1),
+estimated with wave fixed effects and controls for age, gender,
+education, urban/rural residence, and political interest. Points =
+\(\beta\); horizontal bars = 95\% confidence intervals (HC2 robust). The
+structure is the paper's central finding. On the two satisfaction
+outcomes (top panel) both countries show large positive effects, as the
+performance-legitimation framework predicts. On the single abstract
+normative item (``Dem always preferable''), Korea's coefficient is near
+zero while Taiwan's is strongly negative---the decoupling that motivates
+the analysis. On all four authoritarian rejection items (bottom two
+panels), the pattern reverses: Korea's coefficients are negative and
+significant, Taiwan's are smaller and often non-significant. The
+decoupling concentrates on the one item the consolidation literature
+treats as its primary measure of normative depth. Source: Asian
+Barometer Survey, waves 1--6.}
+
+\end{figure}%
 
 \subsection{The Taiwan comparison}\label{the-taiwan-comparison}
 
@@ -1274,6 +1316,12 @@ die}}. Viking.
 Linz, Juan J (juan Jose), \& Stepan, Alfred C. (1996). {Toward
 consolidated democracies}. \emph{Journal of Democracy}, \emph{7},
 14--33. \url{https://doi.org/10.1353/jod.1996.0031}
+
+\bibitem[\citeproctext]{ref-MacKinnon1985-rb}
+MacKinnon, James G, \& White, Halbert. (1985). {Some
+heteroskedasticity-consistent covariance matrix estimators with improved
+finite sample properties}. \emph{Journal of Econometrics}, \emph{29},
+305--325. \url{https://doi.org/10.1016/0304-4076(85)90158-7}
 
 \bibitem[\citeproctext]{ref-Mauk2020-cn}
 Mauk, Marlene. (2020). {Disentangling an elusive relationship: How

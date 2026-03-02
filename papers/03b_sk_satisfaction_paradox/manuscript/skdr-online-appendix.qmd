@@ -522,40 +522,81 @@ ar$cross_country |>
 
 ## G.1 All Outcomes Side-by-Side
 
-@tbl-item-spec presents OLS coefficients for `econ_index` on all nine individual
-dependent variables for Korea and Taiwan, plus the Korea–Taiwan gap. The key
-result is that the gap between Korea's positive economic effect on the abstract
-normative item ("dem always preferable") and its effect on the authoritarian
-rejection items is much larger than the corresponding gap in Taiwan—confirming
-that the abstract item is capturing something distinct from substantive democratic
-commitment.
+@tbl-item-spec-kr and @tbl-item-spec-tw present the complete coefficient evidence
+for Korea and Taiwan respectively. For each outcome: $\beta$ = unstandardized OLS
+coefficient on `econ_index`; SE = HC2 robust standard error; $p$ = two-sided
+*p*-value; $\beta^\star$ = standardized coefficient (units: outcome SD per SD of
+predictor); $R^2$ = model $R^2$ (including wave FE and all controls). The key
+diagnostic is that the abstract normative item ("Dem always preferable") is the
+only row where Korea's coefficient is near zero while all satisfaction and
+authoritarian rejection rows show consistent, significant effects.
 
-```{r tbl-item-spec}
-#| label: tbl-item-spec
-#| tbl-cap: "Item specificity: econ$\\to$all DVs, Korea and Taiwan"
+```{r tbl-item-spec-kr}
+#| label: tbl-item-spec-kr
+#| tbl-cap: "Evidence locker: econ$\\to$all DVs, Korea. All statistics from pooled OLS with wave FE and standard controls."
 
 ir$all_dvs |>
+  filter(country == "Korea") |>
+  arrange(category, dv) |>
   mutate(
-    sig  = sfn(p.value),
-    cell = sprintf("%.3f%s (%.3f)", estimate, sig, std.error)
+    sig      = sfn(p.value),
+    beta_fmt = sprintf("%.3f%s", estimate, sig),
+    se_fmt   = sprintf("%.3f", std.error),
+    p_fmt    = ifelse(p.value < 0.001, "<0.001", sprintf("%.3f", p.value)),
+    bstd_fmt = sprintf("%.3f", beta_std),
+    r2_fmt   = sprintf("%.3f", r_squared),
+    n_fmt    = formatC(n, format = "d", big.mark = ",")
   ) |>
-  select(country, dv_label, cell, n) |>
-  pivot_wider(names_from = country, values_from = c(cell, n), names_sep = "_") |>
-  select(dv_label, cell_Korea, n_Korea, cell_Taiwan, n_Taiwan) |>
+  select(category, dv_label, beta_fmt, se_fmt, p_fmt, bstd_fmt, r2_fmt, n_fmt) |>
   kbl(
-    col.names = c("Dependent variable", "$\\beta$ (SE)", "N", "$\\beta$ (SE)", "N"),
-    booktabs = TRUE, align = "lrrrr", escape = FALSE,
-    format.args = list(big.mark = ",")
+    col.names = c("Category", "Outcome", "$\\beta$", "SE", "$p$",
+                  "$\\beta^\\star$", "$R^2$", "$N$"),
+    booktabs = TRUE, align = "llrrrrrl", escape = FALSE
   ) |>
-  add_header_above(c(" " = 1, "Korea" = 2, "Taiwan" = 2)) |>
-  column_spec(1, width = "4.5cm") |>
-  column_spec(c(2, 4), width = "2.8cm") |>
+  collapse_rows(columns = 1, latex_hline = "major") |>
+  column_spec(1, width = "3cm") |>
+  column_spec(2, width = "4.5cm") |>
   footnote(
-    general = "Pooled OLS b (econ_index) with wave FE and standard controls. SE in parentheses. *p < .05, **p < .01, ***p < .001.",
+    general = "$\\\\beta$ = unstandardized; $\\\\beta^\\\\star$ = standardized (SD units); $R^2$ includes wave FE and controls. HC2 robust SE. *p < .05, **p < .01, ***p < .001.",
     general_title = "",
-    threeparttable = TRUE
+    threeparttable = TRUE,
+    escape = FALSE
   ) |>
-  kable_styling(latex_options = "hold_position")
+  kable_styling(latex_options = c("hold_position", "scale_down"), font_size = 9)
+```
+
+```{r tbl-item-spec-tw}
+#| label: tbl-item-spec-tw
+#| tbl-cap: "Evidence locker: econ$\\to$all DVs, Taiwan. All statistics from pooled OLS with wave FE and standard controls."
+
+ir$all_dvs |>
+  filter(country == "Taiwan") |>
+  arrange(category, dv) |>
+  mutate(
+    sig      = sfn(p.value),
+    beta_fmt = sprintf("%.3f%s", estimate, sig),
+    se_fmt   = sprintf("%.3f", std.error),
+    p_fmt    = ifelse(p.value < 0.001, "<0.001", sprintf("%.3f", p.value)),
+    bstd_fmt = sprintf("%.3f", beta_std),
+    r2_fmt   = sprintf("%.3f", r_squared),
+    n_fmt    = formatC(n, format = "d", big.mark = ",")
+  ) |>
+  select(category, dv_label, beta_fmt, se_fmt, p_fmt, bstd_fmt, r2_fmt, n_fmt) |>
+  kbl(
+    col.names = c("Category", "Outcome", "$\\beta$", "SE", "$p$",
+                  "$\\beta^\\star$", "$R^2$", "$N$"),
+    booktabs = TRUE, align = "llrrrrrl", escape = FALSE
+  ) |>
+  collapse_rows(columns = 1, latex_hline = "major") |>
+  column_spec(1, width = "3cm") |>
+  column_spec(2, width = "4.5cm") |>
+  footnote(
+    general = "$\\\\beta$ = unstandardized; $\\\\beta^\\\\star$ = standardized (SD units); $R^2$ includes wave FE and controls. HC2 robust SE. *p < .05, **p < .01, ***p < .001.",
+    general_title = "",
+    threeparttable = TRUE,
+    escape = FALSE
+  ) |>
+  kable_styling(latex_options = c("hold_position", "scale_down"), font_size = 9)
 ```
 
 # Appendix H: Identity-Signaling Moderation Tests

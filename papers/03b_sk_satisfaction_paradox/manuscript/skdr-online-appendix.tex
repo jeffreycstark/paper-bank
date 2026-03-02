@@ -753,49 +753,110 @@ Specificity}\label{appendix-g-item-specificity}
 \subsection{G.1 All Outcomes
 Side-by-Side}\label{g.1-all-outcomes-side-by-side}
 
-Table~\ref{tbl-item-spec} presents OLS coefficients for
-\texttt{econ\_index} on all nine individual dependent variables for
-Korea and Taiwan, plus the Korea--Taiwan gap. The key result is that the
-gap between Korea's positive economic effect on the abstract normative
-item (``dem always preferable'') and its effect on the authoritarian
-rejection items is much larger than the corresponding gap in
-Taiwan---confirming that the abstract item is capturing something
-distinct from substantive democratic commitment.
+Table~\ref{tbl-item-spec-kr} and Table~\ref{tbl-item-spec-tw} present
+the complete coefficient evidence for Korea and Taiwan respectively. For
+each outcome: \(\beta\) = unstandardized OLS coefficient on
+\texttt{econ\_index}; SE = HC2 robust standard error; \(p\) = two-sided
+\emph{p}-value; \(\beta^\star\) = standardized coefficient (units:
+outcome SD per SD of predictor); \(R^2\) = model \(R^2\) (including wave
+FE and all controls). The key diagnostic is that the abstract normative
+item (``Dem always preferable'') is the only row where Korea's
+coefficient is near zero while all satisfaction and authoritarian
+rejection rows show consistent, significant effects.
 
 \begin{table}
 
-\caption{\label{tbl-item-spec}Item specificity: econ\(\to\)all DVs,
-Korea and Taiwan}
+\caption{\label{tbl-item-spec-kr}Evidence locker: econ\(\to\)all DVs,
+Korea. All statistics from pooled OLS with wave FE and standard
+controls.}
 
 \centering{
 
-\centering
+\centering\begingroup\fontsize{9}{11}\selectfont
+
 \begin{threeparttable}
-\begin{tabular}[t]{>{\raggedright\arraybackslash}p{4.5cm}>{\raggedleft\arraybackslash}p{2.8cm}r>{\raggedleft\arraybackslash}p{2.8cm}r}
+\resizebox{\ifdim\width>\linewidth\linewidth\else\width\fi}{!}{
+\begin{tabular}[t]{>{\raggedright\arraybackslash}p{3cm}>{\raggedright\arraybackslash}p{4.5cm}rrrrrl}
 \toprule
-\multicolumn{1}{c}{ } & \multicolumn{2}{c}{Korea} & \multicolumn{2}{c}{Taiwan} \\
-\cmidrule(l{3pt}r{3pt}){2-3} \cmidrule(l{3pt}r{3pt}){4-5}
-Dependent variable & $\beta$ (SE) & N & $\beta$ (SE) & N\\
+Category & Outcome & $\beta$ & SE & $p$ & $\beta^\star$ & $R^2$ & $N$\\
 \midrule
-Satisfaction: democracy & 0.342*** (0.019) & 7,407 & 0.398*** (0.016) & 8,706\\
-Satisfaction: government & 0.575*** (0.022) & 7,353 & 0.660*** (0.017) & 8,583\\
-Dem always preferable & -0.032 (0.031) & 7,281 & -0.239*** (0.028) & 8,584\\
-Auth rejection (index) & -0.082*** (0.019) & 7,538 & -0.040*** (0.012) & 8,784\\
-Reject: strongman & -0.077** (0.025) & 7,458 & -0.042** (0.016) & 8,501\\
-\addlinespace
-Reject: military rule & -0.092*** (0.021) & 7,478 & -0.016 (0.014) & 8,614\\
-Reject: expert rule & -0.079** (0.027) & 6,313 & -0.019 (0.017) & 7,009\\
-Reject: single-party & -0.096*** (0.024) & 7,463 & -0.078*** (0.015) & 8,545\\
-Dem extent (current) & -0.059*** (0.007) & 6,673 & -0.114*** (0.008) & 7,849\\
-System deserves support & -0.300*** (0.031) & 4,782 & -0.406*** (0.018) & 5,667\\
-\addlinespace
-No major change needed & -0.341*** (0.027) & 4,693 & -0.454*** (0.020) & 5,732\\
+ & Satisfaction: democracy & 0.342*** & 0.019 & <0.001 & 0.227 & 0.082 & 7,407\\
+
+\multirow{-2}{*}{\raggedright\arraybackslash Satisfaction} & Satisfaction: government & 0.575*** & 0.022 & <0.001 & 0.302 & 0.151 & 7,353\\
+\cmidrule{1-8}
+Abstract normative & Dem always preferable & -0.032 & 0.031 & 0.298 & -0.013 & 0.060 & 7,281\\
+\cmidrule{1-8}
+ & Auth rejection (index) & -0.082*** & 0.019 & <0.001 & -0.054 & 0.013 & 7,538\\
+
+ & Reject: strongman & -0.077** & 0.025 & 0.002 & -0.039 & 0.007 & 7,458\\
+
+ & Reject: military rule & -0.092*** & 0.021 & <0.001 & -0.052 & 0.018 & 7,478\\
+
+ & Reject: expert rule & -0.079** & 0.027 & 0.004 & -0.040 & 0.011 & 6,313\\
+
+\multirow{-5}{*}{\raggedright\arraybackslash Auth rejection} & Reject: single-party & -0.096*** & 0.024 & <0.001 & -0.051 & 0.011 & 7,463\\
+\cmidrule{1-8}
+ & Dem extent (current) & -0.059*** & 0.007 & <0.001 & -0.061 & 0.723 & 6,673\\
+
+ & System deserves support & -0.300*** & 0.031 & <0.001 & -0.154 & 0.033 & 4,782\\
+
+\multirow{-3}{*}{\raggedright\arraybackslash Evaluative} & No major change needed & -0.341*** & 0.027 & <0.001 & -0.208 & 0.056 & 4,693\\
 \bottomrule
-\end{tabular}
+\end{tabular}}
 \begin{tablenotes}
-\item Pooled OLS b (econ\_index) with wave FE and standard controls. SE in parentheses. *p < .05, **p < .01, ***p < .001.
+\item $\beta$ = unstandardized; $\beta^\star$ = standardized (SD units); $R^2$ includes wave FE and controls. HC2 robust SE. *p < .05, **p < .01, ***p < .001.
 \end{tablenotes}
 \end{threeparttable}
+\endgroup{}
+
+}
+
+\end{table}%
+
+\begin{table}
+
+\caption{\label{tbl-item-spec-tw}Evidence locker: econ\(\to\)all DVs,
+Taiwan. All statistics from pooled OLS with wave FE and standard
+controls.}
+
+\centering{
+
+\centering\begingroup\fontsize{9}{11}\selectfont
+
+\begin{threeparttable}
+\resizebox{\ifdim\width>\linewidth\linewidth\else\width\fi}{!}{
+\begin{tabular}[t]{>{\raggedright\arraybackslash}p{3cm}>{\raggedright\arraybackslash}p{4.5cm}rrrrrl}
+\toprule
+Category & Outcome & $\beta$ & SE & $p$ & $\beta^\star$ & $R^2$ & $N$\\
+\midrule
+ & Satisfaction: democracy & 0.398*** & 0.016 & <0.001 & 0.285 & 0.119 & 8,706\\
+
+\multirow{-2}{*}{\raggedright\arraybackslash Satisfaction} & Satisfaction: government & 0.660*** & 0.017 & <0.001 & 0.394 & 0.218 & 8,583\\
+\cmidrule{1-8}
+Abstract normative & Dem always preferable & -0.239*** & 0.028 & <0.001 & -0.094 & 0.083 & 8,584\\
+\cmidrule{1-8}
+ & Auth rejection (index) & -0.040*** & 0.012 & <0.001 & -0.038 & 0.145 & 8,784\\
+
+ & Reject: strongman & -0.042** & 0.016 & 0.009 & -0.030 & 0.063 & 8,501\\
+
+ & Reject: military rule & -0.016 & 0.014 & 0.242 & -0.013 & 0.130 & 8,614\\
+
+ & Reject: expert rule & -0.019 & 0.017 & 0.257 & -0.014 & 0.067 & 7,009\\
+
+\multirow{-5}{*}{\raggedright\arraybackslash Auth rejection} & Reject: single-party & -0.078*** & 0.015 & <0.001 & -0.060 & 0.125 & 8,545\\
+\cmidrule{1-8}
+ & Dem extent (current) & -0.114*** & 0.008 & <0.001 & -0.117 & 0.565 & 7,849\\
+
+ & System deserves support & -0.406*** & 0.018 & <0.001 & -0.301 & 0.114 & 5,667\\
+
+\multirow{-3}{*}{\raggedright\arraybackslash Evaluative} & No major change needed & -0.454*** & 0.020 & <0.001 & -0.310 & 0.111 & 5,732\\
+\bottomrule
+\end{tabular}}
+\begin{tablenotes}
+\item $\beta$ = unstandardized; $\beta^\star$ = standardized (SD units); $R^2$ includes wave FE and controls. HC2 robust SE. *p < .05, **p < .01, ***p < .001.
+\end{tablenotes}
+\end{threeparttable}
+\endgroup{}
 
 }
 
