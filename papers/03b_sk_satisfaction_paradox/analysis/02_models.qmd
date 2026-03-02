@@ -33,6 +33,8 @@ execute:
 ```{r setup}
 library(tidyverse)
 library(broom)
+library(sandwich)   # HC2 robust SEs (no PSU/strata in ABS harmonized data)
+library(lmtest)
 
 project_root <- "/Users/jeffreystark/Development/Research/paper-bank"
 paper_dir    <- file.path(project_root, "papers/03b_sk_satisfaction_paradox")
@@ -130,17 +132,17 @@ for (cntry in c("Korea", "Taiwan")) {
   f_auth_int <- as.formula(paste("auth_reject_index ~ econ_index * wave_c +", controls))
   m_auth_int <- lm(f_auth_int, data = sub)
 
-  sat_tidy  <- tidy(m_sat_int,  conf.int = TRUE) |>
+  sat_tidy  <- tidy_hc2(m_sat_int) |>
     filter(term %in% c("econ_index", "econ_index:wave_c")) |>
     mutate(dv = "Satisfaction", country = cntry,
            r_sq = summary(m_sat_int)$r.squared, n = nobs(m_sat_int))
 
-  qual_tidy <- tidy(m_qual_int, conf.int = TRUE) |>
+  qual_tidy <- tidy_hc2(m_qual_int) |>
     filter(term %in% c("econ_index", "econ_index:wave_c")) |>
     mutate(dv = "Democratic quality", country = cntry,
            r_sq = summary(m_qual_int)$r.squared, n = nobs(m_qual_int))
 
-  auth_tidy <- tidy(m_auth_int, conf.int = TRUE) |>
+  auth_tidy <- tidy_hc2(m_auth_int) |>
     filter(term %in% c("econ_index", "econ_index:wave_c")) |>
     mutate(dv = "Auth rejection", country = cntry,
            r_sq = summary(m_auth_int)$r.squared, n = nobs(m_auth_int))
@@ -174,15 +176,15 @@ m_xc_qual <- lm(f_xc_qual, data = both)
 f_xc_auth <- as.formula(paste("auth_reject_index ~ econ_index * is_korea + factor(wave) +", controls))
 m_xc_auth <- lm(f_xc_auth, data = both |> filter(!is.na(auth_reject_index)))
 
-xc_sat_tidy <- tidy(m_xc_sat, conf.int = TRUE) |>
+xc_sat_tidy <- tidy_hc2(m_xc_sat) |>
   filter(term %in% c("econ_index", "is_korea", "econ_index:is_korea")) |>
   mutate(dv = "Satisfaction")
 
-xc_qual_tidy <- tidy(m_xc_qual, conf.int = TRUE) |>
+xc_qual_tidy <- tidy_hc2(m_xc_qual) |>
   filter(term %in% c("econ_index", "is_korea", "econ_index:is_korea")) |>
   mutate(dv = "Democratic quality")
 
-xc_auth_tidy <- tidy(m_xc_auth, conf.int = TRUE) |>
+xc_auth_tidy <- tidy_hc2(m_xc_auth) |>
   filter(term %in% c("econ_index", "is_korea", "econ_index:is_korea")) |>
   mutate(dv = "Auth rejection")
 
@@ -890,38 +892,174 @@ subgroup_full_df |>
 ```
 
 
+## Appendix-compatible model results {#sec-appendix-compat}
+
+Compute the five-component structure consumed by `skdr-online-appendix.qmd`.
+All models use HC2 robust SEs via the updated `extract_econ_coef` / `tidy_hc2` helpers.
+
+```{r appendix-models}
+# Derive winner_loser if not already present (voted_winning_losing: 1=Winner, 2=Loser)
+if (!"winner_loser" %in% names(dat)) {
+  dat <- dat |>
+    mutate(winner_loser = case_when(
+      voted_winning_losing == 1 ~ "Winner",
+      voted_winning_losing == 2 ~ "Loser",
+      TRUE ~ NA_character_
+    ))
+}
+
+# DV label mapping (5 individual items)
+dv_labels <- c(
+  sat_democracy_n   = "Satisfaction with democracy",
+  sat_govt_n        = "Satisfaction with government",
+  qual_pref_dem_n   = "Dem always preferable",
+  qual_extent_n     = "Democratic extent",
+  auth_reject_index = "Auth rejection index"
+)
+
+yr_kr <- c(`1`=2003L, `2`=2006L, `3`=2011L, `4`=2015L, `5`=2019L, `6`=2022L)
+yr_tw <- c(`1`=2001L, `2`=2006L, `3`=2010L, `4`=2014L, `5`=2019L, `6`=2022L)
+
+# ── A: Wave-by-wave (5 individual DVs, both countries) ──────────────────────
+wbw_app <- list()
+for (cntry in c("Korea", "Taiwan")) {
+  for (w in 1:6) {
+    sub <- dat |> filter(country_label == cntry, wave == w)
+    if (nrow(sub) < 100) next
+    for (dv in names(dv_labels)) {
+      if (all(is.na(sub[[dv]]))) next
+      f <- as.formula(paste(dv, "~ econ_index +", controls))
+      m <- tryCatch(lm(f, data = sub), error = function(e) NULL)
+      if (is.null(m)) next
+      wbw_app[[paste(cntry, w, dv, sep = "_")]] <-
+        extract_econ_coef(m) |>
+        mutate(dv = dv, dv_label = dv_labels[dv],
+               country = cntry, wave = w,
+               r_sq = summary(m)$r.squared, n = nobs(m))
+    }
+  }
+}
+wave_by_wave_app <- bind_rows(wbw_app)
+
+cat("wave_by_wave_app rows:", nrow(wave_by_wave_app), "\n")
+cat("dv_labels:", unique(wave_by_wave_app$dv_label), "\n")
+
+# ── B: Pooled individual-DV models (5 DVs × 2 countries, wave FE) ──────────
+pooled_app <- list()
+for (cntry in c("Korea", "Taiwan")) {
+  sub <- dat |> filter(country_label == cntry)
+  for (dv in names(dv_labels)) {
+    if (all(is.na(sub[[dv]]))) next
+    f <- as.formula(paste(dv, "~ econ_index + factor(wave) +", controls))
+    m <- tryCatch(lm(f, data = sub), error = function(e) NULL)
+    if (is.null(m)) next
+    pooled_app[[paste(cntry, dv, sep = "_")]] <-
+      extract_econ_coef(m) |>
+      mutate(dv = dv, dv_label = dv_labels[dv],
+             country = cntry, r_sq = summary(m)$r.squared, n = nobs(m))
+  }
+}
+pooled_indiv_app <- bind_rows(pooled_app)
+
+cat("\npooled_indiv_app rows:", nrow(pooled_indiv_app), "\n")
+
+# ── C: Cross-country interaction (5 DVs) ────────────────────────────────────
+xc_app <- list()
+both <- dat |> mutate(is_korea = as.numeric(country_label == "Korea"))
+for (dv in names(dv_labels)) {
+  sub <- both |> filter(!is.na(.data[[dv]]))
+  f <- as.formula(paste(dv, "~ econ_index * is_korea + factor(wave) +", controls))
+  m <- tryCatch(lm(f, data = sub), error = function(e) NULL)
+  if (is.null(m)) next
+  xc_app[[dv]] <- tidy_hc2(m) |>
+    filter(term %in% c("econ_index", "is_korea", "econ_index:is_korea")) |>
+    mutate(dv = dv, dv_label = dv_labels[dv], n = nobs(m))
+}
+cross_country_app <- bind_rows(xc_app)
+
+cat("\ncross_country_app rows:", nrow(cross_country_app), "\n")
+
+# ── D: Political interest subgroups (Korea, 3 DVs) ──────────────────────────
+polint_dvs <- c(qual_pref_dem_n   = "Dem always preferable",
+                sat_democracy_n   = "Satisfaction with democracy",
+                auth_reject_index = "Auth rejection index")
+
+polint_app <- list()
+kr <- dat |> filter(country_label == "Korea")
+for (grp in c("High interest", "Low interest")) {
+  sub <- kr |> filter(polint_group == grp)
+  if (nrow(sub) < 200) next
+  for (dv in names(polint_dvs)) {
+    if (all(is.na(sub[[dv]]))) next
+    f <- as.formula(paste(dv, "~ econ_index + factor(wave) +", controls))
+    m <- tryCatch(lm(f, data = sub), error = function(e) NULL)
+    if (is.null(m)) next
+    polint_app[[paste(grp, dv, sep = "_")]] <-
+      extract_econ_coef(m) |>
+      mutate(dv = dv, dv_label = polint_dvs[dv],
+             country = "Korea", group = grp, n = nobs(m))
+  }
+}
+polint_subgroup_app <- bind_rows(polint_app)
+
+cat("\npolint_subgroup_app rows:", nrow(polint_subgroup_app), "\n")
+
+# ── E: Winner–loser subgroups (both countries, 2 DVs) ───────────────────────
+winner_dvs <- c(qual_pref_dem_n = "Dem always preferable",
+                sat_democracy_n = "Satisfaction with democracy")
+
+winner_app <- list()
+for (cntry in c("Korea", "Taiwan")) {
+  sub_c <- dat |> filter(country_label == cntry, !is.na(winner_loser))
+  for (grp in c("Winner", "Loser")) {
+    sub <- sub_c |> filter(winner_loser == grp)
+    if (nrow(sub) < 100) next
+    for (dv in names(winner_dvs)) {
+      if (all(is.na(sub[[dv]]))) next
+      f <- as.formula(paste(dv, "~ econ_index + factor(wave) +", controls))
+      m <- tryCatch(lm(f, data = sub), error = function(e) NULL)
+      if (is.null(m)) next
+      winner_app[[paste(cntry, grp, dv, sep = "_")]] <-
+        extract_econ_coef(m) |>
+        mutate(dv = dv, dv_label = winner_dvs[dv],
+               country = cntry, group = grp, n = nobs(m))
+    }
+  }
+}
+winner_loser_subgroup_app <- bind_rows(winner_app)
+
+cat("\nwinner_loser_subgroup_app rows:", nrow(winner_loser_subgroup_app), "\n")
+```
+
 ## Save all results
 
 ```{r save}
 model_results <- list(
-  # --- Main text ---
-  wave_by_wave       = wave_df,
-  pooled_interaction = pooled_df,
-  cross_country      = xc_df,
+  # --- Appendix-compatible: 5 individual DVs with HC2 SEs ---
+  wave_by_wave          = wave_by_wave_app,
+  pooled_indiv          = pooled_indiv_app,
+  cross_country         = cross_country_app,
+  polint_subgroup       = polint_subgroup_app,
+  winner_loser_subgroup = winner_loser_subgroup_app,
+
+  # --- Main text figures / inline stats ---
+  wave_composite     = wave_df,          # sat/qual/auth indices, wave-by-wave
+  pooled_interaction = pooled_df,        # wave × econ interaction models
+  cross_country_comp = xc_df,            # cross-country on composite indices
   subgroups          = subgroup_df,
 
-  # --- Appendix B: Disaggregated DVs (four buckets) ---
+  # --- Appendix robustness ---
   four_bucket        = app_b_df,
-
-  # --- Appendix C: Measurement comparability ---
   zscore_models      = zscore_df,
   ordered_logit      = ologit_df,
-
-  # --- Appendix D: Weights ---
   weighted_models    = weighted_df,
-
-  # --- Appendix E: Additional robustness ---
   indiv_dvs          = indiv_dv_results,
   trust_robustness   = trust_robustness,
   indiv_econ         = indiv_econ_results,
   extra_controls     = extra_ctrl_df,
   placebo_outcomes   = placebo_df,
-
-  # --- Appendix F: Identity probes ---
   pride_interaction  = bind_rows(identity_interaction_results),
   china_moderation   = china_df,
-
-  # --- Appendix G: Full subgroups ---
   subgroups_full     = subgroup_full_df,
 
   # --- Inline stats ---

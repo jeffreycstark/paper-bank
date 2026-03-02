@@ -29,6 +29,8 @@ and by country. The 4.5× ratio calculation quantifies the key cross-item contra
 ```{r setup}
 library(tidyverse)
 library(broom)
+library(sandwich)
+library(lmtest)
 library(knitr)
 library(kableExtra)
 
@@ -271,7 +273,7 @@ xc_item_rows <- map_dfr(all_dvs, function(dv_entry) {
     dv, "~ econ_index * is_korea + factor(wave) +", controls_str
   )
   m <- lm(as.formula(formula_str), data = dat)
-  broom::tidy(m, conf.int = TRUE) |>
+  tidy_hc2(m) |>
     filter(term == "econ_index:is_korea") |>
     mutate(
       dv       = dv,

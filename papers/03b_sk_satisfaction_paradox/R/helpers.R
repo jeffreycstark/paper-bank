@@ -11,10 +11,38 @@ normalize_01 <- function(x) {
 # ── Model helpers ──────────────────────────────────────────────────────────────
 controls <- "age_n + gender + edu_n + urban_rural + polint_n"
 
+# HC2 heteroscedasticity-robust tidy for a full model (replaces broom::tidy)
+# ABS does not provide PSU/strata identifiers, so HC2 is used throughout.
+tidy_hc2 <- function(model) {
+  vcv <- sandwich::vcovHC(model, type = "HC2")
+  ct  <- lmtest::coeftest(model, vcov = vcv)
+  tibble::tibble(
+    term      = rownames(ct),
+    estimate  = ct[, "Estimate"],
+    std.error = ct[, "Std. Error"],
+    statistic = ct[, "t value"],
+    p.value   = ct[, "Pr(>|t|)"]
+  ) |>
+    dplyr::mutate(
+      conf.low  = estimate - 1.96 * std.error,
+      conf.high = estimate + 1.96 * std.error
+    )
+}
+
+# HC2-robust extract for econ_index term
 extract_econ_coef <- function(model) {
-  broom::tidy(model, conf.int = TRUE) |>
-    dplyr::filter(term == "econ_index") |>
-    dplyr::select(estimate, std.error, statistic, p.value, conf.low, conf.high)
+  vcv <- sandwich::vcovHC(model, type = "HC2")
+  ct  <- lmtest::coeftest(model, vcov = vcv)
+  b   <- ct["econ_index", "Estimate"]
+  se  <- ct["econ_index", "Std. Error"]
+  tibble::tibble(
+    estimate  = b,
+    std.error = se,
+    statistic = ct["econ_index", "t value"],
+    p.value   = ct["econ_index", "Pr(>|t|)"],
+    conf.low  = b - 1.96 * se,
+    conf.high = b + 1.96 * se
+  )
 }
 
 sig_stars <- function(p) {
@@ -26,11 +54,20 @@ sig_stars <- function(p) {
   )
 }
 
-# Extract a named coefficient row from a tidy model
+# HC2-robust extract for a named term
 extract_coef <- function(model, term_name) {
-  broom::tidy(model, conf.int = TRUE) |>
-    dplyr::filter(term == term_name) |>
-    dplyr::select(estimate, std.error, statistic, p.value, conf.low, conf.high)
+  vcv <- sandwich::vcovHC(model, type = "HC2")
+  ct  <- lmtest::coeftest(model, vcov = vcv)
+  b   <- ct[term_name, "Estimate"]
+  se  <- ct[term_name, "Std. Error"]
+  tibble::tibble(
+    estimate  = b,
+    std.error = se,
+    statistic = ct[term_name, "t value"],
+    p.value   = ct[term_name, "Pr(>|t|)"],
+    conf.low  = b - 1.96 * se,
+    conf.high = b + 1.96 * se
+  )
 }
 
 # ── Survey year lookups ────────────────────────────────────────────────────────

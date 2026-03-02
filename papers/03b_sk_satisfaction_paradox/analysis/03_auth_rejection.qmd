@@ -28,6 +28,8 @@ alternatives more strongly, not less.
 ```{r setup}
 library(tidyverse)
 library(broom)
+library(sandwich)
+library(lmtest)
 library(knitr)
 library(kableExtra)
 
@@ -236,7 +238,7 @@ formula_xc <- as.formula(paste(
 
 m_xc <- lm(formula_xc, data = dat)
 
-auth_xc_tidy <- broom::tidy(m_xc, conf.int = TRUE) |>
+auth_xc_tidy <- tidy_hc2(m_xc) |>
   mutate(stars = sig_stars(p.value))
 
 auth_xc_df <- auth_xc_tidy
@@ -363,7 +365,7 @@ auth_mod_rows <- map_dfr(countries, function(cntry) {
     "qual_pref_dem_n ~ econ_index * auth_index + factor(wave) +", controls_str
   )
   m <- lm(as.formula(formula_str), data = df)
-  broom::tidy(m, conf.int = TRUE) |>
+  tidy_hc2(m) |>
     mutate(
       country = cntry,
       stars   = sig_stars(p.value),
