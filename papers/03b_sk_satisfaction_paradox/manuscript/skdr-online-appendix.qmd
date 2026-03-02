@@ -259,13 +259,16 @@ mr$pooled_indiv |>
   select(dv_label, cell_Korea, n_Korea, cell_Taiwan, n_Taiwan) |>
   kbl(
     col.names = c("Dependent variable", "$\\beta$ (SE)", "N", "$\\beta$ (SE)", "N"),
-    booktabs = TRUE, align = "lllll", escape = FALSE,
+    booktabs = TRUE, align = "lrrrr", escape = FALSE,
     format.args = list(big.mark = ",")
   ) |>
   add_header_above(c(" " = 1, "Korea" = 2, "Taiwan" = 2)) |>
-  add_footnote(
-    "OLS b (econ_index) with wave FE and standard controls. SE in parentheses. *p < .05, **p < .01, ***p < .001.",
-    notation = "none"
+  column_spec(1, width = "4.5cm") |>
+  column_spec(c(2, 4), width = "2.8cm") |>
+  footnote(
+    general = "OLS b (econ_index) with wave FE and standard controls. SE in parentheses. *p < .05, **p < .01, ***p < .001.",
+    general_title = "",
+    threeparttable = TRUE
   ) |>
   kable_styling(latex_options = "hold_position")
 ```
@@ -361,7 +364,11 @@ winners (supporters of the governing party) and losers (supporters of the opposi
 winner_wide <- mr$winner_loser_subgroup |>
   mutate(
     sig  = sfn(p.value),
-    cell = sprintf("%.3f%s (%.3f)", estimate, sig, std.error)
+    cell = sprintf("%.3f%s (%.3f)", estimate, sig, std.error),
+    dv_label = recode(dv_label,
+      "Dem always preferable"      = "Dem. always pref.",
+      "Satisfaction with democracy" = "Sat. w/ democracy"
+    )
   ) |>
   select(country, group, dv_label, cell) |>
   pivot_wider(names_from = dv_label, values_from = cell) |>
@@ -373,9 +380,11 @@ winner_wide |>
     booktabs = TRUE, align = paste0("ll", strrep("r", ncol(winner_wide) - 2))
   ) |>
   collapse_rows(columns = 1, latex_hline = "major") |>
-  add_footnote(
-    "OLS coefficient on econ_index with wave FE and standard controls. SE in parentheses. *p < .05, **p < .01, ***p < .001.",
-    notation = "none"
+  column_spec(3:ncol(winner_wide), width = "3.5cm") |>
+  footnote(
+    general = "OLS coefficient on econ_index with wave FE and standard controls. SE in parentheses. *p < .05, **p < .01, ***p < .001.",
+    general_title = "",
+    threeparttable = TRUE
   ) |>
   kable_styling(latex_options = "hold_position")
 ```
@@ -514,16 +523,16 @@ ir$pooled |>
   select(dv_label, cell_Korea, n_Korea, cell_Taiwan, n_Taiwan) |>
   kbl(
     col.names = c("Dependent variable", "$\\beta$ (SE)", "N", "$\\beta$ (SE)", "N"),
-    booktabs = TRUE, align = "lllll", escape = FALSE,
+    booktabs = TRUE, align = "lrrrr", escape = FALSE,
     format.args = list(big.mark = ",")
   ) |>
   add_header_above(c(" " = 1, "Korea" = 2, "Taiwan" = 2)) |>
-  add_footnote(
-    paste0(
-      "Pooled OLS b (econ_index) with wave FE and standard controls. ",
-      "SE in parentheses. *p < .05, **p < .01, ***p < .001."
-    ),
-    notation = "none"
+  column_spec(1, width = "4.5cm") |>
+  column_spec(c(2, 4), width = "2.8cm") |>
+  footnote(
+    general = "Pooled OLS b (econ_index) with wave FE and standard controls. SE in parentheses. *p < .05, **p < .01, ***p < .001.",
+    general_title = "",
+    threeparttable = TRUE
   ) |>
   kable_styling(latex_options = "hold_position")
 ```
