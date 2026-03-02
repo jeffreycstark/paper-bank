@@ -684,6 +684,51 @@ A9 |>
 
 \newpage
 
+## Table A10: Democracy vs. Economic Development Trade-Off, 2008--2021 {.unnumbered}
+
+```{r tbl-tableA10}
+#| echo: false
+#| tbl-cap: "Democracy vs. Economic Development Trade-Off Item, Wave Means (Cambodia)"
+A10 <- readRDS(file.path(tbl_dir, "tableA10_dem_vs_econ.rds"))
+
+A10 |>
+  dplyr::select(Wave = wave, Year = year, N = n_valid, Mean = fmt) |>
+  dplyr::mutate(Wave = paste0("W", Wave)) |>
+  kbl(
+    col.names = c("Wave", "Year", "$N$", "Mean (95\\% CI)"),
+    align     = "cccc",
+    booktabs  = TRUE,
+    linesep   = "",
+    escape    = FALSE
+  ) |>
+  kable_styling(
+    latex_options = c("hold_position"),
+    font_size     = 10,
+    full_width    = FALSE
+  ) |>
+  column_spec(1:2, width = "1.5cm") |>
+  column_spec(3, width = "1.5cm") |>
+  column_spec(4, width = "4.5cm") |>
+  footnote(
+    general = paste0(
+      "Item: respondents choose between economic development and political democracy ",
+      "on a five-point scale (1 = economic development definitely more important, ",
+      "5 = political democracy definitely more important), with a midpoint option. ",
+      "Wording is consistent across all four waves. ",
+      "Means reported with 95\\\\% CI (t-based) in parentheses. ",
+      "The item is included here for completeness; ",
+      "it shows less dynamic variation than the democracy-vs-equality trade-off item ",
+      "reported in the main analysis."
+    ),
+    general_title     = "Note:",
+    footnote_as_chunk = TRUE,
+    escape            = FALSE,
+    threeparttable    = TRUE
+  )
+```
+
+\newpage
+
 ## Appendix D: 2017 Cambodia Socio-Economic Survey — Governance Module {.unnumbered}
 
 ```{r tbl-appendixD}
