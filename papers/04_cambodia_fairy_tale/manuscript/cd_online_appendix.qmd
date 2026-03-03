@@ -40,8 +40,6 @@ format:
     number-sections: true
     theme: cosmo
     code-fold: true
-bibliography: references.bib
-csl: apa.csl
 execute:
   echo: false
   warning: false

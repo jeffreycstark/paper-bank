@@ -157,9 +157,46 @@ Do not offer to add entries, do not add them proactively, and do not add them in
 ## Environment
 
 **R**: Managed via `renv`. Restore with `Rscript -e "renv::restore()"`.
-Key packages: tidyverse, haven, here, arrow, nnet, kableExtra.
+Key packages: tidyverse, haven, here, arrow, nnet, kableExtra, modelsummary.
 
 No R MCP is configured. R code runs via `Rscript` in Bash.
+
+---
+
+## Regression Tables
+
+Use `modelsummary` (not `kableExtra` or `stargazer`) for all regression output tables. This applies to OLS, logit, ordered logit, and mixed models. The standard pattern for side-by-side model comparison:
+
+```r
+library(modelsummary)
+
+models <- list(
+  "OLS (1)"   = lm(y ~ x1 + x2, data = d),
+  "Logit (2)" = glm(y ~ x1 + x2, data = d, family = binomial)
+)
+
+modelsummary(
+  models,
+  output    = "latex",          # or "kableExtra" for inline Quarto rendering
+  stars     = c("*" = .1, "**" = .05, "***" = .01),
+  coef_map  = c(x1 = "Variable label", x2 = "Variable label 2"),
+  gof_map   = c("nobs", "r.squared", "adj.r.squared", "logLik", "AIC"),
+  title     = "Table caption here",
+  notes     = "Robust SEs in parentheses. * p<0.10, ** p<0.05, *** p<0.01."
+)
+```
+
+**When to use `modelsummary`:**
+- Any table showing regression coefficients (OLS, logit, probit, ordered logit, LMM)
+- Side-by-side model comparison (baseline vs. controls, different DVs, attenuation tests)
+- Appendix model tables (Model Set A, B, C structures from reviewer responses)
+
+**Output format:**
+- Use `output = "latex"` for `.R` scripts that save `.tex` fragments
+- Use `output = "kableExtra"` inside Quarto `.qmd` chunks for inline rendering
+- Save model lists as `.rds` via `saveRDS(models, ...)` so tables can be regenerated without re-running models
+
+**Do not use** `stargazer`, manual `kbl()` coefficient tables, or `texreg` — `modelsummary` is the project standard.
 
 ---
 
