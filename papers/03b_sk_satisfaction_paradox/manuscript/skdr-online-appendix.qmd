@@ -46,8 +46,6 @@ format:
     code-fold: true
     embed-resources: true
 prefer-html: true
-bibliography: references.bib
-csl: apa.csl
 execute:
   warning: false
   message: false
@@ -72,6 +70,7 @@ mr   <- readRDS(file.path(results_dir, "model_results.rds"))
 ar   <- readRDS(file.path(results_dir, "auth_rejection_results.rds"))
 ir   <- readRDS(file.path(results_dir, "item_specificity_results.rds"))
 desc <- readRDS(file.path(results_dir, "descriptive_stats.rds"))
+r2   <- readRDS(file.path(results_dir, "reviewer2_results.rds"))
 
 yr_kr <- c(`1`=2003L, `2`=2006L, `3`=2011L, `4`=2015L, `5`=2019L, `6`=2022L)
 yr_tw <- c(`1`=2001L, `2`=2006L, `3`=2010L, `4`=2014L, `5`=2019L, `6`=2022L)
@@ -415,10 +414,7 @@ winner_tbl |>
 ## F.1 Pooled Models
 
 @tbl-auth-pooled reports pooled OLS estimates of econ → authoritarian rejection
-(index and four component items) for Korea and Taiwan. The sign test is: if
-the Korean decoupling reflects democratic erosion, better economic evaluations should
-weaken rejection of authoritarian alternatives. If it reflects only a
-performance-satisfaction response, they should strengthen rejection.
+(index and four component items) for Korea and Taiwan. The sign test: if economic comfort strengthens anti-authoritarian conviction---as a normative deepening account would predict---the coefficient should be negative (higher econ → lower acceptance, i.e., stronger rejection). If the instrumental orientation extends to substantive evaluation, the coefficient should be positive on acceptance items, or equivalently, the rejection-coded coefficient should indicate that economic comfort is associated with reduced rejection.
 
 ```{r tbl-auth-pooled}
 #| label: tbl-auth-pooled
@@ -794,6 +790,188 @@ poly_tbl |>
   ) |>
   kable_styling(latex_options = "hold_position")
 ```
+
+
+# Appendix J: Construct Validity --- Satisfaction Control Test
+
+If the authoritarian rejection items are merely capturing performance evaluation in
+normative clothing, controlling for democratic satisfaction should absorb the economic
+coefficient on authoritarian rejection. @tbl-sat-control tests this by comparing the
+$\beta$ on `econ_index` with and without `sat_democracy_n` as an additional control,
+for all five authoritarian rejection outcomes in both countries.
+
+```{r tbl-sat-control}
+#| label: tbl-sat-control
+#| tbl-cap: "Construct validity: econ$\\to$auth rejection with and without satisfaction control"
+
+r2$task1a |>
+  select(country, dv_label, model, estimate, std.error, p.value, r_squared) |>
+  mutate(
+    sig  = sfn(p.value),
+    cell = sprintf("%.3f%s (%.3f)", estimate, sig, std.error),
+    r2   = sprintf("%.4f", r_squared)
+  ) |>
+  select(country, dv_label, model, cell, r2) |>
+  pivot_wider(names_from = model, values_from = c(cell, r2), names_sep = "_") |>
+  select(country, dv_label,
+         `cell_Baseline`, `r2_Baseline`,
+         `cell_+ Satisfaction`, `r2_+ Satisfaction`) |>
+  kbl(
+    col.names = c("Country", "DV", "$\\beta$ (SE)", "$R^2$",
+                  "$\\beta$ (SE)", "$R^2$"),
+    booktabs = TRUE, align = "llrrrr", escape = FALSE
+  ) |>
+  add_header_above(c(" " = 2, "Baseline" = 2, "+ Satisfaction" = 2)) |>
+  collapse_rows(columns = 1, latex_hline = "major") |>
+  footnote(
+    general = "Pooled OLS with wave FE and standard controls. $\\\\beta$ on econ\\\\_index shown. HC2 robust SE in parentheses. *p < .05, **p < .01, ***p < .001.",
+    general_title = "",
+    threeparttable = TRUE,
+    escape = FALSE
+  ) |>
+  kable_styling(latex_options = c("hold_position", "scale_down"), font_size = 9)
+```
+
+Maximum attenuation across all five Korean outcomes is 10.2 percent (military rejection),
+with all coefficients retaining their original significance levels. The economic effect
+on authoritarian rejection operates through a pathway independent of performance satisfaction.
+
+
+# Appendix K: Factor Structure of Satisfaction and Authoritarian Rejection Items
+
+An exploratory factor analysis tests whether the satisfaction and authoritarian rejection
+items load on distinguishable factors. Seven items are included: democracy satisfaction,
+government satisfaction, "democracy is always preferable," and the four authoritarian
+rejection items (strongman, military, expert, single-party). The analysis is restricted
+to Korean respondents pooled across all available waves.
+
+@tbl-efa-loadings reports the two-factor solution (oblimin rotation, maximum likelihood
+extraction). Parallel analysis suggests three factors; a two-factor solution is presented
+as the theoretically motivated specification.
+
+```{r tbl-efa-loadings}
+#| label: tbl-efa-loadings
+#| tbl-cap: "Two-factor EFA loadings: satisfaction and authoritarian rejection items (Korea, pooled)"
+
+efa <- r2$task1b$efa_2f
+loadings_df <- as.data.frame(unclass(efa$loadings))
+loadings_df$item <- c("Democracy satisfaction", "Gov't satisfaction",
+                       "Dem always preferable",
+                       "Reject: strongman", "Reject: military",
+                       "Reject: expert", "Reject: single-party")
+loadings_df$h2 <- efa$communalities
+
+loadings_df |>
+  select(item, ML1, ML2, h2) |>
+  mutate(across(c(ML1, ML2, h2), \(x) sprintf("%.3f", x))) |>
+  kbl(row.names = FALSE,
+    col.names = c("Item", "Factor 1", "Factor 2", "$h^2$"),
+    booktabs = TRUE, align = "lrrr", escape = FALSE
+  ) |>
+  footnote(
+    general = sprintf(
+      "Oblimin rotation, ML extraction. N = %s. RMSEA = %.3f, TLI = %.3f. Factor correlation = %.3f. *p < .05, **p < .01, ***p < .001.",
+      format(r2$task1b$n_obs, big.mark = ","),
+      efa$RMSEA[1], efa$TLI, efa$Phi[1, 2]
+    ),
+    general_title = "",
+    threeparttable = TRUE
+  ) |>
+  kable_styling(latex_options = "hold_position")
+```
+
+The four authoritarian rejection items load 0.68--0.77 on Factor 1; the two satisfaction
+items load on Factor 2. The factors are near-orthogonal (*r* = --0.11). "Democracy is
+always preferable" loads weakly on both factors, consistent with it operating as a
+conceptually distinct dimension. The pattern is stable across all available waves
+(RMSEA 0.023--0.062, TLI > 0.95 in all waves).
+
+
+# Appendix L: Cross-Country Measurement Invariance --- Authoritarian Rejection Battery
+
+A one-factor CFA on the four authoritarian rejection items tests configural, metric,
+and scalar invariance across Korea and Taiwan. @tbl-mi-fit reports fit statistics;
+@tbl-mi-comparison reports model comparison tests.
+
+```{r tbl-mi-fit}
+#| label: tbl-mi-fit
+#| tbl-cap: "Measurement invariance: fit statistics for authoritarian rejection CFA"
+
+mi_fits <- list(
+  Configural = r2$task4$fit_configural,
+  Metric     = r2$task4$fit_metric,
+  Scalar     = r2$task4$fit_scalar
+)
+
+mi_tbl <- purrr::map_dfr(names(mi_fits), function(nm) {
+  fm <- lavaan::fitMeasures(mi_fits[[nm]],
+    c("cfi.robust", "rmsea.robust", "srmr", "tli.robust",
+      "chisq.scaled", "df.scaled"))
+  tibble::tibble(
+    Model    = nm,
+    CFI      = fm["cfi.robust"],
+    RMSEA    = fm["rmsea.robust"],
+    SRMR     = fm["srmr"],
+    TLI      = fm["tli.robust"],
+    `Chi-sq` = fm["chisq.scaled"],
+    df       = fm["df.scaled"]
+  )
+})
+
+mi_tbl |>
+  mutate(across(c(CFI, RMSEA, SRMR, TLI), \(x) sprintf("%.3f", x)),
+         `Chi-sq` = sprintf("%.1f", `Chi-sq`),
+         df = sprintf("%.0f", df)) |>
+  kbl(booktabs = TRUE, align = "lrrrrrr") |>
+  footnote(
+    general = "MLR estimator. Korea N = 6,245; Taiwan N = 6,776. Robust fit indices reported.",
+    general_title = "",
+    threeparttable = TRUE
+  ) |>
+  kable_styling(latex_options = "hold_position")
+```
+
+```{r tbl-mi-comparison}
+#| label: tbl-mi-comparison
+#| tbl-cap: "Measurement invariance: model comparison tests"
+
+comp_cm <- r2$task4$comparison_cm
+comp_ms <- r2$task4$comparison_ms
+
+cfi_c <- lavaan::fitMeasures(r2$task4$fit_configural, "cfi.robust")
+cfi_m <- lavaan::fitMeasures(r2$task4$fit_metric, "cfi.robust")
+cfi_s <- lavaan::fitMeasures(r2$task4$fit_scalar, "cfi.robust")
+
+tibble::tibble(
+  Comparison = c("Configural to Metric", "Metric to Scalar"),
+  `Delta Chi-sq` = c(comp_cm[["Chisq diff"]][2], comp_ms[["Chisq diff"]][2]),
+  `Delta df`     = c(comp_cm[["Df diff"]][2], comp_ms[["Df diff"]][2]),
+  p              = c(comp_cm[["Pr(>Chisq)"]][2], comp_ms[["Pr(>Chisq)"]][2]),
+  `Delta CFI`    = c(cfi_c - cfi_m, cfi_m - cfi_s)
+) |>
+  mutate(
+    `Delta Chi-sq` = sprintf("%.2f", `Delta Chi-sq`),
+    `Delta df`     = sprintf("%.0f", `Delta df`),
+    p              = sprintf("%.4f", p),
+    `Delta CFI`    = sprintf("%.4f", `Delta CFI`)
+  ) |>
+  kbl(
+    col.names = c("Comparison", "$\\Delta\\chi^2$", "$\\Delta$df", "$p$", "$\\Delta$CFI"),
+    booktabs = TRUE, align = "lrrrr", escape = FALSE
+  ) |>
+  footnote(
+    general = "Scaled chi-square difference test. Chen (2007) criterion: $\\\\Delta$CFI < 0.010 supports invariance.",
+    general_title = "",
+    threeparttable = TRUE,
+    escape = FALSE
+  ) |>
+  kable_styling(latex_options = "hold_position")
+```
+
+Both metric ($\Delta$CFI = 0.001) and scalar ($\Delta$CFI = 0.003) invariance hold by the
+Chen [-@Chen2007-tk] criterion (threshold: $\Delta$CFI < 0.010). Chi-square difference tests
+are statistically significant, as expected with *N* > 13,000. The four authoritarian rejection
+items measure the same construct with equivalent loadings and intercepts across Korea and Taiwan.
 
 
 # References {.unnumbered}

@@ -250,7 +250,7 @@
 \subtitle{Economic Performance and the Structure of Democratic Support
 in South Korea}
 \author{Jeffrey Stark}
-\date{March 2, 2026}
+\date{March 3, 2026}
 \begin{document}
 \maketitle
 
@@ -644,10 +644,14 @@ Results}\label{appendix-f-authoritarian-rejection-full-results}
 
 Table~\ref{tbl-auth-pooled} reports pooled OLS estimates of econ →
 authoritarian rejection (index and four component items) for Korea and
-Taiwan. The sign test is: if the Korean decoupling reflects democratic
-erosion, better economic evaluations should weaken rejection of
-authoritarian alternatives. If it reflects only a
-performance-satisfaction response, they should strengthen rejection.
+Taiwan. The sign test: if economic comfort strengthens
+anti-authoritarian conviction---as a normative deepening account would
+predict---the coefficient should be negative (higher econ → lower
+acceptance, i.e., stronger rejection). If the instrumental orientation
+extends to substantive evaluation, the coefficient should be positive on
+acceptance items, or equivalently, the rejection-coded coefficient
+should indicate that economic comfort is associated with reduced
+rejection.
 
 \begin{table}
 
@@ -1092,6 +1096,194 @@ Reject: single-party rule & -0.168 & -0.198\\
 
 \end{table}%
 
+\section{Appendix J: Construct Validity --- Satisfaction Control
+Test}\label{appendix-j-construct-validity-satisfaction-control-test}
+
+If the authoritarian rejection items are merely capturing performance
+evaluation in normative clothing, controlling for democratic
+satisfaction should absorb the economic coefficient on authoritarian
+rejection. Table~\ref{tbl-sat-control} tests this by comparing the
+\(\beta\) on \texttt{econ\_index} with and without
+\texttt{sat\_democracy\_n} as an additional control, for all five
+authoritarian rejection outcomes in both countries.
+
+\begin{table}
+
+\caption{\label{tbl-sat-control}Construct validity: econ\(\to\)auth
+rejection with and without satisfaction control}
+
+\centering{
+
+\centering\begingroup\fontsize{9}{11}\selectfont
+
+\begin{threeparttable}
+\resizebox{\ifdim\width>\linewidth\linewidth\else\width\fi}{!}{
+\begin{tabular}[t]{llrrrr}
+\toprule
+\multicolumn{2}{c}{ } & \multicolumn{2}{c}{Baseline} & \multicolumn{2}{c}{+ Satisfaction} \\
+\cmidrule(l{3pt}r{3pt}){3-4} \cmidrule(l{3pt}r{3pt}){5-6}
+Country & DV & $\beta$ (SE) & $R^2$ & $\beta$ (SE) & $R^2$\\
+\midrule
+ & Auth rejection index & -0.082*** (0.019) & 0.0135 & -0.079*** (0.020) & 0.0142\\
+
+ & Reject: strongman & -0.077** (0.025) & 0.0068 & -0.078** (0.025) & 0.0071\\
+
+ & Reject: military & -0.092*** (0.021) & 0.0184 & -0.082*** (0.022) & 0.0194\\
+
+ & Reject: expert & -0.079** (0.027) & 0.0109 & -0.081** (0.028) & 0.0111\\
+
+\multirow{-5}{*}{\raggedright\arraybackslash Korea} & Reject: single-party & -0.096*** (0.024) & 0.0106 & -0.089*** (0.024) & 0.0117\\
+\cmidrule{1-6}
+ & Auth rejection index & -0.040*** (0.012) & 0.1447 & -0.052*** (0.012) & 0.1385\\
+
+ & Reject: strongman & -0.042** (0.016) & 0.0626 & -0.057*** (0.017) & 0.0607\\
+
+ & Reject: military & -0.016 (0.014) & 0.1297 & -0.023 (0.014) & 0.1276\\
+
+ & Reject: expert & -0.019 (0.017) & 0.0666 & -0.029 (0.018) & 0.0653\\
+
+\multirow{-5}{*}{\raggedright\arraybackslash Taiwan} & Reject: single-party & -0.078*** (0.015) & 0.1251 & -0.086*** (0.015) & 0.1210\\
+\bottomrule
+\end{tabular}}
+\begin{tablenotes}
+\item Pooled OLS with wave FE and standard controls. $\beta$ on econ\_index shown. HC2 robust SE in parentheses. *p < .05, **p < .01, ***p < .001.
+\end{tablenotes}
+\end{threeparttable}
+\endgroup{}
+
+}
+
+\end{table}%
+
+Maximum attenuation across all five Korean outcomes is 10.2 percent
+(military rejection), with all coefficients retaining their original
+significance levels. The economic effect on authoritarian rejection
+operates through a pathway independent of performance satisfaction.
+
+\section{Appendix K: Factor Structure of Satisfaction and Authoritarian
+Rejection
+Items}\label{appendix-k-factor-structure-of-satisfaction-and-authoritarian-rejection-items}
+
+An exploratory factor analysis tests whether the satisfaction and
+authoritarian rejection items load on distinguishable factors. Seven
+items are included: democracy satisfaction, government satisfaction,
+``democracy is always preferable,'' and the four authoritarian rejection
+items (strongman, military, expert, single-party). The analysis is
+restricted to Korean respondents pooled across all available waves.
+
+Table~\ref{tbl-efa-loadings} reports the two-factor solution (oblimin
+rotation, maximum likelihood extraction). Parallel analysis suggests
+three factors; a two-factor solution is presented as the theoretically
+motivated specification.
+
+\begin{table}
+
+\caption{\label{tbl-efa-loadings}Two-factor EFA loadings: satisfaction
+and authoritarian rejection items (Korea, pooled)}
+
+\centering{
+
+\centering
+\begin{threeparttable}
+\begin{tabular}[t]{lrrr}
+\toprule
+Item & Factor 1 & Factor 2 & $h^2$\\
+\midrule
+Democracy satisfaction & 0.031 & 0.663 & 0.436\\
+Gov't satisfaction & -0.073 & 0.516 & 0.280\\
+Dem always preferable & -0.258 & -0.141 & 0.079\\
+Reject: strongman & 0.770 & 0.002 & 0.593\\
+Reject: military & 0.684 & -0.021 & 0.471\\
+\addlinespace
+Reject: expert & 0.746 & 0.031 & 0.552\\
+Reject: single-party & 0.724 & -0.026 & 0.530\\
+\bottomrule
+\end{tabular}
+\begin{tablenotes}
+\item Oblimin rotation, ML extraction. N = 5,887. RMSEA = 0.020, TLI = 0.995. Factor correlation = -0.107. *p < .05, **p < .01, ***p < .001.
+\end{tablenotes}
+\end{threeparttable}
+
+}
+
+\end{table}%
+
+The four authoritarian rejection items load 0.68--0.77 on Factor 1; the
+two satisfaction items load on Factor 2. The factors are near-orthogonal
+(\emph{r} = --0.11). ``Democracy is always preferable'' loads weakly on
+both factors, consistent with it operating as a conceptually distinct
+dimension. The pattern is stable across all available waves (RMSEA
+0.023--0.062, TLI \textgreater{} 0.95 in all waves).
+
+\section{Appendix L: Cross-Country Measurement Invariance ---
+Authoritarian Rejection
+Battery}\label{appendix-l-cross-country-measurement-invariance-authoritarian-rejection-battery}
+
+A one-factor CFA on the four authoritarian rejection items tests
+configural, metric, and scalar invariance across Korea and Taiwan.
+Table~\ref{tbl-mi-fit} reports fit statistics;
+Table~\ref{tbl-mi-comparison} reports model comparison tests.
+
+\begin{table}
+
+\caption{\label{tbl-mi-fit}Measurement invariance: fit statistics for
+authoritarian rejection CFA}
+
+\centering{
+
+\centering
+\begin{threeparttable}
+\begin{tabular}[t]{lrrrrrr}
+\toprule
+Model & CFI & RMSEA & SRMR & TLI & Chi-sq & df\\
+\midrule
+Configural & 0.991 & 0.077 & 0.013 & 0.973 & 89.5 & 4\\
+Metric & 0.990 & 0.062 & 0.019 & 0.982 & 119.6 & 7\\
+Scalar & 0.987 & 0.058 & 0.022 & 0.984 & 167.6 & 10\\
+\bottomrule
+\end{tabular}
+\begin{tablenotes}
+\item MLR estimator. Korea N = 6,245; Taiwan N = 6,776. Robust fit indices reported.
+\end{tablenotes}
+\end{threeparttable}
+
+}
+
+\end{table}%
+
+\begin{table}
+
+\caption{\label{tbl-mi-comparison}Measurement invariance: model
+comparison tests}
+
+\centering{
+
+\centering
+\begin{threeparttable}
+\begin{tabular}[t]{lrrrr}
+\toprule
+Comparison & $\Delta\chi^2$ & $\Delta$df & $p$ & $\Delta$CFI\\
+\midrule
+Configural to Metric & 21.35 & 3 & 0.0001 & 0.0014\\
+Metric to Scalar & 46.79 & 3 & 0.0000 & 0.0026\\
+\bottomrule
+\end{tabular}
+\begin{tablenotes}
+\item Scaled chi-square difference test. Chen (2007) criterion: $\Delta$CFI < 0.010 supports invariance.
+\end{tablenotes}
+\end{threeparttable}
+
+}
+
+\end{table}%
+
+Both metric (\(\Delta\)CFI = 0.001) and scalar (\(\Delta\)CFI = 0.003)
+invariance hold by the Chen (2007) criterion (threshold: \(\Delta\)CFI
+\textless{} 0.010). Chi-square difference tests are statistically
+significant, as expected with \emph{N} \textgreater{} 13,000. The four
+authoritarian rejection items measure the same construct with equivalent
+loadings and intercepts across Korea and Taiwan.
+
 \section*{References}\label{references}
 \addcontentsline{toc}{section}{References}
 
@@ -1100,6 +1292,12 @@ Reject: single-party rule & -0.168 & -0.198\\
 \bibitem[\citeproctext]{ref-Asian-Barometer-Survey2023-uh}
 Asian Barometer Survey. (2023). \emph{{Asian Barometer Survey, Waves 1-6
 (2001--2021)}} {[}Dataset{]}.
+
+\bibitem[\citeproctext]{ref-Chen2007-tk}
+Chen, Fang Fang. (2007). {Sensitivity of goodness of fit indexes to lack
+of measurement invariance}. \emph{Structural Equation Modeling: A
+Multidisciplinary Journal}, \emph{14}, 464--504.
+\url{https://doi.org/10.1080/10705510701301834}
 
 \bibitem[\citeproctext]{ref-Dalton2004-bq}
 Dalton, Russell J. (2004). \emph{{Democratic challenges, democratic
