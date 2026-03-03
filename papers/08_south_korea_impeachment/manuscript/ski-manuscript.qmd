@@ -56,6 +56,7 @@ format:
           \usepackage{threeparttablex}
           \usepackage{colortbl}
           \usepackage{xcolor}
+          \usepackage{siunitx}
           \captionsetup{width=\textwidth}
           \setlength\LTcapwidth{\textwidth}
           \floatplacement{figure}{H}
@@ -71,8 +72,6 @@ format:
   docx:
     toc: true
     number-sections: true
-bibliography: references.bib
-csl: apa.csl
 execute:
   warning: false
   message: false
@@ -86,6 +85,12 @@ library(tidyverse)
 library(knitr)
 library(kableExtra)
 library(modelsummary)
+
+# Force kableExtra backend so modelsummary uses booktabs/longtable (already in preamble)
+# rather than tinytable/tabularray, which is not installed in this TeX Live.
+options(modelsummary_factory_latex = "kableExtra")
+options(modelsummary_factory_html  = "kableExtra")
+options(modelsummary_factory_word  = "flextable")
 
 project_root <- "/Users/jeffreystark/Development/Research/paper-bank"
 paper_dir    <- file.path(project_root, "papers/08_south_korea_impeachment")
@@ -114,7 +119,7 @@ if (file.exists(file.path(results_dir, "partisan_model.rds"))) {
 
 # Introduction
 
-On November 19, 2016, roughly one million South Korean citizens gathered in central Seoul with candles. The protests continued for nineteen consecutive weeks. At their peak, an estimated seventeen million participants had taken part nationwide — in a country of fifty-one million. What they demanded, and eventually obtained, was the removal of President Park Geun-hye on charges of corruption and abuse of power. On March 10, 2017, the Constitutional Court upheld her impeachment in a unanimous ruling. Within two months, Moon Jae-in had won the presidency with a substantial popular mandate. By every available standard of democratic performance, the system had worked.
+On November 19, 2016, roughly one million South Korean citizens gathered in central Seoul with candles. The protests continued for nineteen consecutive weeks. At their peak, an estimated seventeen million participants had taken part nationwide — in a country of fifty-one million [@Database2026-di]. What they demanded, and eventually obtained, was the removal of President Park Geun-hye on charges of corruption and abuse of power. On March 10, 2017, the Constitutional Court upheld her impeachment in a unanimous ruling [@Yonhap-News-Agency2017-bv]. Within two months, Moon Jae-in had won the presidency with a substantial popular mandate. By every available standard of democratic performance, the system had worked.
 
 The paradox that motivates this article is what happened next. Between 2016 and 2019 — precisely the period in which citizens had the most dramatic possible evidence that accountability institutions functioned — mass confidence in those institutions collapsed. Trust in the National Assembly, the media, and nongovernmental organizations fell by 0.6 to 0.7 points on a normalized scale. Executive institutional trust, by contrast, declined only 0.16 points. Economic optimism rose. Electoral engagement intensified; party identification climbed across the same window. Citizens were reinvesting in the electoral game while disinvesting in the institutions through which electoral accountability is supposed to operate.
 
@@ -290,7 +295,42 @@ The output legitimacy moderation model tests the second component of H1: whether
 #| tbl-cap: "Output legitimacy moderation model. Dependent variable: institutional trust (1–5). Model extends Table 3 specification with Economic Evaluation × Institution Type interactions. Standard errors clustered by respondent. Source: KAMOS Waves 1 and 4."
 #| echo: false
 
-# TODO: load outleg_mod and display with modelsummary()
+if (exists("outleg_mod")) {
+  outleg_results <- readRDS(file.path(results_dir, "output_legitimacy_model.rds"))
+  outleg_vcov    <- outleg_results$vcov
+
+  tbl4_coef_map <- c(
+    "wave_num"                                    = "Wave 4 (2019)",
+    "inst_typeHorizontal"                         = "Horizontal institution",
+    "inst_typeSocietal"                           = "Societal institution",
+    "econ_present_n"                              = "Economic evaluation",
+    "wave_num:inst_typeHorizontal"                = "Wave 4 × Horizontal",
+    "wave_num:inst_typeSocietal"                  = "Wave 4 × Societal",
+    "wave_num:econ_present_n"                     = "Wave 4 × Econ (Executive shield)",
+    "inst_typeHorizontal:econ_present_n"          = "Horizontal × Econ",
+    "inst_typeSocietal:econ_present_n"            = "Societal × Econ",
+    "wave_num:inst_typeHorizontal:econ_present_n" = "Wave 4 × Econ × Horizontal",
+    "wave_num:inst_typeSocietal:econ_present_n"   = "Wave 4 × Econ × Societal",
+    "(Intercept)"                                 = "Constant"
+  )
+
+  modelsummary(
+    outleg_results$model,
+    vcov      = outleg_vcov,
+    coef_map  = tbl4_coef_map,
+    coef_omit = "^(age_n|gender|edu_n|income_n)",
+    stars     = c("*" = .05, "**" = .01, "***" = .001),
+    fmt       = 4,
+    gof_map   = c("nobs", "r.squared", "adj.r.squared"),
+    notes     = paste0(
+      "OLS with survey weights; standard errors clustered by respondent (HC1). ",
+      "Reference categories: Executive institution, Wave 1 (2016). ",
+      "Economic evaluation is a composite of family and national economic assessments (0–1 scale). ",
+      "Controls for age, gender, education, and income included but not shown. ",
+      "* p < .05, ** p < .01, *** p < .001. Source: KAMOS Waves 1 and 4."
+    )
+  )
+}
 ```
 
 ## Partisan Sorting Check

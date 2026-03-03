@@ -31,6 +31,7 @@ format:
           \usepackage{graphicx}
           \usepackage{threeparttable}
           \usepackage{threeparttablex}
+          \usepackage{siunitx}
           \captionsetup{width=\textwidth}
           \setlength\LTcapwidth{\textwidth}
           \floatplacement{figure}{H}
@@ -46,8 +47,6 @@ format:
   docx:
     toc: true
     number-sections: true
-bibliography: references.bib
-csl: apa.csl
 execute:
   warning: false
   message: false
@@ -63,6 +62,11 @@ library(kableExtra)
 library(modelsummary)
 library(broom)
 library(MASS)      # polr() for ordered logit
+
+# Force kableExtra backend — tabularray is not installed in this TeX Live
+options(modelsummary_factory_latex = "kableExtra")
+options(modelsummary_factory_html  = "kableExtra")
+options(modelsummary_factory_word  = "flextable")
 
 project_root <- "/Users/jeffreystark/Development/Research/paper-bank"
 paper_dir    <- file.path(project_root, "papers/08_south_korea_impeachment")
@@ -92,6 +96,10 @@ if (file.exists(file.path(results_dir, "econ_alt_model.rds")))
   econ_alt_mod <- readRDS(file.path(results_dir, "econ_alt_model.rds"))
 if (file.exists(file.path(results_dir, "descriptives.rds")))
   desc <- readRDS(file.path(results_dir, "descriptives.rds"))
+if (file.exists(file.path(results_dir, "placebo_model.rds")))
+  placebo_res <- readRDS(file.path(results_dir, "placebo_model.rds"))
+if (file.exists(file.path(results_dir, "society_sensitivity_model.rds")))
+  soc_res <- readRDS(file.path(results_dir, "society_sensitivity_model.rds"))
 ```
 
 # Appendix A: Data and Measurement {#sec-data}
@@ -214,16 +222,46 @@ The economic evaluation composite is the mean of the family economic conditions 
 
 ```{r tbl-output-legitimacy-full}
 #| label: tbl-output-legitimacy-full
-#| tbl-cap: "Output legitimacy moderation models. Dependent variable: institutional trust (1–5). Model 1: family economic conditions as moderator; Model 2: national economic conditions; Model 3: composite economic evaluation. Standard errors clustered by respondent. Source: KAMOS Waves 1 and 4."
+#| tbl-cap: "Output legitimacy moderation model — full coefficient table. Dependent variable: institutional trust (0–1 scale). Three-way interaction model with economic evaluation composite. Standard errors clustered by respondent. Source: KAMOS Waves 1 and 4."
 #| echo: false
 
-# TODO: load outleg_mod (list of three models) and display
-# modelsummary(
-#   outleg_mod,
-#   output = "kableExtra",
-#   stars = c("*" = 0.05, "**" = 0.01, "***" = 0.001),
-#   ...
-# )
+if (exists("outleg_mod")) {
+  ol_res <- readRDS(file.path(results_dir, "output_legitimacy_model.rds"))
+
+  ol_coef_map <- c(
+    "wave_num"                                    = "Wave 4 (2019)",
+    "inst_typeHorizontal"                         = "Horizontal institution",
+    "inst_typeSocietal"                           = "Societal institution",
+    "econ_present_n"                              = "Economic evaluation",
+    "wave_num:inst_typeHorizontal"                = "Wave 4 × Horizontal",
+    "wave_num:inst_typeSocietal"                  = "Wave 4 × Societal",
+    "wave_num:econ_present_n"                     = "Wave 4 × Econ (Executive shield)",
+    "inst_typeHorizontal:econ_present_n"          = "Horizontal × Econ",
+    "inst_typeSocietal:econ_present_n"            = "Societal × Econ",
+    "wave_num:inst_typeHorizontal:econ_present_n" = "Wave 4 × Econ × Horizontal",
+    "wave_num:inst_typeSocietal:econ_present_n"   = "Wave 4 × Econ × Societal",
+    "age_n"                                       = "Age",
+    "gender"                                      = "Gender (male = 1)",
+    "edu_n"                                       = "Education",
+    "income_n"                                    = "Income",
+    "(Intercept)"                                 = "Constant"
+  )
+
+  modelsummary(
+    ol_res$model,
+    vcov      = ol_res$vcov,
+    coef_map  = ol_coef_map,
+    stars     = c("*" = .05, "**" = .01, "***" = .001),
+    fmt       = 4,
+    gof_map   = c("nobs", "r.squared", "adj.r.squared"),
+    notes     = paste0(
+      "OLS with survey weights; SEs clustered by respondent (HC1). ",
+      "Reference: Executive institution, Wave 1 (2016). ",
+      "Economic evaluation = composite of family and national economic assessments (0–1). ",
+      "* p < .05, ** p < .01, *** p < .001."
+    )
+  )
+}
 ```
 
 The key quantities of interest are the Economic Evaluation × Wave × Institution Type three-way interactions, which test whether the change in the relationship between economic evaluation and trust across waves differed by institution type. A positive and significant Economic Evaluation × Wave × Executive coefficient would indicate that economic optimism buffered executive trust specifically over the 2016–2019 period. Null or negative analogous coefficients for the intermediary categories would confirm the category-specificity of the buffer — that is, confirm the output legitimacy mechanism rather than a general positivity effect that operates uniformly across all institution types.
@@ -276,10 +314,95 @@ The key finding to confirm is that the executive–intermediary divergence patte
 
 ```{r tbl-alt-groupings}
 #| label: tbl-alt-groupings
-#| tbl-cap: "Alternative institution-type grouping specifications. Model 1 adds diffuse social trust as a fourth category; Model 2 reassigns trust in society to the societal accountability category; Model 3 estimates separate wave interactions for all ten trust items. Executive institutions are the reference category. Standard errors clustered by respondent. Source: KAMOS Waves 1 and 4."
+#| tbl-cap: "Alternative institution-type grouping specifications. Model 1 (baseline): original three-category specification. Model 2: trust in society added to the Societal category. Model 3: trust in society treated as a separate fourth category. Executive institutions are the reference category in all models. Standard errors clustered by respondent. Source: KAMOS Waves 1 and 4."
 #| echo: false
 
-# TODO: load alt_group_mod (list of three models) and display
+if (exists("threeway_mod") && exists("soc_res")) {
+  soc_coef_map <- c(
+    "wave_num"                           = "Wave 4 (2019)",
+    "inst_typeHorizontal"                = "Horizontal institution",
+    "inst_typeSocietal"                  = "Societal institution",
+    "inst_type_socHorizontal"            = "Horizontal institution",
+    "inst_type_socSocietal"              = "Societal institution",
+    "inst_type_soc4Horizontal"           = "Horizontal institution",
+    "inst_type_soc4Societal"             = "Societal institution",
+    "inst_type_soc4Social"               = "Social trust (added item)",
+    "wave_num:inst_typeHorizontal"       = "Wave 4 × Horizontal",
+    "wave_num:inst_typeSocietal"         = "Wave 4 × Societal",
+    "wave_num:inst_type_socHorizontal"   = "Wave 4 × Horizontal",
+    "wave_num:inst_type_socSocietal"     = "Wave 4 × Societal",
+    "wave_num:inst_type_soc4Horizontal"  = "Wave 4 × Horizontal",
+    "wave_num:inst_type_soc4Societal"    = "Wave 4 × Societal",
+    "wave_num:inst_type_soc4Social"      = "Wave 4 × Social trust",
+    "(Intercept)"                        = "Constant"
+  )
+
+  modelsummary(
+    list(
+      "Model 1 (Baseline)"       = threeway_mod$model,
+      "Model 2 (Society→Cat. C)" = soc_res$model_inc,
+      "Model 3 (Society=Cat. D)" = soc_res$model_sep
+    ),
+    vcov      = list(threeway_mod$vcov, soc_res$vcov_inc, soc_res$vcov_sep),
+    coef_map  = soc_coef_map,
+    coef_omit = "^(age_n|gender|edu_n|income_n|ideology_n)",
+    stars     = c("*" = .05, "**" = .01, "***" = .001),
+    fmt       = 4,
+    gof_map   = c("nobs", "r.squared"),
+    notes     = paste0(
+      "OLS with survey weights; SEs clustered by respondent (HC1). ",
+      "Reference: Executive institution, Wave 1 (2016). ",
+      "Controls (age, gender, education, income, ideology) included but not shown. ",
+      "* p < .05, ** p < .01, *** p < .001."
+    )
+  )
+}
+```
+
+## Category D Placebo Test {#sec-placebo}
+
+A key identification concern for the output legitimacy account is that the economic evaluation moderation might reflect a general economic positivity halo — citizens who evaluate the economy favorably simply trust all institutions more, rather than executive institutions specifically. If so, the "executive shield" is a measurement artifact rather than evidence of category-specific output legitimacy. Table C3 reports the placebo test using Category D institutions (private enterprise, religious institutions), whose trust trajectory should be governed by economic conditions and personal experience rather than democratic performance frames. Under the output legitimacy account, the Wave × Economic Evaluation interaction should be positive for executive institutions but null for Category D institutions — just as it should be null for horizontal and societal accountability institutions.
+
+```{r tbl-placebo}
+#| label: tbl-placebo
+#| tbl-cap: "Category D placebo test. Output legitimacy moderation model extended to include private enterprise and religious institutions (Category D) as a fourth institution type. Dependent variable: institutional trust (0–1 scale). The 'Wave 4 × Econ × Category D' row provides the placebo test of the executive shield hypothesis. Standard errors clustered by respondent. Source: KAMOS Waves 1 and 4."
+#| echo: false
+
+if (exists("placebo_res")) {
+  placebo_coef_map <- c(
+    "wave_num"                                     = "Wave 4 (2019)",
+    "inst_type4Horizontal"                         = "Horizontal institution",
+    "inst_type4Societal"                           = "Societal institution",
+    "inst_type4Category D"                         = "Category D institution",
+    "econ_present_n"                               = "Economic evaluation",
+    "wave_num:econ_present_n"                      = "Wave 4 × Econ (Executive shield)",
+    "wave_num:inst_type4Horizontal"                = "Wave 4 × Horizontal",
+    "wave_num:inst_type4Societal"                  = "Wave 4 × Societal",
+    "wave_num:inst_type4Category D"                = "Wave 4 × Category D",
+    "wave_num:inst_type4Horizontal:econ_present_n" = "Wave 4 × Econ × Horizontal",
+    "wave_num:inst_type4Societal:econ_present_n"   = "Wave 4 × Econ × Societal",
+    "wave_num:inst_type4Category D:econ_present_n" = "Wave 4 × Econ × Category D (placebo)",
+    "(Intercept)"                                  = "Constant"
+  )
+
+  modelsummary(
+    placebo_res$model,
+    vcov      = placebo_res$vcov,
+    coef_map  = placebo_coef_map,
+    coef_omit = "^(age_n|gender|edu_n|income_n)",
+    stars     = c("*" = .05, "**" = .01, "***" = .001),
+    fmt       = 4,
+    gof_map   = c("nobs", "r.squared"),
+    notes     = paste0(
+      "OLS with survey weights; SEs clustered by respondent (HC1). ",
+      "Reference: Executive institution, Wave 1 (2016). ",
+      "Category D = private enterprise + religious institutions. ",
+      "Placebo prediction: Wave 4 × Econ × Category D should be null or negative. ",
+      "Controls (age, gender, education, income) included but not shown. ",
+      "* p < .05, ** p < .01, *** p < .001."
+    )
+  )
+}
 ```
 
 ## Alternative Economic Evaluation Operationalizations {#sec-econ-alt}
