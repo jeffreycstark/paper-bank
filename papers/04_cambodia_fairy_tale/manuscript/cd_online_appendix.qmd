@@ -1,5 +1,5 @@
 ---
-title: "Online Appendix: [TITLE TBD]"
+title: "Online Appendix: The Education of a Citizenry"
 author:
   - name: Jeffrey Stark
 date: now
@@ -33,6 +33,7 @@ format:
           \floatplacement{figure}{H}
           \floatplacement{table}{H}
           \raggedright
+          \AtBeginEnvironment{tablenotes}{\setstretch{1}}
   html:
     toc: true
     toc-depth: 3
@@ -779,10 +780,3 @@ saie |>
     threeparttable    = TRUE
   )
 ```
-
-\newpage
-
-# References {.unnumbered}
-
-::: {#refs}
-:::

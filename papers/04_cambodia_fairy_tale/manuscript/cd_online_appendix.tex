@@ -107,20 +107,6 @@
  
 
 
-\usepackage{booktabs}
-\usepackage{longtable}
-\usepackage{array}
-\usepackage{multirow}
-\usepackage{wrapfig}
-\usepackage{float}
-\usepackage{colortbl}
-\usepackage{pdflscape}
-\usepackage{tabu}
-\usepackage{threeparttable}
-\usepackage{threeparttablex}
-\usepackage[normalem]{ulem}
-\usepackage{makecell}
-\usepackage{xcolor}
 \usepackage{setspace}
 \usepackage{booktabs}
 \usepackage{caption}
@@ -138,6 +124,24 @@
 \floatplacement{figure}{H}
 \floatplacement{table}{H}
 \raggedright
+\usepackage{setspace}
+\usepackage{booktabs}
+\usepackage{caption}
+\usepackage{longtable}
+\usepackage{array}
+\usepackage{multirow}
+\usepackage{float}
+\usepackage{graphicx}
+\usepackage{threeparttable}
+\usepackage{threeparttablex}
+\usepackage{colortbl}
+\usepackage{xcolor}
+\captionsetup{width=\textwidth}
+\setlength\LTcapwidth{\textwidth}
+\floatplacement{figure}{H}
+\floatplacement{table}{H}
+\raggedright
+\AtBeginEnvironment{tablenotes}{\setstretch{1}}
 \makeatletter
 \@ifpackageloaded{caption}{}{\usepackage{caption}}
 \AtBeginDocument{%
@@ -183,7 +187,7 @@
 \IfFileExists{xurl.sty}{\usepackage{xurl}}{} % add URL line breaks if available
 \urlstyle{same}
 \hypersetup{
-  pdftitle={Online Appendix: {[}TITLE TBD{]}},
+  pdftitle={Online Appendix: The Education of a Citizenry},
   pdfauthor={Jeffrey Stark},
   colorlinks=true,
   linkcolor={blue},
@@ -193,17 +197,17 @@
   pdfcreator={LaTeX via pandoc}}
 
 
-\title{Online Appendix: {[}TITLE TBD{]}}
+\title{Online Appendix: The Education of a Citizenry}
 \author{Jeffrey Stark}
-\date{March 3, 2026 at 6:58 AM}
+\date{March 3, 2026 at 7:19 AM}
 \begin{document}
 \maketitle
 
 
 \setstretch{2}
-\subsection*{Table A1: Cross-Wave Comparability of Survey
+\section*{Table A1: Cross-Wave Comparability of Survey
 Items}\label{table-a1-cross-wave-comparability-of-survey-items}
-\addcontentsline{toc}{subsection}{Table A1: Cross-Wave Comparability of
+\addcontentsline{toc}{section}{Table A1: Cross-Wave Comparability of
 Survey Items}
 
 \begingroup\fontsize{7}{9}\selectfont
@@ -264,9 +268,9 @@ Discusses politics & How often do you discuss politics with friends or family? (
 
 \newpage
 
-\subsection*{Table A2: Subgroup Analysis of Key
+\section*{Table A2: Subgroup Analysis of Key
 Variables}\label{table-a2-subgroup-analysis-of-key-variables}
-\addcontentsline{toc}{subsection}{Table A2: Subgroup Analysis of Key
+\addcontentsline{toc}{section}{Table A2: Subgroup Analysis of Key
 Variables}
 
 \begin{table}
@@ -451,10 +455,10 @@ Wave & Primary or below & Secondary & Tertiary\\
 
 \newpage
 
-\subsection*{Table A3: Placebo Battery---Non-Political
+\section*{Table A3: Placebo Battery---Non-Political
 Variables}\label{table-a3-placebo-batterynon-political-variables}
-\addcontentsline{toc}{subsection}{Table A3: Placebo
-Battery---Non-Political Variables}
+\addcontentsline{toc}{section}{Table A3: Placebo Battery---Non-Political
+Variables}
 
 \begin{table}
 
@@ -494,10 +498,9 @@ Democracy satisfaction & 2.97 (0.024) & 2.98 (0.020) & 2.71 (0.023) & 3.10 (0.01
 
 \newpage
 
-\subsection*{Table A4: W3→W4 Partisan
+\section*{Table A4: W3→W4 Partisan
 Decomposition}\label{table-a4-w3w4-partisan-decomposition}
-\addcontentsline{toc}{subsection}{Table A4: W3→W4 Partisan
-Decomposition}
+\addcontentsline{toc}{section}{Table A4: W3→W4 Partisan Decomposition}
 
 \begin{table}
 
@@ -564,10 +567,10 @@ Group & W3 (2012) & W4 (2015) & $\Delta$ W4$-$W3\\
 
 \newpage
 
-\subsection*{Table A5: W6 DK/Refuse Group Attitudinal
+\section*{Table A5: W6 DK/Refuse Group Attitudinal
 Profile}\label{table-a5-w6-dkrefuse-group-attitudinal-profile}
-\addcontentsline{toc}{subsection}{Table A5: W6 DK/Refuse Group
-Attitudinal Profile}
+\addcontentsline{toc}{section}{Table A5: W6 DK/Refuse Group Attitudinal
+Profile}
 
 \begin{table}
 
@@ -623,10 +626,10 @@ Variable & CPP Voter & CNRP/SRP Voter & DK/Refuse\\
 
 \newpage
 
-\subsection*{Table A6: OLS Attenuation Tests---Freedom
+\section*{Table A6: OLS Attenuation Tests---Freedom
 Perceptions}\label{table-a6-ols-attenuation-testsfreedom-perceptions}
-\addcontentsline{toc}{subsection}{Table A6: OLS Attenuation
-Tests---Freedom Perceptions}
+\addcontentsline{toc}{section}{Table A6: OLS Attenuation Tests---Freedom
+Perceptions}
 
 \begin{table}
 
@@ -671,9 +674,9 @@ Wave & Model A: Baseline & Model B: +Freedom & Attenuation (\%)\\
 
 \newpage
 
-\subsection*{Table A7: Wave × Freedom Interaction
+\section*{Table A7: Wave × Freedom Interaction
 Models}\label{table-a7-wave-freedom-interaction-models}
-\addcontentsline{toc}{subsection}{Table A7: Wave × Freedom Interaction
+\addcontentsline{toc}{section}{Table A7: Wave × Freedom Interaction
 Models}
 
 \begin{table}
@@ -719,10 +722,9 @@ Wave & Wave $\times$ Free Speech (high)\\
 
 \newpage
 
-\subsection*{Table A8: Nonresponse Prediction---Logistic Regression
-(Wave
+\section*{Table A8: Nonresponse Prediction---Logistic Regression (Wave
 6)}\label{table-a8-nonresponse-predictionlogistic-regression-wave-6}
-\addcontentsline{toc}{subsection}{Table A8: Nonresponse
+\addcontentsline{toc}{section}{Table A8: Nonresponse
 Prediction---Logistic Regression (Wave 6)}
 
 \begin{table}
@@ -758,9 +760,9 @@ Urban residence (1 = urban) & 0.86 (0.65, 1.13) & 0.271NA\\
 
 \newpage
 
-\subsection*{Table A9: Bounds Analysis---Democratic Future
+\section*{Table A9: Bounds Analysis---Democratic Future
 Expectations}\label{table-a9-bounds-analysisdemocratic-future-expectations}
-\addcontentsline{toc}{subsection}{Table A9: Bounds Analysis---Democratic
+\addcontentsline{toc}{section}{Table A9: Bounds Analysis---Democratic
 Future Expectations}
 
 \begin{table}
@@ -798,9 +800,9 @@ Conservative: nonrespondents imputed at W3 mean & W6 & 1242 & 1242 & 8.51 & -1.0
 
 \newpage
 
-\subsection*{Table A10: Democracy vs.~Economic Development Trade-Off,
+\section*{Table A10: Democracy vs.~Economic Development Trade-Off,
 2008--2021}\label{table-a10-democracy-vs.-economic-development-trade-off-20082021}
-\addcontentsline{toc}{subsection}{Table A10: Democracy vs.~Economic
+\addcontentsline{toc}{section}{Table A10: Democracy vs.~Economic
 Development Trade-Off, 2008--2021}
 
 \begin{table}
@@ -836,11 +838,10 @@ W6 & 2021 & 1174 & 2.25 (2.17, 2.34)\\
 
 \newpage
 
-\subsection*{Appendix D: 2017 Cambodia Socio-Economic Survey ---
-Governance
+\section*{Appendix D: 2017 Cambodia Socio-Economic Survey --- Governance
 Module}\label{appendix-d-2017-cambodia-socio-economic-survey-governance-module}
-\addcontentsline{toc}{subsection}{Appendix D: 2017 Cambodia
-Socio-Economic Survey --- Governance Module}
+\addcontentsline{toc}{section}{Appendix D: 2017 Cambodia Socio-Economic
+Survey --- Governance Module}
 
 \begin{table}
 
@@ -875,13 +876,6 @@ Paid additional money to officials to get things done faster (2016) & 34.9 & {}[
 }
 
 \end{table}%
-
-\newpage
-
-\section*{References}\label{references}
-\addcontentsline{toc}{section}{References}
-
-\phantomsection\label{refs}
 
 
 
