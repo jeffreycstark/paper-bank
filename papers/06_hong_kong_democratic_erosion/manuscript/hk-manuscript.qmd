@@ -220,6 +220,10 @@ The analysis proceeds in four stages, each motivated by the theoretical framewor
 
 All estimates incorporate ABS-provided post-stratification weights. Robustness checks include non-parametric Mann-Whitney $U$ tests (Online Appendix B), stratified percentile bootstrap with 5,000 iterations and BCa confidence intervals (Online Appendix D.1), Benjamini-Hochberg false discovery rate corrections (Online Appendix F.2), and Manski-style bounding exercises for both trust in police and trust in the national government (Online Appendix D.2). Full variable definitions with ABS Wave 5 item codes and response scales are reported in Online Appendix A.
 
+## AI assistance disclosure. 
+
+The author used Claude (Anthropic, version 4.5) to assist with R programming, including data cleaning scripts, model specification, and debugging of analysis code. All analytical decisions, theoretical framing, and interpretation of results are the author's own. AI-generated code was reviewed, tested, and modified by the author before inclusion in the analysis pipeline.
+
 # Results
 
 ## Hong Kong's Outlier Status: Justifying the Case
