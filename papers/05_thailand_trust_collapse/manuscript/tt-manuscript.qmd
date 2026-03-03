@@ -275,7 +275,7 @@ The paper proceeds as follows. Section 2 reviews the literature on institutional
 
 ## Institutional Trust in Democratizing Asia
 
-Political trust is critical for democratic stability [@Easton1979-rc; @Norris1999-sn], but dynamics differ between established democracies and Asia's hybrid regimes. Western research emphasizes post-materialist shifts [@Inglehart1997-gw] or critical citizenship [@Norris2011-oc]; Asian contexts show different patterns from recent transitions and regime contestation.
+Political trust is critical for democratic stability [@Easton1979-gl; @Norris1999-sn], but dynamics differ between established democracies and Asia's hybrid regimes. Western research emphasizes post-materialist shifts [@Inglehart1997-gw] or critical citizenship [@Norris2011-oc]; Asian contexts show different patterns from recent transitions and regime contestation.
 
 Early work identified a "satisfaction-support gap": citizens dissatisfied with performance while maintaining democratic support [@Shin2007-gu; @Shin2008-gu]. Subsequent research documented substantial trust variation across Asia [@Chu2008-fk; @Chang2007-sy], but few examine within-country trajectories across decades or investigate mechanisms driving differential trust.
 
@@ -365,6 +365,10 @@ All models incorporate ABS-provided survey weights (available for Waves 3--6; Wa
 ## Limitations
 
 Repeated cross-sections prevent individual-level causal inference but suit our aggregate focus. Response rates remain stable (60--70%), minimizing selection concerns. Trust questions use identical wording across waves/countries. We infer individual mechanisms from country-level heterogeneity, supplementing with subgroup comparisons where possible. Our three-country comparison limits generalizability but provides theoretically meaningful contrasts.
+
+## AI assistance disclosure. 
+
+The author used Claude (Anthropic, version 4.5) to assist with R programming, including data cleaning scripts, model specification, and debugging of analysis code. All analytical decisions, theoretical framing, and interpretation of results are the author's own. AI-generated code was reviewed, tested, and modified by the author before inclusion in the analysis pipeline.
 
 # Results
 

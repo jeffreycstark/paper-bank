@@ -2,7 +2,7 @@
 
 ## Institutional Trust in Democratizing Asia
 
-Political trust is critical for democratic stability [@Easton1979-rc; @Norris1999-sn], but dynamics differ between established democracies and Asia's hybrid regimes. Western research emphasizes post-materialist shifts [@Inglehart1997-gw] or critical citizenship [@Norris2011-oc]; Asian contexts show different patterns from recent transitions and regime contestation.
+Political trust is critical for democratic stability [@Easton1979-gl; @Norris1999-sn], but dynamics differ between established democracies and Asia's hybrid regimes. Western research emphasizes post-materialist shifts [@Inglehart1997-gw] or critical citizenship [@Norris2011-oc]; Asian contexts show different patterns from recent transitions and regime contestation.
 
 Early work identified a "satisfaction-support gap": citizens dissatisfied with performance while maintaining democratic support [@Shin2007-gu; @Shin2008-gu]. Subsequent research documented substantial trust variation across Asia [@Chu2008-fk; @Chang2007-sy], but few examine within-country trajectories across decades or investigate mechanisms driving differential trust.
 
