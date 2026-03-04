@@ -10,7 +10,7 @@ author:
 date: now
 date-format: "MMMM D, YYYY [at] h:mm A"
 abstract: |
-  Between 2008 and 2021, Cambodian citizens underwent one of the most dramatic transformations in political orientation recorded in contemporary survey research. Drawing on four waves of Asian Barometer Survey data (Waves 2, 3, 4, and 6; N ≈ 1,000–1,242 per wave), supplemented by the 2017 Cambodia Socio-Economic Survey (N = 3,363), this article traces the arc of that transformation as a sequential process: from post-conflict acquiescence, through a remarkable peak of democratic aspiration and civic mobilization, to a final condition of political withdrawal and regime normalization following the elimination of organized opposition. The Cambodian case offers an unusually clean empirical window into how dominant-party authoritarian regimes produce political quiescence---not through the cultivation of enthusiastic support, but through a process the article terms *demobilization by subtraction*. The forced dissolution of the Cambodia National Rescue Party in 2017 was the keystone of a broader campaign of political closure---encompassing independent media shutdowns, civil society restrictions, and an uncontested national election---that collectively restructured citizen orientations across multiple attitudinal and behavioral dimensions simultaneously. The article documents a theoretically consequential divergence: abstract democratic commitment---the belief that democracy is the best form of government---remained largely intact across the study period, while democratic prioritization, feasibility expectations, and independent civic engagement collapsed in parallel. Citizens did not abandon democratic ideals; they ceased to believe those ideals were achievable and ceased to prioritize them against competing goods. The findings challenge accounts that treat authoritarian legitimacy as a product of performance or ideology, suggesting instead that the most effective mechanism of regime stabilization may be the systematic closure of the political imagination.
+  Between 2008 and 2021, Cambodian citizens underwent one of the most dramatic transformations in political orientation recorded in contemporary survey research. Drawing on four waves of Asian Barometer Survey data (Waves 2, 3, 4, and 6; N ≈ 1,000–1,242 per wave), supplemented by the 2017 Cambodia Socio-Economic Survey (N = 3,363), this article traces the arc of that transformation as a sequential process: from post-conflict acquiescence, through a remarkable peak of democratic aspiration and civic mobilization, to a final condition of political withdrawal and regime normalization following the elimination of organized opposition. The Cambodian case offers an unusually clean empirical window into how dominant-party authoritarian regimes produce political quiescence---not through the cultivation of enthusiastic support, but through a process the article terms *demobilization by subtraction*. The forced dissolution of the Cambodia National Rescue Party in 2017 was the keystone of a broader campaign of political closure---encompassing independent media shutdowns, civil society restrictions, and an uncontested national election---that coincided with a synchronized restructuring of citizen orientations across multiple attitudinal and behavioral dimensions---a pattern consistent with the demobilization-by-subtraction mechanism developed here. The article documents a theoretically consequential divergence: abstract democratic commitment---the belief that democracy is the best form of government---remained largely intact across the study period, while democratic prioritization, feasibility expectations, and independent civic engagement collapsed in parallel. Citizens did not abandon democratic ideals; they ceased to believe those ideals were achievable and ceased to prioritize them against competing goods. The findings challenge accounts that treat authoritarian legitimacy as a product of performance or ideology, suggesting instead that the most effective mechanism of regime stabilization may be the systematic closure of the political imagination.
 keywords:
   - Cambodia
   - Asian Barometer Survey
@@ -88,9 +88,9 @@ It is worth pausing on that number. On a scale designed to capture the full rang
 
 Nine years later, that same measure had fallen to `r round(stats$dem_future_w6, 1)` out of 10. In the same period, independent civic engagement---contacting influential figures outside the state, discussing politics, attending to political news---had collapsed to historic lows, even as participation through officially sanctioned channels quietly rose. Acceptance of authoritarian governance alternatives, including strongman rule, single-party rule, expert rule, and military rule, had risen sharply. Reported encounters with corruption had plummeted from `r round(stats$corrupt_witnessed_w3, 0)` percent to `r round(stats$corrupt_witnessed_w6, 0)` percent. And voter turnout in national elections, now conducted without any viable opposition, had paradoxically climbed to `r round(stats$voted_w6, 0)` percent.
 
-What happened in between is the subject of this article. The answer, stated plainly, is that the Cambodian People's Party dissolved the only credible opposition party, the Cambodia National Rescue Party (CNRP), in November 2017---and simultaneously dismantled the independent media, civil society organizations, and informal networks through which citizens had accessed alternative political information and organized collective action. The combined effect restructured the political field so thoroughly that Cambodian citizens adjusted their attitudes, behaviors, and expectations in a remarkably coherent pattern. This article argues that this adjustment is best understood not as a story of authoritarian consolidation in the conventional sense---not as the triumph of ideology, coercion, or performance legitimacy---but as something quieter and, in its way, more profound: the education of a citizenry in the limits of the politically possible.
+What happened in between is the subject of this article. The answer, stated plainly, is that the Cambodian People's Party dissolved the only credible opposition party, the Cambodia National Rescue Party (CNRP), in November 2017---and simultaneously dismantled the independent media, civil society organizations, and informal networks through which citizens had accessed alternative political information and organized collective action. The combined effect coincided with a remarkably coherent adjustment in Cambodian citizens' attitudes, behaviors, and expectations---one that matches the predicted signature of demobilization by subtraction across multiple survey dimensions simultaneously. This article argues that this adjustment is best understood not as a story of authoritarian consolidation in the conventional sense---not as the triumph of ideology, coercion, or performance legitimacy---but as something quieter and, in its way, more profound: the education of a citizenry in the limits of the politically possible.
 
-The phenomenon under investigation---the systematic elimination of organized opposition within an otherwise functioning electoral system---has become increasingly common across consolidating authoritarian regimes, from Turkey's suppression of the Peoples' Democratic Party to Russia's dismantling of Navalny's organizational network. Yet existing scholarship has focused primarily on the institutional mechanics of opposition elimination rather than its downstream effects on mass political orientations. This article proposes that opposition elimination---understood not as a single act but as the systematic dismantling of the political alternative and the institutional ecosystem that sustained it---produces a distinctive observable signature in public opinion: synchronized, multi-domain shifts in which democratic expectations, independent civic engagement, political attention, and willingness to report corruption all decline in parallel, while acceptance of authoritarian governance alternatives and participation through regime-managed channels rise. The critical diagnostic indicator is a divergence between electoral and civic participation---rising voter turnout amid collapsing independent engagement---that signals the transformation of elections from mechanisms of political choice into rituals of regime compliance. If this signature proves generalizable beyond the Cambodian case, it offers both a theoretical framework for understanding how authoritarian regimes stabilize through subtraction rather than through active legitimation, and a practical diagnostic tool for identifying democratic closure in real time using existing cross-national survey infrastructure.
+The phenomenon under investigation---the systematic elimination of organized opposition within an otherwise functioning electoral system---has become increasingly common across consolidating authoritarian regimes, from Turkey's suppression of the Peoples' Democratic Party to Russia's dismantling of Navalny's organizational network. Yet existing scholarship has focused primarily on the institutional mechanics of opposition elimination rather than its downstream effects on mass political orientations. This article proposes that opposition elimination---understood not as a single act but as the systematic dismantling of the political alternative and the institutional ecosystem that sustained it---produces a distinctive observable signature in public opinion: synchronized, multi-domain shifts in which democratic expectations, independent civic engagement, political attention, and willingness to report corruption all decline in parallel, while acceptance of authoritarian governance alternatives and participation through regime-managed channels rise. The critical diagnostic indicator is a divergence between electoral and civic participation---rising voter turnout amid collapsing independent engagement---that signals the transformation of elections from mechanisms of political choice into rituals of regime compliance. If this signature proves generalizable beyond the Cambodian case, it offers both a theoretical framework for understanding how authoritarian regimes stabilize through subtraction rather than through active legitimation, and a hypothesized diagnostic signature for identifying democratic closure using existing cross-national survey infrastructure---one that awaits validation beyond the Cambodian case.
 
 The article is organized around the four survey waves as acts in a political sequence. This is a deliberate methodological choice. Cambodia's trajectory between 2008 and 2021 is both analytically tractable --- the survey data capture discrete moments in a well-documented closure --- and narratively coherent, with each wave mapping onto a distinct phase of political life.
 
@@ -107,6 +107,8 @@ The concept advanced here---demobilization by subtraction---is distinct from the
 [^4]: Gaventa's central insight---that sustained powerlessness produces not resistance but the internalization of quiescence---provides the closest existing theoretical analogue to the pattern observed in the Cambodian data, though his analysis is situated in a very different political context [@Gaventa1980-ob].
 
 [^5]: The distinction matters: Lukes' third dimension operates *before* grievances form; demobilization by subtraction operates *after* grievances have formed and been politically activated, removing the vehicle for their expression rather than the grievances themselves [@Lukes2005-bc].
+
+The distinction between subtraction and repression is not merely definitional; it generates different observable implications that allow empirical adjudication. Repression-driven demobilization operates through fear: the costs of political expression are raised, producing a population that self-censors, straightlines sensitive survey items, and suppresses positive evaluations of any governance arrangement. The observable signature is broad-spectrum attenuation---responses cluster toward the safe middle, nonresponse rises uniformly across sensitive batteries, and satisfaction with governance declines as citizens conceal their views. Demobilization by subtraction produces a different pattern. Because the mechanism operates through the removal of the political alternative rather than the elevation of punishment, it predicts domain-specific rather than broad-spectrum attenuation: political aspiration and independent engagement collapse while non-political attitudes remain stable, and satisfaction with democracy may actually *rise* as citizens recalibrate their evaluative standards against a narrowed horizon of possibility. The Cambodian data are consistent with the subtraction signature and inconsistent with the pure repression signature on both counts---domain-specificity holds across the placebo battery, and democracy satisfaction rose to its highest recorded value in the least democratic moment of the study period. Subtraction is expected to dominate repression as a demobilization mechanism under two conditions: when the opposition served as the primary focal organization for civic coordination, such that its removal collapses the informational and mobilizational infrastructure of collective action; and when the regime's repressive apparatus is selective rather than generalized, targeting the opposition and its organizational ecosystem rather than the citizenry at large. Cambodia satisfies both conditions. Where repression is generalized and mass terror is deployed, subtraction and repression are likely to operate simultaneously and their effects become difficult to separate; the Cambodian case, where the crackdown was organizationally targeted rather than population-wide, offers a cleaner window into the subtraction mechanism in relative isolation.
 
 The remainder of this article proceeds as follows. A data section describes the ABS waves, measures, and cross-wave comparability. Four analytic sections trace the survey evidence through pre-mobilization (2008), peak mobilization (2012), selective retreat (2015), and post-dissolution normalization (2021). A section on alternative mechanisms adjudicates competing explanations, and a concluding section draws out theoretical implications.
 
@@ -152,7 +154,118 @@ The current analysis expands the treatment of democratic attitudes beyond the 0�
 
 *Media engagement and political interest.* Political interest, political news following, and political discussion are measured on consistent scales (1–4 or 1–3) across all waves. Internet news frequency underwent substantial changes in response scale across waves (6-point in Waves 2 and 3, 8-point in Wave 4, 9-point in Wave 6) and has been harmonized to a common 1–6 frequency scale (1 = never, 6 = daily or more); details of the harmonization procedure are documented in a footnote at first use.
 
-*Analytic strategy.* The analysis is primarily descriptive, reporting wave-level means, proportions, and cross-wave differences for each indicator. All estimates are accompanied by 95 percent confidence intervals computed from standard errors (binomial/Wilson intervals for proportions; normal-approximation intervals for means). Cross-wave differences for headline statistics are evaluated using two-sample t-tests (for means) or two-sample proportion tests (for proportions). The article does not employ regression modeling; the analytic leverage derives from within-case temporal variation across a well-documented political sequence rather than from cross-sectional covariate adjustment. This design cannot establish causality in the formal sense, but it can identify whether the timing, direction, and domain-specificity of observed shifts are consistent with the demobilization-by-subtraction mechanism and inconsistent with plausible alternatives. The alternative mechanisms section addresses this adjudication directly.
+@tbl-comparability summarizes the comparability status of the headline indicators; inferences relying on Partial items are flagged in the text at first use.
+
+```{r tbl-comparability}
+#| echo: false
+#| tbl-cap: "Cross-Wave Comparability of Headline Indicators"
+comp_data <- tibble::tribble(
+  ~Variable,                            ~Status,    ~Notes,
+  "Contacted influential person",       "Full",     "",
+  "Demonstration attendance",           "Full",     "",
+  "Single-party rule (1--4)",           "Full",     "Not fielded W2",
+  "Strongman rule (1--4)",              "Full",     "Not fielded W2",
+  "Democracy always preferable",        "Full",     "Not fielded W2",
+  "Democracy satisfaction (1--4)",      "Full",     "",
+  "Democratic future (0--10)",          "Full*",    "Not fielded W2; 63\\% NR in W6",
+  "Democracy vs.\\ equality (1--5)",    "Full",     "Not fielded W2",
+  "Witnessed corruption (binary)",      "Partial",  "W2 wording narrower",
+  "Contacted civil servant",            "Partial",  "W3 wording differs",
+  "Contacted elected official",         "Partial",  "W3 wording differs",
+  "Internet news frequency",            "Partial",  "Scale harmonized"
+)
+
+comp_data |>
+  kbl(
+    col.names = c("Variable", "Status", "Notes"),
+    align     = "lll",
+    booktabs  = TRUE,
+    linesep   = "",
+    escape    = FALSE
+  ) |>
+  kable_styling(
+    latex_options = c("hold_position"),
+    font_size     = 9,
+    full_width    = FALSE
+  ) |>
+  column_spec(1, width = "5.5cm") |>
+  column_spec(2, width = "1.5cm") |>
+  column_spec(3, width = "5.5cm") |>
+  row_spec(8, hline_after = TRUE) |>
+  footnote(
+    general = paste0(
+      "Full = identical or functionally equivalent wording across all waves in which the item appears. ",
+      "Partial = minor wording shift or response scale change requiring caution in cross-wave comparison. ",
+      "Full* = wording consistent but elevated nonresponse in later waves limits inferential strength. ",
+      "Full detail in Appendix Table A1."
+    ),
+    general_title     = "Note:",
+    footnote_as_chunk = TRUE,
+    escape            = FALSE,
+    threeparttable    = TRUE
+  )
+```
+
+*Analytic strategy.* The analysis is primarily descriptive, reporting wave-level means, proportions, and cross-wave differences for each indicator. All estimates are accompanied by 95 percent confidence intervals computed from standard errors (binomial/Wilson intervals for proportions; normal-approximation intervals for means). Cross-wave differences for headline statistics are evaluated using two-sample t-tests (for means) or two-sample proportion tests (for proportions). The analytic leverage derives from within-case temporal variation across a well-documented political sequence rather than from regression-based causal identification; covariate-adjusted OLS models are reported in @tbl-ols-controls as a compositional robustness check, confirming that the headline wave-level patterns are not explained by demographic differences across survey samples. This design cannot establish causality in the formal sense, but it can identify whether the timing, direction, and domain-specificity of observed shifts are consistent with the demobilization-by-subtraction mechanism and inconsistent with plausible alternatives. The alternative mechanisms section addresses this adjudication directly.
+
+```{r tbl-ols-controls}
+#| echo: false
+#| tbl-cap: "OLS Wave Coefficients With Demographic Controls"
+rr_dir <- file.path(paper_dir, "analysis/reviewer_response")
+mc <- read.csv(file.path(rr_dir, "freedom_models_coefs.csv"),
+               stringsAsFactors = FALSE)
+
+mc_a <- mc |>
+  dplyr::filter(model == "A_baseline", grepl("^wave_f", term)) |>
+  dplyr::mutate(
+    dv_label = dplyr::recode(dv,
+      "dem_country_future"     = "Dem.\\ future (0--10)",
+      "democracy_satisfaction" = "Dem.\\ satisfaction (1--4)",
+      "dem_pref_binary"        = "Dem.\\ preference (binary)"
+    ),
+    wave_label = paste0("Wave ", gsub("wave_f", "", term)),
+    p_stars = dplyr::case_when(
+      p.value < 0.001 ~ "***",
+      p.value < 0.01  ~ "**",
+      p.value < 0.05  ~ "*",
+      TRUE            ~ ""
+    ),
+    cell = sprintf("%.3f (%.3f)%s", estimate, std.error, p_stars)
+  )
+
+mc_wide <- mc_a |>
+  dplyr::select(dv_label, wave_label, cell) |>
+  tidyr::pivot_wider(names_from = dv_label, values_from = cell)
+
+mc_wide |>
+  kbl(
+    col.names = c("", names(mc_wide)[-1]),
+    align     = "lccc",
+    booktabs  = TRUE,
+    linesep   = "",
+    escape    = FALSE
+  ) |>
+  kable_styling(
+    latex_options = c("hold_position"),
+    font_size     = 9,
+    full_width    = FALSE
+  ) |>
+  column_spec(1, width = "1.8cm") |>
+  column_spec(2:4, width = "3.5cm") |>
+  footnote(
+    general = paste0(
+      "OLS regression. All models include age, gender, education, and urbanicity as controls. ",
+      "Reference wave: W3 for democratic future; W2 for satisfaction and preference. ",
+      "Cell format: coefficient (SE). ",
+      "* $p < .05$; ** $p < .01$; *** $p < .001$. ",
+      "Full models with freedom-perception controls and attenuation estimates in Appendix Table A6."
+    ),
+    general_title     = "Note:",
+    footnote_as_chunk = TRUE,
+    escape            = FALSE,
+    threeparttable    = TRUE
+  )
+```
 
 # The Quiet Kingdom: Cambodia in 2008
 
