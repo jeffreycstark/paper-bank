@@ -405,6 +405,72 @@ knitr::asis_output(tbl_str)
 
 \newpage
 
+## Table A5b: W6 DK/Refuse Group---Demographic Profile {.unnumbered}
+
+```{r tbl-tableA5b}
+#| echo: false
+#| tbl-cap: "Demographic Comparison: W6 Respondents vs. DK/Refuse on Democratic Future Item"
+A5b <- readRDS(file.path(tbl_dir, "tableA5b_dk_demographics.rds"))
+
+A5b_display <- A5b |>
+  dplyr::mutate(
+    p_display = dplyr::case_when(
+      is.na(p_value) ~ "",
+      p_value < 0.001 ~ "< 0.001",
+      TRUE ~ sprintf("%.3f", p_value)
+    ),
+    # Escape % for LaTeX (escape = FALSE in kbl)
+    respondent_value = gsub("%", "\\\\%", respondent_value),
+    dk_refuse_value  = gsub("%", "\\\\%", dk_refuse_value),
+    label            = gsub("%", "\\\\%", label)
+  ) |>
+  dplyr::select(label, respondent_value, dk_refuse_value, difference, test, p_display, sig)
+
+tbl_A5b <- A5b_display |>
+  kbl(
+    col.names = c("Variable", "Respondents", "DK/Refuse", "Difference", "Test", "$p$", ""),
+    align     = "lcccccc",
+    booktabs  = TRUE,
+    linesep   = "",
+    escape    = FALSE
+  ) |>
+  kable_styling(
+    latex_options = c("hold_position"),
+    font_size     = 9,
+    full_width    = FALSE
+  ) |>
+  column_spec(1, width = "4.0cm") |>
+  column_spec(2:3, width = "2.0cm") |>
+  column_spec(4, width = "1.5cm") |>
+  column_spec(5, width = "2.0cm") |>
+  column_spec(6, width = "1.3cm") |>
+  column_spec(7, width = "0.5cm") |>
+  pack_rows("Continuous", 1, 2) |>
+  pack_rows("Binary", 3, 4) |>
+  pack_rows("Age group distribution", 5, 7) |>
+  pack_rows("Education distribution", 8, 10) |>
+  footnote(
+    general = paste0(
+      "Wave 6 (2021) only. Respondents = those who answered the democratic future item ",
+      "(N = ", A5b$n_resp[1], "); DK/Refuse = those who declined or gave no answer ",
+      "(N = ", A5b$n_dk[1], "). ",
+      "Continuous variables: two-sample t-test; binary variables: two-sample proportion test; ",
+      "categorical distributions: Pearson chi-squared test. ",
+      "No demographic characteristic significantly predicts DK/Refuse status, ",
+      "indicating the nonresponse group is demographically indistinguishable from respondents."
+    ),
+    general_title     = "Note:",
+    footnote_as_chunk = TRUE,
+    escape            = FALSE,
+    threeparttable    = TRUE
+  )
+
+tbl_str <- sub("\\begingroup", "\\begingroup\\setstretch{1}", as.character(tbl_A5b), fixed = TRUE)
+knitr::asis_output(tbl_str)
+```
+
+\newpage
+
 ## Table A6: OLS Attenuation Tests---Freedom Perceptions {.unnumbered}
 
 ```{r tbl-tableA6}
@@ -601,7 +667,7 @@ nr_display <- nr |>
       "urban"                = "Urban residence (1 = urban)"
     ),
     OR_fmt = sprintf("%.2f (%.2f, %.2f)", OR, OR_lo, OR_hi),
-    p_fmt  = sprintf("%.3f%s", p.value, p_stars)
+    p_fmt  = sprintf("%.3f%s", p.value, dplyr::coalesce(p_stars, ""))
   ) |>
   dplyr::select(term_label, OR_fmt, p_fmt)
 
@@ -644,13 +710,21 @@ knitr::asis_output(tbl_str)
 ```{r tbl-tableA9}
 #| echo: false
 #| tbl-cap: "Bounds Analysis: Democratic Future Expectations Under Nonresponse Imputation Scenarios"
-A9 <- readRDS(file.path(tbl_dir, "tableA9_bounds.rds"))
+A9_expanded <- readRDS(file.path(tbl_dir, "table_bounds_maintext.rds"))
+A9 <- A9_expanded$wide
 
-A9 |>
+A9_display <- A9 |>
+  dplyr::mutate(
+    w3 = sprintf("%.2f", w3),
+    w4 = sprintf("%.2f", w4),
+    w6 = sprintf("%.2f", w6)
+  )
+
+tbl_A9 <- A9_display |>
   kbl(
-    col.names = c("Scenario", "Wave", "$N$", "Respondents",
-                  "Mean", "$\\Delta$ from W3"),
-    align     = "lccccc",
+    col.names = c("Scenario", "W3 (2012)", "W4 (2015)", "W6 (2021)",
+                  "$\\Delta$ W3$\\to$W4", "$\\Delta$ W4$\\to$W6", "$\\Delta$ W3$\\to$W6"),
+    align     = "lcccccc",
     booktabs  = TRUE,
     linesep   = "",
     escape    = FALSE
@@ -660,25 +734,26 @@ A9 |>
     font_size     = 9,
     full_width    = FALSE
   ) |>
-  column_spec(1, width = "6.5cm") |>
-  column_spec(2:6, width = "1.4cm") |>
-  row_spec(1, hline_after = TRUE) |>
+  column_spec(1, width = "4.5cm") |>
+  column_spec(2:4, width = "1.5cm") |>
+  column_spec(5:7, width = "1.8cm") |>
   footnote(
     general = paste0(
       "Dependent variable: democratic future expectations (0--10 scale). ",
-      "W3 (2012): N = 910 respondents of 1,200 (nonresponse 24.2 percent). ",
-      "W6 (2021): N = 458 respondents of 1,242 (nonresponse 63.1 percent). ",
-      "Imputation bounds assign W6 nonrespondents to the scale maximum (10), ",
-      "minimum (0), or the W3 population mean (9.58). ",
-      "Under the conservative imputation (nonrespondents at W3 mean), ",
-      "the observed decline of $-$2.91 points narrows to $-$1.07 points but remains ",
-      "in the same direction."
+      "Nonresponse rates: W3 = 24.2\\\\%, W4 = 54.0\\\\%, W6 = 63.1\\\\%. ",
+      "Observed row uses respondents only (W3 N = 910; W4 N = 552; W6 N = 458). ",
+      "Imputation rows assign all nonrespondents the stated value and recompute the population mean. ",
+      "Even under the most conservative assumption (all nonrespondents at scale maximum = 10), ",
+      "the W3$\\to$W6 decline is $-$0.91 points---directionally robust and substantively meaningful."
     ),
     general_title     = "Note:",
     footnote_as_chunk = TRUE,
     escape            = FALSE,
     threeparttable    = TRUE
   )
+
+tbl_str <- sub("\\begingroup", "\\begingroup\\setstretch{1}", as.character(tbl_A9), fixed = TRUE)
+knitr::asis_output(tbl_str)
 ```
 
 \newpage
@@ -733,8 +808,8 @@ A10 |>
 ```{r tbl-appendixD}
 #| echo: false
 #| tbl-cap: "Perceived Civic Freedoms and Corruption Exposure, 2017 (SAIE)"
-saie_raw <- readRDS(saie_path)
-saie <- saie_raw |>
+ses_data <- readRDS(file.path(tbl_dir, "tableD_ses_baseline.rds"))
+saie <- ses_data$ses |>
   dplyr::transmute(
     Item = wording,
     Pct  = formatC(pct_agree, format = "f", digits = 1),
@@ -771,6 +846,57 @@ saie |>
       "the sixth (below the line) measures self-reported corruption exposure. ",
       "These items are not comparable to ABS instruments and are used triangulatively ",
       "to establish baseline civic conditions in the immediate pre-dissolution period."
+    ),
+    general_title     = "Note:",
+    footnote_as_chunk = TRUE,
+    escape            = FALSE,
+    threeparttable    = TRUE
+  )
+```
+
+\vspace{1em}
+
+```{r tbl-appendixD-abs}
+#| echo: false
+#| tbl-cap: "ABS Freedom Perception Items, Cambodia (Waves 3--6)"
+ses_data <- readRDS(file.path(tbl_dir, "tableD_ses_baseline.rds"))
+abs_f <- ses_data$abs_freedom |>
+  dplyr::transmute(
+    Wave = paste0("W", wave, " (", year, ")"),
+    N    = formatC(n, format = "d", big.mark = ","),
+    `Free speech (% agree)` = sprintf("%.1f", pct_speech_agree),
+    `Free speech (mean)` = sprintf("%.2f", mean_speech),
+    `Free to organize (% agree)` = sprintf("%.1f", pct_org_agree),
+    `Free to organize (mean)` = sprintf("%.2f", mean_org)
+  )
+
+abs_f |>
+  kbl(
+    col.names = c("Wave", "$N$", "\\% Agree", "Mean (1--4)",
+                  "\\% Agree", "Mean (1--4)"),
+    align     = "cccccc",
+    booktabs  = TRUE,
+    linesep   = "",
+    escape    = FALSE
+  ) |>
+  kable_styling(
+    latex_options = c("hold_position"),
+    font_size     = 10,
+    full_width    = FALSE
+  ) |>
+  add_header_above(c(" " = 2, "Freedom of Speech" = 2, "Freedom to Organize" = 2)) |>
+  column_spec(1, width = "2.0cm") |>
+  column_spec(2, width = "1.2cm") |>
+  column_spec(3:6, width = "2.0cm") |>
+  footnote(
+    general = paste0(
+      "Source: Asian Barometer Survey, Cambodia. ",
+      "Freedom of speech: 'People are free to speak what they think without fear' (1 = strongly disagree to 4 = strongly agree). ",
+      "'\\\\% Agree' = proportion responding 3 (somewhat agree) or 4 (strongly agree). ",
+      "Freedom to organize: 'People can join any organization they like without fear' (same scale). ",
+      "These ABS items are conceptually related to, but not directly comparable with, ",
+      "the binary SES items in the table above; the SES items are commune-level perceptions ",
+      "while the ABS items are national-level evaluations on a four-point Likert scale."
     ),
     general_title     = "Note:",
     footnote_as_chunk = TRUE,

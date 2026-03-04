@@ -107,6 +107,20 @@
  
 
 
+\usepackage{booktabs}
+\usepackage{longtable}
+\usepackage{array}
+\usepackage{multirow}
+\usepackage{wrapfig}
+\usepackage{float}
+\usepackage{colortbl}
+\usepackage{pdflscape}
+\usepackage{tabu}
+\usepackage{threeparttable}
+\usepackage{threeparttablex}
+\usepackage[normalem]{ulem}
+\usepackage{makecell}
+\usepackage{xcolor}
 \usepackage{setspace}
 \usepackage{booktabs}
 \usepackage{caption}
@@ -199,7 +213,7 @@
 
 \title{Online Appendix: The Education of a Citizenry}
 \author{Jeffrey Stark}
-\date{March 4, 2026 at 5:38 PM}
+\date{March 4, 2026 at 6:50 PM}
 \begin{document}
 \maketitle
 
@@ -626,6 +640,58 @@ Variable & CPP Voter & CNRP/SRP Voter & DK/Refuse\\
 
 \newpage
 
+\section*{Table A5b: W6 DK/Refuse Group---Demographic
+Profile}\label{table-a5b-w6-dkrefuse-groupdemographic-profile}
+\addcontentsline{toc}{section}{Table A5b: W6 DK/Refuse
+Group---Demographic Profile}
+
+\begin{table}
+
+\caption{\label{tbl-tableA5b}Demographic Comparison: W6 Respondents
+vs.~DK/Refuse on Democratic Future Item}
+
+\centering{
+
+\centering\begingroup\setstretch{1}\fontsize{9}{11}\selectfont
+
+\begin{threeparttable}
+\begin{tabular}[t]{>{\raggedright\arraybackslash}p{4.0cm}>{\centering\arraybackslash}p{2.0cm}>{\centering\arraybackslash}p{2.0cm}>{\centering\arraybackslash}p{1.5cm}>{\centering\arraybackslash}p{2.0cm}>{\centering\arraybackslash}p{1.3cm}>{\centering\arraybackslash}p{0.5cm}}
+\toprule
+Variable & Respondents & DK/Refuse & Difference & Test & $p$ & \\
+\midrule
+\addlinespace[0.3em]
+\multicolumn{7}{l}{\textbf{Continuous}}\\
+\hspace{1em}Age (years) & 40.6 (SD=12.9) & 41.7 (SD=13.1) & 1.02 & t-test & 0.181 & \\
+\hspace{1em}Education level (1-10) & 3.8 (SD=2.4) & 3.8 (SD=2.3) & -0.07 & t-test & 0.630 & \\
+\addlinespace[0.3em]
+\multicolumn{7}{l}{\textbf{Binary}}\\
+\hspace{1em}Female (\%) & 48.7\% & 51.1\% & +2.5 pp & prop.test & 0.437 & \\
+\hspace{1em}Urban (\%) & 27.5\% & 24.0\% & -3.5 pp & prop.test & 0.189 & \\
+\addlinespace[0.3em]
+\multicolumn{7}{l}{\textbf{Age group distribution}}\\
+\hspace{1em}Age: Under 30 (\%) & 23.8\% & 21.6\% & -2.2 pp & chi-sq (age group) & 0.405 & \\
+\hspace{1em}Age: 30-49 (\%) & 47.8\% & 46.7\% & -1.1 pp &  &  & \\
+\hspace{1em}Age: 50+ (\%) & 28.4\% & 31.8\% & +3.4 pp &  &  & \\
+\addlinespace[0.3em]
+\multicolumn{7}{l}{\textbf{Education distribution}}\\
+\hspace{1em}Education: Primary or below (\%) & 56.7\% & 56.9\% & +0.2 pp & chi-sq (education) & 0.774 & \\
+\hspace{1em}Education: Secondary (\%) & 36.3\% & 37.1\% & +0.8 pp &  &  & \\
+\hspace{1em}Education: Tertiary (\%) & 7.0\% & 6.0\% & -1.0 pp &  &  & \\
+\bottomrule
+\end{tabular}
+\begin{tablenotes}[para]
+\item \textit{Note:} 
+\item Wave 6 (2021) only. Respondents = those who answered the democratic future item (N = 458); DK/Refuse = those who declined or gave no answer (N = 784). Continuous variables: two-sample t-test; binary variables: two-sample proportion test; categorical distributions: Pearson chi-squared test. No demographic characteristic significantly predicts DK/Refuse status, indicating the nonresponse group is demographically indistinguishable from respondents.
+\end{tablenotes}
+\end{threeparttable}
+\endgroup{}
+
+}
+
+\end{table}%
+
+\newpage
+
 \section*{Table A6: OLS Attenuation Tests---Freedom
 Perceptions}\label{table-a6-ols-attenuation-testsfreedom-perceptions}
 \addcontentsline{toc}{section}{Table A6: OLS Attenuation Tests---Freedom
@@ -741,10 +807,10 @@ Future Item in Wave 6}
 \toprule
 Predictor & OR (95\% CI) & $p$\\
 \midrule
-Perceived freedom of speech (1--4) & 1.01 (0.82, 1.23) & 0.947NA\\
-Perceived freedom to organize (1--4) & 0.90 (0.73, 1.12) & 0.362NA\\
-Education (standardized) & 0.99 (0.88, 1.12) & 0.933NA\\
-Urban residence (1 = urban) & 0.86 (0.65, 1.13) & 0.271NA\\
+Perceived freedom of speech (1--4) & 1.01 (0.82, 1.23) & 0.947\\
+Perceived freedom to organize (1--4) & 0.90 (0.73, 1.12) & 0.362\\
+Education (standardized) & 0.99 (0.88, 1.12) & 0.933\\
+Urban residence (1 = urban) & 0.86 (0.65, 1.13) & 0.271\\
 \bottomrule
 \end{tabular}
 \begin{tablenotes}[para]
@@ -772,24 +838,21 @@ Expectations Under Nonresponse Imputation Scenarios}
 
 \centering{
 
-\centering\begingroup\fontsize{9}{11}\selectfont
+\centering\begingroup\setstretch{1}\fontsize{9}{11}\selectfont
 
 \begin{threeparttable}
-\begin{tabular}[t]{>{\raggedright\arraybackslash}p{6.5cm}>{\centering\arraybackslash}p{1.4cm}>{\centering\arraybackslash}p{1.4cm}>{\centering\arraybackslash}p{1.4cm}>{\centering\arraybackslash}p{1.4cm}>{\centering\arraybackslash}p{1.4cm}}
+\begin{tabular}[t]{>{\raggedright\arraybackslash}p{4.5cm}>{\centering\arraybackslash}p{1.5cm}>{\centering\arraybackslash}p{1.5cm}>{\centering\arraybackslash}p{1.5cm}>{\centering\arraybackslash}p{1.8cm}>{\centering\arraybackslash}p{1.8cm}>{\centering\arraybackslash}p{1.8cm}}
 \toprule
-Scenario & Wave & $N$ & Respondents & Mean & $\Delta$ from W3\\
+Scenario & W3 (2012) & W4 (2015) & W6 (2021) & $\Delta$ W3$\to$W4 & $\Delta$ W4$\to$W6 & $\Delta$ W3$\to$W6\\
 \midrule
-Observed (W3, 2012) & W3 & 1200 & 910 & 9.58 & —\\
-\midrule
-Observed (W6, respondents only) & W6 & 1242 & 458 & 6.67 & -2.91\\
-Bound: nonrespondents imputed at max (10) & W6 & 1242 & 1242 & 8.77 & -0.80\\
-Bound: nonrespondents imputed at min (0) & W6 & 1242 & 1242 & 2.46 & -7.12\\
-Conservative: nonrespondents imputed at W3 mean & W6 & 1242 & 1242 & 8.51 & -1.07\\
+Observed (respondents only) & 9.58 & 7.72 & 6.67 & -1.86 & -1.05 & -2.91\\
+Impute DK/Refuse = 10 (max) & 9.68 & 8.95 & 8.77 & -0.73 & -0.18 & -0.91\\
+Impute DK/Refuse = 5 (midpoint) & 8.47 & 6.25 & 5.62 & -2.22 & -0.63 & -2.85\\
 \bottomrule
 \end{tabular}
 \begin{tablenotes}[para]
 \item \textit{Note:} 
-\item Dependent variable: democratic future expectations (0--10 scale). W3 (2012): N = 910 respondents of 1,200 (nonresponse 24.2 percent). W6 (2021): N = 458 respondents of 1,242 (nonresponse 63.1 percent). Imputation bounds assign W6 nonrespondents to the scale maximum (10), minimum (0), or the W3 population mean (9.58). Under the conservative imputation (nonrespondents at W3 mean), the observed decline of $-$2.91 points narrows to $-$1.07 points but remains in the same direction.
+\item Dependent variable: democratic future expectations (0--10 scale). Nonresponse rates: W3 = 24.2\%, W4 = 54.0\%, W6 = 63.1\%. Observed row uses respondents only (W3 N = 910; W4 N = 552; W6 N = 458). Imputation rows assign all nonrespondents the stated value and recompute the population mean. Even under the most conservative assumption (all nonrespondents at scale maximum = 10), the W3$to$W6 decline is $-$0.91 points---directionally robust and substantively meaningful.
 \end{tablenotes}
 \end{threeparttable}
 \endgroup{}
@@ -869,6 +932,40 @@ Paid additional money to officials to get things done faster (2016) & 34.9 & {}[
 \begin{tablenotes}[para]
 \item \textit{Note:} 
 \item Source: Cambodia Socio-Economic Survey (KHM 2018 SAIE v01; N = 3,363). Fieldwork inferred early-to-mid 2017 based on internal temporal references (2016--17 school year as current; 2016 commune budget as most recently completed; tea money question references 2016 as preceding year). Binary response (Agree/Disagree); valid N ranges 3,285--3,339. 95\% CI: Wilson interval. The first five items measure perceived civic freedoms and local government responsiveness; the sixth (below the line) measures self-reported corruption exposure. These items are not comparable to ABS instruments and are used triangulatively to establish baseline civic conditions in the immediate pre-dissolution period.
+\end{tablenotes}
+\end{threeparttable}
+\endgroup{}
+
+}
+
+\end{table}%
+
+\vspace{1em}
+
+\begin{table}
+
+\caption{\label{tbl-appendixD-abs}ABS Freedom Perception Items, Cambodia
+(Waves 3--6)}
+
+\centering{
+
+\centering\begingroup\fontsize{10}{12}\selectfont
+
+\begin{threeparttable}
+\begin{tabular}[t]{>{\centering\arraybackslash}p{2.0cm}>{\centering\arraybackslash}p{1.2cm}>{\centering\arraybackslash}p{2.0cm}>{\centering\arraybackslash}p{2.0cm}>{\centering\arraybackslash}p{2.0cm}>{\centering\arraybackslash}p{2.0cm}}
+\toprule
+\multicolumn{2}{c}{ } & \multicolumn{2}{c}{Freedom of Speech} & \multicolumn{2}{c}{Freedom to Organize} \\
+\cmidrule(l{3pt}r{3pt}){3-4} \cmidrule(l{3pt}r{3pt}){5-6}
+Wave & $N$ & \% Agree & Mean (1--4) & \% Agree & Mean (1--4)\\
+\midrule
+W3 (2012) & 1,200 & 31.5 & 2.13 & 84.5 & 3.21\\
+W4 (2015) & 1,200 & 33.3 & 2.22 & 82.7 & 3.10\\
+W6 (2021) & 1,242 & 28.7 & 2.12 & 77.0 & 2.96\\
+\bottomrule
+\end{tabular}
+\begin{tablenotes}[para]
+\item \textit{Note:} 
+\item Source: Asian Barometer Survey, Cambodia. Freedom of speech: 'People are free to speak what they think without fear' (1 = strongly disagree to 4 = strongly agree). '\% Agree' = proportion responding 3 (somewhat agree) or 4 (strongly agree). Freedom to organize: 'People can join any organization they like without fear' (same scale). These ABS items are conceptually related to, but not directly comparable with, the binary SES items in the table above; the SES items are commune-level perceptions while the ABS items are national-level evaluations on a four-point Likert scale.
 \end{tablenotes}
 \end{threeparttable}
 \endgroup{}
