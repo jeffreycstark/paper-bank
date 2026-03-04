@@ -56,7 +56,7 @@ paper-bank/
     ├── 03_south_korea_decoupling/       # SK/Taiwan economic-democratic support decoupling
     ├── 04_cambodia_fairy_tale/          # Cambodia
     ├── 05_thailand_trust_collapse/      # Thailand 20-year institutional trust erosion
-    ├── 06_hong_kong_democratic_erosion/ # HK democratic attitudes + sensitivity gradient
+    ├── 06_survey_false_positives_hk/    # HK democratic attitudes + sensitivity gradient
     ├── 07_south_korea_accountability_gap/ # South Korea accountability gap [in progress]
     └── trust-dynamics/                  # Trust dynamics across Asian democracies
 ```
@@ -70,7 +70,7 @@ paper-bank/
 **Data**: ABS (waves 2-6), electoral status coding.
 **Key files**: `analysis/01_data_preparation_mlogit.qmd`, `analysis/revised/` directory.
 
-### 06_hong_kong_democratic_erosion
+### 06_survey_false_positives_hk
 **Topic**: Democratic attitude erosion in Hong Kong, sensitivity gradient methodology.
 **Data**: ABS (wave 5 HK), WVS (wave 7 HK), LBS (Venezuela, Nicaragua).
 **Key files**: `analysis/00_data_preparation.qmd`, `analysis/06_wvs_triangulation.qmd`, `analysis/08_wvs_sensitivity_gradient.R`, `analysis/09_lbs_sensitivity_gradient.R`.

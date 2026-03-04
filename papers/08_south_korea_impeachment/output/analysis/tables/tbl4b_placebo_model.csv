@@ -1,0 +1,8 @@
+term,estimate,std.error,statistic,p.value,stars
+wave_num:econ_present_n,0.0195,0.0309,0.631,0.528,
+inst_type4Horizontal:econ_present_n,-0.0154,0.0181,-0.8546,0.3928,
+inst_type4Societal:econ_present_n,0.0877,0.0174,5.0353,0,***
+inst_type4Category D:econ_present_n,0.0664,0.018,3.6813,2e-4,***
+wave_num:inst_type4Horizontal:econ_present_n,0.033,0.0272,1.2135,0.225,
+wave_num:inst_type4Societal:econ_present_n,-0.0599,0.0261,-2.3004,0.0214,*
+wave_num:inst_type4Category D:econ_present_n,0.0168,0.0269,0.6248,0.5321,

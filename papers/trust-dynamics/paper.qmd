@@ -25,8 +25,6 @@ format:
   html:
     toc: true
     code-fold: true
-bibliography: refs.bib
-csl: ../../apa.csl
 execute:
   echo: false
   warning: false

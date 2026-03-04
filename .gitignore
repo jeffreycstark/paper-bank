@@ -95,6 +95,7 @@ _freeze/
 # Quarto cache
 *_cache/
 *_files/
+*.knit.md
 
 # Data files (uncomment if you don't want to track data)
 # data/raw/*.csv
@@ -168,5 +169,8 @@ papers/**/*.docx
 !papers/**/submission/*.pdf
 !papers/**/output/manuscript/*.pdf
 !papers/**/output/manuscript/*.docx
+# Paperpile master bibliography (regenerated from Paperpile)
+/references.bib
+
 # Large generated files
 data/processed/abs_econdev_authpref.csv

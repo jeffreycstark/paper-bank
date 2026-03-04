@@ -13,7 +13,6 @@ format:
 #  pdf:
 #    toc: true
 #    number-sections: true
-bibliography: ../../../references.bib
 ---
 
 # The Puzzle: The Vietnam Paradox

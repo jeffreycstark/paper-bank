@@ -337,26 +337,188 @@ p4
 ### Table 4: Output legitimacy model
 
 ```{r tbl4-outleg}
+# Export raw coefficients for external use
 tbl4_rows <- outleg_ct |>
   tidy() |>
-  filter(str_detect(term, "inst_type|wave_num|econ")) |>
-  mutate(
-    stars = sig_stars(p.value),
-    term  = term |>
-      str_replace_all("wave_num", "Wave") |>
-      str_replace_all("inst_type", "Inst.type:") |>
-      str_replace_all("econ_present_n", "Econ.eval")
-  ) |>
-  select(term, estimate, std.error, p.value, stars) |>
-  mutate(across(c(estimate, std.error), ~round(.x, 4)),
-         p.value = round(p.value, 4))
+  filter(str_detect(term, "inst_type|wave_num|econ_present_n")) |>
+  mutate(across(c(estimate, std.error, statistic), ~round(.x, 4)),
+         p.value = round(p.value, 4),
+         stars   = sig_stars(p.value))
 
 write_csv(tbl4_rows, file.path(tables_dir, "tbl4_output_legitimacy_model.csv"))
 
-tbl4_rows |>
-  kbl(caption = "Output legitimacy moderation model (key coefficients)",
-      col.names = c("Term", "Estimate", "SE", "p", "")) |>
-  kable_styling(bootstrap_options = c("striped", "hover"), full_width = FALSE)
+# Theory-organized coefficient labels
+# Ordering: main effects → first-order interactions → three-way (shield test)
+tbl4_coef_map <- c(
+  "wave_num"                                    = "Wave 4 (2019)",
+  "inst_typeHorizontal"                         = "Horizontal institution",
+  "inst_typeSocietal"                           = "Societal institution",
+  "econ_present_n"                              = "Economic evaluation",
+  "wave_num:inst_typeHorizontal"                = "Wave 4 × Horizontal",
+  "wave_num:inst_typeSocietal"                  = "Wave 4 × Societal",
+  "wave_num:econ_present_n"                     = "Wave 4 × Econ (Executive shield)",
+  "inst_typeHorizontal:econ_present_n"          = "Horizontal × Econ",
+  "inst_typeSocietal:econ_present_n"            = "Societal × Econ",
+  "wave_num:inst_typeHorizontal:econ_present_n" = "Wave 4 × Econ × Horizontal",
+  "wave_num:inst_typeSocietal:econ_present_n"   = "Wave 4 × Econ × Societal",
+  "(Intercept)"                                 = "Constant"
+)
+
+modelsummary(
+  outleg_mod,
+  vcov      = outleg_vcov,
+  coef_map  = tbl4_coef_map,
+  coef_omit = "^(age_n|gender|edu_n|income_n)",
+  stars     = c("*" = .05, "**" = .01, "***" = .001),
+  fmt       = 4,
+  gof_map   = c("nobs", "r.squared", "adj.r.squared"),
+  title     = "Output Legitimacy Moderation of Institutional Trust",
+  notes     = paste0(
+    "OLS with survey weights; standard errors clustered by respondent (HC1). ",
+    "Reference categories: Executive institution, Wave 1 (2016), low economic evaluation. ",
+    "Economic evaluation is a composite of family and national economic assessments (0–1 scale). ",
+    "Controls for age, gender, education, and income included but not shown. ",
+    "The 'Executive shield' row (Wave 4 × Econ) tests whether rising economic satisfaction ",
+    "buffers executive trust specifically. Negative three-way interactions indicate that this ",
+    "buffer does not extend to Horizontal or Societal institutions. ",
+    "* p < .05, ** p < .01, *** p < .001."
+  )
+)
+```
+
+---
+
+## Model 2b: Category D placebo test
+
+Tests whether the executive output buffer is institution-specific or reflects a general
+economic positivity effect that operates across all institution types. If economic
+optimism buffers trust in **private enterprise and religious institutions** (Category D)
+to the same degree as executive trust, the "executive shield" is actually a general
+positivity halo rather than a category-specific output legitimacy mechanism.
+
+Placebo prediction: the Wave × Econ interaction for Category D should be **null or
+negative** — similar to the Horizontal and Societal interactions — since Category D
+institutions have no democratic accountability function and are therefore not evaluated
+through an output legitimacy frame rooted in state performance.
+
+```{r model2b-placebo-build}
+# Reload kamos_wide in case it was updated with Category D variables
+kamos_wide_full <- readRDS(file.path(results_dir, "kamos_wide.rds"))
+
+# Check Category D variables are present
+if (!all(c("trust_pe_n", "trust_ri_n") %in% names(kamos_wide_full))) {
+  stop("Category D variables missing from kamos_wide.rds. Re-run 00_data_preparation.qmd first.")
+}
+
+# Build long dataset with all four institution categories
+# Primary five (A–C) + two Category D items
+kamos_long_placebo <- kamos_wide_full |>
+  pivot_longer(
+    cols = c(trust_cg_n, trust_lg_n, trust_na_n, trust_md_n, trust_ng_n,
+             trust_pe_n, trust_ri_n),
+    names_to  = "institution",
+    values_to = "trust_score_n"
+  ) |>
+  mutate(
+    inst_type4 = factor(
+      recode(institution,
+        trust_cg_n = "Executive",
+        trust_lg_n = "Executive",
+        trust_na_n = "Horizontal",
+        trust_md_n = "Societal",
+        trust_ng_n = "Societal",
+        trust_pe_n = "Category D",
+        trust_ri_n = "Category D"
+      ),
+      levels = c("Executive", "Horizontal", "Societal", "Category D")
+    ),
+    wave_num = as.integer(wave_num)
+  )
+
+cat("Placebo long dataset: n =", nrow(kamos_long_placebo), "obs\n")
+cat("Institution-type distribution:\n")
+print(table(kamos_long_placebo$inst_type4))
+```
+
+```{r model2b-placebo-estimate}
+controls_no_ideo <- setdiff(controls, "ideology_n")
+
+f2b <- as.formula(
+  paste("trust_score_n ~ wave_num * inst_type4 * econ_present_n +",
+        paste(controls_no_ideo, collapse = " + "))
+)
+
+placebo_mod  <- lm(f2b, data = kamos_long_placebo, weights = weight)
+placebo_vcov <- vcovCL(placebo_mod, cluster = ~resp_id, type = "HC1")
+placebo_ct   <- coeftest(placebo_mod, vcov = placebo_vcov)
+
+cat("=== Model 2b: Category D placebo ===\n")
+cat("N:", nobs(placebo_mod), "obs\n\n")
+
+# Show three-way interactions (the key quantities)
+placebo_ct |>
+  tidy() |>
+  filter(str_detect(term, "econ_present_n") & str_detect(term, ":")) |>
+  select(term, estimate, std.error, p.value) |>
+  mutate(across(where(is.numeric), ~round(.x, 4)),
+         stars = sig_stars(p.value)) |>
+  print()
+```
+
+### Table 4b: Category D placebo — key interactions
+
+```{r tbl4b-placebo}
+tbl4b_coef_map <- c(
+  "wave_num"                                     = "Wave 4 (2019)",
+  "inst_type4Horizontal"                         = "Horizontal institution",
+  "inst_type4Societal"                           = "Societal institution",
+  "inst_type4Category D"                         = "Category D institution",
+  "econ_present_n"                               = "Economic evaluation",
+  "wave_num:econ_present_n"                      = "Wave 4 × Econ (Executive shield)",
+  "wave_num:inst_type4Horizontal"                = "Wave 4 × Horizontal",
+  "wave_num:inst_type4Societal"                  = "Wave 4 × Societal",
+  "wave_num:inst_type4Category D"                = "Wave 4 × Category D",
+  "wave_num:inst_type4Horizontal:econ_present_n" = "Wave 4 × Econ × Horizontal",
+  "wave_num:inst_type4Societal:econ_present_n"   = "Wave 4 × Econ × Societal",
+  "wave_num:inst_type4Category D:econ_present_n" = "Wave 4 × Econ × Category D (placebo)",
+  "(Intercept)"                                  = "Constant"
+)
+
+modelsummary(
+  placebo_mod,
+  vcov      = placebo_vcov,
+  coef_map  = tbl4b_coef_map,
+  coef_omit = "^(age_n|gender|edu_n|income_n)",
+  stars     = c("*" = .05, "**" = .01, "***" = .001),
+  fmt       = 4,
+  gof_map   = c("nobs", "r.squared"),
+  title     = "Category D Placebo Test: Output Legitimacy Moderation",
+  notes     = paste0(
+    "OLS with survey weights; SEs clustered by respondent (HC1). ",
+    "Reference: Executive institution, Wave 1 (2016). ",
+    "Category D = private enterprise + religious institutions. ",
+    "Placebo prediction: Wave 4 × Econ × Category D should be null. ",
+    "* p < .05, ** p < .01, *** p < .001."
+  )
+)
+
+write_csv(
+  placebo_ct |> tidy() |>
+    filter(str_detect(term, "econ_present_n") & str_detect(term, ":")) |>
+    mutate(across(where(is.numeric), ~round(.x, 4)), stars = sig_stars(p.value)),
+  file.path(tables_dir, "tbl4b_placebo_model.csv")
+)
+```
+
+```{r save-placebo}
+placebo_results <- list(
+  model    = placebo_mod,
+  vcov     = placebo_vcov,
+  coeftest = placebo_ct,
+  data     = kamos_long_placebo
+)
+saveRDS(placebo_results, file.path(results_dir, "placebo_model.rds"))
+cat("✓ placebo_model.rds saved\n")
 ```
 
 ---

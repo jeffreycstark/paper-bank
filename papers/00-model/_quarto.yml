@@ -51,10 +51,6 @@ format:
     toc: true
     number-sections: true
 
-# Bibliography
-bibliography: manuscript/references.bib
-csl: manuscript/apa.csl
-
 # Paths
 resources:
   - analysis/figures/

@@ -225,6 +225,14 @@ kamos_raw <- kamos_raw |>
     trust_md_raw = trust_media,   # news media
     trust_ng_raw = trust_ngo,     # NGOs / civil society organizations
 
+    # Category D: excluded from primary analysis (placebo test and direction table)
+    trust_pe_raw = trust_private_enterprise,
+    trust_ri_raw = trust_religious,
+
+    # Robustness check items: generalized social trust
+    trust_sc_raw = trust_society,
+    trust_ct_raw = trust_citizens,
+
     # --- Normalized 0-1 (for regression) ---
     trust_cg_n = normalize_01(trust_cg_raw),
     trust_lg_n = normalize_01(trust_lg_raw),
@@ -232,6 +240,10 @@ kamos_raw <- kamos_raw |>
     trust_le_n = normalize_01(trust_le_raw),
     trust_md_n = normalize_01(trust_md_raw),
     trust_ng_n = normalize_01(trust_ng_raw),
+    trust_pe_n = normalize_01(trust_pe_raw),
+    trust_ri_n = normalize_01(trust_ri_raw),
+    trust_sc_n = normalize_01(trust_sc_raw),
+    trust_ct_n = normalize_01(trust_ct_raw),
 
     # --- Institution-type composites (normalized) ---
     exec_trust_n = rowMeans(cbind(trust_cg_n, trust_lg_n), na.rm = TRUE),
@@ -301,7 +313,11 @@ kamos_wide <- kamos_raw |>
     # Economic
     econ_present_raw, econ_present_n, econ_composite_n,
     # Controls
-    age_n, gender, edu_n, income_n, ideology_n, party_id
+    age_n, gender, edu_n, income_n, ideology_n, party_id,
+    # Category D (excluded from primary; used in placebo test)
+    trust_pe_raw, trust_ri_raw, trust_pe_n, trust_ri_n,
+    # Social trust robustness items
+    trust_sc_raw, trust_ct_raw, trust_sc_n, trust_ct_n
   )
 
 cat("KAMOS wide: n =", nrow(kamos_wide), "| Waves:", paste(unique(kamos_wide$wave), collapse = "/"), "\n")

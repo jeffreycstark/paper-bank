@@ -57,8 +57,6 @@ format:
     toc: true
     number-sections: true
     reference-doc: reference.docx
-bibliography: references.bib
-csl: apa.csl
 execute:
   warning: false
   message: false

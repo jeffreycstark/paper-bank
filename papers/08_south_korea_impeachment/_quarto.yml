@@ -56,7 +56,7 @@ format:
     number-sections: true
 
 # Bibliography
-bibliography: manuscript/references.bib
+bibliography: ../../references.bib
 csl: manuscript/apa.csl
 
 # Paths

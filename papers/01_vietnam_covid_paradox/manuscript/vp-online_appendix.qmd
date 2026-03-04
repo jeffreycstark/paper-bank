@@ -29,7 +29,6 @@ format:
       \raggedright
       \hyphenpenalty=10000
       \exhyphenpenalty=10000
-bibliography: references.bib
 csl: sage-harvard.csl
 execute:
   echo: false

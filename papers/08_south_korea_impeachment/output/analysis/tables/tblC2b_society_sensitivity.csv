@@ -1,0 +1,6 @@
+term,estimate,std.error,statistic,p.value,spec,stars
+wave_num:inst_type_socHorizontal,-0.0424,0.0055,-7.7398,0,Society→Societal,***
+wave_num:inst_type_socSocietal,-0.0333,0.0043,-7.8049,0,Society→Societal,***
+wave_num:inst_type_soc4Horizontal,-0.0424,0.0055,-7.7394,0,Society=separate,***
+wave_num:inst_type_soc4Societal,-0.0516,0.0049,-10.5579,0,Society=separate,***
+wave_num:inst_type_soc4Social,0.0033,0.0055,0.5937,0.5527,Society=separate,

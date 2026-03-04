@@ -24,7 +24,7 @@ format:
     code-tools: true
     df-print: paged
 
-bibliography: manuscript/references.bib
+bibliography: ../../references.bib
 csl: manuscript/sage-harvard.csl
 
 execute:

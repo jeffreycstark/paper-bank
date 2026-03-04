@@ -32,7 +32,6 @@ format:
     toc-depth: 3
     number-sections: true
     theme: cosmo
-bibliography: references.bib
 nocite: |
   @Central_Election_Commission2004-et, @Central_Election_Commission2008-kd, @Central_Election_Commission2016-tc, @National_Election_Commission2008-ao, @National_Election_Commission2012-er, @National_Election_Commission2020-rs, @Election_Commission_of_Thailand2007-co, @Election-Commission-of-Thailand2019-mr, @IFES2026-nw
 csl: chicago-author-date.csl

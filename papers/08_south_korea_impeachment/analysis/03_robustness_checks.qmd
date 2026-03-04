@@ -44,6 +44,7 @@ library(sandwich)
 library(lmtest)
 library(broom)
 library(marginaleffects)
+library(modelsummary)
 library(knitr)
 
 # Explicitly restore dplyr functions that may be masked by loaded dependencies
@@ -256,6 +257,158 @@ bind_rows(orig_int, alt_int) |>
   kbl(caption = "Alternative institution grouping: key interactions",
       col.names = c("Grouping", "Term", "Estimate", "SE", "p", "")) |>
   kable_styling(bootstrap_options = c("striped", "hover"), full_width = FALSE)
+```
+
+---
+
+## Check 2b: Trust-in-society sensitivity (Appendix C, Model 2)
+
+The primary analysis excludes trust in society (`trust_sc_n`) and trust in fellow
+citizens (`trust_ct_n`) on the grounds that they capture generalized social trust
+rather than political institutional confidence. This check verifies that including
+trust in society in the Societal Accountability category does not wash out the
+intermediary decline effect documented in the main analysis.
+
+Two specifications: (a) trust in society added to the Societal category; (b) trust
+in society treated as a fourth, distinct category. In both cases the key prediction
+is that the Wave × Horizontal and Wave × Societal interaction coefficients remain
+significantly negative relative to the executive reference.
+
+```{r check2b-society-build}
+# Check that social trust variables are in kamos_wide
+if (!("trust_sc_n" %in% names(kamos_wide))) {
+  stop("trust_sc_n not in kamos_wide. Re-run 00_data_preparation.qmd first.")
+}
+
+# Model 2b-i: trust_sc_n added to Societal category
+kamos_long_soc_inc <- kamos_wide |>
+  pivot_longer(
+    cols = c(trust_cg_n, trust_lg_n, trust_na_n, trust_md_n, trust_ng_n, trust_sc_n),
+    names_to  = "institution",
+    values_to = "trust_score_n"
+  ) |>
+  mutate(
+    inst_type_soc = factor(
+      recode(institution,
+        trust_cg_n = "Executive",
+        trust_lg_n = "Executive",
+        trust_na_n = "Horizontal",
+        trust_md_n = "Societal",
+        trust_ng_n = "Societal",
+        trust_sc_n = "Societal"    # trust in society added to Societal
+      ),
+      levels = c("Executive", "Horizontal", "Societal")
+    ),
+    wave_num = as.integer(wave_num)
+  )
+
+# Model 2b-ii: trust_sc_n as separate "Social" category
+kamos_long_soc_sep <- kamos_wide |>
+  pivot_longer(
+    cols = c(trust_cg_n, trust_lg_n, trust_na_n, trust_md_n, trust_ng_n, trust_sc_n),
+    names_to  = "institution",
+    values_to = "trust_score_n"
+  ) |>
+  mutate(
+    inst_type_soc4 = factor(
+      recode(institution,
+        trust_cg_n = "Executive",
+        trust_lg_n = "Executive",
+        trust_na_n = "Horizontal",
+        trust_md_n = "Societal",
+        trust_ng_n = "Societal",
+        trust_sc_n = "Social"      # trust in society as separate category
+      ),
+      levels = c("Executive", "Horizontal", "Societal", "Social")
+    ),
+    wave_num = as.integer(wave_num)
+  )
+
+cat("Check 2b-i (society included in Societal): n =", nrow(kamos_long_soc_inc), "\n")
+cat("Check 2b-ii (society as separate Social): n =", nrow(kamos_long_soc_sep), "\n")
+```
+
+```{r check2b-society-estimate}
+# Model i: society included in Societal
+f_soc_inc <- as.formula(paste("trust_score_n ~ wave_num * inst_type_soc +", controls_f))
+mod_soc_inc  <- lm(f_soc_inc, data = kamos_long_soc_inc, weights = weight)
+vcov_soc_inc <- vcovCL(mod_soc_inc, cluster = ~resp_id, type = "HC1")
+ct_soc_inc   <- coeftest(mod_soc_inc, vcov = vcov_soc_inc)
+
+# Model ii: society as separate category
+f_soc_sep <- as.formula(paste("trust_score_n ~ wave_num * inst_type_soc4 +", controls_f))
+mod_soc_sep  <- lm(f_soc_sep, data = kamos_long_soc_sep, weights = weight)
+vcov_soc_sep <- vcovCL(mod_soc_sep, cluster = ~resp_id, type = "HC1")
+ct_soc_sep   <- coeftest(mod_soc_sep, vcov = vcov_soc_sep)
+
+cat("=== Check 2b-i: society → Societal category ===\n")
+ct_soc_inc |>
+  tidy() |>
+  filter(str_detect(term, "wave_num:")) |>
+  select(term, estimate, std.error, p.value) |>
+  mutate(across(where(is.numeric), ~round(.x, 4)), stars = sig_stars(p.value)) |>
+  print()
+
+cat("\n=== Check 2b-ii: society as separate Social category ===\n")
+ct_soc_sep |>
+  tidy() |>
+  filter(str_detect(term, "wave_num:")) |>
+  select(term, estimate, std.error, p.value) |>
+  mutate(across(where(is.numeric), ~round(.x, 4)), stars = sig_stars(p.value)) |>
+  print()
+```
+
+### Comparison: original vs. society-inclusive specifications
+
+```{r check2b-society-comparison}
+soc_coef_map <- c(
+  "wave_num:inst_type_socHorizontal"    = "Wave × Horizontal",
+  "wave_num:inst_type_socSocietal"      = "Wave × Societal",
+  "wave_num:inst_type_soc4Horizontal"   = "Wave × Horizontal",
+  "wave_num:inst_type_soc4Societal"     = "Wave × Societal",
+  "wave_num:inst_type_soc4Social"       = "Wave × Social trust (placebo)",
+  "wave_num:inst_typeHorizontal"        = "Wave × Horizontal",
+  "wave_num:inst_typeSocietal"          = "Wave × Societal"
+)
+
+modelsummary(
+  list(
+    "Original"            = main_res$model,
+    "Society → Societal"  = mod_soc_inc,
+    "Society = separate"  = mod_soc_sep
+  ),
+  vcov      = list(main_res$vcov, vcov_soc_inc, vcov_soc_sep),
+  coef_map  = soc_coef_map,
+  stars     = c("*" = .05, "**" = .01, "***" = .001),
+  fmt       = 4,
+  gof_map   = c("nobs", "r.squared"),
+  title     = "Trust-in-Society Sensitivity: Wave × Institution Interactions",
+  notes     = paste0(
+    "All models use survey weights and SEs clustered by respondent (HC1). ",
+    "Reference: Executive institution, Wave 1 (2016). ",
+    "Controls: age, gender, education, income, ideology. ",
+    "* p < .05, ** p < .01, *** p < .001."
+  )
+)
+
+# Save CSV
+soc_comparison <- bind_rows(
+  ct_soc_inc |> tidy() |> filter(str_detect(term, "wave_num:")) |> mutate(spec = "Society→Societal"),
+  ct_soc_sep |> tidy() |> filter(str_detect(term, "wave_num:")) |> mutate(spec = "Society=separate")
+) |>
+  mutate(across(where(is.numeric), ~round(.x, 4)), stars = sig_stars(p.value))
+
+write_csv(soc_comparison, file.path(tables_dir, "tblC2b_society_sensitivity.csv"))
+cat("✓ tblC2b_society_sensitivity.csv saved\n")
+```
+
+```{r save-society-check}
+society_results <- list(
+  model_inc  = mod_soc_inc,  vcov_inc  = vcov_soc_inc,  ct_inc  = ct_soc_inc,
+  model_sep  = mod_soc_sep,  vcov_sep  = vcov_soc_sep,  ct_sep  = ct_soc_sep
+)
+saveRDS(society_results, file.path(results_dir, "society_sensitivity_model.rds"))
+cat("✓ society_sensitivity_model.rds saved\n")
 ```
 
 ---

@@ -45,7 +45,6 @@ format:
     number-sections: true
     reference-doc: reference.docx
 citeproc: true
-bibliography: references.bib
 csl: sage-harvard.csl
 execute:
   echo: false
@@ -574,7 +573,7 @@ The study makes three contributions. First, it documents an empirical pattern in
 
 ## Performance Legitimacy Under Stress
 
-The foundational claim of performance legitimacy theory is disarmingly simple: citizens reward governments that deliver and punish those that fail [@Lipset1959-ur; @Rothstein2009-lr; @Easton1979-rc]. Institutional trust reflects institutional performance. When governments deliver public goods effectively, citizens reciprocate with support [@Bouckaert2003-ky; @Hetherington2003-oq]. During pandemics, the expectation follows directly---governments that protect citizens should enjoy higher approval than those that do not.
+The foundational claim of performance legitimacy theory is disarmingly simple: citizens reward governments that deliver and punish those that fail [@Lipset1959-ur; @Rothstein2009-lr; @Easton1979-gl]. Institutional trust reflects institutional performance. When governments deliver public goods effectively, citizens reciprocate with support [@Bouckaert2003-ky; @Hetherington2003-oq]. During pandemics, the expectation follows directly---governments that protect citizens should enjoy higher approval than those that do not.
 
 Evidence from Asia complicates this picture. Vietnam routinely reports the highest trust in government despite middling performance on most governance indices, while Japan and South Korea---by objective measures far better governed---report substantially lower trust [@Baniamin2025-rx; @Wong2011-zv]. Baniamin [-@Baniamin2025-rx] attributes the pattern to authoritarian cultural orientation: citizens socialized into hierarchical deference approach authority less critically, inflating trust measures independently of performance. A latent profile analysis across six Southeast Asian countries corroborates this, identifying a dominant high-trust profile in Vietnam that encompasses government, science, and vaccine confidence and cuts across demographic subgroups [@Genova2025-gr].
 
@@ -620,7 +619,7 @@ Thailand provides the crucial comparative leverage. If something common to South
 
 ## Data Source and Sampling
 
-The analysis draws on Asian Barometer Survey Wave 6, collected between late 2021 and fall 2022 across Cambodia, Thailand, and Vietnam. The ABS employs multi-stage stratified random sampling designed to produce nationally representative samples of adult citizens [@Chu2008-st], with all interviews conducted face-to-face using standardised questionnaires.
+The analysis draws on Asian Barometer Survey Wave 6, collected between late 2021 and fall 2022 across Cambodia, Thailand, and Vietnam. The ABS employs multi-stage stratified random sampling designed to produce nationally representative samples of adult citizens [@Chu2008-fk], with all interviews conducted face-to-face using standardised questionnaires.
 
 The analytic sample comprises `r format(total_n, big.mark=",")` respondents: Cambodia (n = `r format(cambodia$n, big.mark=",")`), Vietnam (n = `r format(vietnam$n, big.mark=",")`), and Thailand (n = `r format(thailand$n, big.mark=",")`). Response rates ranged from `r metadata$thailand_response`% in Thailand to `r metadata$cambodia_response`% in Cambodia. Listwise deletion on the core variables---infection, approval, information trust, democracy satisfaction, institutional trust---retains 3,241 respondents (88% of the full sample). Adding demographic and economic controls reduces N modestly due to item-level missingness, with variable completeness ranging from 93% to 99%. Model-specific sample sizes are reported throughout; results are substantively unchanged under multiple imputation (Online Appendix L.3).
 
