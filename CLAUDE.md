@@ -31,6 +31,8 @@ The config file defines paths to:
 - `wvs_harmonized_path`   → WVS harmonized dataset (186,785 respondents, 84 countries, 2 waves)
 - `lbs_harmonized_path`   → LBS harmonized dataset (~20,000 respondents, 18 countries, 5 waves)
 - `kamos_harmonized_path` → KAMOS harmonized dataset (Korean domestic panel; `.rds` and `.parquet` both available)
+- `kgss_harmonized_path`  → KGSS harmonized dataset (Korea General Social Survey, 22,071 respondents, 16 years 2003–2023)
+- `saie_path`             → SAIE governance table (Cambodia 2017–2018, pre-COVID)
 
 All paths point to `/Users/jeffreystark/Development/Research/survey-data-prep/data/processed/`.
 
@@ -209,7 +211,7 @@ modelsummary(
 ## Upstream Dependency (`survey-data-prep`)
 
 **Repository**: `/Users/jeffreystark/Development/Research/survey-data-prep`
-**Datasets produced**: `abs_harmonized.rds`, `wvs_harmonized.parquet`, `lbs_harmonized.rds`, `kamos_harmonized.rds`
+**Datasets produced**: `abs_harmonized.rds`, `wvs_harmonized.parquet`, `lbs_harmonized.rds`, `kamos_harmonized.rds`, `kgss_harmonized.rds`, `tableD_saie_governance.rds`
 
 All harmonized survey data flows one-way from `survey-data-prep` → `paper-bank`. This repo is a **read-only consumer** of that data.
 

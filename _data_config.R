@@ -7,4 +7,5 @@ abs_harmonized_path   <- file.path(survey_data_prep, "data/processed/abs_harmoni
 wvs_harmonized_path   <- file.path(survey_data_prep, "data/processed/wvs_harmonized.parquet")
 lbs_harmonized_path   <- file.path(survey_data_prep, "data/processed/lbs_harmonized.rds")
 kamos_harmonized_path <- file.path(survey_data_prep, "data/processed/kamos_harmonized.rds")
+kgss_harmonized_path  <- file.path(survey_data_prep, "data/processed/kgss_harmonized.rds")
 saie_path             <- file.path(survey_data_prep, "data/processed/tableD_saie_governance.rds")
