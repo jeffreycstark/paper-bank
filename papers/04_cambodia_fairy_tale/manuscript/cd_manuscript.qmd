@@ -567,24 +567,21 @@ t3 |>
   )
 ```
 
-::: {#fig-orientations layout-nrow=2}
+\newpage
 
-```{r}
-#| label: fig-behavioral
+```{r fig-behavioral}
 #| fig-cap: "Behavioral Orientations in Cambodia, 2008--2021. Point estimates with 95\\% confidence intervals (Wilson intervals for proportions; t-based for means). Dashed vertical line marks the 2017 CNRP dissolution. Participation panel reports gate proportions (\\% ever engaged); authoritarian preferences and corruption panels report wave means on original scales. Source: Asian Barometer Survey, Waves 2, 3, 4, 6."
 #| out.width: "100%"
-knitr::include_graphics(file.path(rr_dir, "fig_behavioral.pdf"))
+#| fig-pos: "!htbp"
+knitr::include_graphics(file.path(fig_dir, "fig_behavioral.png"))
 ```
 
-```{r}
-#| label: fig-attitudinal
+```{r fig-attitudinal}
 #| fig-cap: "Attitudinal Orientations in Cambodia, 2008--2021. Point estimates with 95\\% confidence intervals (t-based for means). Dashed vertical line marks the 2017 CNRP dissolution. Democratic Expectations panel: 0--10 scale. Democratic Commitment panel: dem\\_best\\_form (1--4 mean) and dem\\_vs\\_equality (1--5 mean), showing stable abstract commitment diverging from declining expectations. Media \\& Political Interest panel: wave means on original scales. Source: Asian Barometer Survey, Waves 2, 3, 4, 6."
 #| out.width: "100%"
-knitr::include_graphics(file.path(rr_dir, "fig_attitudinal.pdf"))
+#| fig-pos: "!htbp"
+knitr::include_graphics(file.path(fig_dir, "fig_attitudinal.png"))
 ```
-
-Four-wave Trajectory of Political Orientations in Cambodia, 2008--2021.
-:::
 
 
 # Democratic Orientations in 2021
