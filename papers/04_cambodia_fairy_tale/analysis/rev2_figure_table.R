@@ -8,6 +8,8 @@
 suppressPackageStartupMessages({
   library(tidyverse)
   library(ggplot2)
+  library(tikzDevice)
+  library(patchwork)
 })
 
 project_root <- "/Users/jeffreystark/Development/Research/paper-bank"
@@ -114,58 +116,221 @@ fig_ci_data <- bind_rows(fig_ci_rows) |>
     ))
   )
 
-# Colors: 13 series — expand palette
-my_colors <- c(
-  "#2166AC","#B2182B","#4DAF4A",  # Participation
-  "#F4A582","#D6604D",            # Auth prefs
-  "#4393C3","#92C5DE",            # Dem expectations
-  "#762A83","#9970AB",            # Dem commitment
-  "#1B7837","#5AAE61",            # Corruption
-  "#A6761D","#E6AB02"             # Media/interest
+# Short labels for direct annotation (right end of each line)
+short_labels <- c(
+  "Contacted influential"  = "Influential",
+  "Attended demonstration" = "Demonstration",
+  "Voted (last election)"  = "Voted",
+  "Single-party rule"      = "Single-party",
+  "Strongman rule"         = "Strongman",
+  "Democratic future"      = "Future",
+  "Democratic present"     = "Present",
+  "Dem. best form (1-4)"   = "Best form",
+  "Dem. vs. equality (1-5)"= "Dem. vs. eq.",
+  "Witnessed corruption"   = "Witnessed",
+  "Nat'l govt corruption"  = "Nat'l govt",
+  "Follows pol. news"      = "Pol. news",
+  "Political interest"     = "Interest"
 )
 
-fig1_updated <- ggplot(fig_ci_data,
-                       aes(x = year, y = mean_val,
-                           color = label, group = label)) +
-  geom_ribbon(aes(ymin = ci_lower, ymax = ci_upper, fill = label),
-              alpha = 0.10, color = NA) +
-  geom_line(linewidth = 0.8) +
-  geom_point(size = 2.2) +
-  geom_vline(xintercept = 2017, linetype = "dashed",
-             color = "grey50", linewidth = 0.6) +
-  annotate("text", x = 2017, y = -Inf, label = "CNRP\ndissolved",
-           hjust = -0.08, vjust = -0.2, size = 2.2, color = "grey50") +
-  facet_wrap(~domain, scales = "free_y", ncol = 2) +
-  scale_x_continuous(breaks = c(2008, 2012, 2015, 2021)) +
-  scale_color_manual(values = my_colors) +
-  scale_fill_manual(values = my_colors) +
-  labs(
-    title    = "Political Orientations in Cambodia, 2008\u20132021",
-    subtitle = paste0("Participation: % ever engaged. Dem. Expectations: 0\u201310 scale. ",
-                      "Dem. Commitment: raw scales (1\u20134 and 1\u20135). ",
-                      "Other panels: wave means. Shading = 95% CI."),
-    x = NULL, y = NULL, color = NULL, fill = NULL,
-    caption = paste0(
-      "Source: Asian Barometer Survey, Waves 2, 3, 4, 6. Cambodia (N = 1,000\u20131,242 per wave).\n",
-      "CI: Wilson interval for proportions; t-based for means. ",
-      "'Democratic Commitment' panel shows raw scale means: dem_best_form (1\u20134), ",
-      "dem_vs_equality (1\u20135)."
+# Label data: place at highest point of each series, above the line
+label_data <- fig_ci_data |>
+  group_by(label, domain) |>
+  slice_max(mean_val, n = 1, with_ties = FALSE) |>
+  ungroup() |>
+  mutate(short = short_labels[label])
+
+# Colors: 13 series
+my_colors <- c(
+  "Contacted influential"   = "#2166AC",
+  "Attended demonstration"  = "#B2182B",
+  "Voted (last election)"   = "#4DAF4A",
+  "Single-party rule"       = "#F4A582",
+  "Strongman rule"          = "#D6604D",
+  "Democratic future"       = "#4393C3",
+  "Democratic present"      = "#92C5DE",
+  "Dem. best form (1-4)"    = "#762A83",
+  "Dem. vs. equality (1-5)" = "#9970AB",
+  "Witnessed corruption"    = "#1B7837",
+  "Nat'l govt corruption"   = "#5AAE61",
+  "Follows pol. news"       = "#A6761D",
+  "Political interest"      = "#E6AB02"
+)
+
+# ── Shared plot builder ──────────────────────────────────────────────────────
+make_panel_plot <- function(data, lbl_data, title, subtitle, caption) {
+  ggplot(data, aes(x = year, y = mean_val, color = label, group = label)) +
+    geom_ribbon(aes(ymin = ci_lower, ymax = ci_upper, fill = label),
+                alpha = 0.10, color = NA) +
+    geom_line(linewidth = 0.8) +
+    geom_point(size = 2.2) +
+    geom_vline(xintercept = 2017, linetype = "dashed",
+               color = "grey50", linewidth = 0.6) +
+    annotate("text", x = 2017, y = -Inf, label = "CNRP\ndissolved",
+             hjust = -0.08, vjust = -0.2, size = 2.2, color = "grey50") +
+    geom_text(data = lbl_data,
+              aes(x = year, y = mean_val, label = short),
+              vjust = -0.8, hjust = 0.5, size = 2.5, show.legend = FALSE) +
+    facet_wrap(~domain, scales = "free_y", ncol = 2) +
+    scale_x_continuous(breaks = c(2008, 2012, 2015, 2021),
+                       expand = expansion(mult = c(0.02, 0.05))) +
+    scale_y_continuous(expand = expansion(mult = c(0.05, 0.12))) +
+    scale_color_manual(values = my_colors) +
+    scale_fill_manual(values = my_colors) +
+    labs(title = title, subtitle = subtitle,
+         x = NULL, y = NULL, caption = caption) +
+    guides(color = "none", fill = "none") +
+    coord_cartesian(clip = "off") +
+    theme_pub +
+    theme(
+      strip.text    = element_text(size = 9, face = "bold"),
+      plot.subtitle = element_text(size = 7.5),
+      plot.caption  = element_text(size = 6.5)
     )
-  ) +
-  guides(fill = "none") +
-  theme_pub +
-  theme(
-    legend.position  = "right",
-    legend.text      = element_text(size = 6.5),
-    strip.text       = element_text(size = 8),
-    plot.subtitle    = element_text(size = 7)
+}
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# OPTION 1: Single figure, direct labels, 2×3 layout (no legend)
+# ═══════════════════════════════════════════════════════════════════════════════
+cat("\n--- Option 1: Single figure with direct labels ---\n")
+
+fig1_direct <- make_panel_plot(
+  fig_ci_data, label_data,
+  title    = "Political Orientations in Cambodia, 2008\u20132021",
+  subtitle = paste0("Participation: % ever engaged. Expectations: 0\u201310 scale. ",
+                    "Commitment: raw scales (1\u20134 / 1\u20135). Shading = 95% CI."),
+  caption  = paste0(
+    "Source: Asian Barometer Survey, Waves 2, 3, 4, 6. Cambodia (N \u2248 1,000\u20131,242 per wave).\n",
+    "CI: Wilson interval for proportions; t-based for means.")
+)
+
+# tikz output for LaTeX-native text
+tikz(file.path(fig_dir, "fig1_trend_panels.tex"), width = 11, height = 10,
+     standAlone = TRUE, sanitize = TRUE, engine = "luatex")
+print(fig1_direct)
+dev.off()
+# Compile tikz → PDF
+system2("lualatex", args = c("-interaction=nonstopmode",
+  sprintf("-output-directory=%s", fig_dir),
+  file.path(fig_dir, "fig1_trend_panels.tex")),
+  stdout = FALSE, stderr = FALSE)
+# Also save PNG via ggsave (tikz doesn't do raster)
+ggsave(file.path(fig_dir, "fig1_trend_panels.png"), fig1_direct,
+       width = 11, height = 10, dpi = 300)
+cat("Saved fig1_trend_panels (.tex → .pdf + .png)\n")
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# OPTION 3: Two figures — behavioral vs. attitudinal, 2-over-1 layout
+# ═══════════════════════════════════════════════════════════════════════════════
+cat("\n--- Option 3: Two-figure split (2-over-1) ---\n")
+
+behavioral_domains  <- c("Political Participation", "Authoritarian Preferences", "Corruption")
+attitudinal_domains <- c("Democratic Expectations", "Democratic Commitment", "Media & Political Interest")
+
+# ── Single-domain plot builder (no facet, used as patchwork pieces) ───────────
+make_single_panel <- function(data, lbl_data, panel_title) {
+  ggplot(data, aes(x = year, y = mean_val, color = label, group = label)) +
+    geom_ribbon(aes(ymin = ci_lower, ymax = ci_upper, fill = label),
+                alpha = 0.10, color = NA) +
+    geom_line(linewidth = 0.8) +
+    geom_point(size = 2.2) +
+    geom_vline(xintercept = 2017, linetype = "dashed",
+               color = "grey50", linewidth = 0.6) +
+    annotate("text", x = 2017, y = -Inf, label = "CNRP\ndissolved",
+             hjust = -0.08, vjust = -0.2, size = 2.5, color = "grey50") +
+    geom_text(data = lbl_data,
+              aes(x = year, y = mean_val, label = short),
+              vjust = -0.8, hjust = 0.5, size = 3, show.legend = FALSE) +
+    scale_x_continuous(breaks = c(2008, 2012, 2015, 2021),
+                       expand = expansion(mult = c(0.02, 0.05))) +
+    scale_y_continuous(expand = expansion(mult = c(0.05, 0.12))) +
+    scale_color_manual(values = my_colors) +
+    scale_fill_manual(values = my_colors) +
+    labs(title = panel_title, x = NULL, y = NULL) +
+    guides(color = "none", fill = "none") +
+    coord_cartesian(clip = "off") +
+    theme_pub +
+    theme(
+      plot.title = element_text(size = 10, face = "bold", hjust = 0.5),
+      plot.margin = margin(5, 12, 5, 5)
+    )
+}
+
+# ── Behavioral figure: Participation + Auth Prefs on top, Corruption below ───
+bp1 <- make_single_panel(
+  fig_ci_data |> filter(domain == "Political Participation"),
+  label_data  |> filter(domain == "Political Participation"),
+  "Political Participation"
+)
+bp2 <- make_single_panel(
+  fig_ci_data |> filter(domain == "Authoritarian Preferences"),
+  label_data  |> filter(domain == "Authoritarian Preferences"),
+  "Authoritarian Preferences"
+)
+bp3 <- make_single_panel(
+  fig_ci_data |> filter(domain == "Corruption"),
+  label_data  |> filter(domain == "Corruption"),
+  "Corruption"
+)
+
+fig_behavioral <- (bp1 | bp2) / bp3 +
+  plot_annotation(
+    title    = "Behavioral Orientations in Cambodia, 2008\u20132021",
+    subtitle = "Participation: % ever engaged. Auth. preferences & corruption: wave means. Shading = 95% CI.",
+    caption  = paste0(
+      "Source: Asian Barometer Survey, Waves 2, 3, 4, 6. Cambodia (N \u2248 1,000\u20131,242 per wave). ",
+      "CI: Wilson interval for proportions; t-based for means."),
+    theme = theme(
+      plot.title    = element_text(size = 12, face = "bold"),
+      plot.subtitle = element_text(size = 8.5, color = "grey30"),
+      plot.caption  = element_text(size = 7, color = "grey50", hjust = 0)
+    )
   )
 
-ggsave(file.path(fig_dir, "fig1_trend_panels.pdf"), fig1_updated,
-       width = 11, height = 10)
-ggsave(file.path(fig_dir, "fig1_trend_panels.png"), fig1_updated,
-       width = 11, height = 10, dpi = 300)
-cat("Saved updated fig1_trend_panels (.pdf + .png)\n")
+# ── Attitudinal figure: Commitment + Media on top, Expectations solo below ───
+ap1 <- make_single_panel(
+  fig_ci_data |> filter(domain == "Democratic Commitment"),
+  label_data  |> filter(domain == "Democratic Commitment"),
+  "Democratic Commitment"
+)
+ap2 <- make_single_panel(
+  fig_ci_data |> filter(domain == "Media & Political Interest"),
+  label_data  |> filter(domain == "Media & Political Interest"),
+  "Media & Political Interest"
+)
+ap3 <- make_single_panel(
+  fig_ci_data |> filter(domain == "Democratic Expectations"),
+  label_data  |> filter(domain == "Democratic Expectations"),
+  "Democratic Expectations"
+)
+
+fig_attitudinal <- (ap1 | ap2) / ap3 +
+  plot_annotation(
+    title    = "Attitudinal Orientations in Cambodia, 2008\u20132021",
+    subtitle = paste0("Expectations: 0\u201310 scale. Commitment: raw scales (1\u20134 / 1\u20135). ",
+                      "Media & interest: wave means. Shading = 95% CI."),
+    caption  = paste0(
+      "Source: Asian Barometer Survey, Waves 2, 3, 4, 6. Cambodia (N \u2248 1,000\u20131,242 per wave). ",
+      "CI: Wilson interval for proportions; t-based for means."),
+    theme = theme(
+      plot.title    = element_text(size = 12, face = "bold"),
+      plot.subtitle = element_text(size = 8.5, color = "grey30"),
+      plot.caption  = element_text(size = 7, color = "grey50", hjust = 0)
+    )
+  )
+
+# ggsave for behavioral figure (PDF + PNG)
+ggsave(file.path(fig_dir, "fig_behavioral.pdf"), fig_behavioral,
+       width = 7.5, height = 8, device = cairo_pdf)
+ggsave(file.path(fig_dir, "fig_behavioral.png"), fig_behavioral,
+       width = 7.5, height = 8, dpi = 300)
+
+# ggsave for attitudinal figure (PDF + PNG)
+ggsave(file.path(fig_dir, "fig_attitudinal.pdf"), fig_attitudinal,
+       width = 7.5, height = 8, device = cairo_pdf)
+ggsave(file.path(fig_dir, "fig_attitudinal.png"), fig_attitudinal,
+       width = 7.5, height = 8, dpi = 300)
+cat("Saved fig_behavioral + fig_attitudinal (.pdf + .png)\n")
 
 # Preview: dem commitment means by wave
 cat("\n=== Democratic Commitment means by wave ===\n")
@@ -285,15 +450,23 @@ all_var_names <- c(
 label_to_delta <- setNames(delta_w4w6_vec, all_labels)
 
 # Match on label (strip unicode for matching)
+# Handle both column naming conventions (delta_fmt from first run, delta_w3w6_fmt from rerun)
+delta_col <- if ("delta_fmt" %in% names(table3)) "delta_fmt" else "delta_w3w6_fmt"
+
 table3_updated <- table3 |>
   mutate(
     delta_w4w6_fmt = label_to_delta[label]
-  ) |>
-  relocate(delta_w4w6_fmt, .after = delta_fmt)
+  )
 
-# Rename existing delta column to make clear it's W3→W6
-table3_updated <- table3_updated |>
-  rename(delta_w3w6_fmt = delta_fmt)
+# Rename to delta_w3w6_fmt if it hasn't been renamed yet
+if ("delta_fmt" %in% names(table3_updated)) {
+  table3_updated <- table3_updated |>
+    rename(delta_w3w6_fmt = delta_fmt) |>
+    relocate(delta_w4w6_fmt, .after = delta_w3w6_fmt)
+} else {
+  table3_updated <- table3_updated |>
+    relocate(delta_w4w6_fmt, .after = delta_w3w6_fmt)
+}
 
 cat("\nSpot check (first 6 rows):\n")
 table3_updated |>
@@ -317,6 +490,10 @@ cat("\n=== OUTPUT CHECKLIST ===\n")
 files_out <- c(
   "analysis/figures/fig1_trend_panels.pdf",
   "analysis/figures/fig1_trend_panels.png",
+  "analysis/figures/fig_behavioral.pdf",
+  "analysis/figures/fig_behavioral.png",
+  "analysis/figures/fig_attitudinal.pdf",
+  "analysis/figures/fig_attitudinal.png",
   "analysis/tables/table3_four_wave_trajectory.rds"
 )
 for (f in files_out) {

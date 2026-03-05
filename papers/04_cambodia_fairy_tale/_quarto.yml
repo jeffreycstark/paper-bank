@@ -56,6 +56,7 @@ format:
   docx:
     toc: true
     number-sections: true
+    reference-doc: manuscript/reference.docx
 
 # Bibliography
 bibliography: ../../references.bib
