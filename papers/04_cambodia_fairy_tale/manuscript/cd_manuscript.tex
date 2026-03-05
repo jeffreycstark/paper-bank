@@ -10,7 +10,7 @@
 \usepackage{xcolor}
 \usepackage[margin=1in]{geometry}
 \usepackage{amsmath,amssymb}
-\setcounter{secnumdepth}{5}
+\setcounter{secnumdepth}{-\maxdimen} % remove section numbering
 \usepackage{iftex}
 \ifPDFTeX
   \usepackage[T1]{fontenc}
@@ -140,6 +140,20 @@
  
 
 
+\usepackage{booktabs}
+\usepackage{longtable}
+\usepackage{array}
+\usepackage{multirow}
+\usepackage{wrapfig}
+\usepackage{float}
+\usepackage{colortbl}
+\usepackage{pdflscape}
+\usepackage{tabu}
+\usepackage{threeparttable}
+\usepackage{threeparttablex}
+\usepackage[normalem]{ulem}
+\usepackage{makecell}
+\usepackage{xcolor}
 \usepackage{setspace}
 \usepackage{booktabs}
 \usepackage{caption}
@@ -164,11 +178,19 @@
 \usepackage{array}
 \usepackage{multirow}
 \usepackage{float}
+\usepackage{placeins}
 \usepackage{graphicx}
 \usepackage{threeparttable}
 \usepackage{threeparttablex}
 \usepackage{colortbl}
 \usepackage{xcolor}
+\usepackage{tikz}
+\usetikzlibrary{positioning,arrows.meta,shapes.geometric,backgrounds,fit,calc}
+\definecolor{reprcolor}{RGB}{210,230,245}
+\definecolor{coopcolor}{RGB}{225,240,220}
+\definecolor{subtcolor}{RGB}{250,235,210}
+\definecolor{hdrcolor}{RGB}{50,50,80}
+\definecolor{rulecolor}{RGB}{160,160,180}
 \captionsetup{width=\textwidth}
 \setlength\LTcapwidth{\textwidth}
 \floatplacement{figure}{H}
@@ -236,7 +258,7 @@ authoritarianism, democratic aspirations},
 \title{The Education of a Citizenry: Hope, Demobilization, and
 Authoritarian Normalization in Cambodia, 2008--2021}
 \author{Jeffrey Stark}
-\date{March 4, 2026 at 7:51 PM}
+\date{March 5, 2026 at 8:29 AM}
 \begin{document}
 \maketitle
 \begin{abstract}
@@ -277,7 +299,7 @@ political imagination.
 \setstretch{2}
 \section{Introduction}\label{introduction}
 
-In 2012, Cambodians rated the democratic future of their country at 9.6
+In 2012, Cambodians rated the democratic future of their country at 9.58
 out of 10.
 
 It is worth pausing on that number. On a scale designed to capture the
@@ -322,30 +344,19 @@ possible.
 
 The phenomenon under investigation---the systematic elimination of
 organized opposition within an otherwise functioning electoral
-system---has become increasingly common across consolidating
-authoritarian regimes, from Turkey's suppression of the Peoples'
-Democratic Party to Russia's dismantling of Navalny's organizational
-network. Yet existing scholarship has focused primarily on the
+system---has become increasingly common, from Turkey's suppression of
+the Peoples' Democratic Party to Russia's dismantling of Navalny's
+organizational network. Yet existing scholarship has focused on the
 institutional mechanics of opposition elimination rather than its
 downstream effects on mass political orientations. This article proposes
-that opposition elimination---understood not as a single act but as the
-systematic dismantling of the political alternative and the
-institutional ecosystem that sustained it---produces a distinctive
-observable signature in public opinion: synchronized, multi-domain
-shifts in which democratic expectations, independent civic engagement,
-political attention, and willingness to report corruption all decline in
-parallel, while acceptance of authoritarian governance alternatives and
-participation through regime-managed channels rise. The critical
-diagnostic indicator is a divergence between electoral and civic
-participation---rising voter turnout amid collapsing independent
-engagement---that signals the transformation of elections from
-mechanisms of political choice into rituals of regime compliance. If
-this signature proves generalizable beyond the Cambodian case, it offers
-both a theoretical framework for understanding how authoritarian regimes
-stabilize through subtraction rather than through active legitimation,
-and a hypothesized diagnostic signature for identifying democratic
-closure using existing cross-national survey infrastructure---one that
-awaits validation beyond the Cambodian case.
+that opposition elimination produces a distinctive observable signature:
+synchronized, multi-domain shifts concentrated in the political domain,
+with the critical diagnostic being a divergence between rising electoral
+turnout and collapsing independent civic engagement---elections
+transformed from mechanisms of political choice into rituals of regime
+compliance. If this signature proves generalizable, it offers a
+framework for identifying democratic closure using existing
+cross-national survey infrastructure.
 
 The article is organized around the four survey waves as acts in a
 political sequence. This is a deliberate methodological choice.
@@ -376,85 +387,41 @@ product of active authoritarian legitimation but of demobilization by
 subtraction.
 
 The concept advanced here---demobilization by subtraction---is distinct
-from the two mechanisms most commonly invoked to explain political
-quiescence under authoritarianism. The first, repression-driven
-demobilization, holds that citizens withdraw from political life because
-the costs of participation have been raised through coercion,
-surveillance, or the threat of punishment.\footnote{On repression as a
-  mechanism of demobilization, the foundational treatment is Davenport
-  (2007). For a comprehensive typology of repressive strategies, see
-  also the essays collected in Davenport et al. (2005). On the specific
-  mechanisms through which states demobilize protest, see Earl (2011).}
-The second, co-optation, holds that citizens acquiesce because they have
-been incorporated into the regime's distributional networks and
-calculate that loyalty pays better than resistance.\footnote{The
-  co-optation framework is developed most fully in Gandhi (2008). On the
-  equilibrium logic of authoritarian power-sharing, see Przeworski et
-  al. (2000).} Both mechanisms presuppose an active regime strategy
-directed at the population. Demobilization by subtraction operates
-differently. Its proximate cause is not an action taken against citizens
-but an action taken against the political field itself: the removal of
-the credible alternative around which civic mobilization had organized.
-In practice, subtraction rarely occurs as a single surgical act; the
-Cambodian case involved the coordinated elimination of the opposition
-party, independent media outlets, and civil society infrastructure
-within a compressed period. The theoretical claim is that the decisive
-mechanism is the closure of the political field---the elimination of the
-vehicle for collective political expression---rather than the fear,
-material deprivation, or ideological conversion that characterize
-repression and co-optation respectively. The result is not fear-based
-withdrawal or interest-based compliance but something closer to what
-Gaventa termed ``quiescence''---the internalization of powerlessness
-that follows from the sustained absence of viable channels for political
-expression.\footnote{Gaventa's central insight---that sustained
-  powerlessness produces not resistance but the internalization of
-  quiescence---provides the closest existing theoretical analogue to the
-  pattern observed in the Cambodian data, though his analysis is
-  situated in a very different political context (Gaventa 1980).} Where
-Lukes' third dimension of power operates by shaping preferences so that
-grievances never form, demobilization by subtraction operates one step
-later: grievances may persist, but the perceived vehicle for their
-expression has been eliminated, producing a cascade of behavioral and
-attitudinal adjustment that is visible across multiple survey dimensions
-simultaneously.\footnote{The distinction matters: Lukes' third dimension
-  operates \emph{before} grievances form; demobilization by subtraction
-  operates \emph{after} grievances have formed and been politically
-  activated, removing the vehicle for their expression rather than the
-  grievances themselves (Lukes 2005).}
+from repression and co-optation, the two mechanisms most commonly
+invoked to explain political quiescence under authoritarianism
+(Figure~\ref{fig:mechanisms}).\footnote{On repression as a mechanism of
+  demobilization, see Davenport (2007); Davenport et al. (2005); Earl
+  (2011).}\footnote{The co-optation framework is developed most fully in
+  Gandhi (2008). On the equilibrium logic of authoritarian
+  power-sharing, see Przeworski et al. (2000).} Both presuppose an
+active regime strategy directed at the population. Subtraction operates
+differently: its proximate cause is an action taken against the
+political field itself---the removal of the credible alternative around
+which civic mobilization had organized---rather than against citizens
+directly. The result is not fear-based withdrawal or interest-based
+compliance but something closer to what Gaventa termed ``quiescence'':
+the internalization of powerlessness following the sustained absence of
+viable channels for political expression.\footnote{Gaventa's central
+  insight---that sustained powerlessness produces not resistance but the
+  internalization of quiescence---provides the closest existing
+  theoretical analogue to the pattern observed in the Cambodian data
+  (Gaventa 1980).} Where Lukes' third dimension of power shapes
+preferences so that grievances never form, demobilization by subtraction
+operates one step later---grievances may persist, but the perceived
+vehicle for their expression has been eliminated.\footnote{The
+  distinction matters: Lukes' third dimension operates \emph{before}
+  grievances form; demobilization by subtraction operates \emph{after}
+  grievances have formed and been politically activated, removing the
+  vehicle for their expression rather than the grievances themselves
+  (Lukes 2005).}
 
-The distinction between subtraction and repression is not merely
-definitional; it generates different observable implications that allow
-empirical adjudication. Repression-driven demobilization operates
-through fear: the costs of political expression are raised, producing a
-population that self-censors, straightlines sensitive survey items, and
-suppresses positive evaluations of any governance arrangement. The
-observable signature is broad-spectrum attenuation---responses cluster
-toward the safe middle, nonresponse rises uniformly across sensitive
-batteries, and satisfaction with governance declines as citizens conceal
-their views. Demobilization by subtraction produces a different pattern.
-Because the mechanism operates through the removal of the political
-alternative rather than the elevation of punishment, it predicts
-domain-specific rather than broad-spectrum attenuation: political
-aspiration and independent engagement collapse while non-political
-attitudes remain stable, and satisfaction with democracy may actually
-\emph{rise} as citizens recalibrate their evaluative standards against a
-narrowed horizon of possibility. The Cambodian data are consistent with
-the subtraction signature and inconsistent with the pure repression
-signature on both counts---domain-specificity holds across the placebo
-battery, and democracy satisfaction rose to its highest recorded value
-in the least democratic moment of the study period. Subtraction is
-expected to dominate repression as a demobilization mechanism under two
-conditions: when the opposition served as the primary focal organization
-for civic coordination, such that its removal collapses the
-informational and mobilizational infrastructure of collective action;
-and when the regime's repressive apparatus is selective rather than
-generalized, targeting the opposition and its organizational ecosystem
-rather than the citizenry at large. Cambodia satisfies both conditions.
-Where repression is generalized and mass terror is deployed, subtraction
-and repression are likely to operate simultaneously and their effects
-become difficult to separate; the Cambodian case, where the crackdown
-was organizationally targeted rather than population-wide, offers a
-cleaner window into the subtraction mechanism in relative isolation.
+Figure~\ref{fig:mechanisms} maps the observable implications of each
+mechanism. The Cambodian data are consistent with the subtraction
+signature and inconsistent with the pure repression signature on both
+counts. Subtraction is expected to dominate when the opposition served
+as the primary focal organization for civic coordination and when
+repression is selective rather than generalized---both conditions
+Cambodia satisfies.
 
 The remainder of this article proceeds as follows. A data section
 describes the ABS waves, measures, and cross-wave comparability. Four
@@ -463,6 +430,70 @@ analytic sections trace the survey evidence through pre-mobilization
 post-dissolution normalization (2021). A section on alternative
 mechanisms adjudicates competing explanations, and a concluding section
 draws out theoretical implications.
+
+\begin{figure}[!htbp]
+\centering
+\begin{tikzpicture}[
+  mech/.style  = {rectangle, rounded corners=4pt, minimum width=3.7cm,
+                  minimum height=0.9cm, align=center,
+                  font=\small\bfseries\color{hdrcolor}},
+  cause/.style = {rectangle, rounded corners=3pt, minimum width=3.7cm,
+                  minimum height=1.55cm, align=center,
+                  font=\small, text width=3.5cm},
+  sig/.style   = {rectangle, rounded corners=3pt, minimum width=3.7cm,
+                  minimum height=2.2cm,  align=center,
+                  font=\small\itshape, text width=3.5cm},
+  arr/.style   = {-{Stealth[length=5pt]}, thick, color=rulecolor},
+  colsep/.style= {draw=rulecolor!60, very thin},
+  node distance = 0.45cm and 0.6cm
+]
+\node[mech,  fill=reprcolor!80] (r-mech)  {Repression};
+\node[cause, fill=reprcolor!40, below=of r-mech] (r-cause)
+      {Participation costs raised\\(coercion, surveillance,\\threat of punishment)};
+\node[sig,   fill=reprcolor!25, below=of r-cause] (r-sig)
+      {Broad-spectrum attenuation; nonresponse rises uniformly; governance satisfaction declines};
+
+\node[mech,  fill=coopcolor!80, right=of r-mech]  (c-mech)  {Co-optation};
+\node[cause, fill=coopcolor!40, below=of c-mech]  (c-cause)
+      {Loyalty benefits raised\\(patronage, material\\incorporation)};
+\node[sig,   fill=coopcolor!25, below=of c-cause] (c-sig)
+      {Pro-regime attitudes rise; welfare satisfaction increases; opposition support declines};
+
+\node[mech,  fill=subtcolor!80, right=of c-mech]  (s-mech)  {Subtraction};
+\node[cause, fill=subtcolor!40, below=of s-mech]  (s-cause)
+      {Political alternative removed\\(opposition dissolved,\\civic ecosystem dismantled)};
+\node[sig,   fill=subtcolor!25, below=of s-cause] (s-sig)
+      {Domain-specific decline; civic engagement and democratic expectations collapse; non-political attitudes stable; democracy satisfaction \emph{rises}};
+
+\foreach \top/\bot in {r-mech/r-cause, r-cause/r-sig,
+                        c-mech/c-cause, c-cause/c-sig,
+                        s-mech/s-cause, s-cause/s-sig}{
+  \draw[arr] (\top.south) -- (\bot.north);
+}
+
+\node[font=\footnotesize\bfseries\color{rulecolor}, left=0.35cm of r-mech,
+      rotate=0, anchor=east, align=right] {\textsc{Mechanism}};
+\node[font=\footnotesize\bfseries\color{rulecolor}, left=0.35cm of r-cause,
+      rotate=0, anchor=east, align=right, text width=1.5cm] {\textsc{Proximate} \textsc{Cause}};
+\node[font=\footnotesize\bfseries\color{rulecolor}, left=0.35cm of r-sig,
+      rotate=0, anchor=east, align=right, text width=1.5cm] {\textsc{Observable} \textsc{Signature}};
+
+\begin{scope}[on background layer]
+  \draw[colsep]
+    ($(r-mech.north east)!0.5!(c-mech.north west)$)
+    -- ($(r-sig.south east)!0.5!(c-sig.south west)$);
+  \draw[colsep]
+    ($(c-mech.north east)!0.5!(s-mech.north west)$)
+    -- ($(c-sig.south east)!0.5!(s-sig.south west)$);
+\end{scope}
+\end{tikzpicture}
+\caption{\textbf{Three mechanisms of political demobilization: causal pathways and observable implications.}
+The subtraction mechanism is distinguished from repression and co-optation by the locus of regime action
+(the political field rather than the citizenry directly) and by a domain-specific rather than broad-spectrum
+observable signature. The Cambodian data are consistent with the subtraction column and inconsistent with the
+repression and co-optation columns on both the placebo battery and the democracy satisfaction trajectory.}
+\label{fig:mechanisms}
+\end{figure}
 
 \section{Data, Measures, and
 Comparability}\label{data-measures-and-comparability}
@@ -491,21 +522,85 @@ critical political sequence: pre-mobilization (2008), peak mobilization
 (2012), post-crackdown selective retreat (2015), and post-dissolution
 normalization (2021).
 
+\begin{figure}[!htbp]
+\centering
+\begin{tikzpicture}[
+  wave/.style   = {circle, fill=hdrcolor, draw=white, line width=1pt,
+                   minimum size=10pt, inner sep=0pt},
+  event/.style  = {diamond, fill=reprcolor!90, draw=reprcolor!60,
+                   minimum size=9pt, inner sep=0pt},
+  phase/.style  = {rectangle, rounded corners=3pt,
+                   fill=gray!10, draw=gray!30,
+                   minimum width=2.4cm, minimum height=0.7cm,
+                   align=center, font=\footnotesize},
+  ann/.style    = {font=\scriptsize, align=center, text width=2.1cm},
+  node distance = 0pt
+]
+\draw[thick, ->, >=Stealth, color=hdrcolor!70]
+  (-0.6,0) -- (13.8,0);
+
+\def\Wa{0}
+\def\Wb{3.2}
+\def\Wc{6.4}
+\def\Ediss{8.5}
+\def\Eelec{10.0}
+\def\Wd{12.8}
+
+\foreach \x/\yr/\lbl in {
+    \Wa/2008/W2,
+    \Wb/2012/W3,
+    \Wc/2015/W4,
+    \Wd/2021/W6}{
+  \node[wave] (w\yr) at (\x,0) {};
+  \node[font=\small\bfseries, above=6pt of w\yr] {\yr};
+  \node[font=\footnotesize\color{hdrcolor!70}, below=4pt of w\yr]
+        {(\lbl)};
+}
+
+\node[event] (ediss) at (\Ediss, 0) {};
+\node[event] (eelec) at (\Eelec, 0) {};
+
+\node[ann, above=10pt] at (\Ediss, 0)
+      {CNRP\\[-1pt]dissolved\\[-1pt](Nov.\ 2017)};
+\node[ann, above=10pt] at (\Eelec, 0)
+      {One-party\\[-1pt]election\\[-1pt](Jul.\ 2018)};
+
+\node[phase, text width=2.0cm] at (\Wa, -1.35) {Baseline\\equilibrium};
+\node[phase, text width=2.3cm] at (\Wb, -1.35) {Peak\\mobilization};
+\node[phase, text width=2.4cm] at (\Wc, -1.35) {Selective\\retreat};
+\node[phase, text width=1.55cm] at ({(\Ediss+\Eelec)/2}, -1.35) {Political\\closure};
+\node[phase, text width=2.1cm] at (\Wd, -1.35) {Authoritarian\\normalization};
+
+\foreach \x in {\Wa,\Wb,\Wc,\Wd}{
+  \draw[gray!40, very thin] (\x,-0.2) -- (\x,-1.05);
+}
+\draw[gray!40, very thin]
+  ({(\Ediss+\Eelec)/2},-0.2) -- ({(\Ediss+\Eelec)/2},-1.05);
+
+\node[font=\scriptsize, color=hdrcolor!60] at (11.5, -2.6)
+      {\tikz\node[wave,minimum size=7pt]{};\ = ABS wave \quad
+       \tikz\node[event,minimum size=7pt]{};\ = Political event};
+\end{tikzpicture}
+\caption{\textbf{The political sequence, 2008--2021.}
+Filled circles mark Asian Barometer Survey waves; diamonds mark key political events.
+The analysis is organised around four phases defined by the relationship between the
+Cambodia National Rescue Party and the political field: pre-mobilization baseline (2008),
+peak mobilization (2012), selective retreat (2015), and post-dissolution normalization (2021).
+The six-year gap between Wave 4 and Wave 6 encompasses the critical closure sequence.}
+\label{fig:timeline}
+\end{figure}
+
 The ABS employs face-to-face interviews with nationally representative
-probability samples drawn through multistage stratified random sampling.
-The Cambodian samples are stratified by province and urban/rural
-classification, with primary sampling units selected proportional to
-population size and households selected through random walk procedures
-within enumeration areas. The survey instrument is administered in
-Khmer. Response rates across the four waves are consistently high,
-ranging from approximately 80 to 90 percent, which is typical for
-face-to-face surveys in Southeast Asia. No post-stratification weights
-are applied in the present analysis; the samples are treated as
-self-weighting, following the ABS's standard practice for single-country
-analyses.\footnote{On ABS methodology and sampling design, see Chu et
-  al. (2008) The ABS Technical Report for each wave provides
-  country-level details on sampling frames, fieldwork dates, and
-  response rates.}
+probability samples; response rates across the four Cambodian waves
+range from approximately 80 to 90 percent.\footnote{Cambodian samples
+  are stratified by province and urban/rural classification, with
+  primary sampling units selected proportional to population size and
+  households via random walk procedures within enumeration areas. The
+  survey instrument is administered in Khmer. No post-stratification
+  weights are applied; samples are treated as self-weighting, following
+  ABS standard practice for single-country analyses. On ABS methodology
+  and sampling design generally, see Chu et al. (2008); country-level
+  details are in the ABS Technical Report for each wave.}
 
 \subsection{Supplementary Data---The 2017 Cambodia Socio-Economic
 Survey}\label{supplementary-datathe-2017-cambodia-socio-economic-survey}
@@ -580,92 +675,40 @@ instrument, with identical wording and response options across waves.
 
 \subsection{Democratic Orientations}\label{democratic-orientations}
 
-The current analysis expands the treatment of democratic attitudes
-beyond the 0--10 expectation items employed in earlier drafts,
-incorporating measures of democratic commitment, democratic
-prioritization, and democratic satisfaction alongside democratic
-expectations. The expanded battery addresses a measurement concern that
-has become increasingly salient in the comparative democratic attitudes
-literature: that survey-measured ``democratic support'' is not a unitary
-construct but a composite of analytically separable dimensions that may
-respond differently to political conditions (Bratton et al.~2004; Mattes
-and Bratton 2007).
-
-\emph{Democratic commitment.} Two items measure abstract endorsement of
-democracy as a regime form. The first, fielded in all four waves,
-presents respondents with a three-option forced choice: ``Democracy is
-always preferable to any other kind of government,'' ``Under some
-circumstances, an authoritarian government can be preferable,'' or ``For
-people like me, it doesn't matter whether we have a democratic or
-non-democratic government.'' The harmonized coding runs 1 (democracy
-always preferable) to 3 (doesn't matter), such that lower means indicate
-stronger democratic commitment. The second, fielded in Waves 3 through
-6, asks respondents to evaluate the statement ``Democracy may have its
-problems, but it is still the best form of government'' on a standard
-1--4 agree/disagree scale (higher = more pro-democratic). Both items
-employ identical wording across all waves in which they appear.
-Nonresponse rates on these items are low: under 2 percent in Waves 3 and
-4, rising to 10--13 percent in Wave 6---elevated, but far below the
-levels observed on the evaluative-projective items discussed below.
-
-\emph{Democratic prioritization.} One item measures the trade-off
-between political freedom and economic equality, asking respondents to
-choose between ``reducing economic inequality'' and ``protecting
-political freedom'' on a five-point scale (1 = inequality reduction
-definitely more important, 5 = political freedom definitely more
-important), with a midpoint option of ``both equally important.'' The
-item was fielded in Waves 3, 4, and 6 with identical wording.
-Nonresponse is minimal (1--8 percent across waves). A second trade-off
-item, pitting democracy against economic development on a five-point
-scale, is available across all four waves but proves empirically less
-dynamic in the Cambodian case; it is reported in Appendix Table A10 for
-completeness.
-
-\emph{Democratic satisfaction.} Respondents in all four waves were
-asked: ``On the whole, how satisfied or dissatisfied are you with the
-way democracy works in {[}Cambodia{]}?'' on a four-point scale (1 = not
-at all satisfied, 4 = very satisfied). Wording is identical across
-waves. Nonresponse is low (0.3--6.4 percent). This item occupies an
-intermediate position between normative democratic support and regime
-performance evaluation; its trajectory proves substantively central to
-the normalization argument developed below.
-
-\emph{Democratic expectations.} Three items fielded in Waves 3, 4, and 6
-measure perceived democratic quality on 0--10 scales: democratic past
-(how democratic was the country ten years ago?), democratic present (how
-democratic is the country today?), and democratic future (how democratic
-will the country be in ten years?). These items carry the highest
-nonresponse rates in the democratic battery---reaching 63 percent on the
-democratic future item and 43 percent on the democratic present item in
-Wave 6. The elevated missingness, concentrated in Wave 6, is itself
-analytically informative and is addressed at length in the alternative
-mechanisms section. Because the expectations items provide the most
-vivid illustration of the temporal arc documented in this article but
-rest on the weakest data foundations, the analytic strategy treats them
-as supporting evidence for patterns that are established more robustly
-on the commitment, prioritization, and satisfaction measures.
-
-\emph{Corruption experience and perception.} Witnessed corruption is
-measured as a binary indicator (ever personally witnessed or experienced
-government corruption). The Wave 2 item uses narrower wording focused
-specifically on bribe solicitation, while Waves 3--6 use a broader
-``witnessed or experienced'' framing; Wave 2 estimates for this item
-should therefore be interpreted with caution. Perceived corruption in
-national and local government is measured on consistent 1--4 scales
-across all waves.
-
-\emph{Media engagement and political interest.} Political interest,
-political news following, and political discussion are measured on
-consistent scales (1--4 or 1--3) across all waves. Internet news
-frequency underwent substantial changes in response scale across waves
-(6-point in Waves 2 and 3, 8-point in Wave 4, 9-point in Wave 6) and has
-been harmonized to a common 1--6 frequency scale (1 = never, 6 = daily
-or more); details of the harmonization procedure are documented in a
-footnote at first use.
+The analysis tracks four analytically separable dimensions of democratic
+attitudes, following the growing recognition that ``democratic support''
+is not a unitary construct (Bratton et al. 2004; Mattes and Bratton
+2007): abstract commitment (forced-choice democracy preference and an
+agree/disagree evaluative item), practical prioritization (a
+democracy-vs-equality trade-off), satisfaction with how democracy works
+(1--4 scale, identical wording all four waves), and feasibility
+expectations (0--10 past/present/future ratings, Waves 3, 4, and 6
+only).\footnote{\emph{Commitment item 1} (all four waves): forced choice
+  among ``democracy is always preferable,'' ``authoritarian government
+  can sometimes be preferable,'' and ``it doesn't matter'' (coded 1--3).
+  \emph{Commitment item 2} (Waves 3--6): ``democracy may have its
+  problems but it is still the best form of government'' (1--4
+  agree/disagree; nonresponse under 2 percent in Waves 3--4, rising to
+  10--13 percent in Wave 6). \emph{Prioritization} (Waves 3, 4, 6):
+  five-point trade-off between political freedom and economic equality;
+  a second trade-off pitting democracy against economic development is
+  available all four waves but is empirically less dynamic and reported
+  in Appendix Table A10. \emph{Corruption}: witnessed corruption is a
+  binary indicator; Wave 2 wording is narrower than Waves 3--6 and
+  treated with caution. Perceived national and local government
+  corruption on consistent 1--4 scales. \emph{Media and interest}:
+  political interest, news following, and political discussion on
+  consistent 1--4 or 1--3 scales; internet news harmonized to a 1--6
+  frequency scale across waves with differing original response
+  categories.} The expectations items carry the highest nonresponse---63
+percent on democratic future in Wave 6---and are treated as supporting
+evidence for patterns established more robustly on the commitment,
+prioritization, and satisfaction measures. The nonresponse rate is
+itself analytically informative and is addressed in the alternative
+mechanisms section.
 
 Table~\ref{tbl-comparability} summarizes the comparability status of the
-headline indicators; inferences relying on Partial items are flagged in
-the text at first use.
+headline indicators.
 
 \begin{table}
 
@@ -707,24 +750,23 @@ Internet news frequency & Partial & Scale harmonized\\
 
 \end{table}%
 
-\emph{Analytic strategy.} The analysis is primarily descriptive,
-reporting wave-level means, proportions, and cross-wave differences for
-each indicator. All estimates are accompanied by 95 percent confidence
-intervals computed from standard errors (binomial/Wilson intervals for
-proportions; normal-approximation intervals for means). Cross-wave
-differences for headline statistics are evaluated using two-sample
-t-tests (for means) or two-sample proportion tests (for proportions).
-The analytic leverage derives from within-case temporal variation across
-a well-documented political sequence rather than from regression-based
-causal identification; covariate-adjusted OLS models are reported in
+\emph{Analytic strategy.} The analysis is primarily descriptive:
+wave-level means and proportions with 95 percent confidence intervals
+(Wilson intervals for proportions; t-based for means), evaluated with
+two-sample t-tests or proportion tests.\footnote{This design cannot
+  establish causality in the formal sense, but can identify whether the
+  timing, direction, and domain-specificity of observed shifts are
+  consistent with the demobilization-by-subtraction mechanism and
+  inconsistent with plausible alternatives. The analytic strategy treats
+  the Cambodian sequence as a structured comparison across a documented
+  political closure rather than as a natural experiment.}
+Covariate-adjusted OLS models are reported in
 Table~\ref{tbl-ols-controls} as a compositional robustness check,
-confirming that the headline wave-level patterns are not explained by
-demographic differences across survey samples. This design cannot
-establish causality in the formal sense, but it can identify whether the
-timing, direction, and domain-specificity of observed shifts are
-consistent with the demobilization-by-subtraction mechanism and
-inconsistent with plausible alternatives. The alternative mechanisms
-section addresses this adjudication directly.
+confirming that headline patterns are not explained by demographic
+differences across survey samples. The analytic leverage derives from
+within-case temporal variation across a well-documented political
+sequence; the alternative mechanisms section addresses causal
+adjudication directly.
 
 \begin{table}
 
@@ -765,41 +807,18 @@ understand what kind of silence it was.\footnote{Unless otherwise noted,
   Hughes (2010); Strangio (2014); Un (2013a); and Un (2013b)}
 
 By 2008, Cambodia had been under continuous CPP rule for over two
-decades. The Paris Peace Accords of 1991 and the UNTAC-supervised
-elections of 1993 had produced a brief, chaotic experiment in multiparty
-democracy, but the CPP had never genuinely relinquished power, and after
-a violent coup in 1997 and disputed elections in 1998 and 2003, the
-party had consolidated its dominance through a combination of patronage,
-institutional control, and selective coercion. The 2008 National
-Assembly elections, which the CPP won with 58 of 123 seats and
-subsequently expanded through coalition politics, were competitive in
-form but not seriously contested in outcome.
-
-The CPP's dominance by 2008 rested on foundations that went beyond
-electoral mechanics. The party had built a patronage network linking the
-central state to village-level administration, with commune chiefs
-serving as the capillary system through which resources, information,
-and political loyalty flowed (Hughes and Un 2011).\footnote{On the CPP's
-  patronage architecture, see Caroline Hughes and Kheang Un,
-  \emph{Cambodia's Economic Transformation} (Copenhagen: NIAS Press,
-  2011); Un (2012)} The military was thoroughly integrated into the
-party apparatus --- Hun Sen's personal bodyguard unit alone numbered in
-the thousands --- and the judiciary operated as an instrument of
-executive power (Blake 2019; Morgenbesser 2016). GDP growth averaging
-about 7 percent annually, driven by garments, construction, and tourism,
-provided the material foundation for the regime's implicit social
-contract: stability and modest prosperity in exchange for political
-acquiescence (World Bank 2026).
-
-The opposition landscape was fragmented and demoralized. The Sam Rainsy
-Party (SRP), the most prominent non-CPP formation, commanded a loyal but
-limited urban constituency and suffered from periodic leadership crises
-as Sam Rainsy himself cycled between exile and return. The Human Rights
-Party, led by Kem Sokha, drew support from a distinct base but lacked
-the organizational reach to challenge the CPP's rural dominance. Neither
-party, operating independently, presented a credible threat to CPP
-hegemony---a structural condition that would change dramatically with
-their merger four years later (Noren-Nilsson 2015).
+decades. The party had consolidated its dominance through a patronage
+network linking the central state to village-level administration, an
+integrated security apparatus, a compliant judiciary, and GDP growth
+averaging about 7 percent annually---the material foundation for the
+regime's implicit bargain of stability in exchange for political
+acquiescence (Blake 2019; Morgenbesser 2016; World Bank 2026). The
+opposition was fragmented: the Sam Rainsy Party commanded a loyal but
+limited urban constituency; the Human Rights Party, led by Kem Sokha,
+lacked the organizational reach to threaten CPP hegemony. Neither posed
+a credible challenge in isolation---a structural condition that would
+change dramatically with their merger four years later (Norén-Nilsson
+2015).
 
 The Wave 2 Asian Barometer data from this period paint a portrait of a
 population that was neither enthusiastic nor resistant, but simply
@@ -819,19 +838,23 @@ quiet.\footnote{Unless otherwise noted, the following scale conventions
   self-reported and expressed as a percentage.} Political participation
 was present but low in intensity: 43 percent of respondents reported
 ever having contacted a person of influence, yet community leader
-contact averaged just 1.53 on a five-point frequency scale---figures
-that capture a population with prior exposure to civic channels but with
-limited ongoing engagement.\footnote{Direct contact with elected
-  officials and civil servants uses a broadly-worded `at any level'
-  framing in Wave 2 that differs from the narrower, problem-motivated
-  framing in Wave 3 and from the Wave 4 and 6 formulations; these items
-  are not used for cross-wave comparisons involving Wave 2 but are
-  reported in the four-wave tables with appropriate documentation.}
+contact averaged just 1.53 on a five-point frequency scale.\footnote{Direct
+  contact with elected officials and civil servants uses a
+  broadly-worded `at any level' framing in Wave 2 that differs from the
+  narrower, problem-motivated framing in Wave 3 and from the Wave 4 and
+  6 formulations; these items are not used for cross-wave comparisons
+  involving Wave 2 but are reported in the four-wave tables with
+  appropriate documentation.}
 
-\begin{table}[htbp]
+\begin{table}
+
+\caption{\label{tbl-wave2}Wave 2 (2008) Baseline: Political Orientations in Cambodia}
+
+\centering{
+
 \centering
-\caption{Wave 2 (2008) Baseline: Political Orientations in Cambodia}
-\label{tab:wave2}
+
+
 \small
 \renewcommand{\arraystretch}{1.15}
 \begin{tabular}{@{}lr@{\hskip 2em}lr@{}}
@@ -857,50 +880,22 @@ Military rule & 2.19 (2.11--2.27) & Discusses politics (1--3) & 1.65 (1.61--1.69
 
 \vspace{4pt}
 {\footnotesize\textit{Note:} 95\% CI in parentheses (Wilson interval for proportions; $t$-based for means). --- = not fielded in Wave 2. $N = 1{,}000$.}
-\end{table}
 
-The authoritarian attitude measures are perhaps the most telling.
-Single-party rule was rated at 1.79 on a four-point scale (where 4
-represents ``very good''), strongman rule at 1.6, and military rule at
-2.19. These are not the numbers of a population that embraces
-authoritarianism as an ideal; they are the numbers of a population that
-has learned to live within it. The slightly elevated tolerance for
-military rule is consistent with the CPP's own origins in
-Vietnamese-backed military intervention and the residual security
-anxieties of a post-genocide society, but even this measure sits below
-the scale midpoint.
+}
 
-The democratic orientation measures from 2008 establish a baseline of
-modest, largely passive democratic sentiment. On the forced-choice
-democracy preference item, 61.2 percent of respondents selected
-``democracy is always preferable,'' while 30.5 percent---nearly a
-third---chose ``for people like me, it doesn't matter.'' Only 8.3
-percent endorsed the view that authoritarian government could sometimes
-be preferable. The mean (1.69 on the 1--3 scale, where 1 represents the
-strongest democratic commitment) reflects a population that leaned
-democratic but without intensity: a plurality endorsed democracy as an
-abstract principle, but the large ``doesn't matter'' share signals the
-political indifference of a citizenry that had experienced little
-meaningful democratic choice. Democracy satisfaction stood at 2.97 on a
-four-point scale---essentially at the midpoint between ``not very
-satisfied'' and ``fairly satisfied.'' The
-democracy-versus-economic-development trade-off item produced a mean of
-2.43 on a five-point scale, leaning slightly toward economic
-development. These are not the numbers of a population invested in
-democratic politics. They are the numbers of a population for whom
-democracy was neither an aspiration nor a grievance---simply not a
-salient dimension of political life.
+\end{table}%
 
-What is most notable about the 2008 data, viewed in retrospect, is how
-stable everything appears. There are no dramatic spikes, no anomalous
-values, no signs of the upheaval to come. Cambodia in 2008 was a country
-in political equilibrium---not a democratic equilibrium, but not one
-characterized by active authoritarian mobilization either. It was, to
-extend the metaphor, a kingdom in which the subjects had learned that
-the king was permanent and had arranged their lives accordingly. The
-question that the next four years would pose, with startling force, was
-what would happen when that arrangement was briefly and dramatically
-disrupted.
+The authoritarian attitude measures are telling. Single-party rule was
+rated at 1.79 on a four-point scale, strongman rule at 1.6, and military
+rule at 2.19---not numbers of a population that embraces
+authoritarianism as an ideal, but of one that has learned to live within
+it. On the forced-choice democracy preference, 61.2 percent selected
+``democracy is always preferable'' while 30.5 percent chose ``it doesn't
+matter''---a plurality endorsement without intensity. Cambodia in 2008
+was a country in political equilibrium. No dramatic spikes, no anomalous
+values, no signs of the upheaval to come. The question that the next
+four years would pose, with startling force, was what would happen when
+that arrangement was briefly and dramatically disrupted.
 
 \section{The Awakening: Cambodia in
 2012}\label{the-awakening-cambodia-in-2012}
@@ -909,246 +904,106 @@ Something extraordinary happened in Cambodia between 2008 and 2012, and
 the Wave 3 Asian Barometer data capture its imprint with unusual
 clarity.\footnote{Unless otherwise noted, the political chronology and
   electoral data in this section draw on Un (2013b); Um (2014); Strangio
-  (2014); and Noren-Nilsson (2015) On the 2013 election results
+  (2014); and Norén-Nilsson (2015) On the 2013 election results
   specifically, see COMFREL (The Committee for Free and Fair Elections
   in Cambodia) (2013)}
 
 Across nearly every measure of civic engagement and political
 aspiration, Cambodian respondents in 2012 registered at or near the
 highest values in the dataset's history. Contact with influential
-persons---the gate item with consistent framing across waves---rose from
-43 percent in 2008 to 52.6 percent. Community leader contact averaged
-1.9 on a five-point frequency scale, up from 1.53. And the political
-activities newly tracked beginning in Wave 3---attending demonstrations
+persons rose from 43 percent in 2008 to 52.6 percent. Community leader
+contact averaged 1.9 on a five-point frequency scale, up from 1.53. The
+political activities newly tracked in Wave 3---attending demonstrations
 (2.6 percent ever) and signing petitions (10.5 percent ever)---debuted
-at notable levels consistent with a population in active political
-motion.
-
-These are not the numbers of a quiescent population. They are the
-numbers of a population that had been politically activated.
+at levels consistent with a population in active political motion.
 
 The catalyst was the formation of the Cambodia National Rescue Party in
-2012, a merger of the Sam Rainsy Party and the Human Rights Party under
-the joint leadership of Sam Rainsy and Kem Sokha. The CNRP did something
-that no previous Cambodian opposition had managed: it unified the
-fragmented non-CPP political space into a single, credible alternative
-with a coherent message of democratic reform, anti-corruption, and
-economic justice. The party drew its energy from an emerging urban youth
-demographic---the first generation of Cambodians born after the Khmer
-Rouge, educated in the expanding university system, connected to the
-wider world through social media, and impatient with the political
-settlement their parents had accepted.
+2012, a merger of the Sam Rainsy Party and the Human Rights Party. The
+CNRP unified the fragmented non-CPP political space into a single,
+credible alternative with a coherent message of democratic reform,
+anti-corruption, and economic justice, drawing its energy from an urban
+youth demographic---the first generation born after the Khmer Rouge,
+connected to the wider world through social media, and impatient with
+the political settlement their parents had accepted. The July 2013
+national election became the most competitive in Cambodia's post-UNTAC
+history. The CNRP won 55 of 123 National Assembly seats; allegations of
+electoral fraud triggered months of mass protest. For observers and
+participants alike, the political settlement that had governed Cambodia
+since the late 1990s appeared to be unraveling (Strangio 2014;
+Morgenbesser 2017; Norén-Nilsson 2021).
 
-The CNRP's formation in July 2012 was itself a product of political
-learning. Previous opposition efforts had foundered on precisely the
-fragmentation that the CPP exploited: multiple parties splitting the
-non-CPP vote, personal rivalries preventing coordination, and the
-absence of a unified organizational infrastructure capable of matching
-the CPP's commune-level reach. The merger of the SRP and the Human
-Rights Party, brokered through extended negotiations between Sam Rainsy
-and Kem Sokha, resolved the coordination problem at a stroke
-(Noren-Nilsson 2015; Un 2013a). The resulting party offered voters
-something genuinely new in Cambodian politics: a single, unified
-alternative to the CPP with recognizable leaders, a coherent platform,
-and---critically---the organizational capacity to mobilize supporters in
-both urban and peri-urban constituencies.
+The democratic expectations data tell the same story from a different
+angle. Cambodian respondents in 2012 produced a mean of 9.58 on the
+ten-point democratic future scale---near-universal optimism, suggesting
+a population that had collectively decided democratic change was not
+merely desirable but imminent. The past-present-future structure (low
+past: 3.97; middling present: 5.85; exceptionally high future: 9.58) is
+not the signature of a population evaluating its institutions on the
+basis of lived experience---it is a hope-driven orientation, grounded in
+expectation rather than experience, and therefore extraordinarily
+sensitive to political events. The 2012 moment was not a peak of
+abstract democratic commitment: the forced-choice democracy preference
+(56.9 percent choosing ``always preferable'') actually ran \emph{lower}
+than in 2008. It was a peak of democratic \emph{expectation} and
+\emph{prioritization}. Nearly half of respondents (47.1 percent)
+prioritized political freedom over economic equality---a level that
+would not be observed again. Witnessed corruption, at 49 percent,
+reflected not an increase in actual corruption but a population more
+willing to name it, emboldened by opposition messaging and expanded
+civic space. Political interest (2.57) and news following (3.07) stood
+at the highest values in the Cambodian series.\footnote{Traditional
+  values measures also peaked in Wave 3---an unexpected finding given
+  that the broader mobilization was associated with youth activism. One
+  possibility is that the CNRP's messaging, which blended democratic
+  aspiration with Khmer cultural conservatism, activated traditional
+  values alongside democratic ones; another is a general intensification
+  of expressed attitudes in the charged political environment of 2012.}\footnote{The
+  ABS internet news item underwent substantial scale changes across
+  waves (6-point in W2/W3, 8-point in W4, 9-point in W6) and has been
+  harmonized to a common 1--6 frequency scale (1 = never, 6 = daily or
+  more).}
 
-The mobilization dynamics visible in the 2012 survey data intensified
-dramatically in the months that followed. The July 2013 national
-election became the most competitive in Cambodia's post-UNTAC history,
-driven by a potent combination of youth demographics, social media
-penetration, and economic grievance. Facebook, which had reached an
-estimated 1.5 million Cambodian users by 2013, served as both an
-organizational tool and an alternative information ecosystem that
-partially circumvented CPP control of broadcast media (Norén-Nilsson
-2021; Morgenbesser 2020). The CNRP's campaign messaging---centered on
-anti-corruption, land rights, wages for garment workers, and a promise
-to bring genuine democratic accountability---resonated with a generation
-of voters who had no memory of the Khmer Rouge and little patience for
-the stability-first bargain their parents had accepted (Norén-Nilsson
-and Senior Lecturer at the Centre for East and South-East Asian Studies,
-Lund University. 2021).
-
-The election results shocked the political establishment. The CNRP won
-55 of 123 National Assembly seats, reducing the CPP's margin to its
-narrowest since 1993. Allegations of systematic electoral fraud
-triggered months of mass protest in Phnom Penh, with demonstrations
-regularly drawing crowds estimated in the tens of thousands. For
-observers and participants alike, the political settlement that had
-governed Cambodia since the late 1990s appeared to be unraveling
-(Strangio 2014; Morgenbesser 2017).
-
-The democratic expectation measures tell the same story from a different
-angle. When asked to rate the democratic future of their country on a
-ten-point scale, Cambodian respondents in 2012 produced a mean of 9.58.
-This is, by any standard, a remarkably high figure, indicating
-near-universal optimism. It suggests a population that had collectively
-decided that democratic change was not merely desirable but
-imminent---that the political order they had lived under for decades was
-on the verge of fundamental transformation.
-
-The broader democratic orientation battery from Wave 3 reveals a more
-textured picture than the expectations items alone suggest. On the
-forced-choice democracy preference, 56.9 percent chose ``democracy is
-always preferable''---actually \emph{lower} than in 2008 (61.2 percent),
-with 30.2 percent selecting ``doesn't matter'' and 12.9 percent
-endorsing conditional authoritarianism. The 2012 moment was not, in
-other words, a peak of abstract democratic commitment; it was a peak of
-democratic \emph{expectation} and \emph{prioritization}. The distinction
-matters. Respondents who rated their country's democratic future at 9.58
-on a ten-point scale were not necessarily more committed to democracy as
-an ideal than their 2008 counterparts---they were more convinced that
-democracy was arriving. The commitment-expectation gap in 2012---modest
-abstract endorsement alongside extraordinary feasibility optimism---is
-the signature of a population whose democratic orientation was driven by
-perceived possibility rather than by normative conviction.
-
-Where prioritization is concerned, the 2012 data register the high-water
-mark. On the democracy-versus-equality trade-off, the
-pro-political-freedom side accounted for 47.1 percent of respondents
-(25.1 percent ``somewhat,'' 22.0 percent ``definitely''), while the
-pro-equality side stood at 50.4 percent, with a negligible 2.5 percent
-selecting ``both equally important.'' The population was almost evenly
-divided, but nearly half were willing to prioritize political freedom
-over material equality---a level of democratic prioritization that would
-not be observed again. The ``democracy is the best form of government''
-item debuted in this wave at 3.26 on a four-point scale (between
-``agree'' and ``strongly agree''), the highest value it would record
-across the three waves in which it was fielded. Democracy satisfaction
-held steady at 2.98, essentially unchanged from 2008.
-
-The paradox, of course, is that this expectation was not based on any
-structural change in the regime. The CPP still controlled the state
-apparatus, the military, the courts, the media, and the vast patronage
-networks that sustained its rural base. Hun Sen showed no inclination to
-reform or retire. What had changed was not the regime but the perception
-of the regime's permanence---and that perceptual shift, as the
-subsequent waves would demonstrate, proved far more fragile than the
-political moment suggested.
-
-The specific configuration of the democratic assessment triad in 2012 is
-theoretically revealing. The past-present-future structure---low past
-(3.97), middling present (5.85), exceptionally high future (9.58)---is
-not the signature of a population evaluating its democratic institutions
-on the basis of lived experience. A population grounded in experiential
-assessment would be expected to rate the future as a modest
-extrapolation from the present, not as a near-perfect score that exceeds
-the present by nearly four points. What the 2012 configuration captures
-instead is a hope-driven democratic orientation: the conviction that the
-current political order is transitional and that the democratic
-destination is both certain and imminent. This orientation, as
-subsequent waves would reveal, proved extraordinarily sensitive to
-political events---precisely because it was grounded in expectation
-rather than experience.
-
-Even the corruption data reflect the mobilization moment. Witnessed
-corruption stood at 49 percent in Wave 3, up from 28 percent in Wave 2.
-This increase is almost certainly not an increase in actual
-corruption---the CPP's patronage system was well-established long before
-2012---but rather reflects a population that had become more willing to
-identify and report corruption as a political problem, emboldened by the
-opposition's anti-corruption messaging and the expanded civic space that
-accompanied the CNRP's rise.
-
-The media and political engagement measures complete the portrait of a
-mobilized citizenry. Political interest stood at 2.57 on a four-point
-scale, and following political news registered at 3.07---both the
-highest values in the Cambodian ABS series. Political discussion, at
-1.45, remained modest, suggesting that the activation captured in 2012
-was more a matter of individual attention and institutional engagement
-than of deliberative civic culture.\footnote{There are also subtler
-  patterns in the Wave 3 data that resist easy interpretation.
-  Traditional values measures---obedience to parents, deference to
-  teacher authority---also peaked in this wave, an unexpected finding
-  given that the broader mobilization was associated with youth activism
-  and challenges to established authority. One possibility is that the
-  CNRP's own messaging, which blended democratic aspiration with Khmer
-  cultural conservatism and Buddhist moral frameworks, activated
-  traditional values alongside rather than in opposition to democratic
-  ones. Another is that the elevated values reflect a general
-  intensification of political and social engagement in which all
-  expressed attitudes, whether progressive or traditional, registered at
-  higher levels. A third possibility, which cannot be ruled out, is
-  survey context effects: the charged political environment of 2012 may
-  have produced a general social desirability bias toward expressing
-  strong opinions of any kind.} Internet news consumption, harmonized to
-a common six-point frequency scale across waves, stood at 1.22---in the
-``never to hardly ever'' range, consistent with the still very limited
-internet penetration of Cambodia in 2012.\footnote{The ABS internet news
-  item underwent substantial changes in response scale across waves
-  (6-point in W2/W3, 8-point in W4, 9-point in W5/W6). The values
-  reported here reflect harmonization to a common 1--6 frequency scale
-  (1 = never, 6 = daily or more). The coarser W2/W3 scale cannot
-  distinguish within-daily usage patterns available in later waves, but
-  the harmonized values are comparable at the level of weekly, monthly,
-  and annual frequency.}
-
-The 2012 data, taken together, present a portrait of a political
-community at its moment of maximum activation. Every dimension the Asian
-Barometer measures---participation, aspiration, attention, even the
-willingness to name corruption---points in the same direction. It is
-tempting, with the knowledge of what came after, to read this as the
-high-water mark of Cambodian democracy, the moment before the tide
-turned. But that reading, while emotionally satisfying, may be too
-simple. What the Wave 3 data actually capture is something rarer and
-more theoretically interesting: the approximate moment at which a
-population collectively updated its beliefs about what was politically
-possible, right before the regime demonstrated, with devastating
-effectiveness, that those beliefs were wrong.
+The 2012 data capture the approximate moment at which a population
+collectively updated its beliefs about what was politically possible,
+right before the regime demonstrated, with devastating effectiveness,
+that those beliefs were wrong.
 
 \section{The Reckoning: Cambodia in
 2015}\label{the-reckoning-cambodia-in-2015}
 
-That demonstration began at the ballot box and ended in the
-streets.\footnote{Unless otherwise noted, the political chronology in
-  this section draws on Chheang (2015); Morgenbesser (2017); and
-  Norén-Nilsson (2019)} The 2013 national election, held just months
-after the Wave 3 survey captured such exceptional optimism, confirmed
-the CNRP's mobilization power: the opposition won 55 seats to the CPP's
-68, the narrowest margin in the country's modern history. Yet, the
-structural ceiling of the dominant-party state held firm. Amid
-widespread allegations of electoral fraud, the CNRP boycotted
-parliament, triggering months of mass demonstrations that soon merged
-with massive garment worker strikes. For a brief window, genuine
-political transformation appeared imminent. It did not arrive. Following
-a lethal state crackdown on protesters in January 2014, and a subsequent
-political compromise that coaxed the opposition into the National
-Assembly under a fragile and temporary ``Culture of Dialogue,'' the
-momentum of the streets fractured.
+The 2013 election confirmed the CNRP's mobilization power---55 seats to
+the CPP's 68, the narrowest margin in Cambodia's modern history---but
+the structural ceiling held.\footnote{Unless otherwise noted, the
+  political chronology in this section draws on Chheang (2015);
+  Morgenbesser (2017); and Norén-Nilsson (2019)} Fraud allegations
+triggered mass protest; a January 2014 crackdown and subsequent
+compromise coaxed the CNRP into parliament under a fragile ``Culture of
+Dialogue'' that was less a genuine opening than a controlled
+decompression: the CPP retained the security forces, the judiciary, and
+the National Election Committee while progressively constraining the
+CNRP through legal harassment and restrictions on assembly (Morgenbesser
+2017; Norén-Nilsson 2019). By 2015 the dialogue had stalled, and the
+Wave 4 survey entered the field in an atmosphere that had shifted from
+the hopeful energy of 2013 to something more wary.
 
-The ``Culture of Dialogue'' that emerged from the July 2014 agreement
-between Sam Rainsy and Hun Sen was, in retrospect, less a genuine
-political opening than a controlled decompression. The CNRP entered
-parliament and gained access to committee chairmanships, lending the
-arrangement a veneer of power-sharing. But the underlying dynamics had
-not changed: the CPP retained control of the security forces, the
-judiciary, and the National Election Committee, while the CNRP's
-capacity for mass mobilization---its primary source of leverage---was
-progressively constrained through targeted legal harassment of its
-leaders and selective restrictions on public assembly (Morgenbesser
-2017; Norén-Nilsson 2019; Schedler 2013). By 2015, the dialogue had
-largely stalled, and the political atmosphere had shifted from the
-hopeful if chaotic energy of 2013 to something more wary and uncertain.
-It was in this atmosphere that the Wave 4 Asian Barometer survey entered
-the field.
+The Wave 4 data capture a population no longer at the peak of
+mobilization but not yet in the trough of withdrawal. Contact with
+influential persons held essentially steady at 55.9 percent (the
+3.3-point increase from Wave 3 is not statistically significant;
+\emph{p} = 0.11), and demonstration attendance, petition-signing, and
+civil servant contact all edged slightly upward. The ``selective
+retreat'' of 2015 is not written primarily in the behavioral data. It is
+written in the attitudinal record.
 
-The Wave 4 data from 2015 capture a population in the midst of this
-reckoning---no longer at the peak of mobilization but not yet in the
-trough of withdrawal. The behavioral participation measures tell a more
-ambiguous story than might be expected. Contact with influential persons
-held essentially steady at 55.9 percent (the 3.3 percentage-point
-increase from Wave 3 is not statistically significant; \emph{p} = 0.11),
-and demonstration attendance, petition-signing, and civil servant
-contact all edged slightly upward from their Wave 3 levels. Community
-leader contact averaged 2 on a five-point frequency scale, essentially
-unchanged from 2012. The ``selective retreat'' of 2015 is not, in other
-words, a story written primarily in the behavioral data. It is written
-instead in the attitudinal record.
+\begin{table}
 
-\begin{table}[htbp]
+\caption{\label{tbl-wave3to4}Selective Retreat, 2012--2015: Wave 3 to Wave 4 Comparison}
+
+\centering{
+
 \centering
-\caption{Selective Retreat, 2012--2015: Wave 3 to Wave 4 Comparison}
-\label{tab:wave3to4}
+
+
 \small
 \renewcommand{\arraystretch}{1.15}
 \begin{tabular}{@{}lrrr@{\hskip 1.5em}lrrr@{}}
@@ -1174,141 +1029,66 @@ Military rule & 2.19 & 1.98 & $-$0.21 & Discusses politics (1--3) & 1.45 & 1.47 
 
 \vspace{4pt}
 {\footnotesize\textit{Note:} Point estimates only; 95\% CIs reported in Table~3 and Appendix. $\Delta$ = W4 $-$ W3. Participation rows report gate proportions (\%); all other rows report wave means. $\Delta$ for proportions in percentage points; for means in scale units. $N$: W3 = 1{,}200; W4 = 1{,}200.}
-\end{table}
 
-This attitudinal disengagement was not yet accompanied by a
-corresponding rise in authoritarian acceptance. Single-party rule
-actually dipped slightly from 1.97 to 1.78, and military rule fell from
-2.19 to 1.98. Expert rule and strongman rule edged up marginally but
-remained below 2.0. This pattern is analytically important: it suggests
-that the demobilization observed between 2012 and 2015 was driven more
-by disillusionment and tactical withdrawal than by a genuine
-reorientation toward authoritarian preferences. Cambodians were pulling
-back from political action, but they had not yet accepted the
-authoritarian order as normatively appropriate.
+}
 
-The democratic orientation measures from Wave 4 reveal the first signs
-of a decoupling that would define the Cambodian trajectory. On the
-forced-choice democracy preference, 74.9 percent of respondents selected
-``democracy is always preferable''---the highest proportion across all
-four waves, up sharply from 56.9 percent in 2012. The ``doesn't matter''
-category collapsed from 30.2 to 18.9 percent. Citizens were choosing
-sides, and choosing democracy. Why? The 2013 election, the mass
-protests, the crackdown had made democracy contested and salient rather
-than the background condition it had been in 2008. Commitment
-intensified because the ideal was under visible threat. The second
-commitment item --- ``democracy may have its problems but it is still
-the best form of government'' --- dipped modestly from 3.26 to 3.15
-(\emph{p} \textless{} 0.001), statistically significant but
-substantively small.
+\end{table}%
 
-At the same moment, democratic prioritization began its descent. The
-democracy-versus-equality trade-off shifted significantly toward the
-equality pole: the pro-political-freedom side contracted from 47.1 to
-34.6 percent, while the ``both equally'' midpoint expanded from 2.5 to
-8.2 percent (mean: 2.91 → 2.58, \emph{p} \textless{} 0.001). Citizens
-were declaring their commitment to democracy in the abstract while
-becoming less willing to prioritize it when placed in competition with
-economic equality. The pattern is not contradictory; it reflects a
-population that had learned from the events of 2013--2014 that
-democratic aspiration carried real costs---political instability,
-economic disruption, state violence---and was beginning to weigh those
-costs against the ideal even while affirming the ideal itself.
+Table~\ref{tbl-wave3to4} shows the W3→W4 shifts. The attitudinal retreat
+is not accompanied by a corresponding rise in authoritarian
+acceptance---single-party rule dipped, military rule fell, and all four
+measures remained below 2.0. The 2015 demobilization was driven by
+disillusionment and tactical withdrawal, not reorientation toward
+authoritarian preferences.
 
-The democratic expectation measures had already begun their descent. The
-democratic future rating fell from 9.58 to 7.72---a drop of nearly two
-full points on the ten-point scale (\emph{p} \textless{} 0.001). The
-democratic present declined from 5.85 to 5.06. Only the democratic past
-held relatively steady at 3.87. Democracy satisfaction fell to
-2.71---the lowest value in the four-wave series---consistent with a
-widening gap between democratic expectations (still elevated at 7.72)
-and perceived democratic reality (5.06). The gap between what citizens
-hoped for and what they observed produced dissatisfaction; the narrowing
-of that gap by Wave 6, accomplished not by improving reality but by
-lowering expectations, would produce the opposite.
+The democratic orientation data reveal the first signs of a decoupling
+that would define the Cambodian trajectory. Abstract democratic
+commitment paradoxically surged: 74.9 percent selected ``democracy is
+always preferable''---the highest proportion across all four waves, up
+from 56.9 percent in 2012. The crackdown of 2013--2014 had made the
+ideal visible and contested, and citizens chose sides. But
+prioritization began its descent simultaneously: the
+pro-political-freedom share of the democracy-versus-equality trade-off
+contracted from 47.1 to 34.6 percent (mean: 2.91 → 2.58, \emph{p}
+\textless{} 0.001). Citizens were affirming the ideal while becoming
+less willing to bear its costs. Democratic future expectations fell
+nearly two points (\emph{p} \textless{} 0.001); democracy satisfaction
+dropped to 2.71---its lowest value---as the gap between elevated
+expectations and deteriorating reality widened. That gap would close by
+2021, producing the satisfaction paradox documented in
+Figure~\ref{fig-paradox}.
 
-The corruption data from Wave 4 introduce a striking counterpoint.
-Witnessed corruption surged to its highest level in the dataset: 63
-percent of respondents reported having personally encountered
-corruption. This is unlikely to reflect merely increased willingness to
-report; the political environment of 2015 was, if anything, less
-permissive of anti-government speech than 2012. The more likely
-explanation is that the post-2013 period, with its political bargaining,
-institutional jockeying, and expanded CNRP presence in parliament,
-created more visible sites of corruption---more interactions between
-citizens and competing political actors, more opportunities to observe
-the transactional nature of Cambodian governance up close.
-
-The informational dimensions of political life registered the earliest
-signs of the withdrawal that would accelerate dramatically by 2021.
-Political interest declined from 2.57 to 2.29, and following political
-news fell from 3.07 to 2.86---modest drops in absolute terms, but
-significant as the leading edge of a trend that would deepen sharply.
-Political discussion held essentially flat at 1.47, suggesting that
-Cambodians were beginning to disengage from formal political information
-channels while maintaining informal conversational patterns. Internet
-news consumption, meanwhile, continued its modest climb from 1.22 to
-1.82, reflecting the early stages of broadening internet access even as
-political engagement with that access was beginning to wane.
-
-The 2015 wave, viewed within the larger narrative, represents the hinge
-point---the moment when the trajectory could still have gone either way.
-The CNRP was weakened but present, its leaders alternately accommodated
-and harassed, its supporters disillusioned but not yet defeated. The
-data register this ambiguity: democratic hope was falling but had not
-crashed. Behavioral participation remained largely intact while
-attitudinal engagement had already begun its descent. Authoritarian
-acceptance had not yet risen. Corruption was more visible than ever. It
-was a moment of unstable equilibrium, poised between the democratic
-aspiration of 2012 and the authoritarian normalization that was about to
-descend.
+Witnessed corruption surged to 63 percent---its dataset peak. The
+post-2013 period, with its institutional jockeying and expanded CNRP
+parliamentary presence, created more visible sites of corruption, not
+more corruption per se. Political interest and news following registered
+modest declines, the leading edge of a trend that would deepen sharply.
+The 2015 wave is the hinge: democratic hope falling but not yet crashed,
+behavior intact but attitudes already retreating, authoritarian
+acceptance still low. Unstable equilibrium, poised between the
+aspiration of 2012 and the normalization that was about to descend.
 
 \section{The Silence: Cambodia in
 2021}\label{the-silence-cambodia-in-2021}
 
 On November 16, 2017, the Supreme Court of Cambodia dissolved the
-Cambodia National Rescue Party.\footnote{Unless otherwise noted, the
-  political chronology in this section draws on Un and Luo (2020);
-  Chheang and President of the Asian Vision Institute (AVI), an
-  independent think-tank based in Phnom Penh, Cambodia. He is a public
-  policy analyst specializing in geopolitics and political economy of
-  Southeast Asia. (2021); and Morgenbesser and Pepinsky (2019)} The
-ruling, which cited a vaguely defined conspiracy to overthrow the
-government, banned 118 CNRP officials from political activity for five
-years and transferred the party's parliamentary seats to smaller,
-CPP-aligned parties. Kem Sokha had already been arrested in September;
-Sam Rainsy remained in exile. In the July 2018 national election, the
-CPP won all 125 seats in the National Assembly. Cambodia became, for all
-practical purposes, a one-party state.
-
-The CNRP's dissolution did not occur in isolation. It was the
-centerpiece of a broader campaign of political closure that
-systematically dismantled the infrastructure of independent civic life.
-The \emph{Cambodia Daily}, the country's most prominent English-language
-newspaper and a persistent thorn in the CPP's side, was forced to close
-in September 2017 after receiving a disputed tax bill of \$6.3 million
-(Norén-Nilsson 2021). Radio Free Asia's Cambodian bureau was shuttered,
-and several of its journalists faced criminal charges. Independent radio
-stations that had broadcast opposition content were pressured to switch
-to pro-government programming or cease operations entirely. Civil
-society organizations faced intensified regulatory scrutiny under the
-2015 Law on Associations and Non-Governmental Organizations (LANGO),
-which gave the government broad discretionary power to dissolve
-organizations deemed to threaten public order (Norén-Nilsson and Eng
-2020).
-
-The combined effect was the elimination not merely of the political
-opposition but of the broader ecosystem---media, civil society, informal
-networks---through which citizens had accessed alternative political
-information and organized collective action. The transition, in Levitsky
-and Way's typology, was from competitive authoritarianism, in which
-opposition parties exist and can occasionally win, to hegemonic
-authoritarianism, in which the electoral arena is formally maintained
-but substantively emptied (Levitsky and Way 2010; Schedler 2002;
-Morgenbesser and Pepinsky 2019). The 2018 national election, conducted
-without the CNRP on the ballot, produced a CPP sweep of all 125 National
-Assembly seats---a result that formalized what the dissolution had
-already accomplished.
+Cambodia National Rescue Party, citing a vaguely defined conspiracy to
+overthrow the government; 118 CNRP officials were banned from political
+activity, and the party's seats redistributed to CPP-aligned
+formations.\footnote{Unless otherwise noted, the political chronology in
+  this section draws on Un and Luo (2020); Chheang (2021); and
+  Morgenbesser and Pepinsky (2019)} Kem Sokha had already been arrested
+in September; Sam Rainsy remained in exile. The dissolution did not
+occur in isolation. Within weeks, the \emph{Cambodia Daily} was forced
+to close after receiving a disputed \$6.3 million tax bill; Radio Free
+Asia's Cambodian bureau was shuttered; independent radio stations were
+pressured into pro-government programming; and civil society
+organizations faced intensified scrutiny under the 2015 LANGO law
+(Norén-Nilsson 2021; Norén-Nilsson and Eng 2020). The July 2018
+election, conducted without the CNRP, produced a CPP sweep of all 125
+National Assembly seats---completing the transition, in Levitsky and
+Way's typology, from competitive to hegemonic authoritarianism (Levitsky
+and Way 2010; Schedler 2002).
 
 The Wave 6 data from 2021 record the consequences.
 
@@ -1374,6 +1154,12 @@ Variable & W2 (2008) & W3 (2012) & W4 (2015) & \textbf{W6 (2021)} & \Delta W3{\t
 \hspace{1em}Strongman rule & 1.60 (1.54--1.67) & 1.73 (1.67--1.78) & 1.76 (1.71--1.81) & \textbf{2.17 (2.12--2.23)} & +0.45 & +0.42\\
 \hspace{1em}Military rule & 2.19 (2.11--2.27) & 2.19 (2.12--2.25) & 1.98 (1.93--2.04) & \textbf{2.21 (2.15--2.27)} & +0.02 & +0.23\\
 \addlinespace[0.3em]
+\multicolumn{7}{l}{\textbf{Democratic Commitment \& Satisfaction}}\\
+\hspace{1em}Democracy always preferable (\%) & 61.2\% (57.8--64.4) & 56.9\% (54.0--59.7) & 74.9\% (72.4--77.4) & \textbf{66.5\% (63.6--69.3)} & +9.7 pp & -8.4 pp\\
+\hspace{1em}Dem. best form of govt (1--4) & \textemdash & 3.26 (3.22--3.29) & 3.15 (3.12--3.19) & \textbf{3.20 (3.16--3.23)} & -0.06 & +0.04\\
+\hspace{1em}Democracy vs. equality (1--5) & \textemdash & 2.91 (2.83--3.00) & 2.58 (2.49--2.67) & \textbf{2.31 (2.23--2.39)} & -0.60 & -0.27\\
+\hspace{1em}Democracy satisfaction (1--4) & 2.97 (2.92--3.01) & 2.98 (2.94--3.02) & 2.71 (2.66--2.75) & \textbf{3.10 (3.07--3.14)} & +0.12 & +0.39\\
+\addlinespace[0.3em]
 \multicolumn{7}{l}{\textbf{Democratic Expectations (0–10 scale)}}\\
 \hspace{1em}Democratic future (10pt) & — & 9.58 (9.48--9.68) & 7.72 (7.48--7.96) & \textbf{6.67 (6.45--6.89)} & -2.91 & -1.05\\
 \hspace{1em}Democratic past (10pt) & — & 3.97 (3.85--4.09) & 3.87 (3.75--3.98) & \textbf{4.78 (4.65--4.92)} & +0.82 & +0.92\\
@@ -1393,7 +1179,7 @@ Variable & W2 (2008) & W3 (2012) & W4 (2015) & \textbf{W6 (2021)} & \Delta W3{\t
 \end{tabular}
 \begin{tablenotes}[para]
 \item \textit{Note:} 
-\item N per wave: W2 = 1,000; W3 = 1,200; W4 = 1,200; W6 = 1,242. Rows 1–6 (Political Participation) report the percentage of respondents who ever engaged in each activity (gate proportion), with 95\% CI (Wilson interval) in parentheses; $\Delta$ for these rows is in percentage points. Rows 7–8 and all remaining rows report unweighted wave means with 95\% CI (t-based) in parentheses; $\Delta$ is the arithmetic difference. '---' indicates variable not fielded in that wave. $\Delta$ W3$\rightarrow$W6 = peak-to-trough change (W6 minus W3). $\Delta$ W4$\rightarrow$W6 = post-dissolution change (W6 minus W4). W6 column in bold marks the endpoint of the trajectory. Voted last election and corruption witnessed are binary proportions.
+\item N per wave: W2 = 1,000; W3 = 1,200; W4 = 1,200; W6 = 1,242. Rows 1--6 (Political Participation) report the percentage of respondents who ever engaged in each activity (gate proportion), with 95\% CI (Wilson interval) in parentheses; $\Delta$ for these rows is in percentage points. Democracy always preferable reports the percentage selecting `democracy is always preferable' (Wilson CI). Remaining rows report unweighted wave means with 95\% CI (t-based) in parentheses; $\Delta$ is the arithmetic difference. `---' or `textemdash' indicates variable not fielded in that wave. $\Delta$ W3$\rightarrow$W6 = peak-to-trough change (W6 minus W3). $\Delta$ W4$\rightarrow$W6 = post-dissolution change (W6 minus W4). W6 column in bold marks the endpoint of the trajectory. Voted last election and corruption witnessed are binary proportions.
 \end{tablenotes}
 \end{threeparttable}}
 \endgroup{}
@@ -1440,97 +1226,66 @@ in 2021 continued to endorse democracy as an ideal at rates essentially
 unchanged from the peak mobilization of 2012. Whatever the dissolution
 accomplished, it did not produce ideological conversion.
 
-The forced-choice democracy preference item tells a subtler story. The
-proportion selecting ``democracy is always preferable'' declined from
-its Wave 4 peak of 74.9 percent to 66.5 percent---still a clear
-majority, but a significant contraction. The critical diagnostic is
-\emph{where the movement went}. The ``doesn't matter'' category, which
-had contracted sharply between 2012 and 2015 (30.2 to 18.9 percent),
-continued to decline to 17.5 percent---its lowest level across all four
-waves. The growth was concentrated entirely in ``under some
-circumstances, an authoritarian government can be preferable,'' which
+The forced-choice democracy preference declined from its Wave 4 peak of
+74.9 percent to 66.5 percent---still a clear majority. The critical
+diagnostic is where the movement went: the ``doesn't matter'' category
+continued to decline to 17.5 percent, its lowest level across all four
+waves, while ``authoritarian government can sometimes be preferable''
 more than doubled from 6.1 to 16.0 percent. This distribution is
-inconsistent with generalized political apathy, which would inflate the
-``doesn't matter'' category, and inconsistent with fear-driven
-acquiescence, which would push respondents toward whichever option
-appeared safest. It is consistent with a specific form of pragmatic
-recalculation: a subset of citizens who had committed to democracy as an
-ideal in 2015, when the opposition was still present, reassessed that
-commitment in light of a political reality in which democratic
-alternatives no longer existed. They did not become indifferent; they
-became conditionally authoritarian. The distinction between apathy and
-conditional acceptance is central to the normalization framework
-proposed here.
+inconsistent with generalized apathy and inconsistent with fear-driven
+acquiescence; it is consistent with a specific pragmatic recalculation
+by citizens who reassessed their democratic commitment in light of a
+political reality in which the democratic alternative no longer existed.
 
-Democratic prioritization---measured on an item with 8.1 percent
-nonresponse, among the lowest rates in the political battery---reached
-its lowest recorded level. The democracy-versus-equality trade-off
-declined to a mean of 2.31 (\emph{p} \textless{} 0.001 for both the
-W3→W6 and W4→W6 comparisons). The pro-political-freedom side of the
-distribution, which had accounted for 47.1 percent of respondents in
-2012, contracted to 21.7 percent---a collapse of more than half. The
-movement was not uniform across the distribution. The ``somewhat
-pro-freedom'' category suffered the steepest proportional decline (25.1
-to 8.4 percent), while ``definitely pro-freedom'' eroded more modestly
-(22.0 to 13.3 percent). The citizens most susceptible to
+Democratic prioritization reached its lowest recorded level. The
+pro-political-freedom share of the democracy-versus-equality trade-off
+contracted from 47.1 percent in 2012 to 21.7 percent in 2021---a
+collapse of more than half. The ``both equally important'' midpoint
+expanded from 2.5 to 15.1 percent, while ``authoritarian sometimes
+preferable'' grew modestly. The citizens most susceptible to
 deprioritization were those whose commitment to political freedom had
-been moderate and conditional---precisely the pragmatic middle that the
+been moderate and conditional---the pragmatic middle that the
 normalization framework predicts would be most responsive to the closure
-of democratic possibility. Meanwhile, the ``both equally important''
-midpoint expanded from 2.5 percent in 2012 to 15.1 percent---a sixfold
-increase in the population that had retreated to noncommittal
-ambivalence. These respondents are the attitudinal analogue of the
-behavioral withdrawal documented in the participation data: citizens who
-previously held a directional political preference and have ceased to
-hold one.
+of democratic possibility.
 
-The democratic expectation items continued their descent, though these
-estimates rest on substantially weaker data foundations than the
-commitment, prioritization, and satisfaction measures. With 63 percent
-nonresponse on the democratic future item and 43 percent on the
-democratic present item in Wave 6, the expectation measures describe the
-orientation of the minority of respondents who retained enough political
-engagement to formulate a numerical judgment about Cambodia's democratic
-trajectory. The patterns are reported here as supporting evidence for
-the normalization dynamics established above on more robust measures,
-not as independent findings. The democratic future rating fell from 7.72
-in 2015 to 6.67 in 2021 (\emph{p} \textless{} 0.001), extending the
-decline from the extraordinary 9.58 recorded in 2012 to a level that,
-while still modestly optimistic, represents a drop of nearly three
-points---roughly 30 percent of the available scale range---across nine
-years. Democratic present stood at 5.77, essentially unchanged from 2012
-(5.85), while the democratic past rose to 4.78---the only democratic
-measure to increase between 2012 and 2021. Among respondents who
-answered, the upward revision of the past alongside the downward
-revision of the future is suggestive of a flattened temporal
-perspective---though this interpretation necessarily rests on a selected
-subsample and should be treated as illustrative rather than definitive.
+The democratic expectation items continued their descent, though the 63
+percent nonresponse on the democratic future item and 43 percent on the
+democratic present mean these estimates describe only the minority of
+respondents who retained enough political engagement to formulate a
+numerical judgment. Treated as supporting evidence rather than
+independent findings, the democratic future rating fell from 7.72 in
+2015 to 6.67 in 2021 (\emph{p} \textless{} 0.001)---a drop of nearly
+three points from the extraordinary 9.58 recorded in 2012.
 
 The most robust single finding from the Wave 6 democratic orientation
-battery---measured on an item with only 6.4 percent nonresponse, on
-identical wording across all four waves---is the satisfaction paradox
-(Linde and Ekman 2003; Valgarðsson and Devine 2022). Democracy
-satisfaction rose to 3.10, the highest value across all four waves and a
-statistically significant increase from both the Wave 4 trough of 2.71
-(\emph{p} \textless{} 0.001) and the Wave 3 value of 2.98 (\emph{p}
-\textless{} 0.001). On the surface, this is paradoxical: satisfaction
-with democracy reached its peak in the least democratic moment in the
-country's modern history, three years after a one-party election in
-which the CPP won every seat. The paradox dissolves under the
-normalization framework. Satisfaction is a function of the gap between
-expectations and perceived reality. In 2015, expectations remained
-elevated while reality was visibly deteriorating, producing a large gap
-and low satisfaction. By 2021, expectations had collapsed while the
-regime was delivering stability and modest service provision through its
-patronage infrastructure. The gap closed from below, and satisfaction
-rose. Citizens became more satisfied with ``the way democracy works''
-not because democratic quality improved---by any external assessment it
-deteriorated dramatically---but because they had recalibrated their
-understanding of what ``democracy'' meant in the Cambodian context. The
-satisfaction recovery is the clearest single indicator of normalization
-in the dataset: it shows adaptive preference formation operating in real
-time, as citizens adjusted their evaluative standards to accommodate the
-available political reality.
+battery is the satisfaction paradox (Linde and Ekman 2003; Valgarðsson
+and Devine 2022): democracy satisfaction rose to 3.10---its highest
+value across all four waves, on an item with only 6.4 percent
+nonresponse---in the least democratic moment in the country's modern
+history. Figure~\ref{fig-paradox} shows why. Satisfaction is a function
+of the gap between expectations and perceived reality; by 2021 that gap
+had closed from below, as expectations collapsed while the regime
+delivered stability through its patronage infrastructure. The
+satisfaction recovery is the clearest single indicator of adaptive
+preference formation in the dataset.
+
+\begin{figure}[!htbp]
+
+\centering{
+
+\includegraphics[width=0.9\linewidth,height=\textheight,keepaspectratio]{cd_manuscript_files/figure-pdf/fig-paradox-1.pdf}
+
+}
+
+\caption{\label{fig-paradox}\textbf{The satisfaction paradox, 2012--2021.}
+Democratic future expectations (0--10 scale) and democracy satisfaction
+rescaled to the same range (original 1--4 scale shown on right axis).
+Shaded region marks the expectation--reality gap. The gap closes by 2021
+as expectations collapse while satisfaction rises---the empirical
+signature of authoritarian normalization. Dashed vertical line marks the
+2017 CNRP dissolution. Source: Asian Barometer Survey, Waves 3, 4, 6.}
+
+\end{figure}%
 
 The authoritarian acceptance measures moved in mirror image. All four
 alternative governance indicators rose to their highest levels: expert
@@ -1540,80 +1295,40 @@ W4-to-W6 period---the six years that encompassed the CNRP's destruction
 and the subsequent one-party election. What had been stable or declining
 through 2015 now surged.
 
-Does the rise in authoritarian acceptance represent genuine preference
-change --- Cambodians coming to believe that authoritarian governance is
-normatively desirable --- or something else? The magnitude of the shift,
-while statistically meaningful, is modest in absolute terms: all four
-measures remain around 2.2 on a four-point scale, below the midpoint.
-Cambodians are not rating authoritarianism as ``good''; they are rating
-it as slightly less bad than before. The timing matters too ---
-concentrated after the removal of the democratic alternative, not during
-an earlier period of repressive tightening --- pointing toward adaptive
-preference formation rather than genuine conversion. Most telling is the
-attitudinal context: the shift co-occurs with the collapse of democratic
-future expectations (from 7.72 to 6.67) and declining political
-interest. This is not a population that has found a new political faith.
-It is a population that has stopped believing the old one was
-achievable.
+The authoritarian acceptance measures remain around 2.2 on a four-point
+scale---below the midpoint. Cambodians are not rating authoritarianism
+as ``good''; they are rating it as slightly less bad than before. The
+timing---concentrated after the removal of the democratic alternative,
+not during earlier repressive tightening---points toward adaptive
+preference formation rather than genuine conversion. This is not a
+population that has found a new political faith. It is a population that
+has stopped believing the old one was achievable.
 
 The article proposes the term authoritarian normalization to describe
 this process, distinguishing it from authoritarian legitimation.
 Legitimation implies that citizens have come to view the regime as
-rightfully entitled to rule, whether on the basis of performance,
-ideology, or tradition. Normalization implies something weaker but
-potentially more durable: citizens have come to view the regime as the
-only available reality and have adjusted their expressed preferences to
-align with that reality. The distinction matters theoretically because
-it suggests different mechanisms of regime stability---and different
-vulnerabilities. A regime sustained by legitimation is threatened when
-performance falters or ideology loses appeal. A regime sustained by
-normalization is threatened when alternatives re-enter the political
-imagination.
+rightfully entitled to rule---on the basis of performance, ideology, or
+tradition; normalization implies something weaker but potentially more
+durable: citizens have adjusted their expressed preferences to align
+with the only available reality. The vulnerabilities differ accordingly.
+A regime sustained by legitimation is threatened when performance
+falters; one sustained by normalization is threatened when alternatives
+re-enter the political imagination.
 
-The normalization framework finds a productive analogue in Wedeen's
-analysis of political compliance in Assad's Syria, where citizens
-enacted elaborate rituals of regime praise not from belief but because
-acting as if they believed was the condition of ordinary life (Wedeen
-1998, 2000). The Cambodian case differs in a respect that is
-analytically fundamental. Wedeen's compliance is performative: citizens
-maintain private skepticism while publicly enacting belief. The
-Cambodian pattern visible in the ABS data is not performative in this
-sense. The survey responses are private, administered with
-confidentiality protocols. The attitudinal shifts appear to reflect
-genuine reorientation, not strategic concealment: citizens moved into
-conditional authoritarianism rather than into noncommittal safe
-responses, and the shifts cut across demographic subgroups in ways that
-fear-based models do not predict. What the cases share is the outcome
---- a population that has arranged its evaluative life around the
-available political reality --- but through different mechanisms.
-Wedeen's Syrians performed accommodation while potentially preserving
-private dissent; the Cambodian data suggest something closer to the
-internalization of accommodation, or at minimum, the erosion of the
-psychological infrastructure required to sustain dissent in the absence
-of institutional support.
-
-The democracy-versus-equality trajectory---from near-parity in 2012 to a
-two-to-one margin favoring equality over political freedom by
-2021---bears the hallmarks of what Elster termed adaptive preference
-formation: the adjustment of desires to match perceived possibilities,
-the ``sour grapes'' mechanism through which agents come to devalue what
-they cannot obtain (Elster 2016, orig. 1983; Przeworski 2022). The
-Cambodian case, however, reveals a more complex process than Elster's
-formulation anticipates. The adaptation is partial. Citizens
-deprioritized political freedom when placed in explicit competition with
-equality, and they lowered their expectations of democratic progress,
-but they did not revise their abstract endorsement of democracy as the
-best form of government. The ideal persisted even as the practical
-commitment to it eroded. This partial adaptation is theoretically
-consequential: it suggests that democratic values operate at multiple
-psychological levels, some of which are more responsive to political
-context than others (Jones and Cowan 2025). The surface layer---abstract
-endorsement---proves resilient to even dramatic changes in the structure
-of political alternatives. The operational layer---the willingness to
-bear costs for democratic outcomes---proves highly elastic. A regime
-that successfully eliminates alternatives need not worry about what
+The Cambodian pattern is not performative compliance in Wedeen's sense,
+where citizens maintain private skepticism while publicly enacting
+belief (Wedeen 1998). Survey responses are private, and the attitudinal
+shifts reflect genuine reorientation: citizens moved into conditional
+authoritarianism rather than noncommittal safe responses, and the shifts
+cut uniformly across demographic subgroups. The
+democracy-versus-equality trajectory---from near-parity in 2012 to a
+two-to-one margin favoring equality by 2021---bears the hallmarks of
+Elster's adaptive preference formation (Elster 2016, orig. 1983;
+Przeworski 2022), but the adaptation is partial. Abstract endorsement of
+democracy proved resilient while the willingness to prioritize it
+collapsed. A regime that eliminates alternatives need not change what
 citizens believe in principle; it need only wait for the practical
-implications of that belief to atrophy.
+implications of those beliefs to atrophy (Jones and Cowan 2025).
 
 The corruption data offer perhaps the most unsettling evidence of
 normalization. Witnessed corruption collapsed from 63 percent in 2015 to
@@ -1648,30 +1363,21 @@ survey environment itself: in a political climate where the opposition
 has been criminalized, respondents may calculate that acknowledging
 witnessed corruption carries risks, and the social desirability bias
 literature confirms that such effects intensify under political
-constraint (Schedler and Sarsfield 2007; Frye et al.~2017). The two
+constraint (Schedler and Sarsfield 2007; Frye et al. 2017). The two
 mechanisms --- reduced exposure through demobilization and increased
 reticence through social desirability pressure --- likely operate in
 tandem.
 
-The voter turnout paradox completes the portrait. Despite the collapse
-of all other forms of political engagement, self-reported voting in the
-last election rose from 79 percent in 2012 to 83 percent in 2015 to 88
-percent in 2021. This pattern---rising electoral participation amid
-collapsing civic engagement---is a well-documented feature of hegemonic
-authoritarian systems, where elections serve not as mechanisms of
-political choice but as rituals of regime affirmation. The 2018 election
-made the ritual character of Cambodian voting unusually visible. The
-CNRP-in-exile's ``clean finger'' campaign---urging voters to boycott and
-display uninked fingers as proof of refusal---transformed the indelible
-ink applied at polling stations from an anti-fraud measure into a tool
-of social surveillance. Factory workers were warned that returning to
-work without inked fingers would result in wage deductions; village
-heads distributed polling slips with the expectation that residents
-would comply; government employees were required to participate (McCargo
-2018). Voting in a one-party election is not a political act in the same
-sense as voting in a competitive one; it is closer to a demonstration of
-compliance, a public performance of belonging to the political community
-as the regime defines it. The fact that turnout rises precisely as
+The voter turnout paradox completes the portrait. Self-reported voting
+rose from 79 percent in 2012 to 88 percent in 2021, even as all other
+forms of political engagement collapsed. The 2018 election made the
+ritual character of Cambodian voting unusually visible: the
+CNRP-in-exile's ``clean finger'' campaign transformed polling-station
+ink from an anti-fraud measure into a tool of social surveillance, with
+factory workers warned of wage deductions for returning without inked
+fingers (McCargo 2018). Voting in a one-party election is not a
+political act in the same sense as voting in a competitive one; it is a
+demonstration of compliance. The fact that turnout rises precisely as
 meaningful engagement collapses suggests that Cambodians understand the
 distinction even as they perform the ritual.\footnote{The international
   orientation data add a final dimension to the normalization portrait.
@@ -1695,28 +1401,17 @@ distinction even as they perform the ritual.\footnote{The international
   interdependence---would sharpen this point considerably (Strangio
   2020).}
 
-The informational withdrawal that began tentatively in 2015 reached its
-full expression by 2021. Following political news fell to 2.04,
-political interest declined to 2.06, and political discussion dropped to
-1.26---the lowest values recorded across all four waves. These figures
-describe a population that has not merely withdrawn from political
-action but has largely ceased to attend to political information at all.
-The internet news variable throws this withdrawal into particularly
-sharp relief: harmonized internet news consumption rose to 4.66 by Wave
-6---approaching ``at least once a week''---reflecting the rapid
-expansion of internet infrastructure and smartphone penetration across
-Cambodia. Cambodians in 2021 had far greater access to online
-information than at any previous survey wave, yet their political
-interest, news following, and willingness to discuss politics all fell
-to historic lows. The infrastructure for engagement had expanded; the
-will to use it for political purposes had collapsed. The
-self-reinforcing logic is straightforward: citizens who do not
-participate have less reason to follow political developments; citizens
-who do not follow political developments have less basis on which to
-participate. Demobilization, once initiated through the removal of the
-political alternative, generates its own sustaining momentum through
-this informational feedback loop---a dynamic that suggests the effects
-of the CNRP's dissolution may prove more durable than the act itself.
+Political news following fell to 2.04, political interest to 2.06, and
+political discussion to 1.26---the lowest values across all four waves.
+The internet news variable throws this withdrawal into sharp relief:
+harmonized consumption rose to 4.66 by Wave 6, reflecting rapid
+expansion of internet infrastructure. Cambodians in 2021 had far greater
+access to online information than at any previous wave, yet their
+political interest and news following fell to historic lows. The
+infrastructure for engagement had expanded; the will to use it for
+political purposes had collapsed. Demobilization, once initiated through
+the removal of the political alternative, generates its own sustaining
+momentum through this informational feedback loop.
 
 The Cambodia of 2021 is, in a sense, the inverse of the Cambodia of
 2012. Where the earlier moment was characterized by activation across
@@ -1729,40 +1424,6 @@ underlying orientation from which attitudes and behaviors derive---what
 might be called the perceived horizon of political possibility. When
 that horizon expanded, everything expanded with it. When it contracted,
 everything contracted.
-
-Two findings from 2021 deserve particular attention before turning to
-alternative explanations. The first is the rise in democracy
-satisfaction, which climbed from its Wave 4 trough of 2.71 to 3.10 by
-2021---the highest value in the four-wave series. The item wording is
-identical across waves, nonresponse is low (6.4 percent in Wave 6), and
-the response is affirmative rather than oppositional: respondents
-reported being \emph{satisfied} with how democracy functions in
-Cambodia. This is the hardest single data point in the analysis to
-explain as an artifact of fear or social desirability bias. A population
-censoring itself out of regime apprehension would be expected to avoid
-any politically sensitive judgment; satisfaction with the democratic
-system is both politically sensitive and positive toward the regime. The
-fact that it rose---and that it rose from a low baseline during the
-period of peak democratic aspiration---is the empirical signature of
-adaptive preference formation. Citizens did not become more optimistic
-about democracy's trajectory; they became more accepting of the reality
-that was on offer.
-
-The second finding concerns the rise in authoritarian governance
-preferences. The absolute values warrant acknowledgment: at a mean of
-approximately 2.2 on a four-point scale, these remain well below the
-scale midpoint, and the Cambodian data do not support a reading of
-strong ideological conversion to authoritarianism. That is not, however,
-what demobilization by subtraction predicts. The mechanism does not
-require enthusiastic endorsement of authoritarian rule; it requires only
-the systematic erosion of the expectation that alternatives exist and
-the progressive disengagement from the behaviors through which those
-alternatives might be pursued. A mean of 2.2---statistically elevated,
-substantively mild, uniformly distributed across demographic groups---is
-precisely the attitudinal signature of a population that has not
-converted to authoritarianism but has stopped believing that resisting
-it serves any purpose. The rise is the floor of normalization, not its
-ceiling.
 
 \section{Alternative Mechanisms and
 Adjudication}\label{alternative-mechanisms-and-adjudication}
@@ -1778,166 +1439,64 @@ that can be evaluated against the available data.
 
 \emph{Preference falsification.} The most direct challenge holds that
 the observed shifts reflect increased survey reticence under harsher
-post-2017 conditions rather than genuine attitude change. If respondents
-in 2021 were concealing pro-democratic views out of fear, the measured
-declines would overstate actual demobilization. Item nonresponse on
-democratic expectations rose substantially --- from 24 to 63 percent on
-the democratic future item, from 21 to 31 percent on the democratic past
---- consistent with an environment in which some respondents feel
-uncomfortable evaluating their country's democratic
-trajectory.\footnote{Mean nonresponse across all political items also
-  rose, from approximately 5 percent in Wave 3 to 14 percent in Wave 6.
-  This general pattern is consistent with either increased reluctance to
-  venture political opinions or decreased political engagement reducing
-  the salience of these questions.}
+post-2017 conditions rather than genuine attitude change. Item
+nonresponse on democratic expectations rose substantially---from 24 to
+63 percent on the democratic future item---consistent with an
+environment in which some respondents feel uncomfortable evaluating
+their country's democratic trajectory.\footnote{Mean nonresponse across
+  all political items rose from approximately 5 percent in Wave 3 to 14
+  percent in Wave 6, consistent with either increased reluctance or
+  decreased political engagement.}
 
-Three considerations, however, limit the scope of this alternative.
-First, if survey reticence were the primary driver, one would expect it
-to manifest broadly---through increased straightlining, elevated ``don't
-know'' responses across all political batteries, or systematic
-acquiescence. The data show a more selective pattern: straightlining
-rates on the authoritarian preferences battery actually declined from
-Wave 4 (38 percent) to Wave 6 (35 percent), and acquiescence rates
-(proportion selecting the most positive response) remained low and
-stable across waves. Respondents who did answer appear to have engaged
-substantively with the questions rather than defaulting to safe or
-formulaic responses. Second, the demobilization pattern began before the
-most intensive period of political closure: democratic future
-expectations fell by nearly two points between Wave 3 and Wave 4, and
-political interest declined between the same waves, well before the CNRP
-dissolution and its associated repressive apparatus. If fear were the
-primary mechanism, the timing should concentrate in the post-2017 period
-rather than emerging incrementally from 2012 onward. Third, the placebo
-battery provides the strongest evidence of domain specificity.
-Non-political items that should not be affected by opposition
-elimination---national pride (3.66 in Wave 3, 3.63 in Wave 4, 3.79 in
-Wave 6), family economic situation (3.03, 3.05, 2.86), and perceived
-economic change (3.1, 3.04, 3.27)---show no systematic decline across
-waves. If generalized survey reticence were suppressing responses, these
-items would be expected to drift downward as well; they do not.
+Three considerations limit the scope of this alternative. First, if
+survey reticence were the primary driver, it should manifest
+broadly---but straightlining rates on the authoritarian preferences
+battery actually \emph{declined} from Wave 4 (38 percent) to Wave 6 (35
+percent), and acquiescence rates remained low and stable. Second, the
+demobilization pattern began before the most intensive period of
+political closure: democratic future expectations fell nearly two points
+between Waves 3 and 4, and political interest declined, well before the
+CNRP dissolution. Third, non-political placebo items---national pride,
+family economic situation, perceived economic change---show no
+systematic decline across waves; generalized reticence would be expected
+to suppress these as well.
 
-The most direct empirical test of the preference-falsification
-hypothesis draws on two ABS items asking respondents to rate, on a
-four-point scale from strongly disagree to strongly agree, whether
-``people are free to speak what they think without fear''
-(\emph{dem\_free\_speech}) and ``people can join any organization they
-like without fear'' (\emph{gov\_free\_to\_organize}). Perceived freedom
-to organize declined steadily across waves---from a mean of 3.41 in Wave
-2 to 3.21 in Wave 3, 3.1 in Wave 4, and 2.96 in Wave 6---confirming that
-the perceived civic environment tightened substantially over the study
-period, consistent with the documentary record. Perceived freedom of
-speech was comparatively flat (W2: 2.08; W3: 2.13; W4: 2.22; W6: 2.12).
-If preference falsification were the primary driver of the observed
-attitudinal shifts, controlling for these freedom perceptions should
-attenuate the wave-level coefficients. Adding both variables as
-covariates in OLS models predicting democratic future expectations,
-democracy satisfaction, and democratic preference produces virtually no
-attenuation: the Wave 6 coefficient on democratic future expectations
-changes by 0.4 percent; the Wave 4 coefficient by 3.3 percent.
-Attenuation on democracy satisfaction (11.9 percent at Wave 4) and
-democratic preference (6.7 percent at Wave 4) is similarly negligible.
-Freedom perceptions absorb essentially none of the temporal variance in
-democratic orientations. Furthermore, the moderation pattern runs
-opposite to the preference-falsification prediction: adding an
-interaction between wave and perceived freedom of speech reveals that
-the declines in democratic future expectations are concentrated among
-respondents who perceive \emph{more} freedom of speech---not less (Wave
-4 interaction: β = -1.88, \emph{p} \textless{} .001; Wave 6: β = -1.18,
-\emph{p} \textless{} .001). If survey reticence were suppressing
-pro-democratic responses, the effect should concentrate among those who
-feel least free to speak; instead, the deepest disillusionment runs
-through precisely those who feel most free to do so---a pattern
-consistent with genuine preference revision rather than strategic
-concealment.
+The most direct empirical test draws on ABS items measuring perceived
+freedom of speech and freedom to organize. Adding both as covariates in
+OLS models predicting democratic future expectations, satisfaction, and
+preference produces virtually no attenuation: the Wave 6 coefficient on
+democratic future expectations changes by 0.4 percent. The moderation
+pattern runs opposite to the preference-falsification prediction:
+declines in democratic future expectations are concentrated among
+respondents who perceive \emph{more} freedom of speech, not less (Wave 4
+interaction: \(\beta\) = -1.88, \emph{p} \textless{} .001; Wave 6:
+\(\beta\) = -1.18, \emph{p} \textless{} .001). The deepest
+disillusionment runs through precisely those who feel most free to
+express it---a pattern consistent with genuine preference revision
+rather than strategic concealment.
 
-The expanded democratic orientation battery provides additional leverage
-against the preference-falsification hypothesis. The response
-distributions on two forced-choice items are particularly informative.
-On the democracy-versus-equality trade-off, the Wave 6 shift moved
-respondents primarily into the noncommittal midpoint (``both equally
-important,'' expanding from 2.5 to 15.1 percent) rather than toward the
-pro-regime pole (which grew modestly). A frightened population seeking
-the socially safe answer in an authoritarian context would be expected
-to choose the answer that aligns with perceived regime preferences---in
-this case, prioritizing equality over political freedom, consistent with
-the CPP's developmental rhetoric. Instead, the largest category of
-movement was into ambivalence. Similarly, on the forced-choice democracy
-preference, the Wave 6 growth concentrated in ``authoritarian sometimes
-preferable'' (6.1 to 16.0 percent) rather than in ``doesn't matter''
-(which actually continued to decline, from 18.9 to 17.5 percent). If
-survey reticence were the primary driver, the noncommittal option---the
-safest refuge for a respondent unwilling to stake a position---would be
-expected to expand. It contracted. The growth of conditional
-authoritarianism alongside the contraction of apathy is more consistent
-with citizens who have genuinely reassessed the trade-offs between
-regime types than with citizens concealing stable preferences behind
-safe responses.
-
-The most parsimonious reading is that the elevated nonresponse on
-democratic expectation items reflects a combination of genuine
-disengagement (respondents who no longer attend to politics and
-therefore have no opinion to offer) and some degree of reluctance, while
-the responses that are provided reflect real attitudinal shifts. This
-interpretation is consistent with Frye et al.'s finding that
-survey-measured approval in semi-competitive authoritarian contexts can
-closely track genuine opinion, though the gap between expressed and
-private attitudes likely widens as political space narrows further (Frye
-et al. 2017).
-
-The nonresponse gradient across the democratic orientation battery in
-Wave 6 is itself analytically informative. The items with the lowest
-nonresponse---``democracy is the best form of government'' (9.9
-percent), the democracy-versus-equality trade-off (8.1 percent), the
-forced-choice democracy preference (13.4 percent)---are agree/disagree
-or forced-choice items that require respondents to select among
-pre-defined positions. The items with the highest
-nonresponse---democratic future (63 percent), democratic present (42.5
-percent)---are evaluative-projective items that require respondents to
-generate a numerical judgment about Cambodia's democratic trajectory.
-The cognitive and political demands of these two classes of items differ
-substantially. Placing Cambodia's democratic future on a ten-point scale
-requires both the political engagement to hold an opinion about the
-country's trajectory and the willingness to commit that opinion to a
-number. Selecting ``agree'' or ``disagree'' on whether democracy is the
-best form of government requires neither.
-
-The nonresponse gradient thus maps onto the normalization framework.
-Citizens can still answer whether democracy is desirable in the abstract
-(low cost, low sensitivity), but increasingly decline to evaluate where
-their country sits on a democratic continuum (high cost, high
-sensitivity, or---per the theory---genuine absence of a formed opinion
-because the question has lost practical relevance). The 63 percent who
-did not answer the democratic future item and the 37 percent who
-answered with diminished expectations are not competing narratives but
-complementary expressions of the same process. The former have
-disengaged from the question entirely; the latter have revised their
-answer downward.
-
-Bounds analysis confirms that the headline decline is robust to extreme
-assumptions about the missing respondents. If all nonrespondents on the
-democratic future item in Wave 6 are imputed at the maximum scale value
-of 10---the most conservative possible assumption, granting every
-missing respondent the most optimistic democratic expectation---the
-resulting population mean is 8.77. Even under this extreme scenario, the
-decline from the Wave 3 value of 9.58 remains 0.81 points---substantial
-and directionally unambiguous even under this most favorable possible
-assumption. The core finding that democratic expectations fell
-substantially between 2012 and 2021 is not an artifact of differential
-nonresponse.
+The nonresponse gradient across the democratic orientation battery is
+itself analytically informative. Items with the lowest nonresponse---the
+forced-choice democracy preference (13.4 percent), the
+democracy--equality trade-off (8.1 percent)---are those requiring
+respondents to select among pre-defined positions. Items with the
+highest nonresponse---democratic future (63 percent), democratic present
+(42.5 percent)---require generating a numerical judgment about
+Cambodia's democratic trajectory. Citizens can still answer whether
+democracy is desirable in the abstract, but increasingly decline to
+evaluate where their country sits on a democratic continuum. The 63
+percent who did not answer the democratic future item and the 37 percent
+who answered with diminished expectations are complementary expressions
+of the same process.
 
 \section{Partisan Heterogeneity and the Scope of
 Demobilization}\label{partisan-heterogeneity-and-the-scope-of-demobilization}
 
-If demobilization by subtraction operates specifically through the
-removal of the opposition---rather than through the generalized closure
-of political space---the resulting attitudinal shifts should concentrate
-among citizens who were politically attached to the dissolved party.
-Former CNRP supporters, who lost their vehicle for political expression,
-should exhibit steeper declines in democratic expectation and civic
-engagement than CPP supporters, whose political home remained intact.
-The ABS vote choice items, which identify respondents' reported partisan
-behavior in the most recent national election, permit a direct test of
-this prediction.
+If subtraction operates through removal of the opposition specifically,
+attitudinal shifts should concentrate among former CNRP supporters, who
+lost their vehicle for political expression, rather than among CPP
+supporters, whose political home remained intact. The ABS vote choice
+items permit a direct test.
 
 The partisan distribution across waves is itself the first piece of
 evidence. In Wave 4 (2015), CNRP voters constituted 21.3 percent of the
@@ -1985,27 +1544,18 @@ authoritarian conversion. The dissolution did not merely change
 attitudes; it destroyed the partisan categories through which
 differential effects could be measured.
 
-The second consideration is theoretical, and it reframes the uniformity
-finding as consistent with---rather than contradictory to---the
-subtraction mechanism, once the mechanism is specified at the correct
-level of analysis. The prediction that CNRP supporters should be
-differentially affected assumes that subtraction operates like losing
-one's team: supporters of the dissolved party lose their political
-vehicle while everyone else is unaffected. The framework advanced in
-this article operates at a different level. The removal of the credible
-alternative restructures the political field itself---the horizon of
-possibility for all participants, not only those who identified with the
-opposition. CPP voters in 2015 inhabited a competitive political system
-in which their party could face genuine electoral challenge, in which
-political information served a decision-making function, and in which
-contacting influential persons outside the party apparatus had strategic
-rationale. CPP voters in 2021 inhabited a one-party state in which none
-of these conditions obtained. The elimination of the CNRP depoliticized
-the system as a whole, reducing the informational and participatory
-incentives for all citizens regardless of partisan attachment. Under
-this reading, the uniformity of the observed shifts is precisely what a
-field-level mechanism would predict---and what a party-level mechanism
-would not.
+The second consideration is theoretical. The prediction that CNRP
+supporters should be differentially affected assumes subtraction
+operates like losing one's team. The framework advanced here operates at
+a different level: the removal of the credible alternative restructures
+the political field itself, not merely the partisan calculus of
+opposition supporters. CPP voters in 2015 inhabited a competitive system
+in which political information served a decision-making function and
+contacting persons outside the party apparatus had strategic rationale;
+CPP voters in 2021 inhabited a one-party state in which neither
+condition obtained. The uniformity of the observed shifts is precisely
+what a field-level mechanism predicts---and what a party-level mechanism
+does not.
 
 \section{Supplementary Evidence from the 2017 Socio-Economic
 Survey}\label{supplementary-evidence-from-the-2017-socio-economic-survey}
@@ -2016,37 +1566,26 @@ dissolution, partially addressing the temporal gap between ABS Waves 4
 (2015) and 6 (2021). The SES data are not directly comparable to the ABS
 in scale or design, but the directional evidence is informative.
 
-In early-to-mid 2017, 86.1 percent of SES respondents agreed that
-``people in this commune are free to speak what they think without
-fear,'' and 87.9 percent agreed that ``people in this commune can join
-any organisation they like without fear.'' The perceived freedom to vote
-for any party without fear stood at 94.0 percent---near-universal
-agreement, recorded in the final months before the elimination of the
-only meaningful alternative party. These figures establish that on the
-eve of the crackdown, Cambodian citizens overwhelmingly perceived
-themselves as living in a civic environment that permitted free
-expression, association, and partisan choice. The political closure that
-followed was not acting on a population that already felt constrained.
-The subjective distance between the pre-dissolution civic environment
-(as perceived by citizens) and the post-dissolution environment
-documented in the ABS Wave 6 data was, by these measures, substantial.
+In early-to-mid 2017, 86.1 percent of SES respondents reported freedom
+to speak without fear, 87.9 percent reported freedom to join
+organizations without fear, and 94.0 percent reported freedom to vote
+for any party without fear---near-universal agreement, recorded in the
+final months before the elimination of the only meaningful alternative
+party. The political closure that followed was not acting on a
+population that already felt constrained. These figures establish the
+subjective distance between the pre-dissolution civic environment and
+the post-dissolution environment documented in Wave 6.
 
-The tea money item corroborates the corruption trajectory from a
-different instrument and a more behaviorally concrete measure. In the
-SES, 34.9 percent of respondents reported that they or a household
-member had paid additional money to government officials in 2016 to
-``get things done or get things done faster.'' This rate---measuring
-direct personal bribery experience rather than the broader ``witnessed
-or experienced'' formulation used in the ABS---confirms that petty
-corruption remained widespread in the immediate pre-dissolution period.
-The ABS witnessed-corruption item registered 63 percent in 2015 and 15
-percent in 2021; the SES tea money rate of 34.9 percent for 2016,
-falling between these values on a narrower and more concrete measure, is
-consistent with a corruption environment that had not materially
-improved before the dissolution. The subsequent ABS collapse is thus
-more difficult to attribute to genuine anti-corruption progress and more
-consistent with the exposure-reduction and social-desirability
-mechanisms discussed above.
+The SES tea money item corroborates the corruption trajectory from a
+more behaviorally concrete instrument: 34.9 percent of respondents
+reported paying additional money to officials in 2016 to get things
+done. This direct bribery measure confirms that petty corruption
+remained widespread in the immediate pre-dissolution period. With the
+ABS witnessed-corruption item registering 63 percent in 2015 and 15
+percent in 2021, the SES rate of 34.9 percent for 2016 falls precisely
+between these values on a narrower measure, making it more difficult to
+attribute the subsequent ABS collapse to genuine anti-corruption
+progress.
 
 Satisfaction with local governance was high: 88.2 percent agreed that
 commune councillors are ``helpful and responsive at solving problems,''
@@ -2068,27 +1607,21 @@ above.\footnote{The only post-dissolution SES data publicly available
   CNRP dissolution is itself consistent with the political closure
   documented here.}
 
-\emph{Pandemic-era behavioral disruption.} The Wave 6 data were
-collected in 2021, during the COVID-19 pandemic. Public health
-restrictions on gatherings, movement, and face-to-face interaction could
-independently depress participation measures, particularly those
-involving physical contact such as community leader visits and
-demonstration attendance. This concern is legitimate but bounded. The
-key attitudinal shifts---the decline in democratic future expectations,
-the rise in authoritarian governance acceptance---are not plausibly
-explained by pandemic restrictions, which constrain behavior but have no
-direct mechanism for altering governance preferences. The decline in
-democratic expectations began in Wave 4 (2015), six years before the
-pandemic, establishing a trajectory that the 2021 data continue rather
-than initiate. Moreover, the participation items that most directly
-involve physical contact do not show the expected pandemic signature:
-demonstration attendance held essentially constant between Wave 4 and
-Wave 6 (4.5 to 3.3 percent, a non-significant difference), while the
-sharpest participation decline occurred in contacting influential
-persons, an activity that need not involve face-to-face interaction. The
-pandemic may have amplified certain behavioral measures, but it cannot
-account for the breadth, direction, or temporal onset of the observed
-pattern.\footnote{One placebo item does register a notable decline:
+\emph{Pandemic-era behavioral disruption.} Wave 6 was collected during
+the COVID-19 pandemic, and public health restrictions could
+independently depress physical participation measures. The concern is
+legitimate but bounded. The key attitudinal shifts---the decline in
+democratic future expectations, the rise in authoritarian governance
+acceptance---are not plausibly explained by pandemic restrictions, which
+constrain behavior but have no direct mechanism for altering governance
+preferences. The decline in democratic expectations began in Wave 4
+(2015), six years before the pandemic. Demonstration attendance held
+essentially constant between Wave 4 and Wave 6 (4.5 to 3.3 percent),
+while the sharpest participation decline occurred in contacting
+influential persons, an activity requiring no face-to-face contact. The
+pandemic may have amplified certain behavioral measures; it cannot
+account for the pattern's breadth, direction, or temporal
+onset.\footnote{One placebo item does register a notable decline:
   interpersonal trust fell from 14 percent (Wave 4) to 5 percent (Wave
   6) on the binary ``most people can be trusted'' item. This drop is
   consistent with the social atomization documented in pandemic-era
@@ -2101,74 +1634,35 @@ pattern.\footnote{One placebo item does register a notable decline:
   contamination of the survey environment.}
 
 \emph{Temporal resolution and the dissolution-as-keystone
-interpretation.} A distinct methodological concern cuts across all of
-the preceding adjudication tests: the six-year gap between Wave 4 (2015)
-and Wave 6 (2021) means the analysis cannot determine the temporal
-profile of the observed shifts. Three models are consistent with the
-available data. The first---an acute shock model---holds that the
-sharpest attitudinal changes occurred in the immediate aftermath of the
-CNRP dissolution in November 2017 and the one-party election of July
-2018, and that the 2021 data capture a population that has already
-partially recovered from the initial shock. Under this model, the 2021
-values understate the peak magnitude of demobilization. The second---a
-gradual normalization model---holds that the shifts accumulated
-incrementally across the 2017--2021 period as the consequences of
-political closure compounded through informational feedback loops and
-the progressive atrophy of civic habits. Under this model, the 2021 data
-capture the endpoint of a process still in motion. The third---a
-repression-with-subtraction model---holds that the observed shifts are
-not primarily products of field restructuring but of the cumulative
-repressive apparatus that accompanied the dissolution: media closures,
-civil society restrictions, legal harassment, and the chilling effects
-of the criminalization of the opposition. Under this model, subtraction
-is a component of a standard authoritarian consolidation package rather
-than a distinctive mechanism.
-
-The available data cannot definitively adjudicate among these three
-models, and the honest answer is that elements of all three likely
-operated simultaneously. Two considerations, however, favor the
-subtraction-centered interpretation over the repression-centered
+interpretation.} The six-year gap between Wave 4 (2015) and Wave 6
+(2021) means the analysis cannot determine whether the sharpest
+attitudinal changes occurred as an acute shock immediately following the
+dissolution, accumulated gradually through 2021, or reflect primarily
+the cumulative repressive apparatus that accompanied it. Elements of all
+three models likely operated simultaneously. Two considerations favor
+the subtraction-centered interpretation over the repression-centered
 alternative. First, the attitudinal trajectory began before the most
-intensive period of repression: democratic future expectations fell by
-nearly two points and political interest declined measurably between
-Wave 3 (2012) and Wave 4 (2015), a period during which the CNRP was
-under selective pressure but still functionally intact and the broader
-repressive apparatus had not yet been deployed. If cumulative repression
-were the primary driver, the onset of attitudinal change should
-concentrate in the post-2017 period rather than emerging incrementally
-from the peak of mobilization. Second, the domain-specificity of the
-shifts---political attitudes and behaviors declining while non-political
-attitudes remain stable---is more consistent with a mechanism that
-operates through the structure of political alternatives than with
-generalized intimidation, which would be expected to depress expressed
-attitudes across domains. The interpretation advanced here treats the
-dissolution as the keystone of the closure process: the act that
-restructured the political field and set in motion the cascading
-adjustments documented in the data, even as the accompanying repressive
-measures amplified and accelerated those adjustments.
+intensive period of repression: democratic future expectations fell
+nearly two points and political interest declined between Waves 3 and 4,
+when the CNRP was under selective pressure but still functionally
+intact. If cumulative repression were the primary driver, onset should
+concentrate post-2017. Second, the domain-specificity of the shifts is
+more consistent with a mechanism operating through the structure of
+political alternatives than with generalized intimidation, which would
+be expected to depress expressed attitudes across domains. The
+dissolution is treated here as the keystone of the closure process---the
+act that restructured the political field---even as the accompanying
+repressive measures amplified and accelerated those adjustments.
 
-The domain-specificity pattern deserves more direct treatment than it
-has received, because it constitutes the strongest available evidence
-against a purely fear-centered interpretation. If generalized
-intimidation were the primary mechanism, its effects should register
-broadly: a population that is simply afraid of surveyors would be
-expected to express socially safe answers across the board, producing
-declines in reported opposition, increases in pro-regime sentiment, and
-suppression of any attitude touching governance. But that is not what
-the data show. National pride held stable across all four waves. Family
-economic assessment and perceptions of personal economic change are
-statistically indistinguishable between Wave 4 and Wave 6. Interpersonal
-trust declined, but the decline is consistent with documented
-pandemic-era patterns globally and may reflect social atomization rather
-than survey reticence. The shifts that are large, directional, and
-statistically unambiguous are concentrated precisely in the domain that
-the dissolution restructured: political aspiration, civic engagement,
-and willingness to prioritize democratic values against competing goods.
-A blanket fear story would produce a different cross-domain signature.
-What the data show instead is selectivity---the fingerprint of a
-mechanism that operated on the structure of political alternatives
-rather than on the willingness to speak. Full placebo battery results
-are reported in Appendix Table A3.
+The domain-specificity pattern constitutes the strongest evidence
+against a fear-centered interpretation. National pride, family economic
+assessment, and perceived economic change are all statistically stable
+between Wave 4 and Wave 6, while large directional shifts are
+concentrated in political aspiration, civic engagement, and democratic
+prioritization---precisely the domain the dissolution restructured.
+Generalized fear produces broad-spectrum attenuation (see
+Figure~\ref{fig:mechanisms}); the Cambodian data show selectivity. Full
+placebo battery results are in Appendix Table A3.
 
 \emph{Technological channel substitution.} The finding that
 participation through formal channels rose between Wave 4 and Wave
@@ -2230,103 +1724,73 @@ with any single alternative mechanism.
 
 \section{Conclusion}\label{conclusion}
 
-The story told in the preceding pages is, in one sense, particular to
-Cambodia---a product of specific historical circumstances, a specific
-regime, a specific opposition movement, and a specific act of political
-closure. In another sense, it is a story with much wider application,
-because the mechanism it illustrates---the restructuring of citizen
+The mechanism identified here---the restructuring of citizen
 orientations through the removal of political alternatives---operates
-wherever dominant-party regimes consolidate power. This concluding
-section draws out four theoretical implications of the Cambodian
-sequence and considers their relevance beyond the single case.
+wherever dominant-party regimes consolidate power. Four theoretical
+implications bear emphasis.
 
-The first concerns the mechanism itself, and the expanded democratic
-orientation analysis permits a more precise formulation than earlier
-treatments. Demobilization by subtraction does not operate by eroding
-democratic values. Abstract democratic commitment---measured by the most
-widely used items in the cross-national survey toolkit---remained
-essentially stable across the Cambodian study period; a clear majority
-of respondents in 2021 continued to endorse democracy as the best form
-of government at rates statistically indistinguishable from the peak
-mobilization of 2012. What collapsed was not the ideal but the
-willingness to prioritize that ideal against competing goods---and, on
-the more tentatively measured expectation items, the perceived horizon
-within which the ideal could be realized. The pro-political-freedom
-share of the democracy-versus-equality trade-off contracted from 47 to
-22 percent. Democracy satisfaction---paradoxically---rose to its highest
-recorded level, as citizens recalibrated their evaluative standards to
-accommodate a political reality in which the democratic alternative had
-been removed. Democratic expectations, measured on items carrying
-substantially higher nonresponse, fell by nearly three points on a
-ten-point scale---a decline that, while directionally robust even under
-extreme imputation assumptions, rests on a selected subsample and
-corroborates rather than independently establishes the normalization
-pattern. The divergence between resilient ideals and collapsing
-prioritization suggests that democratic attitudes in authoritarian
-contexts are not the unitary construct that much of the democratic
-values literature assumes. They have at least three partially
-independent dimensions---ideal endorsement, practical prioritization,
-and feasibility expectation---that respond to the structure of available
+The first concerns the mechanism itself. Demobilization by subtraction
+does not operate by eroding democratic values. Abstract democratic
+commitment remained essentially stable across the Cambodian study
+period; a clear majority of respondents in 2021 endorsed democracy as
+the best form of government at rates statistically indistinguishable
+from 2012. What collapsed was not the ideal but the willingness to
+prioritize it against competing goods and, on the more tentatively
+measured expectation items, the perceived horizon within which the ideal
+could be realized. The breadth of that collapse---uniform across CPP and
+former CNRP voters alike---confirms that the mechanism operates at the
+level of the political field rather than the partisan calculus of
+individual supporters. CPP voters did not lose their party; they lost a
+political system in which independent information and
+outside-the-apparatus contact served any strategic purpose. The
+pro-political-freedom share contracted from 47 to 22 percent; democracy
+satisfaction paradoxically rose to its highest recorded level
+(Figure~\ref{fig-paradox}). The divergence between resilient ideals and
+collapsing prioritization suggests that democratic attitudes in
+authoritarian contexts have at least three partially independent
+dimensions---ideal endorsement, practical prioritization, and
+feasibility expectation---that respond to the structure of available
 political alternatives in characteristically different ways (Jones and
-Cowan 2025). The mechanism, moreover, need not be attributed to the
-dissolution alone. The Cambodian closure involved the simultaneous
-elimination of the opposition party, independent media, and civil
-society organizations---a compressed sequence whose individual
-contributions cannot be isolated with the available data. The
-theoretical claim is that the \emph{combined} effect of eliminating the
-political alternative and its supporting ecosystem produces the
-divergence pattern documented here, not that any single act within the
-sequence is independently sufficient. Cross-national surveys that
-aggregate these dimensions into a single ``democratic support'' index
-may be measuring a composite whose components move in opposite
-directions under precisely the conditions of greatest theoretical
-interest.
+Cowan 2025). Cross-national surveys that aggregate these dimensions into
+a single ``democratic support'' index may be measuring a composite whose
+components move in opposite directions under precisely the conditions of
+greatest theoretical interest.
 
 The second implication concerns the relationship between hope and
-democratic attitudes. The Wave 3 data, viewed alongside the expanded
-orientation battery, suggest that the extraordinary democratic optimism
-of 2012 was not accompanied by correspondingly extraordinary democratic
-commitment. The forced-choice democracy preference actually registered
-\emph{lower} in 2012 than in 2015,
-when---counterintuitively---commitment surged to its highest level
+democratic attitudes. The Wave 3 data suggest that the extraordinary
+democratic optimism of 2012 was not accompanied by correspondingly
+extraordinary democratic commitment---the forced-choice democracy
+preference ran \emph{lower} in 2012 than in 2015, when commitment surged
 precisely as expectations were falling. This temporal decoupling
-suggests that democratic support in authoritarian contexts may be driven
-by two distinct psychological mechanisms that peak at different moments:
-feasibility perception, which responds to the structure of political
-opportunities and peaked when the CNRP made democracy appear imminent;
-and value crystallization, which responds to perceived threat and peaked
-when the post-2013 crackdown placed democratic values under visible
-siege. The Cambodian sequence---commitment lagging expectation on the
-upswing, then outlasting it on the downswing---challenges the
-foundational assumption of the political culture tradition that
-democratic values and democratic expectations move in tandem as
-expressions of a single underlying orientation.\footnote{The canonical
-  formulation of democratic values as a stable cultural attribute is
-  found in the political culture tradition from Inglehart (1997) onward.
-  The Cambodian data suggest a more situationally contingent model in
-  which the components of democratic support are decoupled---closer to
-  what Bratton and Mattes have termed ``demand for democracy'' as a
+suggests that democratic support in authoritarian contexts is driven by
+two distinct psychological mechanisms that peak at different moments:
+feasibility perception, which peaked when the CNRP made democracy appear
+imminent; and value crystallization, which peaked when the post-2013
+crackdown placed democratic values under visible siege. The Cambodian
+sequence---commitment lagging expectation on the upswing, then
+outlasting it on the downswing---challenges the foundational assumption
+of the political culture tradition that democratic values and democratic
+expectations move in tandem.\footnote{The canonical formulation of
+  democratic values as a stable cultural attribute is found in the
+  political culture tradition from Inglehart (1997) onward. The
+  Cambodian data suggest a more situationally contingent model---closer
+  to what Bratton and Mattes have termed ``demand for democracy'' as a
   function of perceived supply (Bratton et al. 2004; Mattes and Bratton
   2007).}
 
-The third implication concerns corruption measurement. The finding that
-witnessed corruption declined precipitously alongside civic
-participation suggests a troubling methodological artifact: survey-based
+The third implication concerns corruption measurement. Survey-based
 corruption indicators may systematically understate corruption in
-demobilized populations. When citizens withdraw from engagement with
-state institutions, they also withdraw from the sites where corruption
-is experienced and observed. A regime that successfully demobilizes its
-population will, by this logic, appear less corrupt on standard survey
-measures even if actual corruption is unchanged or increasing. This has
-practical consequences for the evaluation of anti-corruption campaigns
-in authoritarian contexts. The CPP's selective anti-corruption efforts
-during this period may well have had some genuine effect, but the
-dramatic scale of the decline---from 49 percent to 15 percent (\emph{p}
-\textless{} 0.001)---is far more parsimoniously explained by the
-withdrawal of citizens from the institutional encounters where
-corruption becomes visible. Transparency International's Corruption
-Perception Index and similar instruments may be particularly vulnerable
-to this dynamic in consolidating authoritarian regimes.
+demobilized populations: when citizens withdraw from engagement with
+state institutions, they withdraw from the sites where corruption is
+experienced and observed. The CPP's anti-corruption efforts during this
+period may have had some genuine effect, but the fourfold collapse in
+witnessed corruption---from 49 percent to 15 percent---is more
+parsimoniously explained by the withdrawal of citizens from
+institutional encounters where corruption becomes visible. External
+assessments corroborate this interpretation: Cambodia's Transparency
+International CPI score was essentially unchanged across the study
+period. Instruments like the CPI may be particularly vulnerable to this
+dynamic in consolidating authoritarian regimes.
 
 The fourth implication is diagnostic. The divergence between electoral
 participation and civic participation---turnout rising to 88 percent
@@ -2345,145 +1809,50 @@ formally intact.
 
 These findings carry inherent limitations. Four cross-sectional waves
 across thirteen years provide suggestive but not definitive evidence;
-the absence of Waves 1 and 5 from the Cambodian ABS series limits the
-precision with which structural breaks can be identified, and the
-six-year gap between Wave 4 (2015) and Wave 6 (2021) means the analysis
-cannot pinpoint whether the sharpest attitudinal shifts occurred
-immediately following the CNRP dissolution in 2017 or accumulated
-gradually across the broader closure process. Nor can the design isolate
-the specific contribution of the dissolution from the accompanying media
-shutdowns, civil society restrictions, and electoral manipulation that
-constituted the full authoritarian consolidation sequence. The elevated
-nonresponse on democratic expectation items in Wave 6---reaching 63
-percent on the democratic future measure---means the attitudinal
-estimates from 2021 are based on the subset of respondents willing to
-venture an opinion, which may disproportionately exclude those with the
-strongest pro-democratic views or, alternatively, those least engaged
-with politics. A direct test of whether fear of speech drives this
-missingness is available from the ABS freedom-of-speech and
-freedom-of-assembly items: a logistic regression predicting nonresponse
-on the Wave 6 democratic future item, controlling for education and
-urbanicity, finds that neither perceived freedom of speech (OR = 1.01,
-\emph{p} = 0.95) nor perceived freedom to organize (OR = 0.9, \emph{p} =
-0.36) predicts missingness. Respondents who feel less free to speak are
-no more likely to skip the democratic future question than those who
-feel more free, indicating that the elevated nonresponse rate is not the
-signature of a population censoring itself out of fear.
+the six-year gap between Wave 4 (2015) and Wave 6 (2021) means the
+analysis cannot pinpoint whether the sharpest attitudinal shifts
+occurred immediately following the CNRP dissolution or accumulated
+gradually, nor can it isolate the dissolution's contribution from the
+accompanying media shutdowns, civil society restrictions, and electoral
+manipulation. The elevated nonresponse on democratic expectation items
+in Wave 6---reaching 63 percent on the democratic future measure---means
+the attitudinal estimates from 2021 are based on the subset of
+respondents willing to venture an opinion. A logistic regression
+predicting nonresponse on the Wave 6 democratic future item finds that
+neither perceived freedom of speech (OR = 1.01, \emph{p} = 0.95) nor
+freedom to organize (OR = 0.90, \emph{p} = 0.36) predicts missingness.
+The silence is withdrawal, not suppression.
 
-A further caution concerns the elevated nonresponse on the democratic
-future item in Wave 6: the 2021 mean is, in the strictest sense, a
-survivor statistic. Three imputation scenarios address the concern
-directly. If the 63 percent who declined to answer are assigned the
-scale maximum---treated, that is, as maximally pro-democratic
-respondents who withheld their views out of fear---the W6 mean rises to
-8.77, but the wave-over-wave decline from the 2012 peak narrows to -0.81
-rather than disappearing. Assigning nonrespondents the midpoint of the
-scale produces a W6 mean of 5.62, with a cumulative decline of -3.96
-from the Wave 3 baseline---a magnitude comparable to the observed
-respondent-only estimate. Only the most extreme assumption, assigning
-all nonrespondents a score of zero, could mechanically reverse the
-trajectory, and that assumption requires believing that the missing
-respondents are, without exception, deeply anti-democratic---the
-opposite of the fear-concealment hypothesis. The full bounds table is
-reported in Appendix Table A9.
+The 2021 democratic future mean is, in the strictest sense, a survivor
+statistic. Bounds analysis addresses the concern directly. Assigning all
+nonrespondents the scale maximum---the most conservative possible
+assumption---raises the W6 mean to 8.77, narrowing but not eliminating
+the decline from the 2012 peak (-0.81). Assigning nonrespondents the
+scale midpoint produces a W6 mean of 5.62 and a cumulative decline of
+-3.96 from Wave 3---comparable to the observed respondent-only estimate.
+Only assigning all nonrespondents a score of zero could mechanically
+reverse the trajectory, which requires believing the missing respondents
+are, without exception, deeply anti-democratic. The full bounds table is
+reported in Appendix Table A9. The question is not whether a decline
+occurred---under all plausible assumptions, it did---but how large. That
+63 percent of respondents could not or would not venture an opinion
+about their country's democratic future is itself the condition
+demobilization by subtraction predicts.
 
-The resistance of the directional finding to these scenarios does not
-dissolve the limitation, but it does specify its form. The question is
-not whether a decline occurred---under all plausible assumptions, it
-did---but how large that decline was. The reported 2021 mean is best
-read as an estimate of the attitudinal floor of the responding
-population, with the silent majority contributing an unknown quantity
-that bounds analysis constrains but cannot pin down. That 63 percent of
-respondents could not or would not venture an opinion about their
-country's democratic future is itself the condition demobilization by
-subtraction predicts. The silence and the diminished expectations of
-those who did answer are complementary expressions of the same process.
-
-The preceding section on alternative mechanisms has addressed the
-pandemic, generational, and preference-falsification concerns in detail;
-the conclusion here is that these factors may amplify specific estimates
-but cannot account for the overall pattern. Finally, any single-country
-study faces the inherent limitation of generalizability: the mechanisms
-identified here may be specific to Cambodia's particular configuration
-of post-conflict politics, dominant-party rule, and opposition dynamics.
-
-The most productive response to any single-country study is comparative
-extension. The Cambodian sequence---declining expectations, collapsing
-independent civic engagement, rising democratic satisfaction amid
-falling democratic aspiration, and the diagnostic turnout-participation
-divergence---generates a testable temporal ordering. Its application
-requires no bespoke instrument. Where Asian Barometer waves overlap with
-documented moments of opposition elimination---Thailand after the
-dissolution of Move Forward in 2024, the Philippines during Duterte's
-consolidation---the framework predicts a specific cross-domain pattern:
-political attitudes shifting while non-political attitudes hold, formal
-participation rising while independent engagement collapses, and
-satisfaction with democratic functioning rising even as expectations of
-democratic improvement fall. Russia's trajectory after the systematic
-dismantling of Navalny's organizational network from 2021 onward offers
-a harder test, where the suppression was more overtly repressive and the
-civic ecosystem thinner; whether the domain-specificity signature
-survives in a setting where generalized intimidation is more plausible
-is precisely the kind of cross-case variation that would allow the
-subtraction and repression mechanisms to be distinguished. The
-turnout-participation divergence is the most tractable single
-diagnostic, requiring only two commonly available survey measures and
-carrying no requirement that a credible opposition party ever
-existed---only that one was removed.
-
-This article began with a number: 9.6 out of 10. It is worth ending with
-the question of what that number meant. In 2012, Cambodian citizens
-looked at their country---a dominant-party authoritarian state with
-controlled media, a compromised judiciary, and a history of political
-violence---and saw a democratic future so bright they could barely
-imagine anything brighter. Nine years later, they had learned otherwise.
-The democratic future had not arrived. The party that promised it had
-been dissolved. The leaders who championed it were in prison or exile.
-And the population, having briefly imagined a different political life,
-had returned to the quiet arrangement their parents had
-known---participating in elections that offered no choice, accepting
-governance structures they had once rejected, and gradually, measurably,
-ceasing to pay attention.
-
-Any reliance on longitudinal survey data carries inherent
-vulnerabilities, and this analysis is no exception. The peaks of 2012
-and the valleys of 2021 are colored by the atmospheric conditions of
-those moments.\footnote{Two contextual anomalies warrant specific
-  acknowledgment. First, the Wave 3 (2012) survey was fielded during an
-  unprecedented window of opposition mobilization just prior to the 2013
-  elections, meaning the data likely capture a temporary zenith of
-  democratic optimism rather than a stable baseline. Second, the Wave 6
-  (2021) data were collected during the COVID-19 pandemic, a period
-  where public health restrictions inherently depressed physical civic
-  participation (e.g., attending demonstrations) and may have
-  temporarily inflated reliance on state authority. However, the fact
-  that ideological demobilization (such as the drop in democratic future
-  expectations) began in Wave 4, well before the pandemic, suggests the
-  2021 results reflect deeper authoritarian normalization rather than
-  mere epidemiological artifacts. On the methodological challenges of
-  surveying under authoritarian conditions more generally, see Schedler
-  and Sarsfield (2007) Furthermore, the single-country focus of this
-  study naturally bounds its immediate generalizability, though the
-  mechanisms observed here offer a framework for testing similar
-  dynamics in other consolidating hegemonic regimes.} But the
-theoretical weight of this study rests on the architecture of the
-sequence, not the absolute value of any single data point. Observing the
-same population across four acts of a well-documented political closure,
-the noise of individual waves gives way to a structural signal.
-
-The fairy tale has no happy ending. But it has a lesson, and the lesson
-is not about Cambodia alone. It is about the fragility of democratic
-aspiration in the absence of democratic infrastructure, and about the
-remarkable efficiency with which authoritarian regimes can reshape
-citizen orientations simply by removing the object around which those
-orientations had formed. The education of Cambodia's citizenry between
-2008 and 2021 was not accomplished through indoctrination or ideology.
-It was accomplished through subtraction---the removal of an alternative,
-and the long silence that followed.
+The alternative mechanisms section has addressed the pandemic,
+generational, and preference-falsification concerns; these factors may
+amplify specific estimates but cannot account for the overall pattern.
+Any single-country study faces inherent limits of generalizability: the
+mechanisms identified here may reflect Cambodia's particular
+configuration of post-conflict politics, dominant-party rule, and
+opposition dynamics. Whether subtraction operates similarly in other
+dominant-party or post-competitive contexts is now, at least, a
+researchable question.
 
 \newpage
 
-\subsection{AI assistance disclosure.}\label{ai-assistance-disclosure.}
+\subsection*{AI assistance disclosure}\label{ai-assistance-disclosure}
+\addcontentsline{toc}{subsection}{AI assistance disclosure}
 
 The author used Claude (Anthropic, version 4.5) to assist with R
 programming, including data cleaning scripts, model specification, and
@@ -2510,9 +1879,9 @@ Journal of South-East Asian Studies} 12 (June): 69--89.
 \url{https://doi.org/10.14764/10.ASEAS-0014}.
 
 \bibitem[\citeproctext]{ref-Bratton2004-ke}
-Bratton, Michael, Robert Mattes, and E Gyimah-Boadi. 2004.
-\emph{{Cambridge studies in comparative politics: Public opinion,
-democracy, and market reform in Africa}}. Cambridge University Press.
+Bratton, Michael, Robert Mattes, and E Gyimah-Boadi. 2004. \emph{{Public
+opinion, democracy, and market reform in Africa}}. Cambridge University
+Press. \url{https://doi.org/10.1017/cbo9780511617324}.
 
 \bibitem[\citeproctext]{ref-Chheang2015-ud}
 Chheang, Vannarith. 2015. {``{Cambodia in 2014 the beginning of concrete
@@ -2521,10 +1890,7 @@ Singh. ISEAS Publishing.
 \url{https://doi.org/10.1355/9789814620598-008}.
 
 \bibitem[\citeproctext]{ref-Chheang2021-td}
-Chheang, Vannarith, and President of the Asian Vision Institute (AVI),
-an independent think-tank based in Phnom Penh, Cambodia. He is a public
-policy analyst specializing in geopolitics and political economy of
-Southeast Asia. 2021. {``{Cambodia in 2020: Regime legitimacy
+Chheang, Vannarith. 2021. {``{Cambodia in 2020: Regime legitimacy
 tested}.''} \emph{Southeast Asian Affairs} SEAA21: 73--91.
 \url{https://doi.org/10.1355/aa21-1e}.
 
@@ -2556,9 +1922,9 @@ gloves, and diffuse control}.''} \emph{Annual Review of Sociology} 37
 \url{https://doi.org/10.1146/annurev.soc.012809.102609}.
 
 \bibitem[\citeproctext]{ref-Elster2016-la}
-Elster, Jon. 2016. \emph{{Cambridge philosophy classics: Sour grapes:
-Studies in the subversion of rationality}}. 2nd ed. Cambridge University
-Press.
+Elster, Jon. 2016. \emph{{Sour grapes: Studies in the subversion of
+rationality}}. 2nd ed. Cambridge University Press.
+\url{https://doi.org/10.1017/cbo9781316494172}.
 
 \bibitem[\citeproctext]{ref-Frye2017-qo}
 Frye, Timothy, Scott Gehlbach, Kyle L Marquardt, and Ora John Reuter.
@@ -2601,9 +1967,9 @@ regimes}.''} \emph{Comparative Political Studies}, ahead of print,
 August 13. \url{https://doi.org/10.1177/00104140251369320}.
 
 \bibitem[\citeproctext]{ref-Levitsky2010-bc}
-Levitsky, Steven, and Lucan A Way. 2010. \emph{{Problems of
-international politics: Competitive authoritarianism: Hybrid regimes
-after the cold war}}. Cambridge University Press.
+Levitsky, Steven, and Lucan A Way. 2010. \emph{{Competitive
+authoritarianism: Hybrid regimes after the cold war}}. Cambridge
+University Press. \url{https://doi.org/10.1017/cbo9780511781353}.
 
 \bibitem[\citeproctext]{ref-Linde2003-an}
 Linde, Jonas, and Joakim Ekman. 2003. {``{Satisfaction with democracy: A
@@ -2613,7 +1979,7 @@ note on a frequently used indicator in comparative politics}.''}
 
 \bibitem[\citeproctext]{ref-Lukes2005-bc}
 Lukes, Steven. 2005. \emph{{Power: A Radical View}}. 2nd ed. Palgrave
-MacMillan.
+MacMillan. \url{https://doi.org/10.1007/978-0-230-80257-5_2}.
 
 \bibitem[\citeproctext]{ref-Magaloni2010-wl}
 Magaloni, Beatriz, and Ruth Kricheli. 2010. {``{Political order and
@@ -2629,7 +1995,7 @@ Mattes, Robert, and Michael Bratton. 2007. {``{Learning about
 
 \bibitem[\citeproctext]{ref-McCargo2018-ms}
 McCargo, Duncan. 2018. {``{The trouble with turnout at Cambodia's
-election}.''} In \emph{Asia Times}.
+election}.''} July 31.
 
 \bibitem[\citeproctext]{ref-Morgenbesser2016-vf}
 Morgenbesser, Lee. 2016. \emph{{Behind the facade: Elections under
@@ -2641,12 +2007,6 @@ Morgenbesser, Lee. 2017. {``{The failure of democratisation by elections
 in Cambodia}.''} \emph{Contemporary Politics} 23 (April): 135--55.
 \url{https://doi.org/10.1080/13569775.2016.1230317}.
 
-\bibitem[\citeproctext]{ref-Morgenbesser2020-kz}
-Morgenbesser, Lee. 2020. \emph{{The rise of sophisticated
-authoritarianism in southeast Asia}}. Elements in Politics and Society
-in Southeast Asia. Cambridge University Press.
-\url{https://doi.org/10.1017/9781108630061}.
-
 \bibitem[\citeproctext]{ref-Morgenbesser2019-mb}
 Morgenbesser, Lee, and Thomas B Pepinsky. 2019. {``{Elections as causes
 of democratization: Southeast Asia in comparative perspective}.''}
@@ -2654,7 +2014,7 @@ of democratization: Southeast Asia in comparative perspective}.''}
 \url{https://doi.org/10.1177/0010414018758763}.
 
 \bibitem[\citeproctext]{ref-Noren-Nilsson2015-xa}
-Noren-Nilsson, Astrid. 2015. {``{Cambodia at a crossroads. The
+Norén-Nilsson, Astrid. 2015. {``{Cambodia at a crossroads. The
 narratives of Cambodia national rescue Party supporters after the 2013
 elections}.''} \emph{Internationales Asienforum} 46: 261--78.
 \url{https://doi.org/10.11588/IAF.2015.46.3726}.
@@ -2677,13 +2037,6 @@ within and beyond Cambodian civil society: Elite status and
 boundary-crossing}.''} \emph{Politics and Governance} 8 (September):
 109--19. \url{https://doi.org/10.17645/pag.v8i3.3020}.
 
-\bibitem[\citeproctext]{ref-Noren-Nilsson2021-sq}
-Norén-Nilsson, Astrid, and Senior Lecturer at the Centre for East and
-South-East Asian Studies, Lund University. 2021. {``{Youth mobilization,
-power reproduction and Cambodia's authoritarian turn}.''}
-\emph{Contemporary Southeast Asia} 43: 265--92.
-\url{https://doi.org/10.1355/cs43-2c}.
-
 \bibitem[\citeproctext]{ref-Przeworski2022-om}
 Przeworski, Adam. 2022. {``{Formal models of authoritarian regimes: A
 critique}.''} \emph{Perspectives on Politics} 21: 979--88.
@@ -2691,11 +2044,10 @@ critique}.''} \emph{Perspectives on Politics} 21: 979--88.
 
 \bibitem[\citeproctext]{ref-Przeworski2000-ed}
 Przeworski, Adam, Michael E Alvarez, Jose Antonio Cheibub, and Fernando
-Limongi. 2000. \emph{{Cambridge studies in the theory of democracy:
-Democracy and development: Political institutions and well-being in the
-world, 1950-1990 series number 3: Political institutions and well-being
-in the world, 1950-{1990}}}. Cambridge University Press.
-\url{https://doi.org/10.1017/cbo9780511804946}.
+Limongi. 2000. \emph{{Democracy and development: Political institutions
+and well-being in the world, 1950-1990 series number 3: Political
+institutions and well-being in the world, 1950-{1990}}}. Cambridge
+University Press. \url{https://doi.org/10.1017/cbo9780511804946}.
 
 \bibitem[\citeproctext]{ref-Schedler2002-eg}
 Schedler, Andreas. 2002. {``{The Menu of Manipulation}.''} \emph{Journal
@@ -2705,6 +2057,7 @@ of Democracy} 13: 36--50. \url{https://doi.org/10.1353/jod.2002.0031}.
 Schedler, Andreas. 2013. \emph{{The politics of uncertainty: Sustaining
 and subverting electoral authoritarianism}}. Oxford Studies in
 Democratization. Oxford University Press.
+\url{https://doi.org/10.1093/acprof:oso/9780199680320.001.0001}.
 
 \bibitem[\citeproctext]{ref-Schedler2007-pv}
 Schedler, Andreas, and Rodolfo Sarsfield. 2007. {``{Democrats with
@@ -2721,14 +2074,14 @@ Strangio, Sebastian. 2020. \emph{{In the dragon's shadow: Southeast Asia
 in the Chinese century}}. Yale University Press.
 \url{https://doi.org/10.2307/j.ctv14rmq92}.
 
+\bibitem[\citeproctext]{ref-Transparency_International2023-im}
+Transparency International. 2023. \emph{{Corruption perceptions index
+{2022}}}. Research report. Transparency International.
+
 \bibitem[\citeproctext]{ref-Um2014-ft}
 Um, Khatharya. 2014. {``{Cambodia in 2013: The winds of change}.''}
 \emph{Nan Yang Wen Ti Yan Qiu {[}Southeast Asian Affairs{]}}, 99--116.
-
-\bibitem[\citeproctext]{ref-Un2012-im}
-Un, Kheang. 2012. {``{Cambodia in 2011: A thin veneer of change}.''}
-\emph{Asian Survey} 52 (February): 202--9.
-\url{https://doi.org/10.1525/as.2012.52.1.202}.
+\url{https://doi.org/10.1355/aa14-1g}.
 
 \bibitem[\citeproctext]{ref-Un2013-ss}
 Un, Kheang. 2013a. {``{Cambodia in 2012: Beyond the Crossroads?}''}
@@ -2752,6 +2105,11 @@ Valgarðsson, Viktor Orri, and Daniel Devine. 2022. {``{What satisfaction
 with democracy? A global analysis of {`satisfaction with democracy'}
 measures}.''} \emph{Political Research Quarterly} 75 (September):
 576--90. \url{https://doi.org/10.1177/10659129211009605}.
+
+\bibitem[\citeproctext]{ref-Wedeen1998-qz}
+Wedeen, Lisa. 1998. {``{Acting {`As If'}: Symbolic Politics and Social
+Control in Syria}.''} \emph{Comparative Studies in Society and History}
+40 (July): 503--23. \url{https://doi.org/10.1017/S0010417598001388}.
 
 \bibitem[\citeproctext]{ref-World-Bank2026-nh}
 World Bank. 2026. {``{GDP growth (annual \%): Cambodia {[}World

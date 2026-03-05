@@ -351,6 +351,15 @@ stats$interact_speech_fut_w6 <- get_int("dem_country_future", "free_speech_hi", 
 stats$interact_speech_fut_w4_p <- get_int_p("dem_country_future", "free_speech_hi", "4")
 stats$interact_speech_fut_w6_p <- get_int_p("dem_country_future", "free_speech_hi", "6")
 
+# Democracy satisfaction wave means (for fig-paradox in manuscript)
+sat_means <- camb |>
+  group_by(wave) |>
+  summarise(sat = mean(democracy_satisfaction, na.rm = TRUE), .groups = "drop")
+stats$dem_satisfaction_w2 <- sat_means$sat[sat_means$wave == 2]
+stats$dem_satisfaction_w3 <- sat_means$sat[sat_means$wave == 3]
+stats$dem_satisfaction_w4 <- sat_means$sat[sat_means$wave == 4]
+stats$dem_satisfaction_w6 <- sat_means$sat[sat_means$wave == 6]
+
 saveRDS(stats, file.path(res_dir, "inline_stats.rds"))
 cat("\ninline_stats.rds updated. Total keys:", length(stats), "\n")
 
