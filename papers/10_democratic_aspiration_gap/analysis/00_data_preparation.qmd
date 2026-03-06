@@ -1,0 +1,502 @@
+---
+title: "00 — Data Preparation: The Democratic Aspiration Gap"
+subtitle: "ABS · LBS · Afrobarometer — variable construction, indices, gap scores"
+format:
+  html:
+    toc: true
+    toc-depth: 3
+    number-sections: true
+    theme: cosmo
+    code-fold: true
+    self-contained: true
+execute:
+  echo: true
+  warning: false
+  message: false
+  cache: true
+---
+
+**Purpose**: Load harmonized ABS, LBS, and Afrobarometer data; construct the
+Democratic Aspiration Gap score and its components; build trust divergence
+indices (executive vs. intermediary); construct authoritarian-alternatives
+variables; add demographic controls; and save three analysis-ready datasets
+plus a cross-survey summary frame.
+
+- **Inputs**:
+  - `abs_harmonized_path` → `abs_harmonized.rds`
+  - `lbs_harmonized_path` → `lbs_harmonized.rds`
+  - `afro_harmonized_path` → `afro_harmonized.rds`
+  (all via `_data_config.R`)
+- **Outputs**:
+  - `analysis/results/dat_abs.rds`
+  - `analysis/results/dat_lbs.rds`
+  - `analysis/results/dat_afro.rds`
+  - `analysis/results/dat_gap_summary.rds`  ← country-wave gap scores, all surveys
+
+```{r setup}
+library(tidyverse)
+
+project_root <- "/Users/jeffreystark/Development/Research/paper-bank"
+source(file.path(project_root, "_data_config.R"))
+
+paper_dir    <- file.path(project_root, "papers/10_democratic_aspiration_gap")
+analysis_dir <- file.path(paper_dir, "analysis")
+results_dir  <- file.path(analysis_dir, "results")
+fig_dir      <- file.path(analysis_dir, "figures")
+tables_dir   <- file.path(analysis_dir, "tables")
+
+dir.create(results_dir, showWarnings = FALSE, recursive = TRUE)
+dir.create(fig_dir,     showWarnings = FALSE, recursive = TRUE)
+dir.create(tables_dir,  showWarnings = FALSE, recursive = TRUE)
+
+source(file.path(paper_dir, "R", "helpers.R"))
+```
+
+---
+
+## Load raw harmonized data
+
+```{r load-data}
+abs_raw  <- readRDS(abs_harmonized_path)
+lbs_raw  <- readRDS(lbs_harmonized_path)
+afro_raw <- readRDS(afro_harmonized_path)
+
+cat("ABS:  ", nrow(abs_raw),  "obs,", n_distinct(abs_raw$country),  "countries\n")
+cat("LBS:  ", nrow(lbs_raw),  "obs,", n_distinct(lbs_raw$country),  "countries\n")
+cat("Afro: ", nrow(afro_raw), "obs,", n_distinct(afro_raw$country), "countries\n")
+```
+
+---
+
+## ABS: variable construction
+
+### Trust indices
+
+Executive trust = president + military (+ police as sensitivity check).
+Intermediary trust = parliament + political parties + courts + election commission.
+All items 1–4, higher = more trust (already harmonized).
+
+Note: `trust_president` is missing from ABS Wave 1. The executive trust index
+starts at Wave 2 for all ABS countries.
+
+```{r abs-trust}
+dat_abs <- abs_raw |>
+  rowwise() |>
+  mutate(
+    # Executive trust (load-bearing for mechanism claim)
+    trust_executive = mean(c_across(c(trust_president, trust_military)),
+                           na.rm = TRUE),
+
+    # Intermediary trust
+    trust_intermediary = mean(c_across(c(trust_parliament,
+                                         trust_political_parties,
+                                         trust_courts,
+                                         trust_election_commission)),
+                              na.rm = TRUE),
+
+    # Trust divergence: positive = executive > intermediary (hollowing pattern)
+    trust_divergence = trust_executive - trust_intermediary,
+
+    # Civil-society cluster (for robustness)
+    trust_civil = mean(c_across(c(trust_ngos, trust_newspapers,
+                                  trust_television)),
+                       na.rm = TRUE)
+  ) |>
+  ungroup()
+```
+
+### Democratic Aspiration Gap score
+
+Gap = democratic preference (demand) minus democratic supply assessment.
+Both normalized 0–1 before differencing so the gap is on a common scale.
+
+- Preference (supply-independent): `dem_best_form` (1–4, higher = pro-democracy)
+- Supply assessment: `dem_sat_national` (1–4, higher = more satisfied)
+
+```{r abs-gap}
+dat_abs <- dat_abs |>
+  mutate(
+    dem_pref_n   = normalize_01(dem_best_form),
+    dem_supply_n = normalize_01(democracy_satisfaction),
+    dem_gap      = dem_pref_n - dem_supply_n
+    # Positive gap: wants more democracy than they assess they have
+    # Negative gap: satisfied or over-satisfied (rare)
+  )
+```
+
+### Authoritarian alternatives
+
+ABS items: `strongman_rule`, `expert_rule`, `military_rule`, `single_party_rule`
+Scale: 1–4, **higher = more authoritarian support** (already harmonized).
+
+For cross-survey comparability these will be rescaled to 0–1 within the paper
+itself (see `02_models.qmd`). Raw harmonized values preserved here.
+
+```{r abs-authalt}
+dat_abs <- dat_abs |>
+  rowwise() |>
+  mutate(
+    # Composite authoritarian alternatives index (0-1)
+    authalt_index = mean(c_across(c(strongman_rule, expert_rule,
+                                    military_rule, single_party_rule)),
+                         na.rm = TRUE) |> (\(x) (x - 1) / 3)(),
+
+    # Technocratic channel (theoretically distinct for Singapore/Cambodia/Malaysia)
+    expert_rule_n = (expert_rule - 1) / 3,
+
+    # Personalist channel
+    strongman_rule_n = (strongman_rule - 1) / 3
+  ) |>
+  ungroup()
+```
+
+### Economic controls and demographics
+
+```{r abs-controls}
+dat_abs <- dat_abs |>
+  mutate(
+    econ_national_n = normalize_01(econ_national_now),
+    econ_family_n   = normalize_01(econ_family_now),
+    age_n           = normalize_01(age),
+    edu_n           = normalize_01(education_level),
+    urban           = if_else(urban_rural == 1, 1L, 0L)
+  )
+```
+
+### Diagnostics
+
+```{r abs-diag}
+cat("=== ABS: Gap score coverage by country ===\n")
+dat_abs |>
+  group_by(country) |>
+  summarise(
+    n           = n(),
+    waves       = paste(sort(unique(wave)), collapse = ", "),
+    gap_nonmiss = sum(!is.na(dem_gap)),
+    gap_mean    = round(mean(dem_gap, na.rm = TRUE), 3),
+    trust_div_mean = round(mean(trust_divergence, na.rm = TRUE), 3),
+    .groups = "drop"
+  ) |>
+  arrange(desc(gap_mean)) |>
+  print(n = Inf)
+```
+
+---
+
+## LBS: variable construction
+
+### Trust indices
+
+LBS trust battery: all items 1–4, higher = more trust (reversed from raw).
+
+Executive cluster: `trust_president`, `trust_armed_forces`
+Intermediary cluster: `trust_congress`, `trust_judiciary`, `trust_political_parties`,
+`trust_electoral_authority`
+
+```{r lbs-trust}
+dat_lbs <- lbs_raw |>
+  rowwise() |>
+  mutate(
+    trust_executive = mean(c_across(c(trust_president, trust_armed_forces)),
+                           na.rm = TRUE),
+
+    trust_intermediary = mean(c_across(c(trust_parliament,
+                                          trust_courts,
+                                          trust_political_parties,
+                                          trust_elections)),
+                              na.rm = TRUE),
+
+    trust_divergence = trust_executive - trust_intermediary,
+
+    # Media trust cluster (LBS-only; information environment moderator)
+    trust_media = mean(c_across(c(trust_newspapers, trust_television,
+                                   trust_radio)),
+                       na.rm = TRUE)
+  ) |>
+  ungroup()
+```
+
+### Democratic Aspiration Gap score
+
+- Preference: `dem_always_preferable` (higher = democracy preferable)
+- Supply: `dem_satisfaction` (higher = more satisfied)
+
+```{r lbs-gap}
+dat_lbs <- dat_lbs |>
+  mutate(
+    dem_pref_n   = normalize_01(dem_always_preferable),
+    dem_supply_n = normalize_01(dem_satisfaction),
+    dem_gap      = dem_pref_n - dem_supply_n
+  )
+```
+
+### Authoritarian alternatives
+
+LBS does NOT have a strong-leader / expert-rule item in ordinal form.
+Available items and their coverage:
+
+- `dem_nondem_ok`: tolerance for non-democracy if it solves problems
+  (1–4)
+- `dem_military_support`: support military govt if things get difficult
+  (binary 0/1)
+
+NOTE on cross-survey harmonization: `dem_nondem_ok` is rescaled to 0–1
+and compared to ABS `authalt_index` and Afro `authalt_index_rev`
+in `02_models.qmd`. The Afro reject items run opposite in polarity — see
+the Afro section below for the reversal formula.
+
+```{r lbs-authalt}
+dat_lbs <- dat_lbs |>
+  mutate(
+    # nondem_ok: normalize to 0-1
+    nondem_ok_n = normalize_01(dem_nondem_ok)
+  )
+```
+
+### Economic controls and corruption
+
+Note: LBS harmonized data does not include demographic variables (age,
+education, urban_rural). Models using LBS will omit demographic controls.
+
+```{r lbs-controls}
+dat_lbs <- dat_lbs |>
+  mutate(
+    econ_national_n    = normalize_01(econ_national_current),
+    econ_personal_n    = normalize_01(econ_personal_current),
+    # corruption_experience is binary (1=Yes, 2=No) — recode to 0/1
+    corrupt_exp        = if_else(corruption_experience == 1, 1L, 0L, NA_integer_),
+    corrupt_progress_n = normalize_01(corruption_progress)
+  )
+```
+
+### Diagnostics
+
+```{r lbs-diag}
+cat("=== LBS: Gap score coverage by country ===\n")
+dat_lbs |>
+  group_by(country) |>
+  summarise(
+    n              = n(),
+    waves          = paste(sort(unique(wave)), collapse = ", "),
+    gap_nonmiss    = sum(!is.na(dem_gap)),
+    gap_mean       = round(mean(dem_gap, na.rm = TRUE), 3),
+    trust_div_mean = round(mean(trust_divergence, na.rm = TRUE), 3),
+    .groups = "drop"
+  ) |>
+  arrange(desc(gap_mean)) |>
+  print(n = Inf)
+```
+
+---
+
+## Afrobarometer: variable construction
+
+### Trust indices
+
+Afro trust battery: all items 1–4, higher = more trust (shifted from 0–3 raw).
+
+Executive cluster: `trust_president`, `trust_armed_forces`
+Intermediary cluster: `trust_parliament`, `trust_political_parties`,
+`trust_courts`, `trust_elections`
+Note: `trust_traditional_leaders` is available R2/R4/R6–R9 — kept separate
+as it represents an alternative legitimacy source.
+
+```{r afro-trust}
+dat_afro <- afro_raw |>
+  rowwise() |>
+  mutate(
+    trust_executive = mean(c_across(c(trust_president, trust_armed_forces)),
+                           na.rm = TRUE),
+
+    trust_intermediary = mean(c_across(c(trust_parliament,
+                                          trust_political_parties,
+                                          trust_courts,
+                                          trust_elections)),
+                              na.rm = TRUE),
+
+    trust_divergence = trust_executive - trust_intermediary
+  ) |>
+  ungroup()
+```
+
+### Democratic Aspiration Gap score
+
+- Preference: `dem_support_preferable` (higher = democracy preferable)
+- Supply: `dem_satisfaction` (higher = more satisfied)
+
+Note: `dem_support_preferable` produced z=3.70 in Gambia — the strongest signal
+in the entire dataset. Verify this item's wave coverage for Gambia before
+running the main models.
+
+```{r afro-gap}
+dat_afro <- dat_afro |>
+  mutate(
+    dem_pref_n   = normalize_01(dem_support_preferable),
+    dem_supply_n = normalize_01(dem_satisfaction),
+    dem_gap      = dem_pref_n - dem_supply_n
+  )
+```
+
+### Authoritarian alternatives
+
+Afro items: `reject_one_party`, `reject_military_rule`, `reject_one_man_rule`
+Scale: 1–5, **higher = MORE rejection (pro-democracy)** — OPPOSITE polarity
+to ABS authoritarian items. Reversal formula for cross-survey comparison:
+`authoritarian_support = (6 - reject_item)`, then rescale `(x - 1) / 4` → 0–1.
+
+Raw harmonized direction preserved here. Reversal applied in `02_models.qmd`.
+
+```{r afro-authalt}
+dat_afro <- dat_afro |>
+  rowwise() |>
+  mutate(
+    # Pro-democracy composite (as harmonized — higher = more democratic)
+    prodem_index = mean(c_across(c(reject_one_party,
+                                    reject_military_rule,
+                                    reject_one_man_rule)),
+                        na.rm = TRUE) |> (\(x) (x - 1) / 4)(),
+
+    # Pre-reversed for cross-survey models (higher = more authoritarian,
+    # matching ABS direction). Apply only where needed.
+    authalt_index_rev = mean(c_across(c(reject_one_party,
+                                         reject_military_rule,
+                                         reject_one_man_rule)),
+                             na.rm = TRUE) |> (\(x) 1 - ((x - 1) / 4))()
+  ) |>
+  ungroup()
+```
+
+### Corruption: behavioral bribery battery
+
+Four items available across most rounds (R2–R9): `bribe_document`,
+`bribe_police`, `bribe_school`, `bribe_medical`. These measure *experienced*
+frequency (0–3), not perception — stronger for causal argument than perception-only.
+
+```{r afro-corruption}
+dat_afro <- dat_afro |>
+  rowwise() |>
+  mutate(
+    bribery_index = mean(c_across(c(bribe_document, bribe_police,
+                                     bribe_school, bribe_medical)),
+                         na.rm = TRUE) |> (\(x) x / 3)()  # rescale to 0-1
+  ) |>
+  ungroup()
+```
+
+### Economic controls and demographics
+
+```{r afro-controls}
+dat_afro <- dat_afro |>
+  mutate(
+    econ_national_n = normalize_01(econ_national_current),
+    econ_living_n   = normalize_01(econ_living_conditions),
+    age_n           = normalize_01(age),
+    edu_n           = normalize_01(education_level),
+    urban           = if_else(urban_rural == 1, 1L, 0L)
+  )
+```
+
+### Diagnostics
+
+```{r afro-diag}
+cat("=== Afro: Gap score coverage by country ===\n")
+dat_afro |>
+  group_by(country) |>
+  summarise(
+    n              = n(),
+    rounds         = paste(sort(unique(wave)), collapse = ", "),
+    gap_nonmiss    = sum(!is.na(dem_gap)),
+    gap_mean       = round(mean(dem_gap, na.rm = TRUE), 3),
+    trust_div_mean = round(mean(trust_divergence, na.rm = TRUE), 3),
+    .groups = "drop"
+  ) |>
+  arrange(desc(gap_mean)) |>
+  print(n = Inf)
+```
+
+---
+
+## Cross-survey gap summary frame
+
+Country-wave mean gap scores and trust divergence across all three surveys,
+stacked into a single long frame. Used for Figure 1 (gap trajectories by region)
+and the country typology.
+
+```{r gap-summary}
+# ABS
+sum_abs <- dat_abs |>
+  group_by(country, wave) |>
+  summarise(
+    survey         = "ABS",
+    n              = n(),
+    dem_gap        = mean(dem_gap,         na.rm = TRUE),
+    dem_pref       = mean(dem_pref_n,      na.rm = TRUE),
+    dem_supply     = mean(dem_supply_n,    na.rm = TRUE),
+    trust_exec     = mean(trust_executive,    na.rm = TRUE),
+    trust_int      = mean(trust_intermediary, na.rm = TRUE),
+    trust_div      = mean(trust_divergence,   na.rm = TRUE),
+    .groups = "drop"
+  )
+
+# LBS
+sum_lbs <- dat_lbs |>
+  group_by(country, wave) |>
+  summarise(
+    survey         = "LBS",
+    n              = n(),
+    dem_gap        = mean(dem_gap,         na.rm = TRUE),
+    dem_pref       = mean(dem_pref_n,      na.rm = TRUE),
+    dem_supply     = mean(dem_supply_n,    na.rm = TRUE),
+    trust_exec     = mean(trust_executive,    na.rm = TRUE),
+    trust_int      = mean(trust_intermediary, na.rm = TRUE),
+    trust_div      = mean(trust_divergence,   na.rm = TRUE),
+    .groups = "drop"
+  )
+
+# Afro
+sum_afro <- dat_afro |>
+  group_by(country, wave) |>
+  summarise(
+    survey         = "Afro",
+    n              = n(),
+    dem_gap        = mean(dem_gap,         na.rm = TRUE),
+    dem_pref       = mean(dem_pref_n,      na.rm = TRUE),
+    dem_supply     = mean(dem_supply_n,    na.rm = TRUE),
+    trust_exec     = mean(trust_executive,    na.rm = TRUE),
+    trust_int      = mean(trust_intermediary, na.rm = TRUE),
+    trust_div      = mean(trust_divergence,   na.rm = TRUE),
+    .groups = "drop"
+  )
+
+dat_gap_summary <- bind_rows(
+  sum_abs  |> mutate(country = as.character(country)),
+  sum_lbs  |> mutate(country = as.character(country)),
+  sum_afro |> mutate(country = as.character(country))
+) |>
+  mutate(survey = factor(survey, levels = c("ABS", "LBS", "Afro")))
+
+cat("Gap summary frame:", nrow(dat_gap_summary), "country-wave observations\n")
+cat("By survey:\n")
+count(dat_gap_summary, survey) |> print()
+```
+
+---
+
+## Save
+
+```{r save}
+saveRDS(dat_abs,         file.path(results_dir, "dat_abs.rds"))
+saveRDS(dat_lbs,         file.path(results_dir, "dat_lbs.rds"))
+saveRDS(dat_afro,        file.path(results_dir, "dat_afro.rds"))
+saveRDS(dat_gap_summary, file.path(results_dir, "dat_gap_summary.rds"))
+
+cat("\n✓ Saved:\n")
+cat("  dat_abs.rds        —", nrow(dat_abs), "obs,",
+    n_distinct(dat_abs$country), "countries\n")
+cat("  dat_lbs.rds        —", nrow(dat_lbs), "obs,",
+    n_distinct(dat_lbs$country), "countries\n")
+cat("  dat_afro.rds       —", nrow(dat_afro), "obs,",
+    n_distinct(dat_afro$country), "countries\n")
+cat("  dat_gap_summary.rds —", nrow(dat_gap_summary),
+    "country-wave rows\n")
+```

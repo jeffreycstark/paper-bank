@@ -1,0 +1,110 @@
+---
+title: "01 — Descriptive Analysis: PAPER TITLE"
+format:
+  html:
+    toc: true
+    toc-depth: 3
+    number-sections: true
+    theme: cosmo
+    code-fold: true
+    self-contained: true
+execute:
+  echo: true
+  warning: false
+  message: false
+  cache: true
+---
+
+**Purpose**: Descriptive statistics, trend plots, and exploratory figures.
+
+- **Input**: `analysis/results/analysis_data.rds`
+- **Output**: figures → `analysis/figures/`, tables → `analysis/tables/`,
+  summary objects → `analysis/results/descriptives.rds`
+
+```{r setup}
+library(tidyverse)
+library(knitr)
+library(kableExtra)
+
+project_root <- "/Users/jeffreystark/Development/Research/paper-bank"
+paper_dir    <- file.path(project_root, "papers/00-model")
+analysis_dir <- file.path(paper_dir, "analysis")
+results_dir  <- file.path(analysis_dir, "results")
+fig_dir      <- file.path(analysis_dir, "figures")
+tables_dir   <- file.path(analysis_dir, "tables")
+
+source(file.path(paper_dir, "R", "helpers.R"))
+
+dat <- readRDS(file.path(results_dir, "analysis_data.rds"))
+```
+
+## Sample overview
+
+```{r sample-table}
+# Wave-by-country sample size table
+sample_tbl <- dat |>
+  group_by(country_label, wave) |>
+  summarise(n = n(), .groups = "drop") |>
+  pivot_wider(names_from = wave, values_from = n, names_prefix = "Wave ")
+
+sample_tbl |>
+  kbl(caption = "Sample size by country and wave") |>
+  kable_styling(bootstrap_options = c("striped", "hover"))
+
+write_csv(sample_tbl, file.path(tables_dir, "sample_by_wave.csv"))
+```
+
+## Descriptive statistics
+
+```{r descriptives}
+# TODO: replace variable list with this paper's DVs and IVs
+desc_vars <- c()  # e.g. c("dv1_n", "iv1_n", "age_n", "edu_n", "polint_n")
+
+if (length(desc_vars) > 0) {
+  desc_tbl <- dat |>
+    group_by(country_label) |>
+    summarise(
+      across(all_of(desc_vars),
+             list(mean = ~mean(.x, na.rm = TRUE),
+                  sd   = ~sd(.x,   na.rm = TRUE),
+                  n    = ~sum(!is.na(.x)))),
+      .groups = "drop"
+    )
+  print(desc_tbl)
+  write_csv(desc_tbl, file.path(tables_dir, "descriptives.csv"))
+}
+```
+
+## Trend plots
+
+```{r trends}
+# TODO: compute country-wave means for key DVs and plot trends
+
+# Example pattern:
+# trend_dat <- dat |>
+#   group_by(country_label, wave) |>
+#   summarise(
+#     dv1_mean = mean(dv1_n, na.rm = TRUE),
+#     .groups = "drop"
+#   )
+#
+# p_trend <- ggplot(trend_dat, aes(x = wave, y = dv1_mean,
+#                                  colour = country_label)) +
+#   geom_line(linewidth = 0.8) +
+#   geom_point(size = 2) +
+#   theme_pub +
+#   labs(title = "DV1 by wave", x = "Wave", y = "Mean (0-1)")
+#
+# ggsave(file.path(fig_dir, "fig1_trends.pdf"), p_trend,
+#        width = 6, height = 4)
+# ggsave(file.path(fig_dir, "fig1_trends.png"), p_trend,
+#        width = 6, height = 4, dpi = 300)
+```
+
+## Save summary objects
+
+```{r save}
+# TODO: save any pre-computed descriptive objects needed by the manuscript
+# saveRDS(list(...), file.path(results_dir, "descriptives.rds"))
+cat("✓ Descriptive analysis complete\n")
+```

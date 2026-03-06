@@ -1,0 +1,90 @@
+---
+title: "03 — Robustness Checks: PAPER TITLE"
+format:
+  html:
+    toc: true
+    toc-depth: 3
+    number-sections: true
+    theme: cosmo
+    code-fold: true
+    self-contained: true
+execute:
+  echo: true
+  warning: false
+  message: false
+  cache: true
+---
+
+**Purpose**: Robustness and sensitivity checks for main findings.
+
+- **Input**: `analysis/results/analysis_data.rds`,
+  `analysis/results/model_results.rds`
+- **Output**: `analysis/results/robustness_results.rds`,
+  figures → `analysis/figures/`, tables → `analysis/tables/`
+
+```{r setup}
+library(tidyverse)
+library(broom)
+library(modelsummary)
+library(knitr)
+library(kableExtra)
+
+project_root <- "/Users/jeffreystark/Development/Research/paper-bank"
+paper_dir    <- file.path(project_root, "papers/00-model")
+analysis_dir <- file.path(paper_dir, "analysis")
+results_dir  <- file.path(analysis_dir, "results")
+fig_dir      <- file.path(analysis_dir, "figures")
+tables_dir   <- file.path(analysis_dir, "tables")
+
+source(file.path(paper_dir, "R", "helpers.R"))
+
+dat <- readRDS(file.path(results_dir, "analysis_data.rds"))
+mr  <- if (file.exists(file.path(results_dir, "model_results.rds"))) {
+  readRDS(file.path(results_dir, "model_results.rds"))
+}
+```
+
+## Alternative specifications
+
+```{r alt-specs}
+# TODO: re-estimate main models with alternative control sets, estimators,
+# or clustering choices.
+#
+# Example: logistic regression for binary DV
+# Example: fixed-effects panel model
+# Example: dropping control variables one at a time
+```
+
+## Alternative measures
+
+```{r alt-measures}
+# TODO: re-estimate main models substituting alternative operationalizations
+# of the DV and/or IV (e.g., z-scores instead of 0-1 normalization,
+# individual items instead of indices).
+```
+
+## Subsample sensitivity
+
+```{r subsamples}
+# TODO: check whether results hold in demographic subgroups, excluding
+# particular waves, or with different country subsets.
+#
+# Example:
+# for (grp in c("Younger", "Older")) {
+#   sub <- dat |> filter(age_group == grp)
+#   # ... estimate and collect
+# }
+```
+
+## Save robustness results
+
+```{r save}
+# TODO: collect robustness outputs and save
+# rob <- list(
+#   alt_spec    = ...,
+#   alt_measure = ...,
+#   subsamples  = ...
+# )
+# saveRDS(rob, file.path(results_dir, "robustness_results.rds"))
+cat("✓ Robustness checks complete\n")
+```
