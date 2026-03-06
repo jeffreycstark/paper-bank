@@ -1,0 +1,390 @@
+---
+title: "Data Exploration: Cambodia Elite Capture"
+subtitle: "Initial inspection of variables for trust and elite capture analysis"
+author: "Jeffrey Stark"
+date: today
+format:
+  html:
+    toc: true
+    toc-depth: 3
+    code-fold: show
+    code-tools: true
+    df-print: paged
+    theme: cosmo
+    embed-resources: true
+execute:
+  warning: false
+  message: false
+---
+
+# Overview
+
+This document explores the Asian Barometer Wave 6 dataset to identify and assess variables relevant for analyzing elite capture through trust patterns in Cambodia (compared to Vietnam and Thailand).
+
+**Key Research Questions:**
+
+1. Do Cambodians show higher local trust but lower national trust (the "trust ladder")?
+2. Does this pattern differ from Vietnam (bureaucratic) and Thailand (polarized)?
+3. What variables can serve as proxies for elite capture and patronage?
+
+# Setup
+```{r 02-setup, message=FALSE, warning=FALSE}
+# ============================================
+# PACKAGE LOADING (Order matters!)
+# ============================================
+
+# Clear environment to prevent conflicts
+rm(list = ls())
+
+# Set CRAN mirror
+options(repos = c(CRAN = "https://cloud.r-project.org"))
+
+# Load packages in CAREFUL ORDER to avoid masking
+# Rule: Load general packages first, specific packages last
+
+# 1. Core tidyverse (loads dplyr, ggplot2, tidyr, etc.)
+library(tidyverse)
+
+# 2. Data import/export
+library(haven)        # For reading SPSS/Stata files
+library(here)         # For project-relative paths
+
+# 3. Data manipulation (reload to ensure dplyr is active)
+library(dplyr)        # Explicit reload to prevent masking
+
+# 4. Labelled data
+library(labelled)     # For handling labeled data
+
+# 5. Visualization and reporting
+library(ggplot2)      # Already in tidyverse, but explicit
+library(gt)           # For tables
+
+# 6. Statistical analysis
+library(psych)        # For factor analysis
+
+# 7. Data quality and cleaning
+library(naniar)       # For missing data visualization
+library(skimr)        # For data summaries
+library(janitor)      # For data cleaning
+
+# ============================================
+# PREVENT COMMON CONFLICTS
+# ============================================
+
+# Ensure we're using dplyr's key functions
+select <- dplyr::select
+filter <- dplyr::filter
+mutate <- dplyr::mutate
+summarise <- dplyr::summarise
+
+# Set global options
+options(scipen = 999)  # Disable scientific notation
+set.seed(2025)         # Reproducibility
+
+cat("✓ Packages loaded successfully\n")
+cat("  dplyr::select is active:", exists("select", mode = "function"), "\n")
+
+# ============================================
+# SOURCE CUSTOM FUNCTIONS
+# ============================================
+
+t0 <- Sys.time()
+cat("[setup] Sourcing custom functions at", format(t0), "\n")
+
+source_success <- tryCatch({
+  source(here("R", "utils", "_load_functions.R"))
+  TRUE
+}, error = function(e) {
+  cat("❌ Error sourcing R/utils/_load_functions.R:", conditionMessage(e), "\n")
+  FALSE
+})
+
+t1 <- Sys.time()
+cat(sprintf("[setup] Sourcing completed in %.2f sec\n", 
+            as.numeric(difftime(t1, t0, units = "secs"))))
+
+if (!source_success) {
+  stop("Failed to source R/utils/_load_functions.R")
+}
+
+# ============================================
+# VERIFY CUSTOM FUNCTIONS
+# ============================================
+
+# Note: Reversal functions are sourced from R/utils/_load_functions.R
+# - safe_reverse_3pt(): Reverses 1-3 scales
+# - safe_reverse_4pt(): Reverses 1-4 scales  
+# - safe_reverse_5pt(): Reverses 1-5 scales
+# - verify_reversal(): Cross-tabulates original vs recoded
+# - verify_no_invalid_codes(): Checks for invalid codes in variables
+# - create_composite(): Creates mean composites with minimum item requirement
+
+required_functions <- c(
+  "safe_reverse_3pt", 
+  "safe_reverse_4pt", 
+  "safe_reverse_5pt", 
+  "verify_reversal", 
+  "verify_no_invalid_codes", 
+  "create_composite"
+)
+
+cat("[setup] Verifying required functions exist...\n")
+
+exists_fun <- vapply(
+  required_functions,
+  function(f) exists(f, mode = "function", inherits = TRUE),
+  logical(1)
+)
+
+missing_functions <- required_functions[!exists_fun]
+
+if (length(missing_functions) > 0) {
+  stop("❌ Missing required functions: ", 
+       paste(missing_functions, collapse = ", "))
+}
+
+cat("✓ All required functions available\n")
+
+# ============================================
+# FINAL VERIFICATION
+# ============================================
+
+# Test that select() is from dplyr
+test_select <- tryCatch({
+  # This should work if dplyr::select is active
+  mtcars %>% select(mpg, cyl)
+  TRUE
+}, error = function(e) {
+  cat("⚠ Warning: select() may not be from dplyr\n")
+  FALSE
+})
+
+if (test_select) {
+  cat("✓ dplyr::select() working correctly\n")
+}
+
+# Display package versions for reproducibility
+cat("\n=== Key Package Versions ===\n")
+cat("dplyr:", as.character(packageVersion("dplyr")), "\n")
+cat("tidyverse:", as.character(packageVersion("tidyverse")), "\n")
+cat("here:", as.character(packageVersion("here")), "\n")
+
+cat("\n✓ Setup complete!\n")
+```
+
+
+```{r load_data}
+# Load data
+data <- readRDS(here("papers/02_cambodia_elite_capture/data/processed/ab_analysis.rds"))
+```
+
+# Basic Dataset Structure
+```{r overview}
+# Dimensions
+cat("Dataset dimensions:\n")
+cat("Rows:", nrow(data), "\n")
+cat("Columns:", ncol(data), "\n\n")
+
+# Countries included
+cat("Countries in dataset:\n")
+data %>% 
+  count(country_name) %>% 
+  arrange(desc(n))
+
+```
+
+# Variable Inventory
+
+## All Available Variables
+```{r all_variables}
+# Get variable names and labels
+var_labels <- data %>% 
+  map_chr(~{
+    label <- attr(.x, "label")
+    if (is.null(label)) return("")
+    return(label)
+  })
+
+# Create inventory
+var_inventory <- tibble(
+  variable = names(data),
+  label = var_labels,
+  type = map_chr(data, ~paste(class(.x), collapse = ", ")),
+  n_unique = map_int(data, ~length(unique(.x))),
+  n_missing = map_int(data, ~sum(is.na(.x)))
+) %>%
+  mutate(
+    pct_missing = round(n_missing / nrow(data) * 100, 1)
+  )
+
+# Display full inventory
+var_inventory %>%
+  arrange(variable) %>%
+  gt() %>%
+  tab_header(
+    title = "Complete Variable Inventory",
+    subtitle = paste0("n = ", nrow(data), " observations")
+  ) %>%
+  cols_label(
+    variable = "Variable Name",
+    label = "Label",
+    type = "Type",
+    n_unique = "Unique Values",
+    n_missing = "Missing (n)",
+    pct_missing = "Missing (%)"
+  )
+```
+
+# Key Variable Categories
+
+## Trust Variables
+
+Looking for variables measuring trust in different institutions/levels:
+```{r trust_variables}
+# Search for trust-related variables
+trust_vars <- var_inventory %>%
+  filter(str_detect(tolower(label), "trust|confidence") | 
+         str_detect(tolower(variable), "trust|conf"))
+
+trust_vars %>%
+  gt() %>%
+  tab_header(title = "Trust & Confidence Variables")
+```
+
+### Trust Variable Distributions (Cambodia)
+```{r trust_distributions_cambodia}
+if (nrow(trust_vars) > 0) {
+  # Filter Cambodia only
+  cambodia_data <- data %>% filter(country_name == "Cambodia")
+  
+  # Get trust variable names
+  trust_var_names <- trust_vars$variable
+  
+  # Plot distributions
+  cambodia_data %>%
+    select(any_of(trust_var_names)) %>%
+    pivot_longer(everything(), names_to = "variable", values_to = "value") %>%
+    filter(!is.na(value)) %>%
+    ggplot(aes(x = value)) +
+    geom_bar() +
+    facet_wrap(~variable, scales = "free") +
+    labs(title = "Distribution of Trust Variables (Cambodia)",
+         x = "Response", y = "Count") +
+    theme_minimal()
+} else {
+  cat("No trust variables found yet.\n")
+}
+```
+
+## Government Performance & Service Delivery
+```{r government_performance}
+# Search for government performance, service delivery
+govt_vars <- var_inventory %>%
+  filter(str_detect(tolower(label), "government|performance|service|deliver|satis") |
+         str_detect(tolower(variable), "govt|perf|serv|satis"))
+
+govt_vars %>%
+  gt() %>%
+  tab_header(title = "Government Performance & Service Variables")
+```
+
+## Corruption & Elite Capture Proxies
+```{r corruption_vars}
+# Search for corruption, elite, patron, local leader variables
+capture_vars <- var_inventory %>%
+  filter(str_detect(tolower(label), "corrupt|elite|patron|leader|village|local|chief") |
+         str_detect(tolower(variable), "corr|elite|patron|leader|village|local"))
+
+capture_vars %>%
+  gt() %>%
+  tab_header(title = "Potential Elite Capture Proxy Variables")
+```
+
+## Contact with Officials/Leaders
+```{r contact_vars}
+# Search for contact, approach, help-seeking
+contact_vars <- var_inventory %>%
+  filter(str_detect(tolower(label), "contact|approach|help|assist|request") |
+         str_detect(tolower(variable), "contact|approach"))
+
+contact_vars %>%
+  gt() %>%
+  tab_header(title = "Contact with Officials/Leaders Variables")
+```
+
+## Socioeconomic & Demographics
+```{r demographics}
+# Key demographics
+demo_vars <- var_inventory %>%
+  filter(str_detect(tolower(label), "age|gender|sex|education|income|urban|rural|employ") |
+         str_detect(tolower(variable), "age|gender|sex|educ|income|urban|rural|employ"))
+
+demo_vars %>%
+  gt() %>%
+  tab_header(title = "Demographic & Socioeconomic Variables")
+```
+
+# country_name-Specific Sample Sizes
+```{r country_name_samples}
+# Focus on Cambodia, Vietnam, Thailand
+data %>%
+  filter(country_name %in% c("Cambodia", "Vietnam", "Thailand")) %>%
+  count(country_name) %>%
+  gt() %>%
+  tab_header(title = "Sample Sizes: Three-country_name Comparison")
+```
+
+# Missing Data Assessment
+```{r missing_data}
+# For Cambodia specifically, what's the missing data situation?
+cambodia_data <- data %>% filter(country_name == "Cambodia")
+
+missing_summary <- tibble(
+  variable = names(cambodia_data),
+  n_missing = map_int(cambodia_data, ~sum(is.na(.x))),
+  pct_missing = round(map_int(cambodia_data, ~sum(is.na(.x))) / nrow(cambodia_data) * 100, 1)
+) %>%
+  filter(pct_missing > 0) %>%
+  arrange(desc(pct_missing))
+
+missing_summary %>%
+  gt() %>%
+  tab_header(
+    title = "Missing Data (Cambodia Only)",
+    subtitle = paste0("n = ", nrow(cambodia_data))
+  ) %>%
+  data_color(
+    columns = pct_missing,
+    colors = scales::col_numeric(
+      palette = c("green", "yellow", "red"),
+      domain = c(0, 100)
+    )
+  )
+```
+
+# Next Steps
+
+Based on this exploration, we need to:
+
+1. **Identify core trust variables** for the "trust ladder" hypothesis
+   - Local level trust (village, neighbors, community)
+   - National level trust (government, parliament, courts)
+   
+2. **Find or construct elite capture proxies**
+   - Service delivery mechanisms (formal vs. informal)
+   - Contact patterns with local leaders
+   - Perceptions of local vs. national corruption
+   
+3. **Check variable consistency** across Cambodia, Vietnam, Thailand
+
+4. **Create analysis-ready variables** with proper coding and labels
+
+5. **Develop initial descriptive statistics** comparing the three countries
+
+---
+
+**Session Info**
+```{r session_info}
+sessionInfo()
+```
+---

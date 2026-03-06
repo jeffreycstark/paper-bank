@@ -1,0 +1,1459 @@
+The Satisfaction Paradox: Economic Performance and the Structure of
+Democratic Support in South Korea
+Jeffrey Stark
+March 6, 2026 at 2:49 PM
+
+Abstract
+
+Democratic consolidation theory predicts that satisfaction with
+democratic performance and normative commitment to democracy reinforce
+each other, with economic performance as the engine. South Korean
+aggregate trends appear to confirm this expectation: over two decades,
+both democratic satisfaction and abstract democratic preference have
+risen. Six waves of Asian Barometer Survey data (2003–2022, n = 7,603)
+reveal that the co-movement is coincidental. Wave-by-wave OLS
+regressions show that economic evaluations powerfully predict
+satisfaction with democracy (β = 0.26–0.46, p < 0.001 in every wave) but
+show a shifting and ultimately reversed relationship with normative
+democratic preference: positive in 2003, null in the middle waves, and
+significantly negative by 2015–2019. The pooled relationship is zero—not
+because the connection is absent, but because a positive early
+relationship cancels a negative later one. The 30-percentage-point rise
+in the belief that democracy is “always preferable”—from 49 to 78
+percent—is a uniform period effect visible in every age group and birth
+cohort, driven by forces entirely unconnected to economic performance.
+The decoupling extends further. On substantive measures—rejection of
+strongman rule, military governance, single-party systems—economically
+comfortable Koreans are marginally more tolerant of authoritarian
+alternatives, not less. The performance-legitimation mode runs through
+the entire structure of Korean democratic support: economic comfort
+increases satisfaction with democracy, shows a relationship with
+principled democratic commitment that reversed from positive to negative
+over the observation window—suggesting an emerging critical citizens
+dynamic invisible in the pooled estimates—and weakly increases openness
+to the authoritarian governance modes that the consolidation literature
+treats as the clearest markers of normative depth. A parallel analysis
+of Taiwan (n = 9,042) sharpens the point: Taiwan exhibits no
+period-level rise in abstract preference but shows strong
+individual-level economic sensitivity—the structural inverse of the
+Korean pattern, consistent with a context where democracy carries
+identity weight that makes economic conditions relevant to normative
+evaluation. South Korea’s December 2024 martial law crisis—resolved
+within six hours by institutional mechanisms and organized political
+opposition—is consistent with a democracy whose demonstrated resilience
+is institutional, though the attitudinal data predate the crisis and
+cannot establish the counterfactual.
+
+Keywords: democratic consolidation, democratic satisfaction, performance
+legitimacy, authoritarian rejection, South Korea, Taiwan, Asian
+Barometer Survey
+
+Introduction
+
+On the evening of December 3, 2024, President Yoon Suk Yeol appeared on
+national television to declare emergency martial law in South Korea,
+citing the need to protect the country from “anti-state forces” and
+“North Korean communist sympathizers” allegedly operating through the
+opposition-controlled National Assembly. Troops were dispatched to the
+parliament building. Political activity was banned. The press was placed
+under the authority of the Martial Law Command. It was the first
+declaration of martial law since Chun Doo-hwan’s 1980 coup—and it lasted
+barely six hours. Lawmakers pushed past soldiers, convened an emergency
+session, and voted unanimously to overturn the decree. Yoon was
+impeached within days. In February 2026, a Seoul court sentenced him to
+life in prison for insurrection (Hankyoreh, 2026; Kim, 2024).
+
+South Korean democracy, by any institutional measure, held. The question
+is what held it.
+
+The standard answer points to institutional design: constitutional
+safeguards, an independent judiciary, a legislature willing to act.
+These matter. But institutional mechanisms are activated by people who
+choose to activate them, and the nature of that choice—whether it
+reflects principled democratic conviction or instrumental calculation
+about which system works—has consequences for how resilient the
+democracy proves against subtler threats than a clumsy late-night
+putsch. The mass public opinion data spanning the two decades before the
+crisis suggest a more complicated picture of Korean democratic
+commitment than the institutional response alone conveys.
+
+The empirical basis for this claim is a pattern documented across six
+waves of the Asian Barometer Survey. Between 2003 and 2022, democratic
+satisfaction in South Korea rose steadily—roughly five percentage points
+per decade. Over the same period, the belief that democracy is always
+preferable rose even more sharply, from 49 to 78 percent of respondents.
+System support declined modestly. A researcher examining these aggregate
+trends might conclude that South Korea is consolidating on
+schedule—rising satisfaction accompanied by rising democratic
+preference, just as the literature predicts. The individual-level
+evidence tells a different story.
+
+The individual-level evidence contradicts a foundational expectation of
+the consolidation literature. From Easton’s (1965) distinction between
+diffuse and specific support through Linz and Stepan’s (1996) insistence
+that democracy must become “the only game in town,” the dominant
+theoretical framework predicts that economic performance builds both
+satisfaction and normative commitment—that the co-movement observable at
+the aggregate level reflects a causal mechanism operating on
+individuals. The Korean data show that it does not. Economic evaluations
+powerfully and consistently predict democratic satisfaction across all
+six waves. Their relationship with normative democratic preference is
+more complex: positive in 2003, null in the middle waves, and
+significantly negative by 2015—a sign reversal that the pooled null (β =
+–0.036) conceals. The 30-percentage-point aggregate rise in “always
+preferable” is a period effect—visible in every age group, every birth
+cohort, and every education level simultaneously—driven by forces
+entirely unconnected to economic performance. The aggregate co-movement
+masks an individual-level structure far more complex than either simple
+decoupling or the co-movement the consolidation literature predicts.
+
+But the story extends further than the headline finding suggests, and in
+a more troubling direction. The decoupling between economic performance
+and democratic commitment is not uniform across measures of commitment.
+On substantive indicators—rejection of strongman rule, military
+governance, expert rule, single-party systems—economically comfortable
+Koreans are marginally more tolerant of authoritarian alternatives, not
+less. The performance-legitimation mode does not stop at satisfaction.
+It penetrates the authoritarian rejection battery, weakly but
+consistently, in the direction of reduced vigilance.
+
+The distinction carries consequences for how we assess democratic
+resilience—and the December 2024 crisis illustrates the point. Martial
+law was reversed by institutional mechanisms: legislators who refused
+military authority, judges who asserted constitutional supremacy, a
+military that chose institutional loyalty over presidential command. Not
+by mass normative mobilization organized around abstract democratic
+principle. The system held because constitutional safeguards activated
+as designed. The attitudinal data suggest the mass public was not the
+primary agent of that activation.
+
+A parallel analysis of Taiwan (n = 9,042 across the corresponding six
+ABS waves) provides comparative leverage—not as a co-equal case study
+but as a diagnostic tool. Taiwan shares South Korea’s developmental
+state heritage, Confucian cultural context, and third-wave
+democratization experience. The Taiwanese data reveal the structural
+inverse of the Korean pattern. Taiwan exhibits no period-level rise in
+abstract preference—it has been flat for two decades—but shows strong
+individual-level economic sensitivity: economically comfortable
+Taiwanese are substantially more likely to endorse democracy as always
+preferable (β = 0.286, p < 0.001, pooled), a critical citizens pattern
+that grows stronger over time. On substantive authoritarian rejection,
+however, Taiwan’s economic sensitivity is actually weaker than Korea’s.
+The abstract item diverges sharply across the two countries
+(cross-country interaction β = –0.278, p < 0.001); the substantive items
+do not. That pattern suggests the abstract measure is capturing
+something specific to Taiwan—where democratization became constitutive
+of national identity in ways it did not in Korea—rather than a deeper
+normative commitment generalizable across contexts.
+
+The paper makes three contributions. First, it documents the
+satisfaction paradox with systematic longitudinal evidence spanning two
+decades, showing precisely where economic evaluations reach into the
+structure of Korean democratic support and where they do not. Second—and
+this is the contribution that emerged from the diagnostic analysis
+rather than the initial theoretical framework—it demonstrates that the
+decoupling is item-specific, concentrated on the abstract normative
+measure rather than on substantive authoritarian rejection. Korean
+democratic support has more substance than the standard consolidation
+indicators suggest. Third, the Taiwan comparison raises a measurement
+question about the field’s most widely used indicator of normative
+democratic commitment, suggesting it captures democratic identity
+signaling in contexts where democracy and national identity have fused,
+rather than the deep principled attachment Easton (1965) theorized as
+diffuse support.
+
+Section 2 develops the theoretical framework, distinguishing abstract
+from substantive democratic commitment within the consolidation
+literature’s co-movement assumption. Section 3 describes the data and
+analytic strategy. Section 4 presents the core results, the diagnostic
+findings, the cross-country comparison, and robustness checks. Section 5
+interprets the findings in light of the Yoon crisis and the measurement
+implications.
+
+Literature Review and Theoretical Framework
+
+Democratic consolidation and the co-movement assumption
+
+The analytical scaffolding for democratic consolidation rests on a
+distinction Easton (1965) drew between two modes of citizen support.
+Diffuse support is a generalized attachment to the political system that
+persists regardless of specific policy outcomes—the reservoir that keeps
+democracies afloat when governments stumble. Specific support is the
+day-to-day evaluation: the economy, government competence, service
+delivery. The two are conceptually independent but, in Easton’s account,
+not causally so. Sustained specific support was expected to deposit
+gradually into the reservoir of diffuse support, building legitimacy
+over time (Easton, 1975).
+
+This expectation hardened into a prediction. Linz and Stepan (1996) gave
+it a memorable formulation—democracy must become “the only game in
+town”—but the underlying logic was more consequential than the phrase.
+Democratic norms internalize through democratic practice. Citizens who
+experience accountable governance develop principled attachment to the
+system that produces it. Diamond (1999) theorized a parallel deepening
+process. The prediction common to these accounts, sometimes stated
+explicitly but more often operating as a tacit assumption, is
+co-movement. Satisfaction and commitment should trend together. The term
+encompasses two related predictions that the literature does not always
+distinguish. At the aggregate level, satisfaction and normative
+commitment should trend in the same direction over time—both rising as
+democracies mature. At the individual level, the same
+predictors—economic evaluations chief among them—should be significantly
+associated with both outcomes. The empirical strategy tests both: §4.1
+documents aggregate trends; §§4.2–4.3 test individual-level
+associations. Korean aggregate trends appear to satisfy the first
+prediction—satisfaction and abstract preference both rose—but the
+individual-level analysis reveals the co-movement to be coincidental:
+the causal mechanism the literature posits (economic performance
+building both satisfaction and commitment) operates on satisfaction
+alone. The individual-level violation is the more analytically
+consequential finding because it shows that apparent aggregate
+co-movement can mask complete causal decoupling.
+
+Norris (1999, 2011) complicated the picture by documenting citizens who
+were simultaneously more committed to democratic ideals and more
+dissatisfied with democratic practice—but note what remained intact. The
+normative dimension was secure and strengthening. Only performance
+evaluation grew more demanding. Critical citizenship, as Norris
+theorized it, is a sign of democratic health. The more radical
+challenge—that satisfaction and normative commitment might rise together
+yet be driven by entirely unconnected mechanisms, with the economic
+engine of legitimation reaching satisfaction but not commitment—has
+received surprisingly little systematic attention. Whether a mature
+democracy can exhibit apparent co-movement at the aggregate level while
+its individual-level causal structure reveals complete decoupling is a
+question the literature has largely left unasked.
+
+Performance legitimacy and the East Asian context
+
+The co-movement assumption grew out of the Western experience, where
+democratic legitimacy was established before or alongside
+industrialization. Civic education, constitutional veneration,
+foundational political narratives—these gave normative commitment a
+basis independent of economic performance. East Asia’s democratization
+experience upends this sequence. In South Korea, Taiwan, and the
+region’s other third-wave democracies, rapid economic development under
+authoritarian auspices preceded democratic transition. Citizens had
+already experienced effective governance without democracy. The
+developmental state worked. Democracy’s legitimacy was therefore
+inevitably comparative—measured, at least in part, against the system it
+replaced.
+
+Park and Shin (2006) identified the resulting configuration: widespread
+democratic preference in Korea coexisting with authoritarian nostalgia,
+limited procedural understanding, and what they termed “incomplete
+democratization.” Chu and colleagues pursued the point across the region
+(Chu et al., 2008, 2020), documenting citizens who define democracy in
+substantive rather than procedural terms. Economic outcomes and good
+governance take priority over elections and civil liberties. When
+citizens have experienced competent authoritarianism, democracy must
+justify itself on output. Mauk (2022) confirmed that even trust in
+democratic institutions across East and Southeast Asian democracies is
+driven primarily by short-term economic performance evaluations and
+incumbent support rather than by the long-term liberal democratic value
+orientations that consolidation theory posits as the deeper foundation.
+Bomhoff and Gu (2012) pressed the broader point that the
+Inglehart-Welzel self-expression values framework—which grounds
+democratic commitment in post-materialist cultural change—simply does
+not capture how democratic attitudes operate in East Asia.
+
+The implication for the co-movement assumption is significant but has
+not been fully drawn out. If citizens evaluate their political system
+primarily on what it delivers rather than how it delivers, satisfaction
+and normative commitment need not track one another. A citizen can be
+highly satisfied with democratic performance while developing no deeper
+attachment to democratic principles, because the attachment was never
+principled in the first place. It was conditional on performance and
+always was.
+
+Abstract endorsement versus substantive anti-authoritarianism
+
+The consolidation literature operationalizes normative commitment
+primarily through abstract endorsement items. The “democracy is always
+preferable” question—asking respondents to choose among democracy as
+always preferable, authoritarian government as sometimes preferable, and
+regime type as irrelevant—has become the field’s standard indicator of
+Easton’s diffuse support. Linz and Stepan’s “only game in town” is
+typically measured through this item or close variants. Foa and Mounk
+(2017) built their deconsolidation argument on generational trends in
+responses to it. The item does important work.
+
+But it also attracts criticism. Inglehart (2003) warned that respondents
+may pay mere “lip service” to abstract pro-democracy questions,
+producing “questionnaire democrats” whose endorsement carries little
+substantive weight (see also Schedler & Sarsfield, 2007). More recently,
+the measurement debate has sharpened. Tai, Hu, and Solt (2022)
+demonstrated that incorporating measurement uncertainty into Claassen’s
+(2020) influential latent variable estimates of democratic support
+eliminates the evidence that support helps democracy survive—a finding
+that underscores just how much turns on measurement choices. Hu (2025)
+extended this critique, arguing that one-dimensional latent variables
+“do not capture the full flavor of democratic support”—that support is
+inherently multidimensional and cannot be collapsed into a single index
+without losing analytically consequential variation. Most
+comprehensively, Claassen and colleagues (2025) developed a new
+multidimensional measurement framework for democratic support using 17
+items across multiple survey programs, finding that items cohere readily
+into unidimensional measures in higher-income countries but that “in
+less-developed settings, citizens are more likely to oppose certain of
+these rights and institutions even while they support liberal democracy
+as a whole.”
+
+The present analysis contributes to this measurement debate at the item
+level rather than the latent-variable level. Abstract endorsement and
+substantive anti-authoritarianism are conceptually distinct, and
+conflating them risks misdiagnosing the structure of democratic support.
+The ABS authoritarian rejection battery—which asks respondents to
+evaluate specific governance alternatives: strongman rule, military
+government, expert rule, single-party systems—taps a different
+dimension. It requires cognitive engagement with concrete institutional
+alternatives rather than an abstract statement of principle. A citizen
+who rejects strongman rule is evaluating a specific governance mode on
+its merits. A citizen who affirms that democracy is always preferable
+may be doing the same—or may be expressing an identity, invoking a
+socialized norm, signaling membership in a political community where
+democratic self-description carries weight.
+
+A clarification about the scope of this distinction is warranted.
+Rejecting authoritarian alternatives is not equivalent to affirming
+democratic processes. A citizen who opposes military rule need not value
+judicial independence, minority rights protection, or legislative
+deliberation—the affirmative content of democratic governance. The
+authoritarian rejection battery captures what citizens oppose, not what
+they endorse. The construct is better understood as defensive
+anti-authoritarianism than as positive democratic commitment. This
+matters for interpretation. A citizenry high on authoritarian rejection
+but low on abstract endorsement may be one that knows what it does not
+want without having articulated what it does—a configuration with real
+protective value against overt authoritarian seizure but uncertain
+resilience against democratic erosion that never presents itself as
+authoritarianism.
+
+The distinction generates different predictions about democratic
+resilience (Mauk, 2020). High abstract endorsement with low substantive
+rejection suggests fragile commitment—cultural performance without
+evaluative content. Low abstract endorsement with high substantive
+rejection suggests defensive anti-authoritarianism more robust than
+standard indicators imply. Chu, Huang, Lagos, and Mattes (Chu et al.,
+2020) recognized the multidimensional character of democratic support in
+their ABS decomposition but did not isolate the abstract-substantive
+divergence as analytically consequential. The analysis presented here
+does.
+
+The framing generates testable predictions. If the Korean decoupling
+reflects genuinely shallow foundations, it should appear across both
+abstract and substantive measures. If it is instead specific to abstract
+commitment, economic evaluations should be null on the abstract item but
+significant on the substantive items.
+
+Hypotheses
+
+H1 (Performance–satisfaction linkage): Economic evaluations are
+positively and significantly associated with democratic satisfaction in
+both Korea and Taiwan.
+
+H2 (Abstract decoupling): In South Korea, economic evaluations have no
+significant relationship with the abstract normative preference that
+democracy is always preferable.
+
+H3a (Substantive null): If the performance-legitimation mode is confined
+to satisfaction, economic evaluations should bear no significant
+relationship to rejection of specific authoritarian
+alternatives—strongman rule, military governance, and single-party
+systems.
+
+H3b (Substantive penetration): If, alternatively, the instrumental
+orientation penetrates the full structure of democratic support,
+economic comfort should be associated with reduced rejection of
+authoritarian governance modes.
+
+H4 (Item specificity): The Korea–Taiwan divergence on the abstract
+normative item is substantially larger than the divergence on
+substantive authoritarian rejection items.
+
+H5 (Cross-country divergence): The relationship between economic
+evaluations and abstract democratic preference is significantly
+different between Korea and Taiwan.
+
+H6 (Universality): The abstract decoupling holds across age groups,
+education levels, and model specifications in Korea, indicating a
+society-wide pattern.
+
+Data and Methods
+
+Data
+
+The analysis draws on the Asian Barometer Survey, a comparative program
+administering nationally representative face-to-face interviews across
+East and Southeast Asia since 2001 (Asian Barometer Survey, 2023). Six
+waves are currently available. South Korea and Taiwan are among the few
+countries surveyed in all six, providing an unusually long panel of
+repeated cross-sections. The Korean sample comprises 7,603 respondents;
+the Taiwanese 9,042. Both use multi-stage stratified probability
+sampling. Survey weights are not applied in the main analysis, following
+convention in the ABS literature; the Korean and Taiwanese samples match
+census margins on age, gender, education, and region within the
+tolerances reported in the ABS technical documentation. Weighted
+estimates produce substantively identical results.
+
+Dependent variables
+
+The analysis tracks four categories of dependent variable, each tapping
+a conceptually distinct dimension of democratic support. Primary
+specifications treat items separately rather than combining them into
+indices—a decision that proves analytically consequential, since the
+items respond to economic evaluations in different and theoretically
+informative ways.
+
+The satisfaction dimension includes two items corresponding to Easton’s
+(1965) specific support: satisfaction with the way democracy works and
+satisfaction with the national government. These are reported separately
+because government satisfaction is so tightly coupled to incumbent
+evaluation that combining it with democratic satisfaction obscures the
+distinction between system-level and government-level assessment.
+
+The abstract normative dimension is captured by agreement that democracy
+is always preferable to any other form of government—the cleanest
+unconditional normative indicator available across all six waves. A
+second item asks respondents to assess the extent to which their country
+is currently democratic; this is evaluative rather than normative and is
+treated as a distinct perceived-quality outcome.
+
+The substantive commitment dimension draws on the ABS authoritarian
+rejection battery: rejection of strongman rule, military government,
+expert rule, and single-party systems (four items, all waves).[1] An
+authoritarian rejection index is computed as the mean of these items
+after normalization. These items require respondents to evaluate
+specific governance modes rather than endorse an abstract principle, and
+their inclusion constitutes the primary analytic addition relative to
+the initial analysis. Chu, Huang, Lagos, and Mattes (Chu et al., 2020)
+introduced the “authoritarian detachment” construct as a conceptually
+distinct dimension of democratic support, separate from both democratic
+preference and democratic satisfaction; the present analysis exploits
+this decomposition by testing whether the dimensions respond differently
+to economic evaluations.
+
+Two supplementary regime legitimacy items—agreement that the political
+system deserves support and disagreement that the system needs major
+change—are available from Wave 3 onward. All items are normalized to 0–1
+scales.
+
+Independent variable
+
+The key independent variable is an economic evaluation index constructed
+from six ABS items spanning sociotropic and pocketbook assessments
+across current, retrospective, and prospective time horizons. Each is
+normalized to 0–1; the index is their mean. Including both levels is
+deliberate—the theoretical question is not which level of economic
+evaluation drives democratic attitudes but whether economic performance
+as a class of explanation links to normative commitment at all.
+
+Controls
+
+All models include age (normalized), gender, education level
+(normalized), urban-rural residence, and political interest
+(normalized)—the major demographic and attitudinal correlates identified
+in the comparative literature (Dalton, 2004). Institutional trust is
+excluded from the primary specification because it is plausibly
+endogenous to both economic evaluations and democratic satisfaction; it
+enters as a robustness check.
+
+Analytic strategy
+
+The analysis proceeds in four stages. The starting point is visual:
+wave-level means for satisfaction, abstract commitment, and substantive
+commitment plotted over time to document the divergence.
+
+The core engine is wave-by-wave OLS regression. For each wave in each
+country, parallel models predict satisfaction, abstract preference, and
+authoritarian rejection from the economic evaluation index with standard
+controls. The key comparison is the economic evaluation coefficient
+across these dependent variables within the same wave.
+
+Running models within each wave rather than pooling with wave fixed
+effects allows the economic-attitude relationship to vary freely over
+time, making visible any temporal instability that pooled specifications
+would average away. Pooled models with centered wave interaction terms
+are estimated separately.
+
+The cross-country comparison pools both countries and estimates:
+
+Y_(i) = α + β₁EconIndex_(i) + β₂Korea_(i) + β₃(EconIndex_(i) × Korea_(i)) + δWave_(i) + γX_(i) + ε_(i)
+
+where β₃ captures the differential effect of economic evaluations in
+Korea relative to Taiwan. That is, β₃ captures the difference in how
+strongly economic comfort predicts democratic attitudes, not the total
+country difference at any given level of economic evaluation. H5
+predicts a significant β₃ on the abstract item. H4 predicts that β₃ is
+substantially larger for the abstract item than for the substantive
+authoritarian rejection items.
+
+Standard errors are HC2 heteroscedasticity-robust throughout (MacKinnon
+& White, 1985). The Asian Barometer Survey does not release primary
+sampling unit or stratum identifiers in its harmonized public release,
+precluding cluster-robust inference; HC2 provides a conservative
+alternative that does not require distributional assumptions about
+within-cluster correlation. Effective sample sizes vary across outcomes
+due to item nonresponse; exact N is reported in each table.
+
+The repeated cross-sectional design cannot establish within-person
+causality. The analytic strategy exploits an asymmetric prediction to
+narrow the range of plausible confounding accounts, though it cannot
+eliminate them. If a single confound—such as dispositional optimism
+coloring both economic perceptions and democratic evaluations—drove the
+results, the bias should inflate β₁ similarly across outcome types. A
+pattern in which β₁ is large for satisfaction, null for abstract
+preference, and significant (in the opposite direction) for
+authoritarian rejection is inconsistent with any symmetric confound. The
+asymmetric-prediction test cannot rule out differential confounding
+across outcome types—social desirability bias, for instance, likely
+operates more strongly on the abstract ‘always preferable’ item, where a
+correct answer exists in a democratic society, than on the satisfaction
+or authoritarian rejection items. The cross-sectional associations
+documented here are therefore best read as structural regularities in
+the relationship between economic evaluations and democratic attitudes,
+not as causal estimates.
+
+AI assistance disclosure.
+
+The author used Claude (Anthropic, version 4.5) to assist with R
+programming, including data cleaning scripts, model specification, and
+debugging of analysis code. All analytical decisions, theoretical
+framing, and interpretation of results are the author’s own.
+AI-generated code was reviewed, tested, and modified by the author
+before inclusion in the analysis pipeline.
+
+Results
+
+Descriptive trends: co-movement at the surface, decoupling beneath
+
+Aggregate trends in South Korea present a picture that, at first glance,
+vindicates the consolidation literature. Democratic satisfaction rose
+over the two decades spanned by the Asian Barometer Survey: the
+satisfaction cluster increased from 0.456 to 0.525 between 2011 and
+2022, roughly seven percentage points on the normalized scale.
+Government satisfaction exhibited the steepest trajectory, climbing from
+approximately 0.33 in 2011 to 0.53 by 2022.
+
+Abstract democratic preference rose even more dramatically. The
+proportion of Korean respondents affirming that democracy is “always
+preferable” increased from 49.4 percent in 2003 to 77.5 percent in
+2022—a 28-percentage-point gain that, taken at face value, suggests
+deepening normative commitment alongside rising satisfaction. Other
+indicators sent mixed signals: the democratic quality cluster drifted
+slightly downward (0.366 to 0.351 between 2011 and 2022), and system
+support declined modestly. But the headline numbers—satisfaction up,
+abstract preference up—look like co-movement.
+
+The regression evidence will puncture this reading. But the aggregate
+rise itself has two features worth documenting first.
+
+The rise is a period effect, not cohort replacement. Every age group
+tracks nearly identically: respondents aged 18–29 rose from 49.5 to 78.2
+percent; respondents aged 60 and older rose from 46.5 to 76.2 percent.
+Birth cohort tracking confirms the pattern—every cohort, from those born
+before 1955 to those born after 1985, shows a rise of roughly 25–30
+percentage points between their first and last observed waves. The
+aggregate trend is not an artifact of younger, more democratic cohorts
+entering the sample. Something changed for everyone. The Korean sample
+actually aged substantially over the observation window—respondents 60
+and older grew from 15 to 30 percent of the sample—which would suppress
+the aggregate rise if it were driven by younger cohorts. It rose anyway,
+in every stratum simultaneously.
+
+The period effect is unexplained by individual-level predictors. Wave
+fixed effects in the regression models are large: the Wave 6 coefficient
+corresponds to a 26-percentage-point increase in the probability of
+endorsing “always preferable” relative to Wave 1, and even the most
+saturated individual-level model—including education, political
+interest, news consumption, democratic values, and institutional
+attitudes—reduces this coefficient by only two-thirds. The aggregate
+trend is not reducible to compositional shifts in the variables the
+survey measures.
+
+Taiwan presents the structural inverse. Abstract preference there has
+been flat for two decades, fluctuating between 47 and 56 percent with no
+trend. Wave fixed effects are near-zero. The 28-percentage-point
+period-level rise that defines the Korean trajectory has no Taiwanese
+counterpart. Whatever moved Korean abstract preference upward—democratic
+socialization, institutional maturation, the accumulation of democratic
+practice across generations—did not operate similarly in Taiwan, despite
+Taiwan’s parallel democratization timeline and comparable economic
+development. The cross-country comparison introduced in §4.3 will show
+that the Taiwanese pattern is the mirror image of Korea’s at the
+individual level as well: where Korea shows no economic connection to
+abstract preference, Taiwan shows a strong one.
+
+Economic evaluations and the structure of democratic support
+
+Satisfaction
+
+Economic evaluations are a consistent and powerful predictor of
+satisfaction with democracy across all six Korean waves, ranging from β
+= 0.262 in Wave 2 to β = 0.455 in Wave 4, every estimate significant at
+p < 0.001. The pooled estimate is β = 0.342. Government satisfaction
+shows even stronger effects (β = 0.473 to 0.823; pooled β = 0.575). No
+surprises here. H1 is confirmed.
+
+Abstract normative commitment
+
+This is where the paradox lives—though it takes a form more complex than
+a simple null.
+
+The pooled estimate is near zero: β = –0.036 (p = 0.418) on the binary
+outcome (1 = “always preferable,” 0 = otherwise). H2 is confirmed at the
+pooled level. But the pooled null conceals a temporal dynamic that the
+wave-by-wave results expose. In 2003, economic evaluations are
+significantly and positively associated with endorsing democracy as
+always preferable (β = 0.323, p = 0.002): economically comfortable
+Koreans were substantially more likely to affirm democratic preference.
+By 2006 the relationship had disappeared (β = 0.138, nonsignificant). It
+stayed null in 2011 (β = –0.125, nonsignificant). Then it reversed. In
+2015 the coefficient turns significantly negative (β = –0.302, p =
+0.010). In 2019, still negative and significant (β = –0.266, p = 0.016).
+In 2022, negative and marginally significant (β = –0.230, p = 0.054).
+The pooled null is an artifact—a positive early relationship cancelling
+a negative later one.
+
+The trajectory amounts to a sign reversal. In 2003, economic comfort
+reinforced democratic endorsement—the pattern consolidation theory
+expects. By 2015, economic comfort was enabling normative scrutiny—the
+critical citizens pattern the theory associates with democratic
+maturity. Korea is not missing the critical citizens dynamic. It is
+developing one, across the full sample, over a two-decade arc that the
+pooled specification rendered invisible.
+
+The 2003 starting point deserves attention. The survey captured Korea
+during the post-crisis recovery upswing, with economic evaluations both
+higher (mean = 0.443 vs. 0.356 in 2006) and more compressed (SD = 0.127
+vs. 0.149). By 2006, after the credit card crisis and the Roh Moo-hyun
+impeachment turmoil, economic confidence had dropped sharply and the
+relationship disappeared. An alternative reading is that 2003 captured a
+transitional moment before the instrumental mode had fully
+consolidated—the democratic transition was barely fifteen years old, and
+the post-authoritarian upheaval may still have supplied non-economic
+reasons for democratic evaluation. The two accounts are not mutually
+exclusive, and a single data point cannot adjudicate.
+
+What matters for the paper’s argument is less the 2003 starting point
+than the 2015–2022 destination. The emergence of the critical citizens
+pattern in the later waves coincides with the period-level rise in
+abstract preference documented in §4.1: as endorsement of “always
+preferable” rose from 49 to 78 percent, the economic relationship
+shifted from reinforcement to scrutiny. The Korean public is not static.
+It is moving—slowly, unevenly, and through mechanisms unconnected to
+economic performance—toward the evaluative orientation that the
+consolidation literature treats as the hallmark of democratic depth.
+
+Substantive authoritarian rejection: direction and consistency
+
+The diagnostic analysis that motivates H3 delivers a finding whose
+direction complicates the abstract decoupling.
+
+Economically comfortable Korean citizens are not more rejecting of
+authoritarian alternatives. They are marginally more accepting. The
+pooled estimate for the authoritarian rejection index is β = −0.082 (p <
+0.001): citizens who evaluate the economy more favorably score roughly
+eight percentage points lower on rejection of strongman, military,
+expert, and single-party rule across the full range of the economic
+index. The relationship is significant for rejection of strongman rule,
+military governance, and single-party systems; it approaches
+conventional significance for expert rule.
+
+H3a is disconfirmed. H3b finds support: the instrumental orientation
+does not stop at satisfaction. It penetrates the authoritarian rejection
+battery.
+
+A qualification about magnitude. At the interquartile range of the
+economic index (0.333 to 0.500), the predicted difference on the
+authoritarian rejection index is 0.014 on the 0–1 scale—roughly 0.04
+points on the original four-point response scale, or 1.3 percent of the
+distance between adjacent response categories. The same specification
+produces predicted differences of 0.057 for democratic satisfaction—four
+times larger—and effectively zero for abstract democratic preference.
+These are not large effects by any standard. But the theoretical weight
+falls on the structural pattern across outcome types, not on the
+magnitude of any single coefficient. The published ABS literature
+reports comparable effect sizes for attitudinal predictors of democratic
+support in Korea: Park and Shin (2006) report R² = 0.013 for their
+democratic support model with twelve predictors, and Mauk (2022) finds
+R² = 0.04–0.08 for political trust in Korea even with multiple predictor
+blocks.
+
+The contrast with the abstract item is worth stating precisely. On
+“democracy is always preferable,” the pooled economic coefficient is
+near zero (β = −0.036, p = 0.418)—though as §4.2.2 documented, the
+pooled null masks a sign reversal from positive (2003) to negative
+(2015–2022). On the substantive items, the coefficient is significant
+and points in the wrong direction—toward greater tolerance of
+authoritarian alternatives among the economically comfortable.
+Satisfaction runs on an economic track. Abstract normative commitment
+runs on no track at all. And substantive anti-authoritarianism runs on
+the economic track too—but pointing toward complacency rather than
+vigilance.
+
+Whether the authoritarian rejection items capture normative
+anti-authoritarianism or performance evaluation in different clothing
+remains a legitimate question. Controlling for democratic satisfaction
+produces at most 10 percent attenuation of the economic coefficient on
+authoritarian rejection, with all five outcomes retaining their original
+significance levels (Appendix J). If the rejection items were simply
+proxying satisfaction, adding satisfaction to the model should absorb
+the economic effect. It does not. An exploratory factor analysis of the
+satisfaction and authoritarian rejection items confirms the structural
+distinction: the two sets of items load on near-orthogonal factors (r =
+−0.11, RMSEA = 0.020, TLI = 0.995), with no substantive cross-loadings.
+The “democracy is always preferable” item loads weakly on both
+factors—suggesting it operates as a conceptually distinct third
+dimension rather than belonging cleanly to either satisfaction or
+anti-authoritarian evaluation. The pattern is stable across all six
+waves (Appendix K).
+
+The authoritarian rejection battery, in other words, captures something
+real and distinct from satisfaction—and the economic relationship runs
+through it in the direction of reduced vigilance.
+
+Item specificity
+
+The Korea–Taiwan gap on “democracy always preferable” (cross-country
+interaction β = –0.278, p < 0.001; Appendix D) dwarfs the gap on the
+substantive items, where the mean interaction is −0.088 (Figure 1). On
+the authoritarian rejection battery, Korea’s economic sensitivity is
+stronger than Taiwan’s—Korean citizens show a larger shift toward
+acceptance of authoritarian alternatives as economic comfort rises.
+Almost all of the headline divergence between the two countries runs
+through the abstract item.
+
+The implication for interpreting the satisfaction paradox concerns
+direction rather than magnitude. The abstract item shows a null in
+Korea—no economic connection at all. The substantive items show a
+connection, but in the direction of reduced anti-authoritarianism among
+the economically comfortable. The decoupling is item-specific,
+confirming H4, but the specificity no longer suggests hidden democratic
+depth. It reveals different registers of the same instrumental
+orientation.
+
+[]
+
+The Taiwan comparison
+
+Taiwan exhibits the expected critical citizens pattern on the abstract
+item. Economic evaluations are significantly and positively associated
+with endorsing democracy as always preferable in five of six waves, with
+the pooled estimate at β = 0.286 (p < 0.001). The single exception is
+Wave 3 (2010), coinciding with the Ma Ying-jeou rapprochement with
+Beijing. Economically comfortable Taiwanese citizens are substantially
+more likely to affirm democracy as a matter of abstract principle.
+
+On the satisfaction dimension, Taiwan mirrors Korea—strong positive
+economic effects, as expected.
+
+The critical finding for the measurement argument is what happens on the
+substantive items. Taiwan’s economic sensitivity on authoritarian
+rejection (β = –0.040) is roughly half of Korea’s (β = –0.082). On
+individual items, Taiwan’s rejection of military rule and expert rule
+fails to reach significance. The cross-country interaction is highly
+significant for the abstract item (β = –0.278, p < 0.001), confirming
+H5, but the interaction attenuates substantially—and in some cases
+reverses direction—on the substantive items.
+
+Taiwan’s critical citizens pattern, in other words, is concentrated on
+the most abstract and identity-laden measure in the battery. On the
+items that require concrete evaluation of specific governance
+alternatives, it is Korea, not Taiwan, that shows the stronger economic
+connection. The divergence maps onto what we know about the two
+countries’ democratization experiences: Taiwan’s transition fused with
+national identity formation vis-à-vis China, making “democracy” a
+category of self-definition as much as a governance evaluation (Rigger,
+2011; Wachman, 1994). Korea’s transition carried no equivalent identity
+charge. The abstract item captures that difference. The substantive
+items do not.
+
+This pattern suggests that the “democracy is always preferable” item is
+doing double duty—measuring normative evaluation in some contexts and
+identity signaling in others. In Taiwan, where democracy is constitutive
+of national self-definition, the item picks up the identity signal
+strongly. In Korea, where it is not, the item goes quiet—not because
+Korean democratic commitment is absent, but because it lives in a
+different register. One that the field’s flagship measure does not
+reach.
+
+The conditional–unconditional boundary
+
+The abstract decoupling concentrates on a single item—“democracy is
+always preferable”—and the obvious question is whether this reflects an
+item-level peculiarity or a genuine structural boundary in Korean
+democratic attitudes. Four alternative normative-adjacent measures
+available in the ABS provide the test.
+
+All four show significant positive associations with economic
+evaluations in both countries. “Democracy is the best form of
+government.” The forced-choice tradeoff between democracy and economic
+development. “Democracy is suitable for our country.” Whether democracy
+can solve society’s problems. None demands the unconditional commitment
+that “always preferable” requires. Every one co-moves with economic
+comfort, exactly as instrumental evaluations should.
+
+The pattern eliminates the worry that Korean citizens are simply
+disengaged from democratic evaluation. They are not. But it locates the
+disengagement with precision. The four responsive items share a
+structural feature: each permits the respondent to evaluate democracy
+relative to something. “Best form of government” invites comparison.
+“Suitable for our country” invites contextual assessment. The tradeoff
+item explicitly frames democracy against economic development. “Can
+solve problems” is an efficacy judgment. All are conditional on context,
+comparison, or performance—and all track the economy.
+
+The “always preferable” item forecloses the hedge. “Always” imposes a
+temporal universality that the other items do not. The three-option
+forced-choice format—always, sometimes, indifferent—leaves no room for
+“it depends.” Korean citizens endorse democracy on every measure that
+permits qualification. On the sole item that forbids it, the economic
+connection goes silent.
+
+The gap is not between engagement and disengagement. It is between
+evaluation and identification—between assessing democracy’s merits under
+present circumstances and affirming democratic commitment as
+unconditional principle. Korean democratic attitudes, on this evidence,
+are robustly evaluative. What they lack is the unconditional
+register—the willingness to endorse democracy regardless of what it
+delivers. That register is precisely what Easton (1965) theorized as
+diffuse support, and it is precisely what the field’s most widely used
+indicator claims to measure.
+
+Two implications follow. For the Korean case, the finding suggests that
+the satisfaction paradox is not a story about democratic indifference.
+Korean citizens think carefully about democracy—on output terms. The
+paradox resides in the gap between that careful instrumental evaluation
+and the principled commitment the consolidation literature expects it to
+generate. For the measurement debate, the finding suggests that the
+“always preferable” item isolates something real and
+distinct—unconditional identification rather than conditional
+evaluation—but that it captures this dimension only where historical
+conditions have given citizens a reason to think about democracy in
+unconditional terms. Taiwan, where democratization fused with national
+self-definition, provides that reason. Korea, where it did not, does
+not. The item’s cross-national validity as a measure of the same
+construct is therefore in question—a point the Taiwan comparison (§4.3)
+and the mechanism probe (Appendix H) reinforce from different angles.
+
+Robustness
+
+The core findings survive a battery of specification and measurement
+checks. Adding institutional trust as a control reduces the
+economic-satisfaction coefficient but leaves it highly significant; the
+preference and authoritarian rejection equations are unchanged. Logistic
+regression on the binary “always preferable” outcome confirms the linear
+probability model results (Korea logit β = –0.161, p = 0.424; Taiwan
+logit β = 1.213, p < 0.001). Ordered logit models on the remaining
+ordinal-scale outcomes confirm the OLS results. Within-wave z-scored
+outcomes produce substantively identical patterns. Each of the six
+individual economic indicators entered separately reproduces the
+structural finding: every indicator predicts satisfaction, none predicts
+abstract preference, and the authoritarian rejection pattern is
+consistent across indicators—current economic evaluations showing the
+cleanest decoupling, forward-looking measures showing small negative
+quality effects.
+
+The economic-satisfaction coefficient is virtually identical for younger
+and older respondents and similar across education levels. In no
+demographic subgroup does the economic-preference relationship reach
+significance in the positive direction. H6 is confirmed: the decoupling
+is society-wide.
+
+The asymmetric-prediction test further disciplines the interpretation.
+If an underlying normative orientation colored economic perceptions
+symmetrically, the bias should inflate the economic coefficient
+similarly across both satisfaction and quality equations. The data show
+the opposite of symmetry: β = 0.26–0.46 for satisfaction, approximately
+zero for abstract preference, −0.082 for authoritarian rejection. Three
+patterns for the same predictor. Symmetric confounding cannot produce
+asymmetric results. The test does not rule out differential
+confounding—social desirability bias, for instance, likely operates more
+strongly on the abstract item than on satisfaction or rejection—but it
+narrows the range of plausible confounding accounts substantially.
+
+Electoral winners, losers, and democratic support
+
+The sore-loser interpretation does not survive the data. The
+economic-preference relationship is null for both electoral winners (β =
+–0.044, p = 0.580) and losers (β = –0.121, p = 0.189) in Korea. The
+formal interaction is nonsignificant (β = –0.100, p = 0.409). Korean
+citizens decouple economic evaluations from abstract democratic
+commitment regardless of whether their party holds power.
+
+In Taiwan, economic evaluations predict abstract preference in both
+groups but substantially more strongly among winners (β = 0.331) than
+losers (β = 0.126), with the interaction significant at p < 0.001. Under
+conditions where democracy carries identity weight, citizens whose party
+won connect economic conditions to democratic endorsement more
+strongly—consistent with greater investment in the democratic project
+whose outcome they shaped. On the satisfaction dimension, the
+winner-loser distinction makes no difference in either country.
+
+Discussion
+
+The satisfaction paradox, reconsidered
+
+The core finding stands. Economic evaluations are robustly associated
+with satisfaction with democracy but not with abstract normative
+commitment in South Korea across two decades of survey data.
+Satisfaction tracks economic performance. Principled democratic
+endorsement does not. The consolidation literature’s co-movement
+assumption—arguably its foundational empirical expectation—fails.
+
+What makes the failure worse is the direction on the substantive items.
+Economically comfortable Koreans are not more rejecting of authoritarian
+alternatives; they are marginally more tolerant of strongman rule,
+military governance, and single-party systems. Performance-legitimation
+does not stop at satisfaction. It penetrates the authoritarian rejection
+battery.
+
+The existing literature on Korean democratic attitudes has characterized
+support as “incomplete” or normatively shallow (Park & Shin, 2006), and
+broader accounts of democratic backsliding (Foa & Mounk, 2017; Shin,
+2020) have reinforced the impression of declining commitment. The
+aggregate ABS data tell a different story: abstract democratic
+preference has risen substantially, from 49 to 78 percent over two
+decades. The vulnerability lies not in the level or trend of normative
+endorsement but in its causal disconnection from the economic
+performance mechanism the consolidation literature posits as its
+foundation. Two decades of additional data confirm that Korean
+democratic support is structurally shallow in a specific sense, though
+they also specify its contours more precisely than “incomplete” implies.
+Korean citizens maintain high levels of authoritarian rejection in
+absolute terms—the mean rejection score hovers near 0.77 on the 0–1
+scale across waves. Economic comfort does not dramatically erode that
+baseline. It shifts the margin, modestly, toward tolerance. The
+structure is one of high baseline anti-authoritarianism with
+performance-contingent variation at the edges—not the collapse of
+democratic commitment that “shallow foundations” might suggest.
+
+Accounts of Korean democratic decay have focused on institutional
+erosion—the politicization of courts, suppression of critical media, and
+executive overreach documented by Shin (2020). These are real and
+consequential. But they describe what elites do, not what citizens
+believe. During the Moon Jae-in administration that Shin’s account
+targets—precisely the period in which, by his account, democratic norms
+were under the most sustained assault—the ABS data show abstract
+democratic preference climbing from 73 to 78 percent. The
+institutional-erosion narrative and the mass-attitudes evidence point in
+opposite directions. Neither can be inferred from the other, and
+conflating them risks misdiagnosis in both directions.
+
+The period-level rise in abstract preference complicates the
+performance-legitimation interpretation—but not in the direction of
+reassurance. Korean citizens have become substantially more likely to
+affirm that democracy is “always preferable” over two decades, a trend
+that appears in every demographic stratum simultaneously. The rise is
+real. But it is disconnected from the economic mechanism that
+consolidation theory identifies as its engine. Education, political news
+consumption, and voting behavior correlate with abstract preference
+cross-sectionally; economic evaluations do not. And the wave fixed
+effects that capture the aggregate trend remain large even after
+controlling for every available individual-level predictor—the rise is
+primarily a macro-level phenomenon, likely reflecting the diffuse
+accumulation of democratic norms through institutional practice rather
+than any mechanism operating through economic performance evaluations.
+
+Acemoglu et al. (2024) document precisely this pathway: successful
+democratic experience breeds its own support over generational time. The
+Korean data fit their account at the aggregate level. The contribution
+of the present analysis is to show that the macro-level normative
+accumulation and the micro-level economic mechanism operate on different
+dimensions of democratic support—the former on abstract preference, the
+latter on satisfaction—and that neither reaches the substantive
+anti-authoritarian vigilance the consolidation literature treats as the
+deepest layer of democratic commitment.
+
+A further diagnostic sharpens the point. On the binary “always
+preferable” measure, the post-democratization cohort (born after 1975, n
+= 2,204) shows a significant negative economic coefficient (β = −0.213,
+p = 0.009): at the interquartile range of the economic index,
+economically comfortable younger Koreans are roughly 3.6 percentage
+points less likely to endorse democracy as always preferable—a modest
+but significant critical citizens effect. The pre-democratization cohort
+(n = 5,063) shows no relationship (β = 0.012, p = 0.817), and the formal
+cohort interaction is marginal (p = 0.060). The pattern is suggestive
+rather than definitive, but the direction is clear: citizens raised
+entirely under democratic governance show the evaluative dynamic the
+consolidation literature associates with democratic maturation, while
+citizens raised under authoritarianism do not. This is not nostalgia—the
+nostalgia mechanism was eliminated on the authoritarian rejection
+dimension—but its mirror: democratic socialization producing the
+abstract evaluative disposition that authoritarian-era socialization did
+not.
+
+Why would economic comfort make citizens marginally more tolerant of
+authoritarian alternatives? The most historically specific
+candidate—developmental-state nostalgia, the associative recall of Park
+Chung-hee-era prosperity among those old enough to remember it—does not
+survive the data. The post-democratization cohort (born after 1975)
+actually shows a larger negative coefficient on authoritarian rejection
+(β = −0.103, p = 0.005) than the pre-democratization cohort (β = −0.076,
+p = 0.001). The formal interaction is nonsignificant (β = 0.029, p =
+0.486). Citizens with no living memory of authoritarian governance are
+no less susceptible to the comfort–tolerance link. The one
+exception—military rule rejection, where personal exposure to military
+governance does sharpen rejection (interaction β = 0.087, p = 0.048)—is
+precisely the exception that proves the rule: experiential memory
+matters for the specific governance mode experienced, not for
+authoritarian tolerance generally. Cognitive disengagement fares no
+better. If economic comfort simply reduced the motivation to think
+critically about political alternatives, political interest should
+moderate the relationship. It does not (β = 0.010, p = 0.881 for the
+interaction); high-interest and low-interest respondents show the same
+negative pattern.
+
+What remains is threat reduction—the possibility that economic security
+lowers the perceived stakes of regime type, making authoritarian
+alternatives feel less consequential as hypothetical governance modes.
+Unlike nostalgia, it requires no historical memory. Unlike
+disengagement, it operates independently of political attentiveness.
+Both features match the data.
+
+The contrast with the abstract preference item sharpens the point. Civic
+engagement does moderate the economic relationship on “democracy is
+always preferable,” but in the opposite direction from what the critical
+citizens framework predicts. The composite engagement interaction is
+significant (β = 0.388, p = 0.048): among the disengaged, economic
+comfort is associated with reduced democratic preference (β = −0.251, p
+= 0.033), while among the engaged, the economic coefficient approaches
+zero or turns positive. The polint interaction points in the same
+direction (β = 0.282, p = 0.067). The engaged minority’s abstract
+democratic endorsement is insulated from economic contingency—stable
+regardless of economic conditions—even as the disengaged show a weak
+critical citizens pattern. On substantive anti-authoritarianism, no such
+distinction exists.
+
+The winner-loser analysis reinforces this reading. The
+economic-preference relationship is null for both electoral winners (β =
+−0.044, p = 0.580) and losers (β = −0.121, p = 0.189) in Korea, and the
+economic-rejection relationship is similarly undifferentiated by
+partisan status. Korean citizens relate to democratic governance
+instrumentally regardless of whether their party holds power.
+
+What the abstract item measures
+
+The Taiwan comparison sharpens the measurement point. Taiwan’s abstract
+commitment is among the strongest documented in the East Asian survey
+literature, and it is growing stronger over time. But Taiwan’s
+substantive authoritarian rejection is weaker than Korea’s, and its
+conditional pro-democracy items show stronger economic contingency. The
+critical citizens pattern is concentrated on the one item most
+susceptible to identity expression—the abstract, unconditional “always
+preferable” question.
+
+Two moderation tests probe the identity-signaling mechanism. If abstract
+democratic endorsement in Taiwan functions partly as an expression of
+anti-China national identity, the critical citizens pattern should be
+stronger among respondents who perceive China as a threat. The
+interaction points in the expected direction but does not reach
+conventional significance (β = 0.093, p = 0.338; Appendix H.1). National
+pride shows no significant moderation in either country (β_(Taiwan) =
+0.073, p = 0.612; Appendix H.2).
+
+These null results do not confirm the identity-signaling interpretation,
+and they do not disconfirm it—the available proxy variables are blunt
+instruments for what is fundamentally a diffuse, historically layered
+phenomenon. The cross-national pattern itself remains the strongest
+evidence: Taiwan’s critical citizens effect concentrates on the most
+abstract and identity-laden item in the battery, and it strengthens over
+time as exclusive Taiwanese self-identification rises. Identity
+signaling is the most parsimonious account of this configuration. But
+other accounts—institutional design differences, civic education, or the
+proximity of an authoritarian threat generating sincere rather than
+performative democratic commitment—cannot be ruled out with these data.
+The interpretation should be read as a theoretically motivated
+hypothesis about what drives the Taiwan–Korea divergence, not an
+empirically settled mechanism.
+
+Taiwan’s democratization became inseparable from national identity
+through the political project of distinguishing Taiwan from
+authoritarian China—a project with identifiable agents and turning
+points. Lee Teng-hui’s “localization” (本土化) reforms linked democratic
+governance to Taiwanese distinctiveness; his 1996 direct presidential
+election, held against PRC missile tests, welded democratic
+participation to national sovereignty. Chen Shui-bian deepened the
+identification; Tsai Ing-wen made democratic self-governance the
+centerpiece of Taiwan’s international identity, a framing intensified
+after Hong Kong’s 2019 protests. The rise of exclusive Taiwanese
+self-identification from under 25 percent in 1996 to over 60 percent
+tracks democratic consolidation almost perfectly (Rigger, 2011; Wachman,
+1994). In this context, affirming that “democracy is always preferable”
+is not merely a governance evaluation—it is an identity claim. The
+trajectory was not linear: Ma Ying-jeou’s rapprochement with Beijing
+coincides with the single wave (2010) in which Taiwan’s critical
+citizens coefficient fails to reach significance.
+
+Korea’s democratization carried no equivalent identity charge. The 1987
+transition was a domestic political settlement of enormous consequence
+for Korean political life, but it did not redefine who Koreans were as a
+national community. No external authoritarian other provided a foil
+against which democratic self-definition could crystallize. The abstract
+item goes quiet in Korea not because democratic commitment is absent but
+because the identity infrastructure that would give abstract endorsement
+its expressive force was never constructed.
+
+Two implications follow. First, cross-national comparisons using the
+“always preferable” item as the sole or primary indicator of normative
+democratic depth risk conflating identity expression with principled
+evaluation. Studies that rank democratic consolidation by responses to
+this item—including the influential work of Foa and Mounk (2017)—may be
+measuring something different from what they intend in contexts where
+democracy carries strong identity weight. The multidimensional
+measurement framework developed by Claassen and colleagues (2025)
+represents one path forward; the present analysis suggests that even
+within that framework, the distinction between abstract endorsement and
+substantive rejection of authoritarian alternatives deserves particular
+analytic attention. Second, and more consequentially for the Korean
+case: the gap between abstract endorsement and substantive commitment is
+not necessarily a vulnerability. It may simply reflect the absence of a
+historical reason to express democratic commitment in abstract,
+identity-laden terms. Acemoglu et al. (2024) document the reverse
+pathway: successful democratic experience breeds its own support over
+generational time. But their evidence suggests this process deposits
+into regime approval rather than abstract principled
+commitment—mirroring the Korean pattern, where two decades of democratic
+experience have raised satisfaction without generating the abstract
+endorsement the consolidation literature expects.
+
+Whether that gap matters depends on what kind of threat a democracy
+faces.
+
+The Yoon crisis and the structure of resilience
+
+The December 2024 martial law episode tested Korean democracy in a
+specific way, and the attitudinal data documented here frame what that
+test revealed.
+
+Martial law was reversed within six hours. Legislators convened, voted
+unanimously to overturn the decree, and initiated impeachment. Courts
+asserted constitutional authority. The military chose institutional
+loyalty over presidential command. The institutional response was swift,
+coordinated, and decisive. Mass protests followed—but the institutional
+mechanisms had already contained the crisis before mass mobilization
+could become the decisive factor.
+
+The attitudinal data documented here are consistent with—though they
+cannot establish—an interpretation in which institutional mechanisms
+bore the primary load. A citizenry for which economic performance drives
+satisfaction, abstract normative commitment drifts without economic
+anchoring, and substantive anti-authoritarianism weakens with economic
+comfort regardless of political attentiveness is not the profile of a
+public primed for normative mobilization around abstract democratic
+principle. But the framing requires two qualifications.
+
+Mass protests followed the martial law declaration—large, rapid, and
+sustained. The ABS data cannot determine whether those protests were
+driven by principled democratic conviction, instrumental outrage at the
+disruption of a functioning system, partisan mobilization against an
+unpopular president, or some combination. The attitudinal structure
+documented here is consistent with any of these motivations except the
+first operating as the dominant force at the population level.
+“Consistent with” is the appropriate epistemic register for pre-crisis
+survey data applied to post-crisis behavior. The observation window
+closes in 2022; what happened in December 2024 lies beyond what these
+data can establish.
+
+The institutional response itself was not automatic. Legislators braved
+military cordons to convene. Judges asserted constitutional authority.
+The military chose institutional loyalty over presidential command.
+These choices may reflect the normative commitments of elite actors—the
+politically attentive stratum whose abstract evaluative capacity §5.4
+documents—now operating not as survey respondents but as institutional
+agents. The crisis was resolved by institutional design activated by
+individuals whose democratic commitments, at least on the abstract
+dimension, appear to run deeper than those of the median citizen.
+Whether that combination protects against the slower erosion that
+Levitsky and Ziblatt (2018) identify as the characteristic
+threat—executive overreach through formally legal channels,
+institutional checks weakened incrementally—is a question the December
+2024 episode does not answer. The mechanism evidence suggests it may
+not: the population-wide susceptibility to reduced anti-authoritarian
+vigilance under economic comfort is not confined to the politically
+disengaged and is not driven by fading authoritarian memory. It operates
+in the present tense.
+
+The political interest finding
+
+The mechanism tests in §5.1 revealed an asymmetry in what civic
+engagement moderates—and the asymmetry redraws the engaged minority
+concept in an unexpected direction.
+
+On abstract preference, engagement insulates rather than sharpens. The
+composite engagement interaction is significant (β = 0.388, p = 0.048):
+among the disengaged, economic comfort is associated with reduced
+democratic preference—the critical citizens direction—while the engaged
+show a null or positive economic-preference relationship. The polint
+interaction points in the same direction (β = 0.282, p = 0.067). The
+aggregate Korean decoupling—the null pooled coefficient—is a composite
+of a weak critical citizens pattern among the disengaged and stable
+endorsement among the engaged. The engaged minority does not mirror
+Taiwan’s evaluative dynamic; it exhibits the unconditional endorsement
+that characterizes internalized democratic commitment—or, less
+charitably, the socialized norm adherence that makes endorsement
+insensitive to economic conditions.
+
+On authoritarian rejection, no such distinction exists. Economically
+comfortable citizens are marginally more tolerant of authoritarian
+alternatives regardless of political interest. The negative coefficient
+is β = −0.093 (p = 0.001) for high-interest respondents and β = −0.062
+(p = 0.014) for low-interest respondents, with a nonsignificant
+interaction. If anything, the economically comfortable and politically
+engaged show a slightly stronger shift—though the difference is not
+statistically distinguishable.
+
+The implication is that civic engagement stabilizes abstract democratic
+endorsement against economic contingency but does not extend that
+stability to the substantive dimension. The engaged minority’s
+democratic preference is secure—insulated from economic conditions in a
+way the disengaged majority’s is not. But when asked about specific
+authoritarian governance modes, the engaged respond to economic comfort
+the same way everyone else does—with marginally reduced rejection. The
+engaged minority’s abstract stability does not inoculate against the
+instrumental evaluation of concrete alternatives.
+
+Whether this asymmetric engagement is sufficient for democratic
+protection depends on the nature of the threat. For acute crises that
+present themselves as overt authoritarian seizure—martial law, military
+intervention, the institutional confrontations that the December 2024
+episode exemplified—the engaged minority’s stable abstract commitment
+may be sufficient, especially when combined with robust institutional
+design. For the gradual erosion that Levitsky and Ziblatt (2018)
+describe—executive overreach through formally legal channels, media
+independence compromised incrementally—the population-wide
+susceptibility to reduced anti-authoritarian vigilance under economic
+comfort is the more consequential finding. The engaged minority’s
+abstract stability does not extend to the substantive dimension where
+that threat operates.
+
+Limitations
+
+The most consequential limitation is the absence of panel data. The ABS
+provides repeated cross-sections; the analysis documents between-person
+associations, not within-person change. The asymmetric pattern—strong
+association with satisfaction, null for abstract commitment, significant
+and negative for authoritarian rejection—is inconsistent with a pure
+reverse-causality account, which predicts symmetric bias. Panel data
+would provide a substantially stronger test.
+
+The abstract-versus-substantive distinction relies on repurposing the
+ABS authoritarian rejection battery as a measure of anti-authoritarian
+disposition. These items were designed to capture authoritarian
+nostalgia (Chu et al., 2008), not the converse, and rejecting named
+authoritarian alternatives is not equivalent to affirming democratic
+processes, institutions, or rights. The interpretive move—treating low
+acceptance of authoritarian alternatives as evidence of defensive
+democratic support—is reasonable but circumscribed. What the data
+document is the negative face of democratic commitment: what Korean
+citizens refuse. The affirmative face—whether they value rule of law,
+legislative deliberation, minority protection as ends rather than
+means—lies beyond what the authoritarian rejection battery can measure.
+
+The two-country design constrains generalizability. Whether the gap
+between abstract and substantive commitment characterizes other
+post-developmental-state democracies—or whether it appears in contexts
+where democratic identity is anchored by mechanisms other than national
+differentiation from an authoritarian neighbor—requires extension to
+additional cases. A direct test of the identity-signaling interpretation
+would require the Taiwanese/Chinese identity spectrum item from the ABS
+Taiwan country-specific module, which is administered alongside the
+cross-national core questionnaire but distributed separately by the
+Election Study Center, National Chengchi University. Access to the
+country-specific variables is restricted to Taiwan-based researchers and
+is not available to the present analysis.
+
+A measurement invariance concern follows from the paper’s own argument.
+If the ‘always preferable’ item captures different constructs across
+contexts, the cross-country interaction compares potentially
+incommensurable quantities. Formal invariance testing on the
+authoritarian rejection battery—where cross-country comparability is
+claimed—supports scalar invariance (ΔCFI = 0.001 metric, 0.003 scalar,
+both below Chen’s (2007) 0.010 threshold; Appendix L). The cross-country
+interaction on ‘always preferable’ should be read as evidence that the
+item behaves differently across contexts, which is the paper’s
+theoretical point rather than a threat to it. Economic evaluations may
+partially proxy incumbent evaluation, though models adding presidential
+trust where available produce substantively identical patterns.
+
+The observation window closes in 2022, before the martial law crisis.
+Wave 7 data will provide a critical test of whether the patterns
+documented here have persisted, intensified, or shifted in response to
+the most dramatic democratic stress test Korea has experienced since
+democratization.
+
+Conclusion
+
+Democratic satisfaction is not democratic deepening. Two decades of
+Asian Barometer data from South Korea establish this. Satisfaction and
+abstract democratic preference can rise in tandem at the aggregate level
+while being driven by entirely disconnected mechanisms at the individual
+level—a satisfaction paradox visible only when the analyst looks beneath
+the surface co-movement to the causal structure underneath. Economic
+performance powers satisfaction. It has no bearing on the
+30-percentage-point rise in abstract preference, which is a period
+effect unexplained by any individual-level predictor. And on the
+substantive measures that tap concrete anti-authoritarian evaluation,
+economic comfort pushes in the wrong direction.
+
+The diagnostic finding deepens rather than softens this conclusion.
+Korean citizens who decouple on “democracy is always preferable” do not
+compensate with stronger substantive anti-authoritarianism. They show
+weaker rejection of authoritarian alternatives as economic comfort
+rises—marginally, but consistently, and in the direction that
+performance-legitimation theory would predict. Korean democratic support
+is structured instrumentally across multiple dimensions: satisfaction
+tracks the economy, abstract commitment floats free of it, and
+substantive rejection of authoritarian alternatives erodes slightly as
+the economy delivers. The system held against an acute crisis in
+December 2024 because institutional mechanisms and the organized
+political opposition that activated them proved sufficient. Whether that
+combination holds against the slower erosion of democratic norms by
+actors who never declare martial law is the question the satisfaction
+paradox leaves unanswered.
+
+Taiwan demonstrates that the abstract measure’s strongest signal comes
+from a context where democracy is fused with national identity—where
+affirming democratic preference is simultaneously affirming national
+self-definition. On the substantive items, the cross-country divergence
+attenuates or reverses. The finding invites scrutiny of how the field
+measures what it claims to measure.
+
+Competing Interests
+
+The author has no relevant financial or non-financial competing
+interests to report.
+
+References
+
+Acemoglu, Daron, Ajzenman, Nicolás, Aksoy, Cevat Giray, Fiszbein,
+Martin, & Molina, Carlos. (2024). (Successful) democracies breed their
+own support. The Review of Economic Studies, 92, 621–655.
+https://doi.org/10.1093/restud/rdae051
+
+Asian Barometer Survey. (2023). Asian Barometer Survey, Waves 1-6
+(2001–2021) [Dataset]. https://asianbarometer.org
+
+Bomhoff, Eduard J, & Gu, Mary Man-Li. (2012). East Asia remains
+different: A comment on the index of “self-expression values,” by
+Inglehart and Welzel. Journal of Cross-Cultural Psychology, 43, 373–383.
+https://doi.org/10.1177/0022022111435096
+
+Chen, Fang Fang. (2007). Sensitivity of goodness of fit indexes to lack
+of measurement invariance. Structural Equation Modeling: A
+Multidisciplinary Journal, 14, 464–504.
+https://doi.org/10.1080/10705510701301834
+
+Chu, Yun-Han, Diamond, Larry, Nathan, Andrew J, & Shin, Doh Chull.
+(2008). How East Asians view democracy. Columbia University Press.
+https://doi.org/10.7312/chu-14534
+
+Chu, Yun-Han, Huang, Kai-Ping, Lagos, Marta, & Mattes, Robert. (2020). A
+lost decade for third-wave democracies? Journal of Democracy, 31,
+166–181. https://doi.org/10.1353/jod.2020.0029
+
+Claassen, Christopher. (2020). Does public support help democracy
+survive? American Journal of Political Science, 64, 118–134.
+https://doi.org/10.1111/ajps.12452
+
+Claassen, Christopher, Ackermann, Kathrin, Bertsou, Eri, Borba, Lucas,
+Carlin, Ryan E, Cavari, Amnon, Dahlum, Sirianne, Gherghina, Sergiu,
+Hawkins, Darren, Lelkes, Yphtach, Magalhães, Pedro C, Mattes, Robert,
+Meijers, Maurits J, Neundorf, Anja, Oross, Dániel, Öztürk, Aykut,
+Sarsfield, Rodolfo, Self, Darin, Stanley, Ben, … Zechmeister, Elizabeth
+J. (2025). Conceptualizing and measuring support for democracy: A new
+approach. Comparative Political Studies, 58, 1171–1198.
+https://doi.org/10.1177/00104140241259458
+
+Dalton, Russell J. (2004). Democratic challenges, democratic choices:
+The erosion of political support in advanced industrial democracies.
+Oxford University Press.
+https://doi.org/10.1093/acprof:oso/9780199268436.001.0001
+
+Diamond, Larry. (1999). Developing democracy: Toward consolidation.
+Johns Hopkins University Press. https://doi.org/10.56021/9780801860140
+
+Easton, David. (1965). A systems analysis of political life. University
+of Chicago Press.
+
+Easton, David. (1975). A re-assessment of the concept of political
+support. British Journal of Political Science, 5, 435–457.
+https://doi.org/10.1017/s0007123400008309
+
+Foa, Roberto Stefan, & Mounk, Yascha. (2017). The signs of
+deconsolidation. Journal of Democracy, 28, 5–15.
+https://doi.org/10.1353/jod.2017.0000
+
+Hankyoreh. (2026, February 20). [Editorial] Court convicts Yoon, but
+fails to fully reckon with his attempted coup.
+https://english.hani.co.kr/arti/english_edition/english_editorials/1245770.html
+
+Hu, Yue, Tai, Yuehong Cassandra, Ko, Hyein, Woo, Byung-Deuk, & Solt,
+Frederick. (2025). An incomplete recipe: One-dimensional latent
+variables do not capture the full flavor of democratic support. Research
+& Politics, 12. https://doi.org/10.1177/20531680251341857
+
+Inglehart, Ronald. (2003). How solid is mass support for democracy—and
+how can we measure it? Political Science & Politics, 36, 51–57.
+https://doi.org/10.1017/s1049096503001689
+
+Kim, Eun-Jung. (2024). (News Focus) Yoon under growing pressure for
+impeachment over brief martial law bid. In Yonhap News Agency.
+https://en.yna.co.kr/view/AEN20241204009800315
+
+Levitsky, Steven, & Ziblatt, Daniel. (2018). How democracies die.
+Viking.
+
+Linz, Juan J, & Stepan, Alfred C. (1996). Toward consolidated
+democracies. Journal of Democracy, 7, 14–33.
+https://doi.org/10.1353/jod.1996.0031
+
+MacKinnon, James G, & White, Halbert. (1985). Some
+heteroskedasticity-consistent covariance matrix estimators with improved
+finite sample properties. Journal of Econometrics, 29, 305–325.
+https://doi.org/10.1016/0304-4076(85)90158-7
+
+Mauk, Marlene. (2020). Disentangling an elusive relationship: How
+democratic value orientations affect political trust in different
+regimes. Political Research Quarterly, 73, 366–380.
+https://doi.org/10.1177/1065912919829832
+
+Mauk, Marlene. (2022). Stable support for democracy in East and
+Southeast Asia? Examining citizens’ trust in democratic institutions.
+East Asia (Piscataway, N.J.), 39, 239–257.
+https://doi.org/10.1007/s12140-021-09381-y
+
+Norris, Pippa. (1999). Critical citizens: Global support for democratic
+government. Cambridge University Press.
+https://www.cambridge.org/core/books/critical-citizens/
+
+Norris, Pippa. (2011). Democratic deficit: Critical citizens revisited.
+Cambridge University Press. https://doi.org/10.1017/cbo9780511973383
+
+Park, Chong-Min, & Shin, Doh Chull. (2006). Do Asian values deter
+popular support for democracy in South Korea? Asian Survey, 46, 341–361.
+https://doi.org/10.1525/as.2006.46.3.341
+
+Rigger, Shelley. (2011). Why Taiwan matters: Small island, global
+powerhouse (2nd ed.). Rowman & Littlefield.
+
+Schedler, Andreas, & Sarsfield, Rodolfo. (2007). Democrats with
+adjectives: Linking direct and indirect measures of democratic support.
+European Journal of Political Research, 46, 637–659.
+https://doi.org/10.1111/j.1475-6765.2007.00708.x
+
+Shin, Gi-Wook. (2020). South Korea’s democratic decay. Journal of
+Democracy, 31, 100–114. https://doi.org/10.1353/jod.2020.0048
+
+Tai, Yuehong Cassandra, Hu, Yue, & Solt, Frederick. (2022). Democracy,
+public support, and measurement uncertainty. The American Political
+Science Review, 1–7. https://doi.org/10.1017/s0003055422000429
+
+Wachman, Alan M. (1994). Taiwan: National identity and democratization:
+National identity and democratization. M.E. Sharpe.
+https://doi.org/10.4324/9781315286976
+
+[1] I use “authoritarian rejection” to describe what Chu et al. (2008)
+termed “authoritarian detachment.” Higher values on all items indicate
+stronger rejection of authoritarian alternatives.

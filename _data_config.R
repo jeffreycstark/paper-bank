@@ -4,6 +4,7 @@
 
 survey_data_prep <- "/Users/jeffreystark/Development/Research/survey-data-prep"
 abs_harmonized_path   <- file.path(survey_data_prep, "data/processed/abs_harmonized.rds")
+afro_harmonized_path  <- file.path(survey_data_prep, "data/processed/afro_harmonized.rds")
 wvs_harmonized_path   <- file.path(survey_data_prep, "data/processed/wvs_harmonized.parquet")
 lbs_harmonized_path   <- file.path(survey_data_prep, "data/processed/lbs_harmonized.rds")
 kamos_harmonized_path <- file.path(survey_data_prep, "data/processed/kamos_harmonized.rds")

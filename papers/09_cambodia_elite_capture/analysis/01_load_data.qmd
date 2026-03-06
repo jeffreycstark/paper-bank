@@ -1,0 +1,42 @@
+---
+title: "Cambodia Elite Capture - Data Preparation"
+author: "Jeffrey Stark"
+date: today
+format:
+  html:
+    toc: true
+    code-fold: show
+    embed-resources: true
+---
+
+# Load Wave 6 Data
+
+```{r setup}
+library(tidyverse)
+library(here)
+
+# Load the ALREADY CLEANED Wave 6 data
+data <- readRDS(here("data", "processed", "w6_all_countries_merged.rds"))
+
+# Filter to our three countries
+# Note: country is a haven_labelled variable, use country_name instead
+cambodia_trust <- data %>%
+  filter(country_name %in% c("Cambodia", "Vietnam", "Thailand"))
+
+# Check what trust variables we have
+cat("Trust variables available:\n")
+trust_vars <- grep("trust", names(cambodia_trust), value = TRUE, ignore.case = TRUE)
+print(trust_vars)
+
+# Check sample sizes
+cambodia_trust %>%
+  group_by(country_name) %>%
+  summarise(n = n())
+```
+
+# Next Steps
+
+1. Check if we have all needed trust variables
+2. If missing, update scripts/02_data_preparation.qmd to add them
+3. Re-run scripts/02_data_preparation.qmd to update ab_analysis.rds
+4. Continue with descriptive analysis
