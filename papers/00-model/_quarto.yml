@@ -55,3 +55,5 @@ format:
 resources:
   - analysis/figures/
   - analysis/tables/
+
+bibliography: ../../references.bib
